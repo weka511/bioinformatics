@@ -132,14 +132,14 @@ def plot_stats(folder,name,k,d,m,fig):
    
 if __name__=='__main__':
     fig=1
-    #plot_stats('C:\\Maths & Physics\\Biology','E-coli.txt',9,1,25,fig)
+    #plot_stats('data','E-coli.txt',9,1,25,fig)
     for k in [7,8,9,10,11,13,17,19,29,39]:
         for name in [
             'E-coli.txt',
             'Salmonella_enterica.txt',
             'Vibrio_cholerae.txt'
             ]:
-            plot_stats('C:\\Maths & Physics\\Biology',name,k,0,25,fig)
+            plot_stats('data',name,k,0,25,fig)
             fig+=1
      
     plt.show()
