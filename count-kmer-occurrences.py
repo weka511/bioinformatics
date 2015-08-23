@@ -56,7 +56,9 @@ def neighbours(kmer,k,d):
         result=[]
         for x in xs:
             result=result+x
-        return result        
+        return result
+    # Generate a list of d-lists of indices that can be changed: e.g. for a d neighbourhood,
+    # determine all the pairs that could be changed
     def indices(d):
         def incr(used):
             return [[i]+used for i in range(k) if i not in used]
@@ -66,10 +68,12 @@ def neighbours(kmer,k,d):
             return incr([])
         else:
             return join([incr(used) for used in indices(d-1)])
+    # Generate all possible substitutions at a specific potion in a kmer
     def substitute(kmer,pos):
         def sub(letter):
             return kmer[0:pos] + letter + kmer[pos+1:]
         return [sub(letter) for letter in ['T','G','C','A']]
+    # Generare alternative versions of a kmer given d-lists of indices
     def generate(iset):
         result=[kmer]
         for i in iset:
