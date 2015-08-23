@@ -5,3 +5,4 @@ Code inspired by [Finding Hidden Messages in DNA (Bioinformatics I)](https://cla
 | Name | Description |
 | -------------------------- | ------------------------------------------------|
 | count-kmer-occurrences.py | Determine number of times each kmer appears in DNA, allowing for reverse complements and d-neighbourhoods |
+| data | folder containing a few genomes |
