@@ -9,6 +9,7 @@
 #   Name -> empty | string
 #   Length -> empty | ":" number
 
+import string
 
 
 class Node:
@@ -35,36 +36,59 @@ class Node:
                 yield rn
 
     
-def parse(newick_text):   
-    def find_parens(start,end,tree,stack):
-        for i in range(start,end):
-            if string[i]=='(':
-                top = stack[len(stack)-1]               
-                node=Node(top.level+1)
-                node.start=i
-                top.add(node)
-                stack.append(node)
-            elif string[i]==')':
-                top = stack.pop()
-                top.end=i
-            
-        return tree
+def parse(text):
+    def create_map():
+        product={
+            ';' : 0,
+            '(' : 1,
+            ')' : 2,
+            ',' : 3,
+            ':' : 4,
+            '_' : 5,
+            '.' : 6,
+            }
+        for i in string.ascii_letters:
+            product[i] = 5
+        for i in string.digits:
+            product[i] = 6
+            for i in string.whitespace:
+                product[i] = -1
+        return product
     
-    string= ''.join(newick_text.split()) 
-    print (string)
-    tree = Node(0)
-    
-    return find_parens(0,len(string),tree,[tree])
-    
+    def tokenize(char_map):
+        
+        def long_token(target,pos):
+            start = pos-1
+            token = target
+            while token==target:
+                ch=text[pos]
+                token = char_map[ch]
+                pos+=1
+            return start,pos
+        pos = 0
+        end = len(text)
+        while pos<end:
+            ch=text[pos]
+            token = char_map[ch]
+            pos+=1
+            if token==-1:
+                continue
+            elif token<5:
+                yield token,pos-1,pos
+            elif token==5 or token==6:
+                start,pos=long_token(token,pos)
+                pos-=1
+                yield token,start,pos
+                
+    for token,start,pos in tokenize(create_map()):
+        print (token,start,pos,text[start:pos])
 
 if __name__=='__main__':
     s = '''
         ((raccoon:19.19959,bear:6.80041):0.84600,((sea_lion:11.99700, seal:12.00300):7.52973,
         ((monkey:100.85930,cat:47.14069):20.59201, weasel:18.87953):2.09460):3.87382,dog:25.46154);
         '''
-    t=string= ''.join(s.split())
-    for node in parse(s).iterate():
-            print (node.level, node.start, node.end,t[node.start:node.end+1])
+    parse(s)
     #print (parse('(cat)dog;'))
     #print (parse('dog;'))
     #print (parse('(dog,cat);'))
