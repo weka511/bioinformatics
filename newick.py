@@ -13,20 +13,26 @@ import string
 
 
 class Node:
+    next_id = 0
     def __init__(self,level,start):
-        self.start = start
-        self.end   = 0
-        self.nodes = []
-        self.level = level
+        self.start  = start
+        self.end    = 0
+        self.nodes  = []
+        self.level  = level
         self.length = 1
-        self.name = ''
+        self.name   = '-'
+        self.id     = Node.next_id
+        Node.next_id +=1
+        print ("Node: ",self.id, self.level)
         
     def add(self,node):
+        print ('Added {0}({1}) to {2}({3})'.format(node.id,node.level,self.id,self.level))
         self.nodes.append(node)
 
     def iterate(self):
         yield self
         for node in self.nodes:
+            #yield node
             for rn in node.iterate():
                 yield rn
 
@@ -85,6 +91,7 @@ class Parser():
         ended = False
         stack = []
         current = None
+        tree = None
         for token,start,pos in self.tokenize(text):
             if ended:
                 print ('Characters beyond end',token,start,pos,text[staself.symbolsrt:pos])
@@ -94,7 +101,12 @@ class Parser():
                 print (len(stack))
                 ended = True
             elif token==OPEN_PARENTHESIS:
-                stack.append(Node(len(stack),start)) # the branchset
+                new_paren = Node(len(stack),start)
+                if len(stack)>0:
+                    stack[len(stack)-1].add(new_paren)
+                stack.append(new_paren) # the branchset
+                if tree==None:
+                    tree = stack[0]
                 current=Node(len(stack),start)       # first branch
                 stack[len(stack)-1].add(current)
             elif token==CLOSE_PARENTHESIS:
@@ -109,7 +121,7 @@ class Parser():
                 pass
             elif token==NAME:
                 current.name=text[start:pos]
-        return current
+        return tree
 
 
 if __name__=='__main__':
@@ -120,8 +132,10 @@ if __name__=='__main__':
         ((monkey:100.85930,cat:47.14069):20.59201, weasel:18.87953):2.09460):3.87382,dog:25.46154);
         '''
     p=parser.parse(s)
+    print ('----------')
     for node in p.iterate():
-        print (p.name)
+        spaces = ''.join(['-' for i in range(node.level)])
+        print ('{0}{1} {2} {3}'.format(spaces,node.id, node.name,node.level))
     #print (parse('(cat)dog;'))
     #print (parse('dog;'))
     #print (parse('(dog,cat);'))
