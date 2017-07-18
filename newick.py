@@ -30,19 +30,18 @@ class Node:
             for rn in node.iterate():
                 yield rn
 
-    
-def parse(text):
-    WHITESPACE        = -1
-    SEMICOLON         = 0
-    OPEN_PARENTHESIS  = 1
-    CLOSE_PARENTHESIS = 2
-    COMMA             = 3
-    COLON             = 4
-    NAME              = 5
-    NUMBER            = 6  
-    
-    def create_map():
-        product={
+WHITESPACE        = -1
+SEMICOLON         = 0
+OPEN_PARENTHESIS  = 1
+CLOSE_PARENTHESIS = 2
+COMMA             = 3
+COLON             = 4
+NAME              = 5
+NUMBER            = 6  
+
+class Parser():
+    def __init__(self):
+        self.symbols={
             ';' : SEMICOLON,
             '(' : OPEN_PARENTHESIS,
             ')' : CLOSE_PARENTHESIS,
@@ -52,28 +51,26 @@ def parse(text):
             '.' : NUMBER,
             }
         for i in string.ascii_letters:
-            product[i] = NAME
+            self.symbols[i] = NAME
         for i in string.digits:
-            product[i] = NUMBER
-            for i in string.whitespace:
-                product[i] = WHITESPACE
-        return product
-    
-    def tokenize(char_map):
-        
+            self.symbols[i] = NUMBER
+        for i in string.whitespace:
+            self.symbols[i] = WHITESPACE
+
+    def tokenize(self,text):        
         def long_token(target,pos):
             start = pos-1
             token = target
             while token==target:
                 ch=text[pos]
-                token = char_map[ch]
+                token = self.symbols[ch]
                 pos+=1
             return start,pos
         pos = 0
         end = len(text)
         while pos<end:
             ch=text[pos]
-            token = char_map[ch]
+            token = self.symbols[ch]
             pos+=1
             if token==WHITESPACE:
                 continue
@@ -83,43 +80,46 @@ def parse(text):
                 start,pos=long_token(token,pos)
                 pos-=1
                 yield token,start,pos
-    
-    ended = False
-    stack = []
-    current = None
-    for token,start,pos in tokenize(create_map()):
-        if ended:
-            print ('Characters beyond end',token,start,pos,text[start:pos])
-        else:
-            print (token,start,pos,text[start:pos])
-        if token==SEMICOLON:
-            print (len(stack))
-            ended = True
-        elif token==OPEN_PARENTHESIS:
-            stack.append(Node(len(stack),start)) # the branchset
-            current=Node(len(stack),start)       # first branch
-            stack[len(stack)-1].add(current)
-        elif token==CLOSE_PARENTHESIS:
-            current=stack.pop()
-            current.end = pos
-        elif token==COMMA:
-            current=Node(len(stack),start)   
-            stack[len(stack)-1].add(current)
-        elif token==COLON:
-            pass
-        elif token==NUMBER:
-            pass
-        elif token==NAME:
-            current.name=text[start:pos]
-    return current
+                        
+    def parse(self,text):        
+        ended = False
+        stack = []
+        current = None
+        for token,start,pos in self.tokenize(text):
+            if ended:
+                print ('Characters beyond end',token,start,pos,text[staself.symbolsrt:pos])
+            else:
+                print (token,start,pos,text[start:pos])
+            if token==SEMICOLON:
+                print (len(stack))
+                ended = True
+            elif token==OPEN_PARENTHESIS:
+                stack.append(Node(len(stack),start)) # the branchset
+                current=Node(len(stack),start)       # first branch
+                stack[len(stack)-1].add(current)
+            elif token==CLOSE_PARENTHESIS:
+                current=stack.pop()
+                current.end = pos
+            elif token==COMMA:
+                current=Node(len(stack),start)   
+                stack[len(stack)-1].add(current)
+            elif token==COLON:
+                pass
+            elif token==NUMBER:
+                pass
+            elif token==NAME:
+                current.name=text[start:pos]
+        return current
 
 
 if __name__=='__main__':
+    parser = Parser()
+    
     s = '''
         ((raccoon:19.19959,bear:6.80041):0.84600,((sea_lion:11.99700, seal:12.00300):7.52973,
         ((monkey:100.85930,cat:47.14069):20.59201, weasel:18.87953):2.09460):3.87382,dog:25.46154);
         '''
-    p=parse(s)
+    p=parser.parse(s)
     for node in p.iterate():
         print (p.name)
     #print (parse('(cat)dog;'))
