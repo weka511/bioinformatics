@@ -36,9 +36,7 @@ class Node:
             for rn in node.iterate():
                 yield rn
 
-
-
-class Parser():
+class Tokenizer:
     WHITESPACE        = -1
     SEMICOLON         = 0
     OPEN_PARENTHESIS  = 1
@@ -46,24 +44,24 @@ class Parser():
     COMMA             = 3
     COLON             = 4
     NAME              = 5
-    NUMBER            = 6      
+    NUMBER            = 6        
     def __init__(self):
         self.symbols={
-            ';' : Parser.SEMICOLON,
-            '(' : Parser.OPEN_PARENTHESIS,
-            ')' : Parser.CLOSE_PARENTHESIS,
-            ',' : Parser.COMMA,
-            ':' : Parser.COLON,
-            '_' : Parser.NAME,
-            '.' : Parser.NUMBER,
+            ';' : Tokenizer.SEMICOLON,
+            '(' : Tokenizer.OPEN_PARENTHESIS,
+            ')' : Tokenizer.CLOSE_PARENTHESIS,
+            ',' : Tokenizer.COMMA,
+            ':' : Tokenizer.COLON,
+            '_' : Tokenizer.NAME,
+            '.' : Tokenizer.NUMBER,
             }
         for i in string.ascii_letters:
-            self.symbols[i] = Parser.NAME
+            self.symbols[i] = Tokenizer.NAME
         for i in string.digits:
-            self.symbols[i] = Parser.NUMBER
+            self.symbols[i] = Tokenizer.NUMBER
         for i in string.whitespace:
-            self.symbols[i] = Parser.WHITESPACE
-
+            self.symbols[i] = Tokenizer.WHITESPACE
+            
     def tokenize(self,text):        
         def long_token(target,pos):
             start = pos-1
@@ -79,56 +77,67 @@ class Parser():
             ch=text[pos]
             token = self.symbols[ch]
             pos+=1
-            if token==Parser.WHITESPACE:
+            if token==Tokenizer.WHITESPACE:
                 continue
-            elif token<Parser.NAME:
-                yield token,pos-1,pos
-            elif token==Parser.NAME or token==Parser.NUMBER:
+            elif token<Tokenizer.NAME:
+                yield token,pos-1,pos,None
+            elif token==Tokenizer.NAME:
                 start,pos=long_token(token,pos)
                 pos-=1
-                yield token,start,pos
-                        
+                yield token,start,pos,text[start:pos]
+            elif token==Tokenizer.NUMBER:
+                start,pos=long_token(token,pos)
+                pos-=1
+                yield token,start,pos,self.value(text[start:pos])
+    def value(self,text):
+        try:
+            return int(text)
+        except ValueError:
+            return float(text)            
+                
+class Parser():
+  
+    def __init__(self,tokenizer):
+        self.tokenizer=tokenizer
+        
     def parse(self,text):        
         ended = False
         stack = []
         current = None
         tree = None
-        for token,start,pos in self.tokenize(text):
+        for token,start,pos,value in self.tokenizer.tokenize(text):
             if ended:
                 print ('Characters beyond end',token,start,pos,text[staself.symbolsrt:pos])
             else:
                 print (token,start,pos,text[start:pos])
-            if token==Parser.SEMICOLON:
+            if token==Tokenizer.SEMICOLON:
                 ended = True
-            elif token==Parser.OPEN_PARENTHESIS:
-                new_paren = Node(len(stack),start)
+            elif token==Tokenizer.OPEN_PARENTHESIS:
+                branchset = Node(len(stack),start)
                 if len(stack)>0:
-                    stack[len(stack)-1].add(new_paren)
-                stack.append(new_paren) # the branchset
+                    stack[len(stack)-1].add(branchset)
+                stack.append(branchset)
                 if tree==None:
                     tree = stack[0]
                 current=Node(len(stack),start)       # first branch
                 stack[len(stack)-1].add(current)
-            elif token==Parser.CLOSE_PARENTHESIS:
+            elif token==Tokenizer.CLOSE_PARENTHESIS:
                 current=stack.pop()
                 current.end = pos
-            elif token==Parser.COMMA:
+            elif token==Tokenizer.COMMA:
                 current=Node(len(stack),start)   
                 stack[len(stack)-1].add(current)
-            elif token==Parser.COLON:
+            elif token==Tokenizer.COLON:
                 pass
-            elif token==Parser.NUMBER:
-                try:
-                    current.length=int(text[start:pos])
-                except ValueError:
-                    current.length=float(text[start:pos])
-            elif token==Parser.NAME:
-                current.name=text[start:pos]
+            elif token==Tokenizer.NUMBER:
+                current.length=value
+            elif token==Tokenizer.NAME:
+                current.name=value
         return tree
 
 
 if __name__=='__main__':
-    parser = Parser()
+    parser = Parser(Tokenizer())
     
     s = '''
         ((raccoon:19.19959,bear:6.80041):0.84600,((sea_lion:11.99700, seal:12.00300):7.52973,
