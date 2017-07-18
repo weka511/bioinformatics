@@ -1,16 +1,32 @@
-#   Grammar from https://en.wikipedia.org/wiki/Newick_format
-#
-#   Tree -> Subtree ";" | Branch ";"
-#   Subtree -> Leaf | Internal
-#   Leaf -> Name
-#   Internal -> "(" BranchSet ")" Name
-#   BranchSet-> Branch | Branch "," BranchSet
-#   Branch -> Subtree Length
-#   Name -> empty | string
-#   Length -> empty | ":" number
+'''
+Copyright (C) 2017 Greenweaves Software Pty Ltd
+
+This is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This software is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this software.  If not, see <http://www.gnu.org/licenses/>
+
+Grammar from https://en.wikipedia.org/wiki/Newick_format
+   Tree -> Subtree ";" | Branch ";"
+   Subtree -> Leaf | Internal
+   Leaf -> Name
+   Internal -> "(" BranchSet ")" Name
+   BranchSet-> Branch | Branch "," BranchSet
+   Branch -> Subtree Length
+   Name -> empty | string
+   Length -> empty | ":" number
+'''
+ 
 
 import string
-
 
 class Node:
     next_id = 0
@@ -23,20 +39,22 @@ class Node:
         self.name   = '-'
         self.id     = Node.next_id
         Node.next_id +=1
-        print ("Node: ",self.id, self.level)
+        #print ("Node: ",self.id, self.level)
         
     def add(self,node):
-        print ('Added {0}({1}) to {2}({3})'.format(node.id,node.level,self.id,self.level))
+        #print ('Added {0}({1}) to {2}({3})'.format(node.id,node.level,self.id,self.level))
         self.nodes.append(node)
 
-    def iterate(self):
-        yield self
+    def iterate(self,path=[]):
+        yield self,path
+        new_path=path[:]
+        new_path.append(self.id)
         for node in self.nodes:
-            #yield node
-            for rn in node.iterate():
+            for rn in node.iterate(new_path):
                 yield rn
-
+                
 class Tokenizer:
+    UNDEFINED         = -2
     WHITESPACE        = -1
     SEMICOLON         = 0
     OPEN_PARENTHESIS  = 1
@@ -61,22 +79,31 @@ class Tokenizer:
             self.symbols[i] = Tokenizer.NUMBER
         for i in string.whitespace:
             self.symbols[i] = Tokenizer.WHITESPACE
-            
+    
+    def get_token(self,ch):
+        try:
+            return self.symbols[ch]
+        except KeyError as e:
+            print('Invalid character: {0} {1}'.format(ch,e))
+            return Tokenizer.UNDEFINED
+        
     def tokenize(self,text):        
         def long_token(target,pos):
             start = pos-1
             token = target
             while token==target:
                 ch=text[pos]
-                token = self.symbols[ch]
+                token = self.get_token(ch)
                 pos+=1
             return start,pos
         pos = 0
         end = len(text)
         while pos<end:
             ch=text[pos]
-            token = self.symbols[ch]
+            token = self.get_token(ch)
             pos+=1
+            if token==Tokenizer.UNDEFINED:
+                continue            
             if token==Tokenizer.WHITESPACE:
                 continue
             elif token<Tokenizer.NAME:
@@ -93,7 +120,10 @@ class Tokenizer:
         try:
             return int(text)
         except ValueError:
-            return float(text)            
+            try:
+                return float(text)            
+            except ValueError as e:
+                print ('Could not parse length: ',e)
                 
 class Parser():
   
@@ -108,8 +138,8 @@ class Parser():
         for token,start,pos,value in self.tokenizer.tokenize(text):
             if ended:
                 print ('Characters beyond end',token,start,pos,text[staself.symbolsrt:pos])
-            else:
-                print (token,start,pos,text[start:pos])
+            #else:
+                #print (token,start,pos,text[start:pos])
             if token==Tokenizer.SEMICOLON:
                 ended = True
             elif token==Tokenizer.OPEN_PARENTHESIS:
@@ -140,14 +170,14 @@ if __name__=='__main__':
     parser = Parser(Tokenizer())
     
     s = '''
-        ((raccoon:19.19959,bear:6.80041):0.84600,((sea_lion:11.99700, seal:12.00300):7.52973,
+        ((raccoon:19.1.9959,bear:6.80041):0.84600,((sea_lion:11.99700, seal:12.00300):7.52973,
         ((monkey:100.85930,cat:47.14069):20.59201, weasel:18.87953):2.09460):3.87382,dog:25.46154);
         '''
     p=parser.parse(s)
     print ('----------')
-    for node in p.iterate():
+    for (node,path) in p.iterate():
         spaces = ''.join(['-' for i in range(node.level)])
-        print ('{0}ID={1}, Name={2}, level={3}, length={4}'.format(spaces,node.id, node.name,node.level,node.length))
+        print ('{5} {0}ID={1}, Name={2}, level={3}, length={4}'.format(spaces,node.id, node.name,node.level,node.length,path))
     #print (parse('(cat)dog;'))
     #print (parse('dog;'))
     #print (parse('(dog,cat);'))
