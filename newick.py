@@ -36,32 +36,33 @@ class Node:
             for rn in node.iterate():
                 yield rn
 
-WHITESPACE        = -1
-SEMICOLON         = 0
-OPEN_PARENTHESIS  = 1
-CLOSE_PARENTHESIS = 2
-COMMA             = 3
-COLON             = 4
-NAME              = 5
-NUMBER            = 6  
+
 
 class Parser():
+    WHITESPACE        = -1
+    SEMICOLON         = 0
+    OPEN_PARENTHESIS  = 1
+    CLOSE_PARENTHESIS = 2
+    COMMA             = 3
+    COLON             = 4
+    NAME              = 5
+    NUMBER            = 6      
     def __init__(self):
         self.symbols={
-            ';' : SEMICOLON,
-            '(' : OPEN_PARENTHESIS,
-            ')' : CLOSE_PARENTHESIS,
-            ',' : COMMA,
-            ':' : COLON,
-            '_' : NAME,
-            '.' : NUMBER,
+            ';' : Parser.SEMICOLON,
+            '(' : Parser.OPEN_PARENTHESIS,
+            ')' : Parser.CLOSE_PARENTHESIS,
+            ',' : Parser.COMMA,
+            ':' : Parser.COLON,
+            '_' : Parser.NAME,
+            '.' : Parser.NUMBER,
             }
         for i in string.ascii_letters:
-            self.symbols[i] = NAME
+            self.symbols[i] = Parser.NAME
         for i in string.digits:
-            self.symbols[i] = NUMBER
+            self.symbols[i] = Parser.NUMBER
         for i in string.whitespace:
-            self.symbols[i] = WHITESPACE
+            self.symbols[i] = Parser.WHITESPACE
 
     def tokenize(self,text):        
         def long_token(target,pos):
@@ -78,11 +79,11 @@ class Parser():
             ch=text[pos]
             token = self.symbols[ch]
             pos+=1
-            if token==WHITESPACE:
+            if token==Parser.WHITESPACE:
                 continue
-            elif token<NAME:
+            elif token<Parser.NAME:
                 yield token,pos-1,pos
-            elif token==NAME or token==NUMBER:
+            elif token==Parser.NAME or token==Parser.NUMBER:
                 start,pos=long_token(token,pos)
                 pos-=1
                 yield token,start,pos
@@ -97,10 +98,9 @@ class Parser():
                 print ('Characters beyond end',token,start,pos,text[staself.symbolsrt:pos])
             else:
                 print (token,start,pos,text[start:pos])
-            if token==SEMICOLON:
-                print (len(stack))
+            if token==Parser.SEMICOLON:
                 ended = True
-            elif token==OPEN_PARENTHESIS:
+            elif token==Parser.OPEN_PARENTHESIS:
                 new_paren = Node(len(stack),start)
                 if len(stack)>0:
                     stack[len(stack)-1].add(new_paren)
@@ -109,17 +109,20 @@ class Parser():
                     tree = stack[0]
                 current=Node(len(stack),start)       # first branch
                 stack[len(stack)-1].add(current)
-            elif token==CLOSE_PARENTHESIS:
+            elif token==Parser.CLOSE_PARENTHESIS:
                 current=stack.pop()
                 current.end = pos
-            elif token==COMMA:
+            elif token==Parser.COMMA:
                 current=Node(len(stack),start)   
                 stack[len(stack)-1].add(current)
-            elif token==COLON:
+            elif token==Parser.COLON:
                 pass
-            elif token==NUMBER:
-                pass
-            elif token==NAME:
+            elif token==Parser.NUMBER:
+                try:
+                    current.length=int(text[start:pos])
+                except ValueError:
+                    current.length=float(text[start:pos])
+            elif token==Parser.NAME:
                 current.name=text[start:pos]
         return tree
 
@@ -135,11 +138,11 @@ if __name__=='__main__':
     print ('----------')
     for node in p.iterate():
         spaces = ''.join(['-' for i in range(node.level)])
-        print ('{0}{1} {2} {3}'.format(spaces,node.id, node.name,node.level))
+        print ('{0}ID={1}, Name={2}, level={3}, length={4}'.format(spaces,node.id, node.name,node.level,node.length))
     #print (parse('(cat)dog;'))
     #print (parse('dog;'))
     #print (parse('(dog,cat);'))
-    #pp=parse(
+    #pp=parser.parse(
         #'''
         #(((Abantias_ibis,Phormictopus_fissipes),(((Alauda_guineti,Certhia_geniculata),(Balaena_paradoxus,Mustela_riparia)),
         #((Circus_guentheri,Oligodon_cyanus),(Gazella_ruthveni,Terpsihone_dentatus)))),
@@ -160,4 +163,6 @@ if __name__=='__main__':
         #Upupa_himantopus)),Circus_homeana),Riparia_ferruginea)));
         #''')
     #for node in pp.iterate():
-        #print (node.level, node.start, node.end)
+        #spaces = ''.join(['-' for i in range(node.level)])
+        #print ('{0}{1} {2} {3}'.format(spaces,node.id, node.name,node.level))    
+   
