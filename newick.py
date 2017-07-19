@@ -38,13 +38,15 @@ class Node:
         self.length = 1
         self.name   = '-'
         self.id     = Node.next_id
+        self.parent = None
+        
         Node.next_id +=1
-        #print ("Node: ",self.id, self.level)
         
     def add(self,node):
         #print ('Added {0}({1}) to {2}({3})'.format(node.id,node.level,self.id,self.level))
         self.nodes.append(node)
-
+        node.parent = self
+        
     def iterate(self,path=[]):
         yield self,path
         new_path=path[:]
@@ -131,10 +133,13 @@ class Parser():
         self.tokenizer=tokenizer
         
     def parse(self,text):        
-        ended = False
-        stack = []
+        ended   = False
+        stack   = []
         current = None
-        tree = None
+        tree    = None
+        lookup  = {}
+        Node.next_id = 0
+        
         for token,start,pos,value in self.tokenizer.tokenize(text):
             if ended:
                 print ('Characters beyond end',token,start,pos,text[staself.symbolsrt:pos])
@@ -163,24 +168,29 @@ class Parser():
                 current.length=value
             elif token==Tokenizer.NAME:
                 current.name=value
-        return tree
+                lookup[value]=current
+        return (tree,lookup)
 
 
 if __name__=='__main__':
+    def display(p):
+        for (node,path) in p.iterate():
+            spaces = ''.join(['-' for i in range(node.level)])
+            print ('{5} {0}ID={1}, Name={2}, level={3}, length={4}'.format(spaces,node.id, node.name,node.level,node.length,path))
+            
     parser = Parser(Tokenizer())
     
     s = '''
         ((raccoon:19.1.9959,bear:6.80041):0.84600,((sea_lion:11.99700, seal:12.00300):7.52973,
         ((monkey:100.85930,cat:47.14069):20.59201, weasel:18.87953):2.09460):3.87382,dog:25.46154);
         '''
-    p=parser.parse(s)
+    p,lookup=parser.parse(s)
     print ('----------')
-    for (node,path) in p.iterate():
-        spaces = ''.join(['-' for i in range(node.level)])
-        print ('{5} {0}ID={1}, Name={2}, level={3}, length={4}'.format(spaces,node.id, node.name,node.level,node.length,path))
-    #print (parse('(cat)dog;'))
+    display(p)
+    print (lookup)
+    #display (parser.parse('(cat)dog;'))
     #print (parse('dog;'))
-    #print (parse('(dog,cat);'))
+    #display (parser.parse('(dog,cat);'))
     #pp=parser.parse(
         #'''
         #(((Abantias_ibis,Phormictopus_fissipes),(((Alauda_guineti,Certhia_geniculata),(Balaena_paradoxus,Mustela_riparia)),
@@ -201,6 +211,7 @@ if __name__=='__main__':
         #((((Coturnix_pyromelana,Porzana_corticale),Hyla_ussuriensis),(Falcipennis_taxispilota,(Notophthalmus_macularius,Rissa_unicus))),
         #Upupa_himantopus)),Circus_homeana),Riparia_ferruginea)));
         #''')
+    #display(pp)
     #for node in pp.iterate():
         #spaces = ''.join(['-' for i in range(node.level)])
         #print ('{0}{1} {2} {3}'.format(spaces,node.id, node.name,node.level))    
