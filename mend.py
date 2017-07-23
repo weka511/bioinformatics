@@ -43,17 +43,10 @@ def mend(node):
 tokenizer = newick.Tokenizer()
 parser = newick.Parser(tokenizer)
 
-tree,_=parser.parse('((((Aa,aa),(Aa,Aa)),((aa,aa),(aa,AA))),Aa);')
-print (mend(tree))
+with open (r'C:\Users\Weka\Downloads\rosalind_mend.txt') as f:
+    for line in f:
+        tree,_=parser.parse(line.strip())
+        print (mend(tree))
 
-#def mend(node):
-    #if len(node.nodes)==0:
-        #try:
-            #return frequencies[node.name]
-        #except KeyError:
-            #return (0,0)
-    #freqs = [mend(parent) for parent in node.nodes]
-    #print (freqs)
-    #result= (freqs[0][0]+freqs[1][0],freqs[0][1]+freqs[1][1])    
-    #return (result[0]/sum(result),result[1]/sum(result) )
+
 
