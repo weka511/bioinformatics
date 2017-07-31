@@ -6,13 +6,12 @@ def distance(p1,p2,m):
 
 def kmeans(k,m,data,centres=trivial_centres):
     centroids=centres(k,m,data)
+    print (centroids)
     step_size=float("inf")
     while step_size>0:
         new_centroids=step(k,m,data,centroids)
-        step_size=0
-        for i in range(k):
-            step_size+=distance(new_centroids[i],centroids[i],m)
-        centroids=new_centroids
+        step_size=sum([distance(new_centroids[i],centroids[i],m) for i in range(k)] )
+        centroids=new_centroids[:]
     return centroids
 
 def step(k,m,data,centres):
@@ -24,15 +23,18 @@ def step(k,m,data,centres):
             if d1<best:
                 index=i
                 best=d1
+        return index
+    
     def centroid(i,indices):
+        print ('centroid', i, indices)
         count=0
         point=[0 for j in range(m)]
         for j in range(len(data)):
             if indices[j]==i:
                 count+=1
-            for l in range(m):
-                point[l]+=data[j][l]
-        return [p/count for p in point]
+                for l in range(m):
+                    point[l]+=data[j][l]
+        return [p/max(count,1) for p in point]
     
     indices = [nearest(p) for p in data]
     
