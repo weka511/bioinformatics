@@ -1,6 +1,6 @@
 import numpy as np
 
-def soft_kmeans(k,m,beta,points,N=1):
+def soft_kmeans(k,m,beta,points,N=1,centres=None):
     def distance(p1,p2):
         return np.sqrt(sum((p1[i]-p2[i])**2 for i in range (m)))    
     @np.vectorize
@@ -21,7 +21,8 @@ def soft_kmeans(k,m,beta,points,N=1):
                 new_centres[i].append(x_i_j)
         return new_centres
 
-    centres=points[:k]
+    if centres==None:
+        centres=points[:k]
     for i in range(N):
         centres=step(centres) 
     return centres

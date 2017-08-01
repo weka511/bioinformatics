@@ -6,7 +6,6 @@ def distance(p1,p2,m):
 
 def kmeans(k,m,data,centres=trivial_centres):
     centroids=centres(k,m,data)
-    #print (centroids)
     step_size=float("inf")
     while step_size>0:
         new_centroids=step(k,m,data,centroids)
