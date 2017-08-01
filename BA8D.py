@@ -32,8 +32,8 @@ if __name__=='__main__':
     beta = -1
     points=[]
  
-    #with open (r'C:\Users\Weka\Downloads\rosalind_ba8c.txt') as f:   
-    with open('BA8D.txt') as f:
+    with open (r'C:\Users\Weka\Downloads\rosalind_ba8d.txt') as f:   
+    #with open('BA8D.txt') as f:
         for line in f:
             if k==-1:
                 values=line.strip().split()
