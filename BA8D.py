@@ -13,7 +13,6 @@ def soft_kmeans(k,m,beta,points,N=1,centres=None):
         numerator=hidden_matrix(mm,kk)
         denominator=np.sum(numerator,axis=0)
         matrix=np.divide(numerator,denominator)
-        #print (matrix)
         new_centres=[[] for i in range(k)]
         for i in range(k):
             for j in range(m):
