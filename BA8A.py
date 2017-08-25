@@ -15,7 +15,6 @@ def FarthestFirstTraversal(data,k,m):
         return best_point
     centres = [random.choice(data)]
     while len(centres)<k:
-        print (centres)
         centres.append(furthest_point())
     return centres
 
