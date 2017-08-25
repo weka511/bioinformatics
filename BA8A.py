@@ -13,17 +13,26 @@ def FarthestFirstTraversal(data,k,m):
                 best_distance = dist(point)
                 best_point = point
         return best_point
-    centres = [random.choice(data)]
+    centres = [data[0]]
+   
     while len(centres)<k:
         centres.append(furthest_point())
     return centres
 
 if __name__=='__main__':
-    print (FarthestFirstTraversal([(0.0, 0.0),
-                                   (5.0, 5.0),
-                                   (0.0, 5.0),
-                                   (1.0, 1.0),
-                                   (2.0, 2.0),
-                                   (3.0, 3.0),
-                                   (1.0, 2.0)
-                                   ],3,2))
+    m = -1
+    k = -1
+    points=[]
+ 
+    with open (r'C:\Users\Weka\Downloads\rosalind_ba8a(1).txt') as f:   
+#    with open (r'ba8a.txt') as f:   
+        for line in f:
+            if k==-1:
+                values=line.strip().split()
+                k=int(values[0])
+                m=int(values[1])
+            else:
+                points.append([float(v) for v in line.strip().split()])
+
+    for pt in FarthestFirstTraversal(points,k,m):
+        print (' '.join('{0:.3f}'.format(p) for p in pt))
