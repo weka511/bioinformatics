@@ -9,8 +9,6 @@ def ins(n,A):
 
     return (swap,A)
 
-#print (ins (6,[6, 10, 4, 5, 1, 2]))
-
 with open('c:/Users/Weka/Downloads/rosalind_ins.txt') as f:
     i=0
     n=0
