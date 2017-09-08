@@ -1,6 +1,5 @@
 def med(n,A,k):
-    #print (n,A,k)
-    if k==1:
+    def helper(n,A):
         a_min=A[0]
         index=0
         for kk in range(n):
@@ -13,15 +12,19 @@ def med(n,A,k):
             return (a_min,index,A[0:-1])
         else:
             return (a_min,index,A[0:index]+A[index+1:])
-        
-    else:
-        (a_min,index,A_rest)=med(n-1,A,k-1)
-        return med(len(A_rest),A_rest,1)
-    
+    AA=A[:]    
+    for kk in range(k):
+            a,_,AA=helper(len(AA),AA)
+            #if kk%100==0:
+                #print (kk,a)
+       
+    return a
+
 #print (med(11,[2, 36, 5, 21, 8, 13, 11, 20, 5, 4 ,1],8))
 
 if __name__=='__main__':
-
+    import timeit
+    start_time = timeit.default_timer()
     with open('c:/Users/Weka/Downloads/rosalind_med.txt') as f:
         n=0
         A=[]
@@ -36,4 +39,6 @@ if __name__=='__main__':
             elif i==2:
                 k=int(text)
             i+=1
+        print('n={0},k={1}'.format(n,k))
         print (med(n,A,k))
+        print ('Elapsed: {0} seconds'.format(timeit.default_timer() - start_time))
