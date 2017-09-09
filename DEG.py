@@ -4,7 +4,7 @@ def deg(n,m,A):
         print (a,b)
         degrees[a-1]+=1
         degrees[b-1]+=1
-    return [d for d in degrees if d>0]
+    return degrees
 
 if __name__=='__main__':
     import timeit
