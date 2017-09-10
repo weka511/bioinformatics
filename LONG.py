@@ -52,4 +52,4 @@ if __name__=='__main__':
         return (seq_record.id,str(seq_record.seq))
     
     from Bio import SeqIO
-    print (long([combine(seq_record) for seq_record in SeqIO.parse("LONG.txt", "fasta")]))
+    print (long([combine(seq_record) for seq_record in SeqIO.parse("c:/Users/Weka/Downloads/rosalind_long.txt", "fasta")]))
