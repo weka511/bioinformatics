@@ -32,12 +32,9 @@
  (Each correction must be a single symbol substitution, and you may return the corrections in any order.)
 '''
 
-def revc(dna):
-	return dna.translate({
-	    ord('A'): 'T',
-	    ord('C'): 'G',
-	    ord('G'):'C', 
-	    ord('T'): 'A'})[::-1]
+import rosalind as r
+
+
 
 def corr(reads):
 	def create_read_match_counts(reads):
@@ -61,10 +58,10 @@ def corr(reads):
 		unmatched=[]		
 		for key,count in read_match_counts.items():
 			if count==1 and not key in matches:
-				revc_key=revc(key)
-				if revc_key in read_match_counts:
-					matches[key]=read_match_counts[revc_key]+1
-					matches[revc_key]=read_match_counts[revc_key]+1
+				r.revc_key=r.revc(key)
+				if r.revc_key in read_match_counts:
+					matches[key]=read_match_counts[r.revc_key]+1
+					matches[r.revc_key]=read_match_counts[r.revc_key]+1
 				else:
 					unmatched.append(key)
 		return unmatched
@@ -83,11 +80,11 @@ def corr(reads):
 		pairs=[]
 		for read in unmatched:
 			neighbours=find_neighbours(read,matches)
-			revc_neighbours= find_neighbours(revc(read),matches)
-			if len(neighbours)==1 and len(revc_neighbours)==0:
+			r.revc_neighbours= find_neighbours(r.revc(read),matches)
+			if len(neighbours)==1 and len(r.revc_neighbours)==0:
 				pairs.append((read,neighbours[0]))
-			if len(neighbours)==0 and len(revc_neighbours)==1:
-				pairs.append((read,revc(neighbours[0])))
+			if len(neighbours)==0 and len(r.revc_neighbours)==1:
+				pairs.append((read,r.revc(neighbours[0])))
 		return pairs
 	
 	read_match_counts = create_read_match_counts(reads)
