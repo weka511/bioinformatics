@@ -35,16 +35,20 @@ import rosalind as r
 
 def dbru(S):
     def union(S):
-        U=S[:]
+        U=set(S)
         for s in S:
             revc=r.revc(s)
             if not revc in U:
-                U.append(revc)
+                U.add(revc)
         return U
-    print (union(S))
-    
-    return [('foo','bar')]
+ 
+    return [(e[0:-1],e[1:]) for e in union(S)]
 
 if __name__=='__main__':
-    for a,b in dbru(['TGAT','CATG','TCAT','ATGC','CATC','CATC']):
+    A=[]
+    with open('c:/Users/Weka/Downloads/rosalind_dbru.txt') as f:
+        for line in f:
+            A.append(line.strip())       
+    #for a,b in dbru(['TGAT','CATG','TCAT','ATGC','CATC','CATC']):
+    for a,b in dbru(A):
         print('({0}, {1})'.format(a,b))
