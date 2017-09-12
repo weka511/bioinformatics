@@ -21,7 +21,7 @@ from DBRU import dbru
 
 def pcov(S):
     k=len(S[0])
-    deBruijn=dbru(S,include_revc=False)
+    _,deBruijn=dbru(S,include_revc=False)
     fragments=[]
     (prefix,suffix)=deBruijn[0]
     while len(fragments)<len(deBruijn):
@@ -30,20 +30,19 @@ def pcov(S):
             if a==suffix:
                 prefix,suffix=a,b
                 break
-    #print (fragments)
+
     superstring=[]
     for i in range(len(S)-k+2):
         if i==0:
             superstring.append(fragments[i])
         else:
             superstring.append(fragments[i][-1])
-    #print (superstring)
+
     return ''.join(superstring)
 
 if __name__=='__main__':
-    #S=['ATTAC','TACAG','GATTA','ACAGA','CAGAT','TTACA','AGATT']
     S=[]
-    with open('c:/Users/Weka/Downloads/rosalind_pcov.txt') as f:
+    with open('c:/Users/Weka/Downloads/rosalind_pcov(1).txt') as f:
         for line in f:
             S.append(line.strip())     
     print (pcov(S))
