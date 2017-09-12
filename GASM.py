@@ -17,11 +17,11 @@
  along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>
 
 '''
-from DBRU import dbru 
+import rosalind as r
 
 def gasm(S):
     k=len(S[0])
-    B,E=dbru(S)
+    B,E=r.dbru(S)
     print (B)
     print (E)
     fragments=[]

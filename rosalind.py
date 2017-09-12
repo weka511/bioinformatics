@@ -38,3 +38,21 @@ def revc(dna):
             ord('C'): 'G',
             ord('G'):'C', 
             ord('T'): 'A'})[::-1]
+
+def dbru(S,include_revc=True):
+    def union(S):                    
+        U=set(S)
+        for s in S:
+            s_revc=revc(s)
+            if include_revc and not s_revc in U:
+                U.add(s_revc)
+        return U
+    def nodes(E):
+        B=[]
+        for (a,b) in E:
+            if not a in B:
+                B.append(a)
+            if not b in B:
+                B.append(b) 
+    E= [(e[0:-1],e[1:]) for e in union(S)]
+    return (nodes(E),E)
