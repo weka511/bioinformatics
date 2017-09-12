@@ -33,12 +33,12 @@
 '''
 import rosalind as r
 
-def dbru(S):
+def dbru(S,include_revc=True):
     def union(S):
         U=set(S)
         for s in S:
             revc=r.revc(s)
-            if not revc in U:
+            if include_revc and not revc in U:
                 U.add(revc)
         return U
  
@@ -46,7 +46,7 @@ def dbru(S):
 
 if __name__=='__main__':
     A=[]
-    with open('c:/Users/Weka/Downloads/rosalind_dbru.txt') as f:
+    with open('c:/Users/Weka/Downloads/rosalind_dbru(1).txt') as f:
         for line in f:
             A.append(line.strip())       
     #for a,b in dbru(['TGAT','CATG','TCAT','ATGC','CATC','CATC']):
