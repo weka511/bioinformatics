@@ -44,18 +44,16 @@ def gasm(S):
     shortest_cycle=None
     for k in range(len(S[0]),2,-1):
         Sk= split(S,k)
-        print (k,Sk)
         B,E=r.dbru(Sk)
-        #print (B,E)
         while(len(E)>0):
             R,E=get_run(E)
             if R[0]==R[-1]:
                 cycle=''.join([r[0] for r in R[0:-1]])
                 if shortest_cycle==None or len(cycle)<len(shortest_cycle):
                     shortest_cycle=cycle
-                #print(cycle)
+
         if shortest_cycle!=None:
-               return shortest_cycle
+            return shortest_cycle
     return shortest_cycle
 
 
