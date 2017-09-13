@@ -20,32 +20,49 @@
 import rosalind as r
 
 def gasm(S):
+    def partition(B,E):
+        B1=set()
+        (prefix,suffix)=E[0]
+        found=True
+        while found:
+            found=False
+            B1.add(prefix)
+            for (a,b) in E:
+                if not found and a==suffix:
+                    prefix,suffix=a,b
+                    found=True
+        B1.add(suffix)           
+        
+        B2=set([b for b in B if not b in B1])
+        
+        E1=[]
+        E2=[]
+        for prefix,suffix in E:
+            if prefix in B1 or suffix in B1:
+                E1.append((prefix,suffix))
+            else:
+                E2.append((prefix,suffix))
+                
+        return (list(B1),E1,B2,E2)
+
     k=len(S[0])
-    B,E=r.dbru(S)
+    B,E=r.dbru(S,include_revc=True)
     print (B)
     print (E)
+    (B1,E1,B2,E2)=partition(B,E)
+    print (B1)
+    print (E1)
+    print (B2)
+    print (E2)
     fragments=[]
-    (prefix,suffix)=E[0]
-    while len(fragments)<len(E):
-        fragments.append(prefix)
-        for (a,b) in E:
-            if a==suffix:
-                prefix,suffix=a,b
-                break
+    
 
-    superstring=[]
-    for i in range(len(S)):
-        if i==0:
-            superstring.append(fragments[i])
-        else:
-            superstring.append(fragments[i][-1])
-
-    return ''.join(superstring)
+    return []
 
 if __name__=='__main__':
-    #print(gasm(['AATCT','TGTAA','GATTA','ACAGA']))
-    S=[]
-    with open('c:/Users/Weka/Downloads/rosalind_gasm.txt') as f:
-        for line in f:
-            S.append(line.strip())     
-    print (gasm(S))    
+    gasm(['AATCT','TGTAA','GATTA','ACAGA'])
+    #S=[]
+    #with open('c:/Users/Weka/Downloads/rosalind_gasm.txt') as f:
+        #for line in f:
+            #S.append(line.strip())     
+    #print (gasm(S))    

@@ -53,6 +53,7 @@ def dbru(S,include_revc=True):
             if not a in B:
                 B.append(a)
             if not b in B:
-                B.append(b) 
+                B.append(b)
+        return B
     E= [(e[0:-1],e[1:]) for e in union(S)]
     return (nodes(E),E)
