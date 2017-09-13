@@ -19,50 +19,50 @@
 '''
 import rosalind as r
 
+def split(S,k):
+    def split1(s):
+        return[s[i:i+k] for i in range(len(s)-k+1)]
+    if k==len(S[0]):
+        return S[:] 
+    return[spl for s in S for spl in split1(s)]
+
+def get_run(E):
+    def search(s):
+        for a,b in E:
+            if a==s:
+                return a,b
+        else:
+            return ([],[])
+    prefix,suffix=E[0]
+    R=[prefix]
+    while len(suffix)>0:
+        R.append(suffix)
+        E.remove((prefix,suffix))
+        prefix,suffix=search(suffix)      
+    return R,E
 def gasm(S):
-    def partition(B,E):
-        B1=set()
-        (prefix,suffix)=E[0]
-        found=True
-        while found:
-            found=False
-            B1.add(prefix)
-            for (a,b) in E:
-                if not found and a==suffix:
-                    prefix,suffix=a,b
-                    found=True
-        B1.add(suffix)           
-        
-        B2=set([b for b in B if not b in B1])
-        
-        E1=[]
-        E2=[]
-        for prefix,suffix in E:
-            if prefix in B1 or suffix in B1:
-                E1.append((prefix,suffix))
-            else:
-                E2.append((prefix,suffix))
-                
-        return (list(B1),E1,B2,E2)
+    shortest_cycle=None
+    for k in range(len(S[0]),2,-1):
+        Sk= split(S,k)
+        print (k,Sk)
+        B,E=r.dbru(Sk)
+        #print (B,E)
+        while(len(E)>0):
+            R,E=get_run(E)
+            if R[0]==R[-1]:
+                cycle=''.join([r[0] for r in R[0:-1]])
+                if shortest_cycle==None or len(cycle)<len(shortest_cycle):
+                    shortest_cycle=cycle
+                #print(cycle)
+        if shortest_cycle!=None:
+               return shortest_cycle
+    return shortest_cycle
 
-    k=len(S[0])
-    B,E=r.dbru(S,include_revc=True)
-    print (B)
-    print (E)
-    (B1,E1,B2,E2)=partition(B,E)
-    print (B1)
-    print (E1)
-    print (B2)
-    print (E2)
-    fragments=[]
-    
-
-    return []
 
 if __name__=='__main__':
-    gasm(['AATCT','TGTAA','GATTA','ACAGA'])
-    #S=[]
-    #with open('c:/Users/Weka/Downloads/rosalind_gasm.txt') as f:
-        #for line in f:
-            #S.append(line.strip())     
-    #print (gasm(S))    
+    #print(gasm(['AATCT','TGTAA','GATTA','ACAGA']))
+    S=[]
+    with open('c:/Users/Weka/Downloads/rosalind_gasm.txt') as f:
+        for line in f:
+            S.append(line.strip())     
+    print (gasm(S))    
