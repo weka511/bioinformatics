@@ -35,10 +35,10 @@ def asmq(S,N=50):
     return asmq_n([len(s) for s in S],N)
 
 if __name__=='__main__':
-    S=['GATTACA','TACTACTAC','ATTGAT','GAAGA']
-    print (asmq(S),asmq(S,N=75))
-    #S=[]
-    #with open('c:/Users/Weka/Downloads/rosalind_asmq.txt') as f:
-        #for line in f:
-            #S.append(line.strip())     
-    #print (asmq(S))    
+    #S=['GATTACA','TACTACTAC','ATTGAT','GAAGA']
+    #print (asmq(S),asmq(S,N=75))
+    S=[]
+    with open('c:/Users/Weka/Downloads/rosalind_asmq.txt') as f:
+        for line in f:
+            S.append(line.strip())     
+    print (asmq(S),asmq(S,N=75))    
