@@ -18,11 +18,27 @@
 
 '''
 
-def generate_contigs(S):
-    pass
-
-def asmq(S):
-    pass
+def asmq_n(S,N):
+    S.sort()
+    total=sum(s for s in S)
+    target=N*total/100
+    #print(total, target)
+    ss=0
+    n=len(S)-1
+    while ss<target:
+        #print (S[n])
+        ss+=S[n]
+        n-=1
+    return S[n+1]
+    
+def asmq(S,N=50):
+    return asmq_n([len(s) for s in S],N)
 
 if __name__=='__main__':
-    print (asmq(['GATTACA','TACTACTAC','ATTGAT','GAAGA']))
+    S=['GATTACA','TACTACTAC','ATTGAT','GAAGA']
+    print (asmq(S),asmq(S,N=75))
+    #S=[]
+    #with open('c:/Users/Weka/Downloads/rosalind_asmq.txt') as f:
+        #for line in f:
+            #S.append(line.strip())     
+    #print (asmq(S))    
