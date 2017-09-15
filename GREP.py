@@ -20,29 +20,68 @@
 
 from rosalind import dbru 
 
-def grow(cycles,E):
-    def grow_one(c):
-        return [c+[suffix] for (prefix,suffix) in E if prefix==c[-1]]
-    return [cycle for c in cycles for cycle in grow_one(c)]
-def is_cycle(S):
-    return S[0]==S[-1]
-def fmt(cycle):
-    return ''.join([c[0] for c in cycle])
+def create_lookup(B,E):
+    F={}
+    for b in B:
+        F[b]=[f for (e,f) in E if e==b]
+    return F
+
+def grow(run,F):
+    end = run[-1]
+    if end in F:
+        return [run + [rr] for rr in F[end]]
+    else:
+        return run
+
+def is_cycle(r,F):
+    return r[-1] in F
+
+def is_complete(r,freqs):
+    print (format(r))
+    myfreqs={}
+    for rr in r:
+        if rr in myfreqs:
+            myfreqs[rr]+=1
+        else:
+            myfreqs[rr]=1
+            
+    wrapped_key=r[-1][1:]+r[0][0]
+    #print (wrapped_key)
+    if wrapped_key in myfreqs:
+        myfreqs[wrapped_key]+=1
+    else:
+        myfreqs[wrapped_key]=1
+    for k in myfreqs.keys():
+        if (not k in freqs):
+            print (k,myfreqs[k],'-')
+            return False
+        if myfreqs[k] != freqs[k]:
+            print (k,myfreqs[k],freqs[k])
+            return False
+    return True
+
+def format(r):
+    return ''.join([rr[0] for rr in r])
+
 def grep(S):
     B,E=dbru(S,include_revc=False)
-    print (B)
-    print (E)
-    e=S[0]
-    cycles=[]
-    runs=[[e[0:-1],e[1:]]]
-    while len(cycles)==0:# or len(cycles[-1])<16:
-        runs=grow(runs,E)
-        new_cycles=[r for r in runs if is_cycle(r) and len(r)==len(S)-1]
-        for c in new_cycles:
-            runs.remove(c)
-            cycles.append(c)
-    cc= [fmt(c) for c in cycles]
-    return list(set(cc))
+    F=create_lookup(B,E)
+    Runs=[[S[0][0:-1],S[0][1:]]]
+
+    N=len(Runs[0])
+    for i in range(len(S)-2): #while len(Runs[0])<5:
+        Runs=[g for run in Runs for g in grow(run,F)]
+        Runs=[r for r in Runs if len(r)>N]
+        N+=1
+
+    cycles =[r for r in Runs if is_cycle(r,F)]
+
+    freqs={}
+    for key in F.keys():
+        freqs[key]=len(F[key]) 
+    #freqs['GC']+=1
+    return [format(c) for c in cycles if is_complete(c,freqs)]
+    
 if __name__=='__main__':
     S=[
         'CAG',
