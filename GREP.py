@@ -37,31 +37,33 @@ def is_cycle(r,F):
     return r[-1] in F
 
 def is_complete(r,freqs):
-    print (format(r))
+    #print (format(r))
+    #print (r)
+    kmers=[]
+    for i in range(len(r)):
+        if i<len(r)-1:
+            kmers.append(r[i]+r[i+1][0])
+        else:
+            kmers.append(r[i]+r[0][0])
+    #print ('k',kmers)
     myfreqs={}
-    for rr in r:
+    for rr in kmers:
         if rr in myfreqs:
             myfreqs[rr]+=1
         else:
             myfreqs[rr]=1
             
-    wrapped_key=r[-1][1:]+r[0][0]
-    #print (wrapped_key)
-    if wrapped_key in myfreqs:
-        myfreqs[wrapped_key]+=1
-    else:
-        myfreqs[wrapped_key]=1
     for k in myfreqs.keys():
         if (not k in freqs):
-            print (k,myfreqs[k],'-')
+            print (k,format(r),myfreqs[k],'-')
             return False
         if myfreqs[k] != freqs[k]:
-            print (k,myfreqs[k],freqs[k])
+            print (k,format(r),myfreqs[k],freqs[k])
             return False
     return True
 
 def format(r):
-    return ''.join([rr[0] for rr in r])
+    return ''.join([rr[0] for rr in r] + [r[-1][-1]])
 
 def grep(S):
     B,E=dbru(S,include_revc=False)
@@ -69,7 +71,7 @@ def grep(S):
     Runs=[[S[0][0:-1],S[0][1:]]]
 
     N=len(Runs[0])
-    for i in range(len(S)-2): #while len(Runs[0])<5:
+    for i in range(len(S)-3): #while len(Runs[0])<5:
         Runs=[g for run in Runs for g in grow(run,F)]
         Runs=[r for r in Runs if len(r)>N]
         N+=1
@@ -77,8 +79,8 @@ def grep(S):
     cycles =[r for r in Runs if is_cycle(r,F)]
 
     freqs={}
-    for key in F.keys():
-        freqs[key]=len(F[key]) 
+    for key in S:
+        freqs[key]=1+freqs[key] if key in freqs else 1
     #freqs['GC']+=1
     return [format(c) for c in cycles if is_complete(c,freqs)]
     
