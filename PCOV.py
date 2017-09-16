@@ -17,7 +17,7 @@
     along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>
 '''
 
-import rosalind as r
+from rosalind import dbru,read_strings
 
 def pcov(S):
     k=len(S[0])
@@ -41,9 +41,5 @@ def pcov(S):
     return ''.join(superstring)
 
 if __name__=='__main__':
-    S=[]
-    with open('c:/Users/Weka/Downloads/rosalind_pcov(1).txt') as f:
-        for line in f:
-            S.append(line.strip())     
-    print (pcov(S))
+    print (pcov(read_strings('c:/Users/Weka/Downloads/rosalind_pcov.txt')))
     

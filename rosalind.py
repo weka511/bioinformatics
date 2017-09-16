@@ -57,3 +57,10 @@ def dbru(S,include_revc=True):
         return B
     E= [(e[0:-1],e[1:]) for e in union(S)]
     return (nodes(E),E)
+
+def read_strings(file_name):
+    S=[]
+    with open(file_name) as f:
+        for line in f:
+            S.append(line.strip())     
+    return S

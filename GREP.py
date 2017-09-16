@@ -18,72 +18,74 @@
 
 '''
 
-from rosalind import dbru 
+import copy
 
+from rosalind import dbru,read_strings 
+
+def count_kmers(S):
+    counts={}
+    for s in S:
+        if s in counts:
+            counts[s]+=1
+        else:
+            counts[s]=1
+    return counts
 def create_lookup(B,E):
     F={}
     for b in B:
         F[b]=[f for (e,f) in E if e==b]
     return F
-
-def grow(run,F):
-    end = run[-1]
-    if end in F:
-        return [run + [rr] for rr in F[end]]
-    else:
-        return run
-
-def is_cycle(r,F):
-    return r[-1] in F
-
-def is_complete(r,freqs):
-    #print (format(r))
-    #print (r)
-    kmers=[]
-    for i in range(len(r)):
-        if i<len(r)-1:
-            kmers.append(r[i]+r[i+1][0])
-        else:
-            kmers.append(r[i]+r[0][0])
-    #print ('k',kmers)
-    myfreqs={}
-    for rr in kmers:
-        if rr in myfreqs:
-            myfreqs[rr]+=1
-        else:
-            myfreqs[rr]=1
-            
-    for k in myfreqs.keys():
-        if (not k in freqs):
-            print (k,format(r),myfreqs[k],'-')
-            return False
-        if myfreqs[k] != freqs[k]:
-            print (k,format(r),myfreqs[k],freqs[k])
-            return False
-    return True
+def remove_unused_kmer(counts):
+    removes=[]
+    for key,value in counts.items():
+        if value==0:
+            removes.append(key)
+    for key in removes:
+        del counts[key]
+    return counts 
 
 def format(r):
     return ''.join([rr[0] for rr in r] + [r[-1][-1]])
-
+    
 def grep(S):
+    counts=count_kmers(S)
     B,E=dbru(S,include_revc=False)
     F=create_lookup(B,E)
-    Runs=[[S[0][0:-1],S[0][1:]]]
+    Runs=[[S[0]]]
+    counts[S[0]]-=1
+    counts=remove_unused_kmer(counts)
+    CountsForRuns=[counts]
+    for n in range(len(S)-1):
+        NewRuns=[]
+        for i in range(len(Runs)):
+            run=Runs[i]
+            counts=CountsForRuns[i]
+            last=run[-1][1:]
+            succ=F[last]
+            counts_old=copy.deepcopy(counts)
+            j=0
+            added=False
+            while j<len(succ):
+                kmer=last+succ[j][-1]
+                if kmer in counts_old:
+                    if added:
+                        new_counts=copy.deepcopy(counts_old)
+                        new_counts[kmer]-=1
+                        new_counts=remove_unused_kmer(new_counts)
+                        new_run=copy.deepcopy(run[:-1])
+                        new_run.append(kmer)
+                        CountsForRuns.append(new_counts)
+                        NewRuns.append(new_run)
+                    else:
+                        counts[kmer]-=1
+                        counts=remove_unused_kmer(counts)
+                        run.append(kmer)
+                        added=True
+                j+=1
+        Runs = Runs + NewRuns    
+            #print (run)
+    return [format(r)[:-1] for r in Runs if len(r)==len(S)]
 
-    N=len(Runs[0])
-    for i in range(len(S)-3): #while len(Runs[0])<5:
-        Runs=[g for run in Runs for g in grow(run,F)]
-        Runs=[r for r in Runs if len(r)>N]
-        N+=1
-
-    cycles =[r for r in Runs if is_cycle(r,F)]
-
-    freqs={}
-    for key in S:
-        freqs[key]=1+freqs[key] if key in freqs else 1
-    #freqs['GC']+=1
-    return [format(c) for c in cycles if is_complete(c,freqs)]
-    
 if __name__=='__main__':
     S=[
         'CAG',
@@ -105,9 +107,72 @@ if __name__=='__main__':
         'TCA'    
     ]
     
-    #S=[]
-    #with open('c:/Users/Weka/Downloads/rosalind_grep.txt') as f:
-        #for line in f:
-            #S.append(line.strip())     
+    #S=read_strings('c:/Users/Weka/Downloads/rosalind_grep.txt')
+
     for s in grep(S):
         print (s)
+        
+    #def create_lookup(B,E):
+        #F={}
+        #for b in B:
+            #F[b]=[f for (e,f) in E if e==b]
+        #return F
+    
+    #def grow(run,F):
+        #end = run[-1]
+        #if end in F:
+            #return [run + [rr] for rr in F[end]]
+        #else:
+            #return run
+    
+    #def is_cycle(r,F):
+        #return r[-1] in F
+    
+    #def is_complete(r,freqs):
+        ##print (format(r))
+        ##print (r)
+        #kmers=[]
+        #for i in range(len(r)):
+            #if i<len(r)-1:
+                #kmers.append(r[i]+r[i+1][0])
+            #else:
+                #kmers.append(r[i]+r[0][0])
+        ##print ('k',kmers)
+        #myfreqs={}
+        #for rr in kmers:
+            #if rr in myfreqs:
+                #myfreqs[rr]+=1
+            #else:
+                #myfreqs[rr]=1
+                
+        #for k in myfreqs.keys():
+            #if (not k in freqs):
+                #print (k,format(r),myfreqs[k],'-')
+                #return False
+            #if myfreqs[k] != freqs[k]:
+                #print (k,format(r),myfreqs[k],freqs[k])
+                #return False
+        #return True
+    
+    #def format(r):
+        #return ''.join([rr[0] for rr in r] + [r[-1][-1]])
+    
+    #def grep(S):
+        #B,E=dbru(S,include_revc=False)
+        #F=create_lookup(B,E)
+        #Runs=[[S[0][0:-1],S[0][1:]]]
+    
+        #N=len(Runs[0])
+        #for i in range(len(S)-3): #while len(Runs[0])<5:
+            #Runs=[g for run in Runs for g in grow(run,F)]
+            #Runs=[r for r in Runs if len(r)>N]
+            #N+=1
+    
+        #cycles =[r for r in Runs if is_cycle(r,F)]
+    
+        #freqs={}
+        #for key in S:
+            #freqs[key]=1+freqs[key] if key in freqs else 1
+        ##freqs['GC']+=1
+        #return [format(c) for c in cycles if is_complete(c,freqs)]
+        
