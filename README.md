@@ -14,23 +14,23 @@ Code inspired by [Finding Hidden Messages in DNA (Bioinformatics I)](https://cla
 | DBRU.py | 	 	Constructing a De Bruijn Graph |
 | DDEG.py | 	 	Double-Degree Array |
 | DEG.py | 	 	Degree Array |
-| FRMT.py | 	Added copy |right notice 	4 days ago|
+| FRMT.py | 	Data Formats|
 | GASM.py | 	 	Genome Assembly Using Reads |
-| GBK.py | 	Added copy |right notice 	4 days ago|
-| GREP.py | 	Solved GREP 	14 minutes ago|
+| GBK.py | 	GenBank Introduction |
+| GREP.py | 	 Genome Assembly with Perfect Coverage and Repeats|
 | INS.py | 	 	Insertion Sort |
-| INV.py | 	Added copy |right notice 	4 days ago|
+| INV.py | 	Counting Inversions (WIP)|
 | LICENSE |	License Agreement|
 | LONG.py | 	Genome Assembly as Shortest Superstring |
 | MED.py | 	Median|
-| MER.py | 	Added copy |right notice 	4 days ago|
-| MS.py | 	Added copy |right notice 	4 days ago|
-| PAR.py | 	Added copy |right notice 	4 days ago|
-| PAR3.py | 	Added copy |right notice 	4 days ago|
+| MER.py |  	Merge Two Sorted Arrays |
+| MS.py | 	Mergesort|
+| PAR.py | 	 	2-Way Partition |
+| PAR3.py | 	 	3-Way Partition |
 | PCOV.py | 	 Genome Assembly with Perfect Coverage |
-| PTRA.py | 	Added copy |right notice 	4 days ago|
+| PTRA.py | 	 	Protein Translation |
 | QS.py | 	Quicksort|
-| README.md 	Update README.md 	2 months ago|
+| README.md 	|This file|
 | count-kmer-occurrences.py | Determine number of times each kmer appears in DNA, allowing for reverse complements and d-neighbourhoods |
 | mend.py | 	 Inferring a Genotype from a Pedigree |
 | newick.py | 	 | Parser for files in Newick format |
