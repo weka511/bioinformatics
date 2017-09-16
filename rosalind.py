@@ -60,8 +60,8 @@ def dbru(S,include_revc=True):
     return (nodes(E),E)
 
 def read_strings(file_name):
-    S=[]
-    with open(file_name) as f:
-        for line in f:
-            S.append(line.strip())     
-    return S
+    '''
+    Read a bunch of string from file, e.g. reads
+    '''
+    with open(file_name) as f: 
+        return [line.strip() for line in f ]
