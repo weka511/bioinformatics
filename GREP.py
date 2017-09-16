@@ -110,28 +110,7 @@ def grep(S):
     return [format(r)[:-1] for r in Runs if len(r)==len(S)]
 
 if __name__=='__main__':
-    S=[
-        'CAG',
-        'AGT',
-        'GTT',
-        'TTT',
-        'TTG',
-        'TGG',
-        'GGC',
-        'GCG',
-        'CGT',
-        'GTT',
-        'TTC',
-        'TCA',
-        'CAA',
-        'AAT',
-        'ATT',
-        'TTC',
-        'TCA'    
-    ]
     
-    S=read_strings('c:/Users/Weka/Downloads/rosalind_grep(1).txt')
-
-    for s in grep(S):
+    for s in grep(read_strings('c:/Users/Weka/Downloads/rosalind_grep(1).txt')):
         print (s)
         
