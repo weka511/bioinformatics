@@ -17,15 +17,10 @@
  along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>
 
 '''
-import rosalind as r
-
-
+from rosalind import dbru,read_strings
 
 if __name__=='__main__':
-    A=[]
-    with open('c:/Users/Weka/Downloads/rosalind_dbru(2).txt') as f:
-        for line in f:
-            A.append(line.strip())       
-    _,E= r.dbru(A)
+    S=read_strings('c:/Users/Weka/Downloads/rosalind_dbru.txt')  
+    _,E= dbru(S)
     for a,b in E:
         print('({0}, {1})'.format(a,b))

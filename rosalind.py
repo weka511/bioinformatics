@@ -40,6 +40,7 @@ def revc(dna):
             ord('T'): 'A'})[::-1]
 
 def dbru(S,include_revc=True):
+    '''DBRU Constructing a De Bruijn Graph'''
     def union(S):                    
         U=set(S)
         for s in S:
