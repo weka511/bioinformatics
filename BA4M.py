@@ -23,41 +23,64 @@ def BA4M(D):
     '''
     https://users.cs.fiu.edu/~weiss/cop3337_f99/assignments/turnpike.pdf
     '''
-    def helper(X,D,first,last):
-        def candidates(x):
-            return [abs(xx-x) for xx in X if not numpy.isnan(xx) and x!=xx]
+    def find_remaining_points(X,D,first,last):
+        
+        def get_set_diffs(diffs):
+            diffs.sort()
+            #print ("Set diffs",D,diffs)
+            set_diffs=[]
+            i=0
+            for diff in diffs:
+                found=False
+                while i<len(D):
+                    #print (i,D[i],diff,D)
+                    if  D[i]<diff:
+                        set_diffs.append(D[i])
+                    elif D[i]==diff:
+                        print ("Found", diff)
+                        found=True
+                        i+=1
+                        break
+                    i+=1
+                if not found:
+                    #print ("Not found",diff,i,D)
+                    return None
+            while i<len(D):
+                set_diffs.append(D[i])
+                i+=1 
+            #print ("Reduced D",D,diffs,set_diffs) 
+            return set_diffs
+        
+        def explore(candidate,X,first,last):
+            diffs=[abs(candidate-x) for x in X if not numpy.isnan(x) and x!=candidate]
+            print ("Trying",candidate,diffs)
+            set_diffs=get_set_diffs(diffs)
+            #print (set_diffs)
+            if set_diffs==None:
+                return None
+            elif len(set_diffs)==0:
+                #print ('Done',X)
+                return X
+            else:
+                return find_remaining_points(X,set_diffs,first,last)
+            
         x_max=D[-1]
-        x_comp=X[-1]-x_max
-        print (D,X,x_max,x_comp)
-        if x_comp in D:
-            c=candidates(x_max)
-            print ("trying", x_max,c)
-            if all([(cc in D) for cc in c]):
-                XX = X[:]
-                XX[last-1] = x_max
-                XX=helper(XX,D[0:-1],first,last-1)
-                if XX==None:
-                    c=candidates(x_comp)
-                    print ("Failed - trying ",x_comp,c)
-                    if all([(cc in D) for cc in c]):
-                        XX = X[:]
-                        XX[first+1] = x_comp
-                        DD=D[:]
-                        DD.remove(x_comp)
-                        return helper(XX,DD,first+1,last)
-            #else:
-                #return XX
-        #else:
-            #pass
-        print("failing")
-        return None
+        XX=X[:]
+        XX[last-1]=x_max
+        trial_solution=explore(x_max,XX,first,last-1)
+        if trial_solution==None:
+            XX=X[:]
+            XX[first+1]=X[-1]-x_max
+            return explore(X[-1]-x_max,XX,first+1,last)
+        else:
+            return trial_solution
     
     len_D=len (D)
     len_X=int(math.sqrt(len_D))
     X=[float('nan')]*len_X
     X[0]=0
     X[-1]=D[-1]
-    return helper(X,[d for d in D[:-1] if d>0],0,-1)
+    return find_remaining_points(X,[d for d in D[:-1] if d>0],0,-1)
 
 if __name__=='__main__':
     D1=[1,2,2,2,3,3,3,4,5,5,5,6,7,8,10]
