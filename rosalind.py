@@ -61,7 +61,23 @@ def dbru(S,include_revc=True):
 
 def read_strings(file_name):
     '''
-    Read a bunch of string from file, e.g. reads
+    Read a bunch of strings from file, e.g. reads
     '''
     with open(file_name) as f: 
         return [line.strip() for line in f ]
+
+def read_list(file_name):
+    '''
+    Read a single list of numbers from file
+    '''    
+    with open(file_name) as f:
+        return [int(n) for n in f.read().split()]
+        
+def write_list(numeric_list,out=None):
+    text=' '.join(str(l) for l in numeric_list )
+    if out==None:
+        print (text)
+    else:
+        with open(out,'w') as outfile:
+            outfile.write(text)
+            
