@@ -10,6 +10,7 @@ Code inspired by [Finding Hidden Messages in DNA (Bioinformatics I)](https://cla
 | BA8B.py | 	Compute the Squared Error Distortion |
 | BA8C.py | Implement the Lloyd Algorithm for k-Means Clustering  |
 | BA8D.py | 	Implement the Soft k-Means Clustering Algorithm |
+| BA8E.py | Implement Hierarchical Clustering |
 | BINS.py | 	 	Binary Search |
 | CORR.py | 	Error Correction in Reads  | 
 | DBRU.py | 	 	Constructing a De Bruijn Graph |
