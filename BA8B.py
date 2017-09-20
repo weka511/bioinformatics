@@ -16,12 +16,10 @@
 # BA8B Compute the Squared Error Distortion
 
 import random,math
-
-def SquaredErrorDistortion(centres,data,k,m):
-   def distance(p1,p2):
-      return sum([(p1[i]-p2[i])**2 for i in range(m)])
+from rosalind import distance
  
-   
+def SquaredErrorDistortion(centres,data,k,m):
+     
    def distance_to_nearest(pt):
       return min([distance(pt,c) for c in centres])
    

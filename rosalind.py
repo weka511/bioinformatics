@@ -59,6 +59,9 @@ def dbru(S,include_revc=True):
     E= [(e[0:-1],e[1:]) for e in union(S)]
     return (nodes(E),E)
 
+def distance(p1,p2):
+    return sum([(p1[i]-p2[i])**2 for i in range(len(p1))])
+    
 def read_strings(file_name):
     '''
     Read a bunch of strings from file, e.g. reads
