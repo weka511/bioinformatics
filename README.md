@@ -6,6 +6,7 @@ Code inspired by [Finding Hidden Messages in DNA (Bioinformatics I)](https://cla
 | -------------------------- | ------------------------------------------------| 
 | ASMQ.py | 	Assessing Assembly Quality with N50 and N75 |
 | BA4M.py |   Solve the Turnpike Problem  |
+! BA7A    | Compute Distances Between Leaves |
 | BA8A.py | 	Implement FarthestFirstTraversal |
 | BA8B.py | 	Compute the Squared Error Distortion |
 | BA8C.py | Implement the Lloyd Algorithm for k-Means Clustering  |
