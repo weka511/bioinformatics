@@ -17,10 +17,8 @@
 
 def ComputeDistancesBetweenLeaves(n,T):
     def get_leaves():
-        Froms = list(T.keys())
+        Froms = list(T. keys())
         Tos   = [a for v in list(T.values()) for (a,_) in v]
-        print (Froms)
-        print (Tos)
         X=Froms + Tos
         X.sort()
         Counts={}
@@ -47,12 +45,19 @@ def ComputeDistancesBetweenLeaves(n,T):
     return [[D(i,j)for j in range(n)] for i in range(n) ]
     
 if __name__=='__main__':
-    T={
-    0:[(4,11)],
-    1:[(4,2)],
-    2:[(5,6)],
-    3:[(5,7)],
-    4:[(0,11),(1,2),(5,4)],
-    5:[(4,4),(3,7),(2,6)]
-    }    
-    print (ComputeDistancesBetweenLeaves(4,T))
+    import re
+    n=-1
+    T={}
+    p=re.compile('([0-9]+)->([0-9]+):([.0-9]+)')
+    with open('c:/Users/Weka/Downloads/rosalind_ba7a(2).txt') as f:
+        for line in f:
+            if n==-1:
+                n=int(line.strip())
+            else:
+                m=p.match(line.strip())
+                if  not int(m.group(1)) in T:
+                    T[int(m.group(1))]=[(int(m.group(2)),int(m.group(3)))]
+                else:
+                    T[int(m.group(1))].append((int(m.group(2)),int(m.group(3))))
+        for ds in ComputeDistancesBetweenLeaves(n,T):
+            print(' '.join(str(d) for d in ds))
