@@ -17,12 +17,33 @@
 from BA7B import ComputeLimbLength
 
 def AdditivePhylogeny(D,n):
+    
     def find_ik():
+        '''
+        Find three leaves such that Di,k = Di,n + Dn,k
+        '''
         for i in range(n-1):
             for k in range(n-1):
                 if D[i][k]==D[i][n-1]+D[n-1][k]:
                     return (i,k)
         print ('not found')
+        
+    def Node(x,i,k):
+        '''
+        the (potentially new) node in T at distance x from i on the path between i and k
+        '''
+        candidates=[l for l in range(n) if D[i][l]==x]
+        
+        if len(candidates)==1:
+            return candidates[0]
+    
+    def AddNode(v,limbLength):
+        '''
+         add leaf n back to T by creating a limb (v, n) of length limbLength
+         '''
+        T[v]=(n,limbLength)
+    
+            
     if n==2:
         return {0:(1,D[0][1])}
     else:
@@ -33,7 +54,12 @@ def AdditivePhylogeny(D,n):
         i,k=find_ik()
         x=D[i][n-1]
         T=AdditivePhylogeny(D,n-1)
-        print(i,k,x,D)
+        print('i={0},n={1},k={2},x={3}'.format(i,n,k,x),D)
+        v=Node(x,i,k)
+        print ('v={0}'.format(v))
+        AddNode(v,limbLength)
+        return T
+    
 if __name__=='__main__':
     n=4
     D=[[0,   13,  21,  22],
