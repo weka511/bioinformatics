@@ -14,10 +14,26 @@
 # along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>
 
 # BA7C Implement Additive Phylogeny
+from BA7B import ComputeLimbLength
 
 def AdditivePhylogeny(D,n):
-    pass
-
+    def find_ik():
+        for i in range(n-1):
+            for k in range(n-1):
+                if D[i][k]==D[i][n-1]+D[n-1][k]:
+                    return (i,k)
+        print ('not found')
+    if n==2:
+        return {0:(1,D[0][1])}
+    else:
+        limbLength=ComputeLimbLength(n-1,n-1,D)
+        for j in range(n-1):
+            D[n-1][j]-=limbLength
+            D[j][n-1]=D[n-1][j]
+        i,k=find_ik()
+        x=D[i][n-1]
+        T=AdditivePhylogeny(D,n-1)
+        print(i,k,x,D)
 if __name__=='__main__':
     n=4
     D=[[0,   13,  21,  22],
