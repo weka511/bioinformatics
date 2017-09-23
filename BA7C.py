@@ -16,11 +16,9 @@
 # BA7C Implement Additive Phylogeny
 from BA7B import ComputeLimbLength
 
-
+N=-1
 def AdditivePhylogeny(D,n):
     global N
-    N=-1
-    
     def find_ik():
         '''
         Find three leaves such that Di,k = Di,n + Dn,k
@@ -36,11 +34,10 @@ def AdditivePhylogeny(D,n):
         the (potentially new) node in T at distance x from i on the path between i and k
         '''
         global N
-        print (N)
         print('Node: x={0},i={1},k={2}'.format(x,i,k))
         for drow in D:
             print (', '.join([str(d) for d in drow])) 
-        print ('Path from i{0} to k{1} has length {2}'.format(i,k,D[i][k]))
+        print ('Path from i[{0}] to k[{1}] has length {2}'.format(i,k,D[i][k]))
         if D[i][k]==x:
             return k
         elif D[i][k]>x:
@@ -58,7 +55,6 @@ def AdditivePhylogeny(D,n):
     if N==-1:
         N=n
    
-    print (N)
     if n==2:
         return {0:(1,D[0][1])}
     else:
