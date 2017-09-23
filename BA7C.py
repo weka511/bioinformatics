@@ -16,7 +16,10 @@
 # BA7C Implement Additive Phylogeny
 from BA7B import ComputeLimbLength
 
+
 def AdditivePhylogeny(D,n):
+    global N
+    N=-1
     
     def find_ik():
         '''
@@ -32,10 +35,18 @@ def AdditivePhylogeny(D,n):
         '''
         the (potentially new) node in T at distance x from i on the path between i and k
         '''
-        candidates=[l for l in range(n) if D[i][l]==x]
+        global N
+        print (N)
+        print('Node: x={0},i={1},k={2}'.format(x,i,k))
+        for drow in D:
+            print (', '.join([str(d) for d in drow])) 
+        print ('Path from i{0} to k{1} has length {2}'.format(i,k,D[i][k]))
+        if D[i][k]==x:
+            return k
+        elif D[i][k]>x:
+            N+=1
+            return N
         
-        if len(candidates)==1:
-            return candidates[0]
     
     def AddNode(v,limbLength):
         '''
@@ -43,7 +54,11 @@ def AdditivePhylogeny(D,n):
          '''
         T[v]=(n,limbLength)
     
-            
+     
+    if N==-1:
+        N=n
+   
+    print (N)
     if n==2:
         return {0:(1,D[0][1])}
     else:
@@ -54,7 +69,9 @@ def AdditivePhylogeny(D,n):
         i,k=find_ik()
         x=D[i][n-1]
         T=AdditivePhylogeny(D,n-1)
-        print('i={0},n={1},k={2},x={3}'.format(i,n,k,x),D)
+        print('i={0},n={1},k={2},x={3},limb length={3}'.format(i,n,k,x,limbLength))
+        for drow in D:
+            print (', '.join([str(d) for d in drow]))
         v=Node(x,i,k)
         print ('v={0}'.format(v))
         AddNode(v,limbLength)
