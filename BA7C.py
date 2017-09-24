@@ -77,12 +77,6 @@ def AdditivePhylogeny(D,n,T=None):
         elif D[i][k]>x:
             return (T.next_node(),True)
     
-    #def AddNode(v,limbLength):
-        #'''
-         #link leaf n back to T by creating a limb (v, n) of length limbLength
-         #'''
-        print('Addnode {0}, at length {2} from {1}'.format(n,v,limbLength))
-        T.link(n-1,v,limbLength)
     
     print ('AdditivePhylogeny n={0}'.format(n)) 
     if T==None:
