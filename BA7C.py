@@ -18,12 +18,14 @@ from BA7B import ComputeLimbLength
 
 class Tree(object):
     def __init__(self,N):
-        self.N=N
         self.nodes=list(range(N))
         self.edges={}
     def link(self,start,end,weight=1):         
         self.half_link(start,end,weight)
         self.half_link(end,start,weight)
+    def unlink(self,i,k):
+        self.half_unlink(i,k)
+        self.half_unlink(k,i)
         
     def half_link(self,a,b,weight):
         if not a in self.nodes:
@@ -32,9 +34,10 @@ class Tree(object):
             self.edges[a].append((b,weight))
         else:
             self.edges[a]=[(b,weight)]
-            
     
-           
+    def half_unlink(self,a,b):
+        self.edges[a]=[(e,w) for (e,w) in self.edges[a] if e != b]
+        
     def print(self,includeNodes=False):
         self.nodes.sort()
         if includeNodes:
@@ -46,8 +49,7 @@ class Tree(object):
                     print ('{0}->{1},{2}'.format(node,end,weight))
                     
     def next_node(self):
-        self.N+=1
-        return self.N-1
+        return len(self.nodes)
     
 def AdditivePhylogeny(D,n,T=None):
     
@@ -71,22 +73,20 @@ def AdditivePhylogeny(D,n,T=None):
             print (', '.join([str(d) for d in drow])) 
         print ('Path from i[{0}] to k[{1}] has length {2}'.format(i,k,D[i][k]))
         if D[i][k]==x:
-            print ('Found k={0}'.format(k))
-            return k
+            return (k,False)
         elif D[i][k]>x:
-            result= T.next_node()
-            print ('New={0}'.format(result))
-            return result
+            return (T.next_node(),True)
     
-    def AddNode(v,limbLength):
-        '''
-         link leaf n back to T by creating a limb (v, n) of length limbLength
-         '''
+    #def AddNode(v,limbLength):
+        #'''
+         #link leaf n back to T by creating a limb (v, n) of length limbLength
+         #'''
         print('Addnode {0}, at length {2} from {1}'.format(n,v,limbLength))
-        T.link(n,v,limbLength)
+        T.link(n-1,v,limbLength)
     
-     
+    print ('AdditivePhylogeny n={0}'.format(n)) 
     if T==None:
+        #print ('Instantiate Tree')
         T=Tree(n)
    
     if n==2:
@@ -96,19 +96,27 @@ def AdditivePhylogeny(D,n,T=None):
     else:
         limbLength=ComputeLimbLength(n-1,n-1,D)
         print('limbLength={0}'.format(limbLength))
-        for j in range(n-1):
+        for j in range(n-1):           #D_bald
             D[n-1][j]-=limbLength
             D[j][n-1]=D[n-1][j]
         i,k=find_ik()
+        #print ('D{2},{0}[{3}]=D{0},{2}[{4}]+D{2},{1}[{5}]'.format(i,k,n-1,D[i][k], D[i][n-1], D[n-1][k])) # Di,k = Di,n + Dn,k
         x=D[i][n-1]
-        DD=[dd[:] for dd in D]
-        T=AdditivePhylogeny(DD,n-1,T)
-        print('i={0},n={1},k={2},x={3},limb length={3}'.format(i,n,k,x,limbLength))
+        #remove row n and column n from D
+        D_Trimmed=[D[l][:-1] for l in range(n-1)]
+        T=AdditivePhylogeny(D_Trimmed,n-1,T)
+        print('i={0},n={1},k={2},x={3},limb length={4}'.format(i,n,k,x,limbLength))
         for drow in D:
             print (', '.join([str(d) for d in drow]))
-        v=Node(x,i,k)
-        print ('v={0}'.format(v))
-        AddNode(v,limbLength)
+        v,is_new=Node(x,i,k)
+        print ('v={0}-{1}'.format(v,is_new))
+        #AddNode(v,limbLength,is_new)
+        print('Addnode {0}, at length {2} from {1}'.format(n,v,limbLength))
+        T.link(n-1,v,limbLength)
+        if is_new:
+            T.unlink(i,k)
+            T.link(i,v,ComputeLimbLength(n,i,D))
+            T.link(k,v,ComputeLimbLength(n,k,D))
         return T
     
 if __name__=='__main__':
