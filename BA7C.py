@@ -66,23 +66,25 @@ class Tree(object):
     def next_node(self):
         return len(self.nodes)
     
-    def traverse(self,i,k,previous=[]):
-        print ('Traverse',i,k,previous)
-        if not i in self.edges: return ([],[])
-        path=[i]
-        weights=[0]
-
+    def traverse(self,i,k,path=[],weights=[]):
+        print ('Traverse',i,k,path,weights)
+        if not i in self.edges: return (False,[])
+        if len(path)==0:
+            path=[i]
+            weights=[0]
+        
         for j,w in self.edges[i]:
-            if j in previous: continue
-            path.append(j)
-            weights.append(w)
+            if j in path: continue
+            path1=path + [j]
+            weights1=weights+[w]
             if j==k:
-                return list(zip(path,weights))
+                print ("Found")
+                return (True,list(zip(path1,weights1)))
             else:
-                test=self.traverse(j,k,previous+[j])
-                if test==None: continue
-                return test
-        return ([],[])    
+                found_k,test=self.traverse(j,k,path1,weights1)
+                if found_k: 
+                    return (found_k,test)
+        return (False,[])    
 
 def DPrint(D):
     print ('=====================')
@@ -103,6 +105,17 @@ def AdditivePhylogeny(D,n,N=-1):
                     ik.append([i,k,n-1])
         return ik[0]
     
+    def get_Position_v(traversal):
+        d=0
+        for l,w in traversal:
+            d0=d
+            d+=w
+            if d==x: return (True,l,l,d0,d)
+            if d>x: return (False,l_previous,l,d0,d)
+            l_previous=l
+            
+        return (False, l_previous, l, d0,d)
+        
     if N==-1:
         N=n
         
@@ -126,18 +139,27 @@ def AdditivePhylogeny(D,n,N=-1):
         T=AdditivePhylogeny(D_Trimmed,n-1,N)
         print('i={0},n={1},k={2},x={3},limb length={4}'.format(i,n,k,x,limbLength))
         # v= the (potentially new) node in T at distance x from i on the path between i and k
-        path,weights=T.traverse(i,k)
-        v=None
+        found_k,traversal=T.traverse(i,k)
+        print (traversal)
+        path,weights=zip(*traversal)
+        print (path,weights)
+        
         if len(path)>=2 and path[0]==i and path[-1]==k:
-            print ("OK",pathe,weights)
+            print ("OK",path,weights)
+         
+        found,l0,l1,d,d0=get_Position_v(traversal)
+        print (found,l0,l1,d,d0)
+         
+        if found:
+            pass
         else:
             v=T.next_node()
             weight_i=ComputeLimbLength(n,i,D)
             weight_k=ComputeLimbLength(n,k,D)
-            print ('New Node {0} between {1}({3}) and {2}({4})'.format(v,i,k,weight_i,weight_k))
-            T.unlink(i,k)
-            T.link(v,i,weight_i)
-            T.link(v,k,weight_k)
+            print ('New Node {0} between {1}({3}) and {2}({4})'.format(v,l0,l1,d,d0))
+            T.unlink(l0,l1)
+            T.link(v,l0,x-d)
+            T.link(v,l1,weight_k)
         # add leaf n back to T by creating a limb (v, n) of length limbLength
         T.link(node,v,limbLength)
         T.print()
