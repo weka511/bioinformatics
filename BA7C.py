@@ -66,22 +66,23 @@ class Tree(object):
     def next_node(self):
         return len(self.nodes)
     
-    def traverse(self,i,k,depth=0):
-        #print ('Traverse',i,k,depth)
+    def traverse(self,i,k,previous=[]):
+        print ('Traverse',i,k,previous)
         if not i in self.edges: return ([],[])
         path=[i]
         weights=[0]
 
         for j,w in self.edges[i]:
-            if j in path: continue
+            if j in previous: continue
             path.append(j)
             weights.append(w)
             if j==k:
                 return list(zip(path,weights))
             else:
-                if depth>25: return ([],[])      #FIXME
-                return self.traverse(j,k,depth+1)
-            
+                test=self.traverse(j,k,previous+[j])
+                if test==None: continue
+                return test
+        return ([],[])    
 
 def DPrint(D):
     print ('=====================')
@@ -202,90 +203,4 @@ if __name__=='__main__':
     #13->44:864
     #14->43:236    
  
-    def AdditivePhylogenyOld(D,n,T=None):
-        
-        def find_ik(n):
-            '''
-            Find three leaves such that Di,k = Di,n + Dn,k
-            '''
-            for i in range(n):
-                for k in range(n):
-                    print('i={0},k={1},D_ik={2},D_in={3},d_nk={4}'.format(i,k,D[i][k],D[i][n-1],D[n-1][k]))
-                    if D[i][k]==D[i][n-1]+D[n-1][k]:
-                        return (i,k)
-            print ('not found')
-         
-        def  explore(i,k,path=[]):
-            path.append(i)
-            if i==k:
-                return path
-            else:
-                for a,_ in T.edges[i]:
-                    if a in path:
-                        continue
-                    test=explore(a,k,path)
-                    if test!=None:
-                        return test
-            
-        def Node(x,i,k):
-            '''
-            the (potentially new) node in T at distance x from i on the path between i and k
-            '''
-            print('Node: x={0},i={1},k={2}'.format(x,i,k))
-            #for drow in D:
-                #print (', '.join([str(d) for d in drow])) 
-            print ('Path from i[{0}] to k[{1}] has length {2}'.format(i,k,D[i][k]))
-            path=explore(i,k)
-            print ("Path is",path)
-            if path!=None:
-                length=0
-                for index in range(len(path)-1):
-                    print (index,path[index],T.edges[path[index]],path[index+1])
-                    for l,w  in T.edges[path[index]]:
-                        print(l,w,path[index+1])
-                        if path[index+1]==l:
-                            length+=w
-                            print(l,w,path[index+1],length)
-                            if length==x:
-                                print ("Found",l)
-                                return l,False
-                            if length>x:
-                                print ("Overshot",l,length)
-    
-            return (T.next_node(),True)
-        
-        
-        print ('\nAdditivePhylogeny n={0}'.format(n)) 
-        if T==None:
-            T=Tree(n)
-       
-        if n==2:
-            T.link(0,1,D[0][1])
-            #T.print(includeNodes=True)
-            return T
-        else:
-            limbLength=ComputeLimbLength(n,n-1,D)
-            for drow in D:
-                print (', '.join([str(d) for d in drow]))        
-            print('limbLength of {0} is {1}'.format(n-1,limbLength))
-            for j in range(n-1):           #D_bald
-                D[n-1][j]-=limbLength
-                D[j][n-1]=D[n-1][j]
-            i,k=find_ik(n)
-            #print ('D{2},{0}[{3}]=D{0},{2}[{4}]+D{2},{1}[{5}]'.format(i,k,n-1,D[i][k], D[i][n-1], D[n-1][k])) # Di,k = Di,n + Dn,k
-            x=D[i][n-1]
-            #remove row n and column n from D
-            D_Trimmed=[D[l][:-1] for l in range(n-1)]
-            T=AdditivePhylogeny(D_Trimmed,n-1,T)
-            print('i={0},n={1},k={2},x={3},limb length={4}'.format(i,n,k,x,limbLength))
-            #for drow in D:
-                #print (', '.join([str(d) for d in drow]))
-            v,is_new=Node(x,i,k)
-            print('Addnode {0}, at length {2} from {1} {3}'.format(n,v,limbLength,is_new))
-    
-            if is_new:
-                T.unlink(i,k)
-                T.link(i,v,ComputeLimbLength(n,i,D))
-                T.link(k,v,ComputeLimbLength(n,k,D))
-            T.link(n,v,limbLength)
-            return T    
+ 
