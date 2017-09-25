@@ -76,19 +76,45 @@ def AdditivePhylogeny(D,n,T=None):
                 if D[i][k]==D[i][n-1]+D[n-1][k]:
                     return (i,k)
         print ('not found')
+     
+    def  explore(i,k,path=[]):
+        path.append(i)
+        if i==k:
+            return path
+        else:
+            for a,_ in T.edges[i]:
+                if a in path:
+                    continue
+                test=explore(a,k,path)
+                if test!=None:
+                    return test
         
     def Node(x,i,k):
         '''
         the (potentially new) node in T at distance x from i on the path between i and k
         '''
         print('Node: x={0},i={1},k={2}'.format(x,i,k))
-        for drow in D:
-            print (', '.join([str(d) for d in drow])) 
+        #for drow in D:
+            #print (', '.join([str(d) for d in drow])) 
         print ('Path from i[{0}] to k[{1}] has length {2}'.format(i,k,D[i][k]))
-        if D[i][k]==x:
-            return (k,False)
-        elif D[i][k]>x:
-            return (T.next_node(),True)
+        path=explore(i,k)
+        print ("Path is",path)
+        if path!=None:
+            length=0
+            for index in range(len(path)-1):
+                print (index,path[index],T.edges[path[index]],path[index+1])
+                for l,w  in T.edges[path[index]]:
+                    print(l,w,path[index+1])
+                    if path[index+1]==l:
+                        length+=w
+                        print(l,w,path[index+1],length)
+                        if length==x:
+                            print ("Found",l)
+                            return l,False
+                        if length>x:
+                            print ("Overshot",l,length)
+
+        return (T.next_node(),True)
     
     
     print ('\nAdditivePhylogeny n={0}'.format(n)) 
@@ -132,10 +158,10 @@ if __name__=='__main__':
         [13,  0 ,  12,  13],
         [21,  12 , 0 ,  13],
         [22 , 13 , 13,  0]]
-    for j in range(4):
-        print ('{0}: {1}'.format(j,ComputeLimbLength(n,j,D)))
-    for j in range(3):
-        print ('{0}: {1}'.format(j,ComputeLimbLength(3,j,D)))        
+    #for j in range(4):
+        #print ('{0}: {1}'.format(j,ComputeLimbLength(n,j,D)))
+    #for j in range(3):
+        #print ('{0}: {1}'.format(j,ComputeLimbLength(3,j,D)))        
     #n=29
     #D=[
         #[0,3036,4777,1541,2766,6656,2401,4119,7488,4929,5344,3516,1485,6392,2066,3216,7008,7206,1187,6491,3379,6262,6153,4927,6670,4997,9010,5793,9032],
