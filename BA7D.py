@@ -64,11 +64,12 @@ def UPGMA(D, n):
     return T
 
 if __name__=='__main__':
-    N=4
-    D=[[0 ,  20,  17,  11],
-    [20,  0,   20,  13],
-    [17,  20,  0 ,  10],
-    [11 , 13,  10,  0 ]]
-    UPGMA(D, N).print()
+    #N=4
+    #D=[[0 ,  20,  17,  11],
+    #[20,  0,   20,  13],
+    #[17,  20,  0 ,  10],
+    #[11 , 13,  10,  0 ]]
+    params,D=read_matrix('c:/Users/Weka/Downloads/rosalind_ba7d(1).txt',conv=float) 
+    UPGMA(D, params[0]).print()
 
 
