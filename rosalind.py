@@ -154,4 +154,8 @@ def write_list(numeric_list,out=None):
     else:
         with open(out,'w') as outfile:
             outfile.write(text)
-            
+    
+def DPrint(D):
+    print ('=====================')
+    for drow in D:
+        print (', '.join([str(d) for d in drow]))           

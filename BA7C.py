@@ -17,11 +17,6 @@
 from BA7B import ComputeLimbLength
 
 from rosalind import Tree  
-
-def DPrint(D):
-    print ('=====================')
-    for drow in D:
-        print (', '.join([str(d) for d in drow]))
     
 def AdditivePhylogeny(D,n,N=-1):
     def find_ikn(DD):
