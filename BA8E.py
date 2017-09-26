@@ -15,7 +15,7 @@
 
 # BA8E Implement Hierarchical Clustering
 
-from rosalind import distance
+from rosalind import distance,read_matrix,write_list
 
 def format(T):
   def expand(links):
@@ -71,20 +71,12 @@ def HierarchicalClustering(D, n):
     for ds in D:
       ds[i]=float('inf')
       ds[j]=float('inf')
-    #for ds in D:
-      #print (ds)
   return (format(T))
   
 if __name__=='__main__':
  
-  with open (r'C:\Users\Weka\Downloads\rosalind_ba8e(1).txt') as f: 
-    n=-1
-    D=[]
-    for line in f:
-      if n==-1:
-        n=int(line.strip())
-      else:
-          D.append([float(v) for v in line.strip().split()])  
-  for e in HierarchicalClustering(D, n):
-    print (e)
+  params,D=read_matrix('c:/Users/Weka/Downloads/rosalind_ba8e(4).txt',conv=float) 
+
+  for e in HierarchicalClustering(D, params[0]):
+    write_list(e)
  

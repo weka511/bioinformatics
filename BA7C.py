@@ -16,7 +16,7 @@
 # BA7C Implement Additive Phylogeny
 from BA7B import ComputeLimbLength
 
-from rosalind import Tree  
+from rosalind import Tree,read_matrix  
     
 def AdditivePhylogeny(D,n,N=-1):
     def find_ikn(DD):
@@ -80,17 +80,10 @@ def AdditivePhylogeny(D,n,N=-1):
         T.link(node,v,limbLength)
         
         return T
-    
-if __name__=='__main__':
+ 
 
-    n=-1
-    D=[]
-    with open('c:/Users/Weka/Downloads/rosalind_ba7c(8).txt') as f:
-        for line in f:
-            if n==-1:
-                n=int(line.strip())
-            else:
-                D.append([int(s) for s in line.strip().split()])
-                
-    AdditivePhylogeny(D,n).print()
+
+if __name__=='__main__':
+    params,D=read_matrix('c:/Users/Weka/Downloads/rosalind_ba7c(8).txt')           
+    AdditivePhylogeny(D,params[0]).print()
     
