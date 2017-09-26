@@ -61,6 +61,77 @@ def dbru(S,include_revc=True):
 
 def distance(p1,p2):
     return sum([(p1[i]-p2[i])**2 for i in range(len(p1))])
+
+class Tree(object):
+    '''
+    Undirected, weighted tree
+    '''
+    def __init__(self,N=-1):
+        self.nodes=list(range(N))
+        self.edges={}
+        
+    def link(self,start,end,weight=1): 
+        self.half_link(start,end,weight)
+        self.half_link(end,start,weight)
+        
+    def unlink(self,i,k):
+        try:
+            self.half_unlink(i,k)
+            self.half_unlink(k,i)
+        except KeyError:
+            print ('Could not unlink {0} from {1}'.format(i,k))
+            self.print()        
+        
+    def half_link(self,a,b,weight):
+        if not a in self.nodes:
+            self.nodes.append(a)        
+        if a in self.edges:
+            self.edges[a].append((b,weight))
+        else:
+            self.edges[a]=[(b,weight)]
+    
+    def half_unlink(self,a,b):
+        links=[(e,w) for (e,w) in self.edges[a] if e != b]
+        if len(links)<len(self.edges[a]):
+            self.edges[a]=links
+        else:
+            print ('Could not unlink {0} from {1}'.format(a,b))
+            self.print()
+    
+    def are_linked(self,a,b):
+        return len([e for (e,w) in self.edges[a] if e == b])>0
+        
+    def print(self,includeNodes=False):
+        print('-----------------')
+        self.nodes.sort()
+        if includeNodes:
+            print (self.nodes)
+        for node in self.nodes:
+            if node in self.edges:
+                for edge in self.edges[node]:
+                    end,weight=edge
+                    print ('{0}->{1}:{2}'.format(node,end,weight))
+                    
+    def next_node(self):
+        return len(self.nodes)
+    
+    def traverse(self,i,k,path=[],weights=[]):
+        if not i in self.edges: return (False,[])
+        if len(path)==0:
+            path=[i]
+            weights=[0]
+        
+        for j,w in self.edges[i]:
+            if j in path: continue
+            path1=path + [j]
+            weights1=weights+[w]
+            if j==k:
+                return (True,list(zip(path1,weights1)))
+            else:
+                found_k,test=self.traverse(j,k,path1,weights1)
+                if found_k: 
+                    return (found_k,test)
+        return (False,[])  
     
 def read_strings(file_name):
     '''
