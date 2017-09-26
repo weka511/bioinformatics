@@ -58,7 +58,6 @@ def HierarchicalClustering(D, n):
     def d(i,j,k):
       return (D[i][k]+D[j][k])/2
     i,j,distance=find_two_closest_clusters() #i>j
-    #print (i,j)
     NClusters+=1
     T[len(T)]=[i,j]
 

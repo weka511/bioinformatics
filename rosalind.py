@@ -133,6 +133,10 @@ class Tree(object):
                     return (found_k,test)
         return (False,[])  
     
+    def get_nodes(self):
+        for node in self.nodes:
+            yield(node)
+            
 def read_strings(file_name):
     '''
     Read a bunch of strings from file, e.g. reads
