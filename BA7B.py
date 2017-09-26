@@ -15,19 +15,11 @@
 
 # BA7B Limb Length Problem
 
+from rosalind import read_matrix
+
 def ComputeLimbLength(n,j,D):
     return int(min([D[i][j]+D[j][k]-D[i][k] for i in range(n) for k in range(n) if j!=k and k!=i and i!=j])/2)
 
 if __name__=='__main__':
-    n=-1
-    j=-1
-    D=[]
-    with open('c:/Users/Weka/Downloads/rosalind_ba7b.txt') as f:
-        for line in f:
-            if n==-1:
-                n=int(line.strip())
-            elif j==-1:
-                j=int(line.strip())
-            else:
-                D.append([int(s) for s in line.strip().split()])
-    print (ComputeLimbLength(n,j,D))
+    params,D=read_matrix('c:/Users/Weka/Downloads/rosalind_ba7b.txt',len_params=2)  
+    print (ComputeLimbLength(params[0],params[1],D))
