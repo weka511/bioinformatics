@@ -72,12 +72,12 @@ def NeighborJoining(D,n):
             D[l].append(new_row[l])
         DPrint(D)
         m=len(D)
-        D=remove(i,D)
-        D=remove(j,D)
+        D=remove(max(i,j),D)
+        D=remove(min(i,j),D)
         print (D)
         T=NeighborJoining(D,n-1)
         T.link(i,m,limbLength_i)
-        T.link(l,m,limbLength_j)       
+        T.link(j,m,limbLength_j)       
         return T
     
 if __name__=='__main__':
