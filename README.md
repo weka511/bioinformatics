@@ -10,6 +10,7 @@ Code inspired by [Finding Hidden Messages in DNA (Bioinformatics I)](https://cla
 | BA7B.py | Limb Length Problem |
 | BA7C.py | Implement Additive Phylogeny |
 | BA7D.py   Implement UPGMA |
+| BA7E.py | Implement the Neighbor Joining Algorithm |
 | BA8A.py | 	Implement FarthestFirstTraversal |
 | BA8B.py | 	Compute the Squared Error Distortion |
 | BA8C.py | Implement the Lloyd Algorithm for k-Means Clustering  |

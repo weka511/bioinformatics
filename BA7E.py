@@ -15,7 +15,7 @@
 
 # BA7E Implement the Neighbor Joining Algorithm 
 
-from rosalind import Tree,DPrint
+from rosalind import Tree,read_matrix
 
 def NeighborJoining(D,n,node_list=None):
 
@@ -87,10 +87,5 @@ def NeighborJoining(D,n,node_list=None):
         return T
     
 if __name__=='__main__':
-    N=4
-    D=[
-        [0 ,  23  ,27  ,20],
-        [23,  0 ,  30 , 28],
-        [27 , 30,  0  , 30],
-        [20 , 28 , 30 , 0 ]]
-    NeighborJoining(D,N).print()
+    params,D=read_matrix('c:/Users/Weka/Downloads/rosalind_ba7e.txt',conv=float) 
+    NeighborJoining(D,params[0]).print()
