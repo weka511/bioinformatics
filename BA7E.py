@@ -17,7 +17,7 @@
 
 from rosalind import Tree,DPrint
 
-def NeighborJoining(D,n):
+def NeighborJoining(D,n,node_list=None):
 
     def remove(i,D):
         D_new=[]
@@ -53,10 +53,12 @@ def NeighborJoining(D,n):
                 Delta[i][j]=(Total_distance[i]-Total_distance[j])/(n-2)
                 Delta[j][i]=Delta[i][j]
         return Delta
-    
+    if node_list==None:
+        node_list=list(range(n))
+        
     if n==2:
         T=Tree()
-        T.link(0,1,D[0][1])
+        T.link(node_list[0],node_list[1],D[0][1])
         return T
     else:
         Total_distance=[sum(row) for row in D]
@@ -66,18 +68,22 @@ def NeighborJoining(D,n):
         limbLength_i=(D[i][j]+Delta[i][j])/2
         limbLength_j=(D[i][j]-Delta[i][j])/2
         new_row=[0.5*(D[k][i]+D[k][j]-D[i][j]) for k in range(n)]+[0]
-        print (new_row)
+ 
         D.append(new_row)
         for l in range(n):
             D[l].append(new_row[l])
-        DPrint(D)
-        m=len(D)
+
+        m=node_list[-1]+1
+        node_list.append(m)
         D=remove(max(i,j),D)
         D=remove(min(i,j),D)
-        print (D)
-        T=NeighborJoining(D,n-1)
-        T.link(i,m,limbLength_i)
-        T.link(j,m,limbLength_j)       
+        node_i=node_list[i]
+        node_j=node_list[j]
+        node_list.remove(node_i)
+        node_list.remove(node_j)
+        T=NeighborJoining(D,n-1,node_list)
+        T.link(node_i,m,limbLength_i)
+        T.link(node_j,m,limbLength_j)       
         return T
     
 if __name__=='__main__':
