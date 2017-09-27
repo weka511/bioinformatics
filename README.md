@@ -9,7 +9,7 @@ Code inspired by [Finding Hidden Messages in DNA (Bioinformatics I)](https://cla
 | BA7A.py | Compute Distances Between Leaves |
 | BA7B.py | Limb Length Problem |
 | BA7C.py | Implement Additive Phylogeny |
-| BA7D.py   Implement UPGMA |
+| BA7D.py |  Implement UPGMA |
 | BA7E.py | Implement the Neighbor Joining Algorithm |
 | BA8A.py | 	Implement FarthestFirstTraversal |
 | BA8B.py | 	Compute the Squared Error Distortion |
