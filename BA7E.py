@@ -15,13 +15,76 @@
 
 # BA7E Implement the Neighbor Joining Algorithm 
 
-def NeighborJoining(D,n):
-    pass
+from rosalind import Tree,DPrint
 
+def NeighborJoining(D,n):
+
+    def remove(i,D):
+        D_new=[]
+        for j in range(len(D)):
+            if j!=i:
+                D_new.append([D[j][k] for k in range(len(D[j])) if k!=i])
+        return D_new        
+        
+    def create_DPrime(Total_distance):
+        DPrime=[[0]*n for dummy in range(n)]
+        for i in range(n):
+            for j in range(i+1,n):
+                DPrime[i][j]=(n-2)*D[i][j]-Total_distance[i]-Total_distance[j]
+                DPrime[j][i]= DPrime[i][j]
+        return DPrime
+    
+    def get_ij_minDPrime(DPrime):
+        i=-1
+        j=-1
+        minD=float('inf')
+        for ii in range(n):
+            for jj in range(ii,n):
+                if  DPrime[ii][jj]<minD:
+                    i=ii
+                    j=jj
+                    minD= DPrime[i][j]
+        return (i,j,minD)
+    
+    def createDelta(Total_distance):
+        Delta=[[0]*n for dummy in range(n)]
+        for i in range(n):
+            for j in range(i+1,n):
+                Delta[i][j]=(Total_distance[i]-Total_distance[j])/(n-2)
+                Delta[j][i]=Delta[i][j]
+        return Delta
+    
+    if n==2:
+        T=Tree()
+        T.link(0,1,D[0][1])
+        return T
+    else:
+        Total_distance=[sum(row) for row in D]
+        DPrime=create_DPrime(Total_distance)
+        (i,j,minD)=get_ij_minDPrime(DPrime)
+        Delta=createDelta(Total_distance)   
+        limbLength_i=(D[i][j]+Delta[i][j])/2
+        limbLength_j=(D[i][j]-Delta[i][j])/2
+        new_row=[0.5*(D[k][i]+D[k][j]-D[i][j]) for k in range(n)]+[0]
+        print (new_row)
+        D.append(new_row)
+        for l in range(n):
+            D[l].append(new_row[l])
+        DPrint(D)
+        m=len(D)
+        D=remove(i,D)
+        D=remove(j,D)
+        print (D)
+        T=NeighborJoining(D,n-1)
+        T.link(i,m,limbLength_i)
+        T.link(l,m,limbLength_j)       
+        return T
+    
 if __name__=='__main__':
     N=4
-    D=[[0 ,  23  ,27  ,20],
-    [23,  0 ,  30 , 28],
-    [27 , 30,  0  , 30],
-    [20 , 28 , 30 , 0 ]]
-    
+    D=[
+        [0 ,  23  ,27  ,20],
+        [23,  0 ,  30 , 28],
+        [27 , 30,  0  , 30],
+        [20 , 28 , 30 , 0 ]]
+    NeighborJoining(D,N).print()
