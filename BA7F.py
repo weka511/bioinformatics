@@ -15,19 +15,44 @@
 
 # BA7F Implement SmallParsimony 
 
-from rosalind import Tree
+from rosalind import LabelledTree
 
-def SmallParsimony(T, Character):
-    pass
+def SmallParsimony(T, Character,alphabet='ATGC'):
+    def get_ripe():
+        for v in T.get_nodes():
+            if not processed(v):
+                for e,w in T.edges[v]:
+                    if e>v: continue
+                    if not processed(e): break
+                return v
+        return None
+    
+    processed={}
+    s={}
+    for v in T.get_nodes():      
+        if T.is_leaf(v):
+            processed[v]=True
+            values={}
+            for k in alphabet:
+                values[k]=0 if k==Character else float('inf')
+                s[v]=values
+            else:
+                processed[v]=false
+    v = get_ripe()
+    while not v == Node:
+        processed[v]=True
+        #do stuff
+        v = get_ripe()
+    
 
 if __name__=='__main__':
     N=4
-    T=Tree.parse(4,
+    T=LabelledTree.parse(4,
                   ['4->CAAATCCC',
                    '4->ATTGCGAC',
                    '5->CTGCGCTG',
                    '5->ATGGACGA',
                    '6->4',
                    '6->5']  )
-    T.print()
+    SmallParsimony(T, '',alphabet='ATGC')
   

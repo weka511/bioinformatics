@@ -138,22 +138,30 @@ class Tree(object):
     def get_nodes(self):
         for node in self.nodes:
             yield(node)
+            
+class LabelledTree(Tree):
+    def __init__(self,N=-1):
+        super().__init__(N)
+        self.labels={}
+        self.leaves=[]
+        
     @staticmethod
     def parse(N,lines,letters='ATGC'):
-        T=Tree(4)
-        strings={}
+        T=LabelledTree(4)
         pattern=re.compile('([0-9]+)->(([0-9]+)|([{0}]+))'.format(letters))
+        
         for line in lines:
             m=pattern.match(line)
             if m:
-                print(m.group(1),m.group(2),m.group(3),m.group(4))
                 i=int(m.group(1))
                 if m.group(3)==None:
-                    strings[m.group(1)]=m.group(4)
+                    j=len(T.leaves)
+                    T.link(i,j)
+                    T.leaves.append(j)
+                    T.labels[j]=m.group(4)
                 if m.group(4)==None:
                     j=int(m.group(3))
                     T.link(i,j)
-        print (strings)
         return T
     
 def read_strings(file_name):
