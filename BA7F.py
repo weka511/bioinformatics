@@ -15,5 +15,19 @@
 
 # BA7F Implement SmallParsimony 
 
-if __name__=='__main__':
+from rosalind import Tree
+
+def SmallParsimony(T, Character):
     pass
+
+if __name__=='__main__':
+    N=4
+    T=Tree.parse(4,
+                  ['4->CAAATCCC',
+                   '4->ATTGCGAC',
+                   '5->CTGCGCTG',
+                   '5->ATGGACGA',
+                   '6->4',
+                   '6->5']  )
+    T.print()
+  

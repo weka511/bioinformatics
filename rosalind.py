@@ -32,6 +32,8 @@
  (Each correction must be a single symbol substitution, and you may return the corrections in any order.)
 '''
 
+import re
+
 def revc(dna):
     return dna.translate({
             ord('A'): 'T',
@@ -136,7 +138,24 @@ class Tree(object):
     def get_nodes(self):
         for node in self.nodes:
             yield(node)
-            
+    @staticmethod
+    def parse(N,lines,letters='ATGC'):
+        T=Tree(4)
+        strings={}
+        pattern=re.compile('([0-9]+)->(([0-9]+)|([{0}]+))'.format(letters))
+        for line in lines:
+            m=pattern.match(line)
+            if m:
+                print(m.group(1),m.group(2),m.group(3),m.group(4))
+                i=int(m.group(1))
+                if m.group(3)==None:
+                    strings[m.group(1)]=m.group(4)
+                if m.group(4)==None:
+                    j=int(m.group(3))
+                    T.link(i,j)
+        print (strings)
+        return T
+    
 def read_strings(file_name):
     '''
     Read a bunch of strings from file, e.g. reads
