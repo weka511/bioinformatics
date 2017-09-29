@@ -68,18 +68,21 @@ class Tree(object):
     '''
     Undirected, weighted tree
     '''
-    def __init__(self,N=-1):
+    def __init__(self,N=-1,bidirectional=True):
         self.nodes=list(range(N))
         self.edges={}
-        
+        self.bidirectional=bidirectional
+        self.N = N
     def link(self,start,end,weight=1): 
         self.half_link(start,end,weight)
-        self.half_link(end,start,weight)
+        if self.bidirectional:
+            self.half_link(end,start,weight)
         
     def unlink(self,i,k):
         try:
             self.half_unlink(i,k)
-            self.half_unlink(k,i)
+            if self.bidirectional:
+                self.half_unlink(k,i)
         except KeyError:
             print ('Could not unlink {0} from {1}'.format(i,k))
             self.print()        
@@ -139,11 +142,19 @@ class Tree(object):
         for node in self.nodes:
             yield(node)
             
+    def initialize_from(self,T):
+        for node in T.nodes:
+            if not node in self.nodes:
+                self.nodes.append(node)
+                if node in T.edges:
+                    for a,w in T.edges[node]:
+                        self.link(node,a,w)
+                        
 class LabelledTree(Tree):
         
     @staticmethod
-    def parse(N,lines,letters='ATGC'):
-        T=LabelledTree(4)
+    def parse(N,lines,letters='ATGC',bidirectional=True):
+        T=LabelledTree(4,bidirectional=bidirectional)
         pattern=re.compile('([0-9]+)->(([0-9]+)|([{0}]+))'.format(letters))
         
         for line in lines:
@@ -154,20 +165,30 @@ class LabelledTree(Tree):
                     j=len(T.leaves)
                     T.half_link(i,j)
                     T.leaves.append(j)
-                    T.labels[j]=m.group(4)
+                    T.set_label(j,m.group(4))
                 if m.group(4)==None:
                     j=int(m.group(3))
                     T.half_link(i,j)
         return T
     
-    def __init__(self,N=-1):
-        super().__init__(N)
+    def __init__(self,N=-1,bidirectional=True):
+        super().__init__(N,bidirectional=bidirectional)
         self.labels={}
         self.leaves=[]
         
     def is_leaf(self,v):
         return v in self.leaves
     
+    def set_label(self,node,label):
+        if not node in self.nodes:
+            self.nodes.append(node)
+        self.labels[node]=label
+    
+    def initialize_from(self,T):
+        super().initialize_from(T)
+        for node,label in T.labels.items():
+            self.set_label(node,label)
+                    
 def read_strings(file_name):
     '''
     Read a bunch of strings from file, e.g. reads

@@ -15,9 +15,15 @@
 
 # BA7F Implement SmallParsimony 
 
+import operator
+
 from rosalind import LabelledTree
 
+def hamming(s1,s2):
+    return sum([0 if c1==c2 else 1 for (c1,c2) in zip(s1,s2)]) 
+
 def SmallParsimony(T,alphabet='ATGC'):
+
     def SmallParsimonyC(Character):
         def get_ripe():
             for v in T.get_nodes():
@@ -46,7 +52,6 @@ def SmallParsimony(T,alphabet='ATGC'):
             
             return sum([get_min(e) for e,_ in T.edges[v]])
         
-        #print (Character)
         processed={}
         s={}
         for v in T.get_nodes():      
@@ -61,16 +66,31 @@ def SmallParsimony(T,alphabet='ATGC'):
         while not v == None:
             processed[v]=True
             s[v]=[calculate_s(symbol,v) for symbol in alphabet ]
-            #print (v,s[v])
+            update_assignments(v,s[v])
             v_last=v
             v = get_ripe()
         return min([s[v_last][c] for c in range(len(alphabet))])
     
-    return sum([SmallParsimonyC([v[i] for l,v in T.labels.items()]) for i in range(len(T.labels[0]))])
+    def update_assignments(v,s):
+        if not v in assignments.labels:
+            assignments.labels[v]=''
+        index=0
+        min_s=float('inf')
+        for i in range(len(s)):
+            if s[i]<min_s:
+                min_s=s[i]
+                index=i
+        assignments.set_label(v,assignments.labels[v]+alphabet[index])
+    
+    assignments=LabelledTree(T.N)
+    assignments.initialize_from(T)
+    
+    return sum([SmallParsimonyC([v[i] for l,v in T.labels.items()]) for i in range(len(T.labels[0]))]),assignments
 
 
 
 if __name__=='__main__':
+       
     N=4
     T=LabelledTree.parse(4,
                   ['4->CAAATCCC',
@@ -78,9 +98,20 @@ if __name__=='__main__':
                    '5->CTGCGCTG',
                    '5->ATGGACGA',
                    '6->4',
-                   '6->5']  )
+                   '6->5'],
+                  bidirectional=False
+                  )
     T.print()
     
-    s=SmallParsimony(T)
-    print (s)
+    score,assignments=SmallParsimony(T)
+    print (score)
+    assignments.nodes.sort()
+    for node in assignments.nodes:
+        if node in assignments.edges:
+            for edge in assignments.edges[node]:
+                end,weight=edge
+                print ('{0}->{1}:{2}'.format(assignments.labels[node],
+                                             assignments.labels[end],
+                                             hamming(assignments.labels[node],assignments.labels[end])))    
+ 
   
