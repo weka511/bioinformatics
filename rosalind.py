@@ -84,7 +84,7 @@ class Tree(object):
             print ('Could not unlink {0} from {1}'.format(i,k))
             self.print()        
         
-    def half_link(self,a,b,weight):
+    def half_link(self,a,b,weight=1):
         if not a in self.nodes:
             self.nodes.append(a)        
         if a in self.edges:
@@ -140,10 +140,6 @@ class Tree(object):
             yield(node)
             
 class LabelledTree(Tree):
-    def __init__(self,N=-1):
-        super().__init__(N)
-        self.labels={}
-        self.leaves=[]
         
     @staticmethod
     def parse(N,lines,letters='ATGC'):
@@ -156,13 +152,21 @@ class LabelledTree(Tree):
                 i=int(m.group(1))
                 if m.group(3)==None:
                     j=len(T.leaves)
-                    T.link(i,j)
+                    T.half_link(i,j)
                     T.leaves.append(j)
                     T.labels[j]=m.group(4)
                 if m.group(4)==None:
                     j=int(m.group(3))
-                    T.link(i,j)
+                    T.half_link(i,j)
         return T
+    
+    def __init__(self,N=-1):
+        super().__init__(N)
+        self.labels={}
+        self.leaves=[]
+        
+    def is_leaf(self,v):
+        return v in self.leaves
     
 def read_strings(file_name):
     '''

@@ -20,12 +20,24 @@ from rosalind import LabelledTree
 def SmallParsimony(T, Character,alphabet='ATGC'):
     def get_ripe():
         for v in T.get_nodes():
-            if not processed(v):
+            if not processed[v] and v in T.edges:
                 for e,w in T.edges[v]:
                     if e>v: continue
-                    if not processed(e): break
+                    if not processed[e]: break
+  
                 return v
         return None
+    
+    def calculate_s(symbol,v,alphabet):
+        def get_min(e):
+            minimum=float('inf')
+            for i in range(len(alphabet)):
+                delta=0 if symbol==alphabet[i] else 1
+                candidate=s[e][i]+delta
+                if candidate<minimum:
+                    minimum=candidate
+            return minimum
+        return sum([get_min(e) for e,_ in T.edges[v]])
     
     processed={}
     s={}
@@ -33,17 +45,19 @@ def SmallParsimony(T, Character,alphabet='ATGC'):
         if T.is_leaf(v):
             processed[v]=True
             values={}
-            for k in alphabet:
-                values[k]=0 if k==Character else float('inf')
-                s[v]=values
-            else:
-                processed[v]=false
+            s[v]=[0 if symbol==Character[v] else float('inf') for symbol in alphabet]
+            print(v,s[v])
+        else:
+            processed[v]=False
+             
     v = get_ripe()
-    while not v == Node:
+    while not v == None:
         processed[v]=True
-        #do stuff
+        s[v]=[calculate_s(symbol,v,alphabet) for symbol in alphabet ]
+        print (s[v])
         v = get_ripe()
     
+
 
 if __name__=='__main__':
     N=4
@@ -54,5 +68,7 @@ if __name__=='__main__':
                    '5->ATGGACGA',
                    '6->4',
                    '6->5']  )
-    SmallParsimony(T, '',alphabet='ATGC')
+    T.print()
+    
+    SmallParsimony(T, 'AAAAAAA',alphabet='ATGC')
   
