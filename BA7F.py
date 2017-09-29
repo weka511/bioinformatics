@@ -17,54 +17,56 @@
 
 from rosalind import LabelledTree
 
-def SmallParsimony(T):
-    def SmallParsimonyC(Character,alphabet='ATGC'):
+def SmallParsimony(T,alphabet='ATGC'):
+    def SmallParsimonyC(Character):
         def get_ripe():
             for v in T.get_nodes():
                 if not processed[v] and v in T.edges:
-                    for e,w in T.edges[v]:
+                    for e,_ in T.edges[v]:
                         if e>v: continue
                         if not processed[e]: break
       
                     return v
             return None
         
-        def calculate_s(symbol,v,alphabet):
+        def calculate_s(symbol,v):
+            '''
+             Calculate score if node v is set to a specified symbol
+                Parameters:
+                    symbol The symbol, e.g. 'A', not the index in alphabet
+                    v      The node
+             '''
+            def delta(i):
+                '''
+                Complement of Kronecker delta
+                '''
+                return 0 if symbol==alphabet[i] else 1 
             def get_min(e):
-                minimum=float('inf')
-                for i in range(len(alphabet)):
-                    delta=0 if symbol==alphabet[i] else 1
-                    candidate=s[e][i]+delta
-                    if candidate<minimum:
-                        minimum=candidate
-                return minimum
+                return min(s[e][i]+delta(i) for i in range(len(alphabet)))
+            
             return sum([get_min(e) for e,_ in T.edges[v]])
         
-        print (Character)
+        #print (Character)
         processed={}
         s={}
         for v in T.get_nodes():      
             if T.is_leaf(v):
                 processed[v]=True
-                values={}
                 s[v]=[0 if symbol==Character[v] else float('inf') for symbol in alphabet]
-                print(v,s[v])
+                #print(v,s[v])
             else:
                 processed[v]=False
                  
         v = get_ripe()
         while not v == None:
             processed[v]=True
-            s[v]=[calculate_s(symbol,v,alphabet) for symbol in alphabet ]
-            print (s[v])
+            s[v]=[calculate_s(symbol,v) for symbol in alphabet ]
+            #print (v,s[v])
+            v_last=v
             v = get_ripe()
-        return sum([min(s[v]) for v in T.get_nodes()])
+        return min([s[v_last][c] for c in range(len(alphabet))])
     
-    m=len(T.labels[0])
-    score=0
-    for i in range(m):
-        score+=SmallParsimonyC([v[i] for l,v in T.labels.items()])
-    return score
+    return sum([SmallParsimonyC([v[i] for l,v in T.labels.items()]) for i in range(len(T.labels[0]))])
 
 
 
