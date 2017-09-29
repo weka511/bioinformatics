@@ -17,10 +17,7 @@
 
 import operator
 
-from rosalind import LabelledTree
-
-def hamming(s1,s2):
-    return sum([0 if c1==c2 else 1 for (c1,c2) in zip(s1,s2)]) 
+from rosalind import LabelledTree,hamm
 
 def SmallParsimony(T,alphabet='ATGC'):
 
@@ -112,6 +109,6 @@ if __name__=='__main__':
                 end,weight=edge
                 print ('{0}->{1}:{2}'.format(assignments.labels[node],
                                              assignments.labels[end],
-                                             hamming(assignments.labels[node],assignments.labels[end])))    
+                                             hamm(assignments.labels[node],assignments.labels[end])))    
  
   
