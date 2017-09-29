@@ -17,46 +17,55 @@
 
 from rosalind import LabelledTree
 
-def SmallParsimony(T, Character,alphabet='ATGC'):
-    def get_ripe():
-        for v in T.get_nodes():
-            if not processed[v] and v in T.edges:
-                for e,w in T.edges[v]:
-                    if e>v: continue
-                    if not processed[e]: break
-  
-                return v
-        return None
-    
-    def calculate_s(symbol,v,alphabet):
-        def get_min(e):
-            minimum=float('inf')
-            for i in range(len(alphabet)):
-                delta=0 if symbol==alphabet[i] else 1
-                candidate=s[e][i]+delta
-                if candidate<minimum:
-                    minimum=candidate
-            return minimum
-        return sum([get_min(e) for e,_ in T.edges[v]])
-    
-    processed={}
-    s={}
-    for v in T.get_nodes():      
-        if T.is_leaf(v):
-            processed[v]=True
-            values={}
-            s[v]=[0 if symbol==Character[v] else float('inf') for symbol in alphabet]
-            print(v,s[v])
-        else:
-            processed[v]=False
-             
-    v = get_ripe()
-    while not v == None:
-        processed[v]=True
-        s[v]=[calculate_s(symbol,v,alphabet) for symbol in alphabet ]
-        print (s[v])
+def SmallParsimony(T):
+    def SmallParsimonyC(Character,alphabet='ATGC'):
+        def get_ripe():
+            for v in T.get_nodes():
+                if not processed[v] and v in T.edges:
+                    for e,w in T.edges[v]:
+                        if e>v: continue
+                        if not processed[e]: break
+      
+                    return v
+            return None
+        
+        def calculate_s(symbol,v,alphabet):
+            def get_min(e):
+                minimum=float('inf')
+                for i in range(len(alphabet)):
+                    delta=0 if symbol==alphabet[i] else 1
+                    candidate=s[e][i]+delta
+                    if candidate<minimum:
+                        minimum=candidate
+                return minimum
+            return sum([get_min(e) for e,_ in T.edges[v]])
+        
+        print (Character)
+        processed={}
+        s={}
+        for v in T.get_nodes():      
+            if T.is_leaf(v):
+                processed[v]=True
+                values={}
+                s[v]=[0 if symbol==Character[v] else float('inf') for symbol in alphabet]
+                print(v,s[v])
+            else:
+                processed[v]=False
+                 
         v = get_ripe()
+        while not v == None:
+            processed[v]=True
+            s[v]=[calculate_s(symbol,v,alphabet) for symbol in alphabet ]
+            print (s[v])
+            v = get_ripe()
+        return sum([min(s[v]) for v in T.get_nodes()])
     
+    m=len(T.labels[0])
+    score=0
+    for i in range(m):
+        score+=SmallParsimonyC([v[i] for l,v in T.labels.items()])
+    return score
+
 
 
 if __name__=='__main__':
@@ -70,5 +79,6 @@ if __name__=='__main__':
                    '6->5']  )
     T.print()
     
-    SmallParsimony(T, 'AAAAAAA',alphabet='ATGC')
+    s=SmallParsimony(T)
+    print (s)
   
