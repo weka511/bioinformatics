@@ -13,29 +13,29 @@
 # You should have received a copy of the GNU General Public License
 # along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>
 
-# BA7G Adapt SmallParsimony to Unrooted Trees  
+# BA7G Adapt SmallParsimony to Unrooted Trees  http://rosalind.info/problems/ba7g/
 
-#If anyone is stuck, Igor Segota solved this without changing any code from the previous challenge, only the input to it.
-
-#I did this, as pointed out, by inserting a new node between a random pair of nodes
-# (store this old pair of nodes as they'll be needed later). Then I removed old two
-# (same but opposite) edges, replaced them with two new edges going away from the root.
-
-#Then I did the breadth-first scan through the graph and deleted all 'backwards' facing edges. 
-#This nice tree graph is now all good and ready for small_parsimony().
-#After the small_parsimony is done (for all characters from sequences), I remove any reference to the root node 
-# (I forgot to do this initially and was stuck). Then I add back an edge (*) between the old two nodes 
-# with the corresponding hamming distance from these two removed nodes.
-
-#(*) actually two because the output requires every edge in duplicate, going the  other way
 
 from rosalind import LabelledTree
-import random,BA7F
+from BA7F import SmallParsimony,print_assignments
 
 def AdaptSmallParsimonyToUnrootedTrees(N,T):
+    '''
+    When the position of the root in an evolutionary tree is unknown,
+    we can simply assign the root to any edge that we like, apply
+    SmallParsimony from "Implement SmallParsimony" to the resulting rooted tree, and then remove the root.
+    It can be shown that this method provides a solution to the following problem.
+    Small Parsimony in an Unrooted Tree Problem
+    '''
     def assign_root():
-        #links= [(u,v,w) for (u,v,w) in T.get_links() if not T.is_leaf(u) and not T.is_leaf(v)]
-        #a,b,_ = links[random.randint(0,len(links)-1)]
+        '''
+        Assign a root to the tree.
+        
+        Initially I followed Igor Segota's solution from
+        https://stepik.org/lesson/10335/step/12?course=Stepic-Interactive-Text-for-Week-3&unit=8301,
+        but found that a random root  generally led to problems with the Small Parsimony algorithm.
+        Using the last node as one half of the broken lenk works well.
+        '''
         a=T.nodes[len(T.nodes)-1]
         b,_=T.edges[a][0]
         print ("Breaking at {0} {1}".format(a,b))
@@ -47,9 +47,8 @@ def AdaptSmallParsimonyToUnrootedTrees(N,T):
     
     a,b,root=assign_root()
     
-    #T.print(T)
     T.remove_backward_links(root)
-    #T.print(T)
+
     return a,b,root,T
 
 
@@ -65,29 +64,15 @@ if __name__=='__main__':
                 lines.append(line.strip())
         return N,LabelledTree.parse(N,lines,bidirectional=True)
     
-    #input=[
-        #'4',
-        #'TCGGCCAA->4',
-        #'4->TCGGCCAA',
-        #'CCTGGCTG->4',
-        #'4->CCTGGCTG',
-        #'CACAGGAT->5',
-        #'5->CACAGGAT',
-        #'TGAGTACC->5',
-        #'5->TGAGTACC',
-        #'4->5',
-        #'5->4'    
-    #]
-    with open('c:/Users/Weka/Downloads/rosalind_ba7g(2).txt') as f:
+ 
+    with open('c:/Users/Weka/Downloads/rosalind_ba7g(3).txt') as f:
         N,T=parse(f)
-        #print (N)
-        #T.print()
         a,b,root,T1= AdaptSmallParsimonyToUnrootedTrees(N,T)
-        #T1.print()
-        #print (T1.labels)
-        score,assignments=BA7F.SmallParsimony(T1)
-        assignments.unlink(root,b)
+        score,assignments=SmallParsimony(T1)
+        # This is the fixup at the emd of processing
+        assignments.unlink(root,b)     
         assignments.unlink(root,a)
         assignments.link(a,b)
+        
         print (score)
-        BA7F.print_assignments(assignments)
+        print_assignments(assignments)
