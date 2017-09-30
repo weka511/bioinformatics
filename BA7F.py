@@ -136,8 +136,7 @@ if __name__=='__main__':
     score,assignments=SmallParsimony(T)
     print (score)
     assignments.nodes.sort()
-    #for l,v in assignments.labels.items():
-        #print (l,v)
+  
     for node in assignments.nodes:
         if node in assignments.edges:
             for edge in assignments.edges[node]:

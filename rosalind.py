@@ -102,8 +102,8 @@ class Tree(object):
     def half_link(self,a,b,weight=1):
         if not a in self.nodes:
             self.nodes.append(a)        
-        if a in self.edges:
-            self.edges[a].append((b,weight))
+        if a in self.edges:               
+            self.edges[a]=[(b0,w0) for (b0,w0) in self.edges[a] if b0 != b] + [(b,weight)]
         else:
             self.edges[a]=[(b,weight)]
     
@@ -166,21 +166,46 @@ class LabelledTree(Tree):
         
     @staticmethod
     def parse(N,lines,letters='ATGC',bidirectional=True):
-        T=LabelledTree(4,bidirectional=bidirectional)
-        pattern=re.compile('([0-9]+)->(([0-9]+)|([{0}]+))'.format(letters))
+        def get_leaf(string):
+            for index,label in T.labels.items():
+                if string==label:
+                    return index
+            return None
+        
+        T=LabelledTree(bidirectional=bidirectional)
+        pattern=re.compile('(([0-9]+)|([{0}]+))->(([0-9]+)|([{0}]+))'.format(letters))
         
         for line in lines:
             m=pattern.match(line)
             if m:
-                i=int(m.group(1))
+                i=None
+ 
+                if m.group(2)==None:
+                    i=get_leaf(m.group(3))
+                    if i==None:
+                        i=len(T.labels)
+                    T.set_label(i,m.group(3))
+ 
+                    if not i in T.leaves:
+                        T.leaves.append(i)
+                        
                 if m.group(3)==None:
-                    j=len(T.leaves)
-                    T.half_link(i,j)
-                    T.leaves.append(j)
-                    T.set_label(j,m.group(4))
-                if m.group(4)==None:
-                    j=int(m.group(3))
-                    T.half_link(i,j)
+                    i=int(m.group(2))
+           
+                if m.group(5)==None:
+                    j=get_leaf(m.group(6))
+                    if j==None:
+                        j=len(T.labels)
+                        if not j in T.leaves:
+                            T.leaves.append(j)                        
+                        T.set_label(j,m.group(6))
+                    T.link(i,j)
+                    
+                   
+                if m.group(6)==None:
+                    j=int(m.group(5))
+                    T.link(i,j)
+                    
         return T
     
     def __init__(self,N=-1,bidirectional=True):
