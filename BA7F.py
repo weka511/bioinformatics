@@ -15,7 +15,7 @@
 
 # BA7F Implement SmallParsimony 
 
-import operator
+import operator,random
 
 from rosalind import LabelledTree,hamm
 
@@ -63,11 +63,32 @@ def SmallParsimony(T,alphabet='ATGC'):
         while not v == None:
             processed[v]=True
             s[v]=[calculate_s(symbol,v) for symbol in alphabet ]
-            update_assignments(v,s[v])
             v_last=v
             v = get_ripe()
+        current_assignment = update_assignments(v_last,s[v_last])
+        backtrack(v_last,s,current_assignment)
         return min([s[v_last][c] for c in range(len(alphabet))])
     
+    def backtrack(v,s,current_assignment):
+        for v_next,_ in T.edges[v]:
+            if T.is_leaf(v_next): continue
+            if not v_next in assignments.labels:
+                assignments.labels[v_next]=''
+            min_score=min([s[v_next][i] for i in range(len(alphabet))])
+            indices=[i for i in range(len(alphabet)) if s[v_next][i]==min_score ]
+            matched=False
+            for i in indices:
+                if alphabet[i]==current_assignment:
+                   
+                    matched=True
+                    assignments.set_label(v_next,assignments.labels[v_next]+current_assignment)
+                    backtrack(v_next,s,current_assignment)
+            if not matched:
+                next_assignment=alphabet[indices[random.randrange(0,(len(indices)))]]
+                
+                assignments.set_label(v_next,assignments.labels[v_next]+next_assignment)
+                backtrack(v_next,s,next_assignment)
+                
     def update_assignments(v,s):
         if not v in assignments.labels:
             assignments.labels[v]=''
@@ -78,6 +99,7 @@ def SmallParsimony(T,alphabet='ATGC'):
                 min_s=s[i]
                 index=i
         assignments.set_label(v,assignments.labels[v]+alphabet[index])
+        return alphabet[index]
     
     assignments=LabelledTree(T.N)
     assignments.initialize_from(T)
@@ -88,27 +110,39 @@ def SmallParsimony(T,alphabet='ATGC'):
 
 if __name__=='__main__':
        
-    N=4
-    T=LabelledTree.parse(4,
-                  ['4->CAAATCCC',
-                   '4->ATTGCGAC',
-                   '5->CTGCGCTG',
-                   '5->ATGGACGA',
-                   '6->4',
-                   '6->5'],
-                  bidirectional=False
-                  )
-    T.print()
+    #N=4
+    #T=LabelledTree.parse(4,
+                  #['4->CAAATCCC',
+                   #'4->ATTGCGAC',
+                   #'5->CTGCGCTG',
+                   #'5->ATGGACGA',
+                   #'6->4',
+                   #'6->5'],
+                  #bidirectional=False
+                  #)
+    #T.print()
+    N=-1
+    rest=[]
+    with open('c:/Users/Weka/Downloads/rosalind_ba7f(3).txt') as f:
+        for line in f:
+            if N==-1:
+                N=int(line.strip())
+            else:
+                rest.append(line.strip())
+    T=LabelledTree.parse(N,rest,bidirectional=False)            
     
     score,assignments=SmallParsimony(T)
     print (score)
     assignments.nodes.sort()
+    #for l,v in assignments.labels.items():
+        #print (l,v)
     for node in assignments.nodes:
         if node in assignments.edges:
             for edge in assignments.edges[node]:
                 end,weight=edge
-                print ('{0}->{1}:{2}'.format(assignments.labels[node],
-                                             assignments.labels[end],
-                                             hamm(assignments.labels[node],assignments.labels[end])))    
+                if node in assignments.labels and end in assignments.labels:
+                    print ('{0}->{1}:{2}'.format(assignments.labels[node],
+                                                 assignments.labels[end],
+                                                 hamm(assignments.labels[node],assignments.labels[end])))    
  
   
