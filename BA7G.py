@@ -30,10 +30,30 @@
 #(*) actually two because the output requires every edge in duplicate, going the  other way
 
 from rosalind import LabelledTree
+import random,BA7F
 
 def AdaptSmallParsimonyToUnrootedTrees(N,T):
-    pass
+    def assign_root():
+        #links= [(u,v,w) for (u,v,w) in T.get_links() if not T.is_leaf(u) and not T.is_leaf(v)]
+        #a,b,_ = links[random.randint(0,len(links)-1)]
+        a=T.nodes[len(T.nodes)-1]
+        b,_=T.edges[a][0]
+        print ("Breaking at {0} {1}".format(a,b))
+        T.unlink(a,b)
+        c=T.next_node()
+        T.link(c,a)
+        T.link(c,b)
+        return (a,b,c)
+    
+    a,b,root=assign_root()
+    
+    #T.print(T)
+    T.remove_backward_links(root)
+    #T.print(T)
+    return a,b,root,T
 
+
+                        
 if __name__=='__main__':
     def parse(input):
         N=-1
@@ -45,19 +65,29 @@ if __name__=='__main__':
                 lines.append(line.strip())
         return N,LabelledTree.parse(N,lines,bidirectional=True)
     
-    input=[
-        '4',
-        'TCGGCCAA->4',
-        '4->TCGGCCAA',
-        'CCTGGCTG->4',
-        '4->CCTGGCTG',
-        'CACAGGAT->5',
-        '5->CACAGGAT',
-        'TGAGTACC->5',
-        '5->TGAGTACC',
-        '4->5',
-        '5->4'    
-    ]
-    N,T=parse(input)
-    T.print()
-    print (AdaptSmallParsimonyToUnrootedTrees(N,T))
+    #input=[
+        #'4',
+        #'TCGGCCAA->4',
+        #'4->TCGGCCAA',
+        #'CCTGGCTG->4',
+        #'4->CCTGGCTG',
+        #'CACAGGAT->5',
+        #'5->CACAGGAT',
+        #'TGAGTACC->5',
+        #'5->TGAGTACC',
+        #'4->5',
+        #'5->4'    
+    #]
+    with open('c:/Users/Weka/Downloads/rosalind_ba7g(2).txt') as f:
+        N,T=parse(f)
+        #print (N)
+        #T.print()
+        a,b,root,T1= AdaptSmallParsimonyToUnrootedTrees(N,T)
+        #T1.print()
+        #print (T1.labels)
+        score,assignments=BA7F.SmallParsimony(T1)
+        assignments.unlink(root,b)
+        assignments.unlink(root,a)
+        assignments.link(a,b)
+        print (score)
+        BA7F.print_assignments(assignments)

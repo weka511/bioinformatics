@@ -161,7 +161,16 @@ class Tree(object):
                 if node in T.edges:
                     for a,w in T.edges[node]:
                         self.link(node,a,w)
-                        
+     
+    def get_links(self):
+        return [(a,b,w) for a in self.nodes for (b,w) in self.edges[a] if a in self.edges]
+    
+    def remove_backward_links(self,root):
+        self.bidirectional = False
+        for (child,_) in self.edges[root]:
+            self.half_unlink(child,root)
+            self.remove_backward_links(child)
+            
 class LabelledTree(Tree):
         
     @staticmethod

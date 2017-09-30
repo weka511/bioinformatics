@@ -108,7 +108,17 @@ def SmallParsimony(T,alphabet='ATGC'):
     
     return sum([SmallParsimonyC([v[i] for l,v in T.labels.items()]) for i in range(len(T.labels[0]))]),assignments
 
-
+def print_assignments(assignments):
+    assignments.nodes.sort()
+  
+    for node in assignments.nodes:
+        if node in assignments.edges:
+            for edge in assignments.edges[node]:
+                end,weight=edge
+                if node in assignments.labels and end in assignments.labels:
+                    print ('{0}->{1}:{2}'.format(assignments.labels[node],
+                                                 assignments.labels[end],
+                                                 hamm(assignments.labels[node],assignments.labels[end])))    
 
 if __name__=='__main__':
        
@@ -135,15 +145,7 @@ if __name__=='__main__':
     
     score,assignments=SmallParsimony(T)
     print (score)
-    assignments.nodes.sort()
-  
-    for node in assignments.nodes:
-        if node in assignments.edges:
-            for edge in assignments.edges[node]:
-                end,weight=edge
-                if node in assignments.labels and end in assignments.labels:
-                    print ('{0}->{1}:{2}'.format(assignments.labels[node],
-                                                 assignments.labels[end],
-                                                 hamm(assignments.labels[node],assignments.labels[end])))    
+    print_assignments(assignments)
+
  
   
