@@ -49,6 +49,40 @@ def SmallParsimony(T,alphabet='ATGC'):
             
             return sum([get_min(e) for e,_ in T.edges[v]])
         
+        def update_assignments(v,s):
+            if not v in assignments.labels:
+                assignments.labels[v]=''
+            index=0
+            min_s=float('inf')
+            for i in range(len(s)):
+                if s[i]<min_s:
+                    min_s=s[i]
+                    index=i
+            assignments.set_label(v,assignments.labels[v]+alphabet[index])
+            return alphabet[index]
+        
+        def backtrack(v, current_assignment):
+            for v_next,_ in T.edges[v]:
+                if T.is_leaf(v_next): continue
+                if not v_next in assignments.labels:
+                    assignments.labels[v_next]=''
+                min_score=min([s[v_next][i] for i in range(len(alphabet))])
+                indices=[i for i in range(len(alphabet)) if s[v_next][i]==min_score ]
+                matched=False
+                for i in indices:
+                    if alphabet[i]==current_assignment:
+                       
+                        matched=True
+                        assignments.set_label(v_next,assignments.labels[v_next]+current_assignment)
+                        backtrack(v_next,current_assignment)
+                if not matched:
+                    # Black magic alert: I am not clear why the introduction of random numbers
+                    # helps here. Maybe it stops the tree being biased towatds the first strings
+                    # in the alphabet.
+                    next_assignment=alphabet[indices[random.randrange(0,(len(indices)))]]               
+                    assignments.set_label(v_next,assignments.labels[v_next]+next_assignment)
+                    backtrack(v_next,next_assignment)        
+            
         processed={}
         s={}
         for v in T.get_nodes():      
@@ -65,42 +99,10 @@ def SmallParsimony(T,alphabet='ATGC'):
             s[v]=[calculate_s(symbol,v) for symbol in alphabet ]
             v_last=v
             v = get_ripe()
-        current_assignment = update_assignments(v_last,s[v_last])
-        backtrack(v_last,s,current_assignment)
+
+        backtrack(v_last,update_assignments(v_last,s[v_last]))
         return min([s[v_last][c] for c in range(len(alphabet))])
-    
-    def backtrack(v,s,current_assignment):
-        for v_next,_ in T.edges[v]:
-            if T.is_leaf(v_next): continue
-            if not v_next in assignments.labels:
-                assignments.labels[v_next]=''
-            min_score=min([s[v_next][i] for i in range(len(alphabet))])
-            indices=[i for i in range(len(alphabet)) if s[v_next][i]==min_score ]
-            matched=False
-            for i in indices:
-                if alphabet[i]==current_assignment:
-                   
-                    matched=True
-                    assignments.set_label(v_next,assignments.labels[v_next]+current_assignment)
-                    backtrack(v_next,s,current_assignment)
-            if not matched:
-                next_assignment=alphabet[indices[random.randrange(0,(len(indices)))]]
-                
-                assignments.set_label(v_next,assignments.labels[v_next]+next_assignment)
-                backtrack(v_next,s,next_assignment)
-                
-    def update_assignments(v,s):
-        if not v in assignments.labels:
-            assignments.labels[v]=''
-        index=0
-        min_s=float('inf')
-        for i in range(len(s)):
-            if s[i]<min_s:
-                min_s=s[i]
-                index=i
-        assignments.set_label(v,assignments.labels[v]+alphabet[index])
-        return alphabet[index]
-    
+       
     assignments=LabelledTree(T.N)
     assignments.initialize_from(T)
     
@@ -123,7 +125,7 @@ if __name__=='__main__':
     #T.print()
     N=-1
     rest=[]
-    with open('c:/Users/Weka/Downloads/rosalind_ba7f(3).txt') as f:
+    with open('c:/Users/Weka/Downloads/rosalind_ba7f(5).txt') as f:
         for line in f:
             if N==-1:
                 N=int(line.strip())
