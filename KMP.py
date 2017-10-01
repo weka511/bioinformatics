@@ -28,6 +28,12 @@ def kmp(s):
     Return: The failure array of s
 '''
     def longest_substring(k,bound):
+        '''
+        Find longest substring. This is more complex than it needs to be
+        if the string is short. For longer strings we need to exploit
+        the fact that the longest substring for k cannot exceed the longest
+        substrin for k-1 PLUS 1.
+        '''
         for j in range(k-bound,k):
             if k-j<=bound:
                 if s[j:k]==s[0:k-j]:
@@ -42,10 +48,6 @@ def kmp(s):
     return result
 
 if __name__=='__main__':
-    #import time
-    #start=time.time()
-    #print(kmp('CAGCATGGTATCACAGCAGAG'))
-
     name=''
     strings=[]
     with open('c:/Users/Weka/Downloads/rosalind_kmp(1).txt') as f:
@@ -57,7 +59,5 @@ if __name__=='__main__':
     string=''.join(s for s in strings)
 
     print(' '.join(str(i) for i in kmp(string)))
-    #elapsed=time.time()-start
-    #minutes, seconds = divmod(elapsed, 60)
-    #print (minutes,seconds)    
+   
                 
