@@ -18,25 +18,27 @@ from Bio import Phylo
 import random
 
 def CharacterTable(tree,split_species_len=0.25):
-    def create_character(i):
+    def create_character():
         character=[]
         for s in species:
-            character.append(i if s in split_species else 1-i)
+            character.append(1 if s in split_species else 0)
         return ''.join([str(c) for c in character])
     
-    print(tree)
+    #print(tree)
     species=[spec.name for spec in tree.find_elements(terminal=True)]
     species.sort()
-    print (species)
+    #print (species)
     clades=[clade for clade in tree.find_clades(terminal=False)]
-    split_species=[]
-    while len(split_species)<split_species_len*len(species):
-        split=clades[random.randint(1,len(clades)-1)]
+    #print (clades)
+    result=[]
+    for split in clades[1:]:
         split_species=[spec.name for spec in split.find_elements(terminal=True)]
-    print (split_species)
-    return [create_character(i) for i in [0,1]]
+        #print (split_species)
+        result.append(create_character())
+    return result
 
 if __name__=='__main__': 
-    tree = Phylo.read('c:/Users/Weka/Downloads/rosalind_ctbl(2).txt', 'newick')
+    #tree = Phylo.read('ctbl.txt', 'newick')
+    tree = Phylo.read('c:/Users/Weka/Downloads/rosalind_ctbl(3).txt', 'newick')
     for ch in CharacterTable(tree):
         print (ch)
