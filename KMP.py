@@ -32,11 +32,14 @@ def kmp(s):
             if s[j:k]==s[0:k-j]:
                 return k-j
         return 0
-    print (len(s))
+ 
     return [longest_substring(k) for k in range(1,len(s)+1)]
 
 if __name__=='__main__':
-    #print(kmp('CAGCATGGTATCACAGCAGAG'))
+    import time
+    start=time.time()
+    print(kmp('CAGCATGGTATCACAGCAGAG'))
+
     name=''
     strings=[]
     with open('c:/Users/Weka/Downloads/rosalind_kmp.txt') as f:
@@ -48,4 +51,7 @@ if __name__=='__main__':
     string=''.join(s for s in strings)
 
     print(kmp(string))
+    elapsed=time.time()-start
+    minutes, seconds = divmod(elapsed, 60)
+    print (minutes,seconds)    
                 
