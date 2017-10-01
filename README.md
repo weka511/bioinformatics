@@ -41,6 +41,7 @@ Code inspired by [Finding Hidden Messages in DNA (Bioinformatics I)](https://cla
 | QS.py | 	Quicksort|
 | README.md 	|This file|
 | count-kmer-occurrences.py | Determine number of times each kmer appears in DNA, allowing for reverse complements and d-neighbourhoods |
+| kmp.py | Speeding Up Motif Finding |
 | mend.py | 	 Inferring a Genotype from a Pedigree |
 | newick.py | 	 | Parser for files in Newick format |
 | nwck.py | 	Distances in Trees |
