@@ -32,7 +32,20 @@ def kmp(s):
             if s[j:k]==s[0:k-j]:
                 return k-j
         return 0
-    return [longest_substring(k) for k in range(len(s))]
+    print (len(s))
+    return [longest_substring(k) for k in range(1,len(s)+1)]
 
 if __name__=='__main__':
-    print(kmp('CAGCATGGTATCACAGCAGAG'))
+    #print(kmp('CAGCATGGTATCACAGCAGAG'))
+    name=''
+    strings=[]
+    with open('c:/Users/Weka/Downloads/rosalind_kmp.txt') as f:
+        for line in f:
+            if (len(name))==0:
+                name=line.strip()
+            else:
+                strings.append(line.strip())
+    string=''.join(s for s in strings)
+
+    print(kmp(string))
+                
