@@ -27,22 +27,28 @@ def kmp(s):
 
     Return: The failure array of s
 '''
-    def longest_substring(k):
-        for j in range(1,k):
-            if s[j:k]==s[0:k-j]:
-                return k-j
+    def longest_substring(k,bound):
+        for j in range(k-bound,k):
+            if k-j<=bound:
+                if s[j:k]==s[0:k-j]:
+                    return k-j
         return 0
  
-    return [longest_substring(k) for k in range(1,len(s)+1)]
+    result=[]
+    longest=-1
+    for k in range(1,len(s)+1):
+        longest=longest_substring(k,longest+1)
+        result.append(longest)
+    return result
 
 if __name__=='__main__':
-    import time
-    start=time.time()
-    print(kmp('CAGCATGGTATCACAGCAGAG'))
+    #import time
+    #start=time.time()
+    #print(kmp('CAGCATGGTATCACAGCAGAG'))
 
     name=''
     strings=[]
-    with open('c:/Users/Weka/Downloads/rosalind_kmp.txt') as f:
+    with open('c:/Users/Weka/Downloads/rosalind_kmp(1).txt') as f:
         for line in f:
             if (len(name))==0:
                 name=line.strip()
@@ -50,8 +56,8 @@ if __name__=='__main__':
                 strings.append(line.strip())
     string=''.join(s for s in strings)
 
-    print(kmp(string))
-    elapsed=time.time()-start
-    minutes, seconds = divmod(elapsed, 60)
-    print (minutes,seconds)    
+    print(' '.join(str(i) for i in kmp(string)))
+    #elapsed=time.time()-start
+    #minutes, seconds = divmod(elapsed, 60)
+    #print (minutes,seconds)    
                 
