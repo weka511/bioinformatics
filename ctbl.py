@@ -13,32 +13,27 @@
 # You should have received a copy of the GNU General Public License
 # along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>
  
+# ctbl Creating a Character Table  http://rosalind.info/problems/ctbl/
 
 from Bio import Phylo
 import random
 
-def CharacterTable(tree,split_species_len=0.25):
-    def create_character():
+def CharacterTable(tree):
+    def create_character(split_species):
         character=[]
         for s in species:
             character.append(1 if s in split_species else 0)
         return ''.join([str(c) for c in character])
     
-    #print(tree)
     species=[spec.name for spec in tree.find_elements(terminal=True)]
     species.sort()
-    #print (species)
+
     clades=[clade for clade in tree.find_clades(terminal=False)]
-    #print (clades)
-    result=[]
-    for split in clades[1:]:
-        split_species=[spec.name for spec in split.find_elements(terminal=True)]
-        #print (split_species)
-        result.append(create_character())
-    return result
+    # we iterate over all Clades except the root
+    return [create_character([spec.name for spec in split.find_elements(terminal=True)]) for split in clades[1:]]
 
 if __name__=='__main__': 
     #tree = Phylo.read('ctbl.txt', 'newick')
-    tree = Phylo.read('c:/Users/Weka/Downloads/rosalind_ctbl(3).txt', 'newick')
+    tree = Phylo.read('c:/Users/Weka/Downloads/rosalind_ctbl(4).txt', 'newick')
     for ch in CharacterTable(tree):
         print (ch)
