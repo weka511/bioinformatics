@@ -33,7 +33,6 @@ def CharacterTable(tree):
     return [create_character([spec.name for spec in split.find_elements(terminal=True)]) for split in clades[1:]]
 
 if __name__=='__main__': 
-    #tree = Phylo.read('ctbl.txt', 'newick')
     tree = Phylo.read('c:/Users/Weka/Downloads/rosalind_ctbl(4).txt', 'newick')
     for ch in CharacterTable(tree):
         print (ch)

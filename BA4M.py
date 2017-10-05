@@ -1,31 +1,39 @@
-'''
-    #BA4M 	Solve the Turnpike Problem 
+#    Copyright (C) 2017 Greenweaves Software Pty Ltd
+#
+#    This is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
+#
+#    This software is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>
+#
+#    #BA4M 	Solve the Turnpike Problem   
 
-    Copyright (C) 2017 Greenweaves Software Pty Ltd
-
-    This is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    This software is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>
-'''
 
 import math,numpy
 from rosalind import read_list,write_list
 
-def BA4M(D,check=False):
+def Turnpike(D,check=False):
     '''
+    Based Mark Weiss's treatment
     https://users.cs.fiu.edu/~weiss/cop3337_f99/assignments/turnpike.pdf
     '''
     def find_remaining_points(X,D,first,last):
-        
+        '''
+        Extend a partial solution by adding more points.
+          Parameters
+              X         Partial solution - typically contains NaNs for unassigned points,
+                                           with known values filled in from the ends
+              D
+              first     Index of end of knownn values at beginning X
+              last      Index of start of know value at end of X
+        '''
         def get_set_diffs(diffs):
             diffs.sort()
             set_diffs=[]
@@ -69,12 +77,19 @@ def BA4M(D,check=False):
             return trial_solution
     
     def check_diffs(reconstruction):
+        '''
+        Verify that a particular reconstruction does indeed give rise to original differences
+        '''
         diffs=[a-b for a in reconstruction for b in reconstruction]
         diffs.sort()
         print ("Checking {0} {1}".format(len(diffs),len(D)))
+        mismatches=0
         for a,b in zip(D,diffs):
             if a!=b:
+                mismatches+=1
                 print (a,b)
+       
+        print ('Found {0} mismatches'.format(mismatches))
         return diffs
         
     len_D=len (D)
@@ -84,8 +99,8 @@ def BA4M(D,check=False):
     X[-1]=D[-1]
     reconstruction= find_remaining_points(X,[d for d in D[:-1] if d>0],0,-1)
     if check:
-        print (check_diffs(reconstruction))
+        check_diffs(reconstruction)
     return reconstruction
 
 if __name__=='__main__':
-    write_list (BA4M(read_list('c:/Users/Weka/Downloads/rosalind_ba4m(2).txt')),out='BA4M.txt')
+    write_list (Turnpike(read_list('data/rosalind_ba4m(2).txt'),check=True),out='BA4M.txt')
