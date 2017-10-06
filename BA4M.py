@@ -41,6 +41,9 @@ def Turnpike(D,check=False):
               last      Index of start of know value at end of X
         '''
         def get_set_diffs(diffs):
+            '''
+            Ascertain whether a some partial set of differences is a subset of D
+            '''
             diffs.sort()
             set_diffs=[]
             i=0
@@ -62,6 +65,10 @@ def Turnpike(D,check=False):
             return set_diffs
         
         def explore(candidate,X,first,last):
+            '''
+            Explore lower levels of tree
+            '''
+            # Constuct set of differences between candidate and known members of X
             diffs=[abs(candidate-x) for x in X if not numpy.isnan(x) and x!=candidate]
             set_diffs=get_set_diffs(diffs)
             if set_diffs==None:
