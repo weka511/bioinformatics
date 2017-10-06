@@ -43,6 +43,7 @@ Code inspired by [Finding Hidden Messages in DNA (Bioinformatics I)](https://cla
 | PAR.py | 	 	2-Way Partition |
 | PAR3.py | 	 	3-Way Partition |
 | PCOV.py | 	 Genome Assembly with Perfect Coverage |
+| pmch.py| 	Perfect Matchings and RNA Secondary Structures |
 | PTRA.py | 	 	Protein Translation |
 | QS.py | 	Quicksort|
 | README.md 	|This file|
