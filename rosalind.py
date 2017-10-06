@@ -271,4 +271,10 @@ def write_list(numeric_list,out=None):
 def DPrint(D):
     print ('=====================')
     for drow in D:
-        print (', '.join([str(d) for d in drow]))           
+        print (', '.join([str(d) for d in drow]))
+        
+class RosalindException(Exception):
+    '''
+    Provide a common class for all exceptions thrown by the library
+    '''
+    pass
