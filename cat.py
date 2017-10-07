@@ -19,12 +19,10 @@ from rosalind import RosalindException,verify_counts_complete_graph
 
 def CatalanNumbers(N):
     cn=[1]
-    def helper(n):
+    for n in range(0,N+1):
         while len(cn)<n+1:
             cn.append(sum([cn[k-1]*cn[n-k] for k in range(1,n+1)]))
-    for n in range(0,N+1):
-        helper(n)
-    return cn
+    return cn[-1]
 
 def CountNonCrossingMatches(string):
     counts=verify_counts_complete_graph(string)
