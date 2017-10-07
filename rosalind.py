@@ -278,3 +278,20 @@ class RosalindException(Exception):
     Provide a common class for all exceptions thrown by the library
     '''
     pass
+
+def factorial(n):
+    return n*factorial(n-1) if n>1 else 1
+
+def verify_counts_complete_graph(string):
+    counts={
+        'A':0,
+        'U':0,
+        'C':0,
+        'G':0
+    }
+    for c in string:
+        counts[c]+=1
+    if counts['A']==counts['U'] and counts['C']==counts['G']:
+        return counts
+    else:
+        raise RosalindException('Mismatched counts {0}/{1} or {2}/{3}'.format(counts['A'],counts['U'],counts['C'],counts['G']))

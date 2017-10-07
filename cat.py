@@ -13,13 +13,22 @@
 #    You should have received a copy of the GNU General Public License
 #    along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>
 #
-#    pmch 	Perfect Matchings and RNA Secondary Structures 
+#    cat 	Catalan Numbers and RNA Secondary Structures 
 
-from rosalind import RosalindException,factorial,verify_counts_complete_graph
-def NumberPerfectMatchings(string):
- 
+from rosalind import RosalindException,verify_counts_complete_graph
+
+def CatalanNumbers(N):
+    cn=[1]
+    def helper(n):
+        while len(cn)<n+1:
+            cn.append(sum([cn[k-1]*cn[n-k] for k in range(1,n+1)]))
+    for n in range(0,N+1):
+        helper(n)
+    return cn
+
+def CountNonCrossingMatches(string):
     counts=verify_counts_complete_graph(string)
-    return factorial(counts['A'])*factorial(counts['G'])
-
+    
 if __name__=='__main__':
-    print (NumberPerfectMatchings('CGCUUGCAGGACAAGGUGCAUAUCUUCACCAUCAGCUAAACGAUAGCCGCUCACGCGGGAUGGUGCGUUCCGUG'))
+    #print (CountNonCrossingMatches('AUAU'))
+    print (CatalanNumbers(12))
