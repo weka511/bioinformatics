@@ -17,56 +17,52 @@
 
 def tree(links):
     result={}
+    max_node=-1
     for (a,b) in links:
+        if a>max_node: max_node=a
+        if b>max_node: max_node=b
+        
         if a in result:
             result[a].append(b)
         else:
             result[a]=[b]
         
+    return (max_node,result)
+
+def ShortestDistances(tree):
+    result=[]
+    def BreadthFirstSearch(start,dist=0):
+        result[start-1]=dist
+        dist+=1
+        if start in tree:
+            for node in tree[start]:
+                if result[node-1]<0 or result[node-1]>dist:
+                    BreadthFirstSearch(node,dist)   
+                    
+    max_node,tree=tree
+    result=[-1]*max_node
+    BreadthFirstSearch(1)
     return result
+    
 
-
-def BestFirstSearch(tree,start,path=[],sub_total=0):
-    result=[(start,sub_total)]
-    if start in tree:
-        for node in tree[start]:
-            if not node in path:
-                result=result+BestFirstSearch(tree,node,sub_total=sub_total+1,path=path+[node])
-    if len(path)==0:
-        n=max(a for (a,b) in result)
-        result.sort()
-        final=[]
-        i=0
-        b,c = result[i]
-        print (result)
-        for a in range(1,n):          
-            if a<b:
-                final.append((a,-1))
-            else:
-                i+=1
-                b0,c0 = result[i]
-                while b0==b:
-                    if c0<c:
-                        c=c0
-                    i+=1
-                    b0,c0 = result[i]
-                final.append((b,c))
-                b=b0
-                c=c0
-                if i>len(result): break
-        return [b for (a,b) in final+[(a+1,c)]]
-    else:
-        return result
 
 if __name__=='__main__':
     print(
-        BestFirstSearch(tree([
-            (6, 6),
+        ShortestDistances(tree([
+            #(6, 6),
             (4, 6),
             (6, 5),
             (4, 3),
             (3, 5),
             (2, 1),
-            (1, 4)]),1))
+            (1, 4)])))
 
-    
+    with open ('c:/Users/Weka/Downloads/rosalind_bfs(4).txt') as f:
+        ll=[]
+        i=0
+        for line in f:
+            if i>0:
+                xs=line.strip().split()
+                ll.append((int(xs[0]),int(xs[1])))
+            i+=1
+        print (ShortestDistances(tree(ll)))

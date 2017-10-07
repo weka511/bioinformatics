@@ -18,6 +18,7 @@ Code inspired by [Finding Hidden Messages in DNA (Bioinformatics I)](https://cla
 | BA8C.py | Implement the Lloyd Algorithm for k-Means Clustering  |
 | BA8D.py | 	Implement the Soft k-Means Clustering Algorithm |
 | BA8E.py | Implement Hierarchical Clustering |
+| bfs.py  | 	Beadth First search !
 | BINS.py | 	 	Binary Search |
 | CORR.py | 	Error Correction in Reads  | 
 | count-kmer-occurrences.py | Determine number of times each kmer appears in DNA, allowing for reverse complements and d-neighbourhoods |
