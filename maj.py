@@ -30,11 +30,18 @@ def maj(A):
     return match if 2 * count > len(A) else -1
 
 if __name__=='__main__':
-    k=4
-    n=8
-    As=[[5, 5, 5, 5, 5, 5, 5, 5],
-       [8, 7, 7, 7, 1, 7, 3, 7],
-       [7, 1, 6, 5, 10, 100, 1000, 1],
-       [5, 1 ,6 ,7 ,1 ,1 ,10, 1]]
+    m = -1
+    k = -1
+    As=[]
+ 
+    with open (r'C:\Users\Simon\Downloads\rosalind_maj.txt') as f:    
+        for line in f:
+            if k==-1:
+                values=line.strip().split()
+                k=int(values[0])
+                m=int(values[1])
+            else:
+                As.append([int(v) for v in line.strip().split()])    
+
     print (' '.join([str(maj(As[i])) for i in range(k)]))
 
