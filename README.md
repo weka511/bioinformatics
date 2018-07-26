@@ -1,9 +1,11 @@
 # Bioinformatics
 
-Code inspired by [Finding Hidden Messages in DNA (Bioinformatics I)](https://class.coursera.org/hiddenmessages-003).
+Code inspired by [Finding Hidden Messages in DNA (Bioinformatics I)](https://class.coursera.org/hiddenmessages-003) and from [Rosalind](http://rosalind.info). 
+NB: functions generally used zero based indexing; Rodalind used 1-based.
 
 | Name | Description |
-| -------------------------- | ------------------------------------------------| 
+| -------------------------- | ------------------------------------------------|
+| 2sum.py | [2SUM](http://rosalind.info/problems/2sum/) |
 | ASMQ.py | 	Assessing Assembly Quality with N50 and N75 |
 | BA4M.py |   Solve the Turnpike Problem  |
 | BA7A.py | Compute Distances Between Leaves |
@@ -35,6 +37,7 @@ Code inspired by [Finding Hidden Messages in DNA (Bioinformatics I)](https://cla
 | kmp.py | Speeding Up Motif Finding |
 | LICENSE |	License Agreement|
 | LONG.py | 	Genome Assembly as Shortest Superstring |
+| maj.py |  [Majority Element](http://rosalind.info/problems/maj/) ||
 | MED.py | 	Median|
 | mend.py | 	 Inferring a Genotype from a Pedigree |
 | MER.py |  	Merge Two Sorted Arrays |

@@ -13,47 +13,40 @@
 #    You should have received a copy of the GNU General Public License
 #    along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>
 #
-#    maj 	Majority Element
+#   2SUM
 
 def f2sum(A):
     def order(a,b):
         return (a,b) if a<b else (b,a)
+    def best(pairs):
+        x0,y0=pairs[0]
+        for x1,y1 in pairs[1:]:
+            if y1<y0:
+                x0,y0=x1,y1
+        return (x0,y0)
     indices = sorted(range(len(A)), key=lambda k: A[k])
-    AA = [A[i] for i in indices]
-    first = 0
-    last = len(indices)-1
-    while AA[first]<=0 or AA[last]>=0: 
-        if AA[first]<0:
-            first+=1
-        if AA[last]>0:
-            last-=1
-    if AA[first]>0:
-        first-=1
-    if AA[last]<0:
-        last+=1
-    while 0<=first and last < len(AA): 
-        if -AA[first]==AA[last]:
-            return order(indices[first]+1,indices[last]+1)
-        if abs(AA[first])<abs(AA[last]):
-            first-=1
-        else:
-            last+=1
-    return -1
+    A_Sorted= [A[i] for i in indices]
+    p = 0
+    q = len(A_Sorted)-1
+    pairs=[]
+    while p < q and A_Sorted[p]<= 0 and A_Sorted[q]>=0:
+        if A_Sorted[p] + A_Sorted[q]==0:
+            pairs.append(order(indices[p],indices[q]))
+            q-=1
+            p+=1
+        elif abs(A_Sorted[p])<abs( A_Sorted[q]):
+            q-=1
+        elif abs(A_Sorted[p])>abs( A_Sorted[q]):
+            p+=1
+ 
+    return best(pairs) if len(pairs)>0 else (-1,-1)
 
 if __name__=='__main__':
-    #k=4 
-    #m=5
-    #As=[
-        #[2 ,-3, 4, 10, 5],
-        #[8 ,2, 4, -2, -8],
-        #[-5, 2, 3, 2, -4],
-        #[5, 4, -5, 6, 8]
-       #]     
     m = -1
     k = -1
     As=[]
  
-    with open (r'C:\Users\Simon\Downloads\rosalind_2sum.txt') as f:    
+    with open (r'C:\Users\Simon\Downloads\rosalind_2sum(5).txt') as f:    
         for line in f:
             if k==-1:
                 values=line.strip().split()
@@ -61,7 +54,11 @@ if __name__=='__main__':
                 m=int(values[1])
             else:
                 As.append([int(v) for v in line.strip().split()])    
-
+                
     for A in As:
-        print(f2sum(A))
+        i,j=f2sum(A)
+        if i>-1:
+            print (i+1,j+1)  #Rosalind used 1-based indices!
+        else:
+            print (i)
 
