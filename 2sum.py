@@ -46,7 +46,7 @@ if __name__=='__main__':
     k = -1
     As=[]
  
-    with open (r'C:\Users\Simon\Downloads\rosalind_2sum(5).txt') as f:    
+    with open (r'data\rosalind_2sum(5).txt') as f:    
         for line in f:
             if k==-1:
                 values=line.strip().split()

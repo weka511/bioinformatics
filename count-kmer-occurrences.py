@@ -47,7 +47,7 @@ dna_pairing={
 # Computer reverse complement
 
 def reverse_complement(string):
- return ''.join([dna_pairing[x] for x in string[::-1]])
+    return ''.join([dna_pairing[x] for x in string[::-1]])
 
 # Find d-neighbours of kmer
 # FIXME: the repeated joins are ugle
