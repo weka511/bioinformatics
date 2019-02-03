@@ -55,7 +55,9 @@ def align(x,
     for f in F:
         print (f)
     t = traceback(F)
-    print (t)
-    
+    for (_,_,x,y) in t:
+        print (x,y)
+    return (F[len(x)+1][len(y)+1],''.join([x for (_,_,x,_) in t]),''.join([y for (_,_,Y,y) in t]))
+
 if __name__=='__main__':
-    align('AGCT','AAGT')
+    print (align('AGCT','AAGT'))
