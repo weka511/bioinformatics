@@ -40,15 +40,30 @@ def align(x,
             F[0][j] = F[0][j-1] + d    
         for i in range(1,len(F)):
             for j in range(1,len(F[0])):
-                F[i][j] = max(F[i-1][j-1] + s[index(x[i-1])][index(y[j-1])],
-                              F[i-1][j] + d,
-                              F[i][j-1] + d,
+                F[i][j] = max(F[i-1][j-1] + s[index(x[i-1])][index(y[j-1])], #match
+                              F[i-1][j] + d,                                 #delete
+                              F[i][j-1] + d,                                 #insert
                               bound)
         return F
 
+    def find_max(F):
+        ii = -1
+        jj = -1
+        m  = -sys.maxsize
+        for i in range(len(F)):
+            for j in range(len(F[0])):
+                if (i>0 or j>0) and  F[i][j]>m:
+                    ii = i
+                    jj = j
+                    m  = F[i][j]
+        print ('find-max',ii,jj,m)
+        return (ii,jj)
+  
+    def find_lower_right(F):
+        return len(F)-1,len(F[0])-1
+    
     def traceback(F):
-        i    = len(F)-1
-        j    = len(F[0])-1
+        i, j = find_lower_right(F)
         path = []
         while True:
             predecessors = []
@@ -85,7 +100,7 @@ def align(x,
     t = traceback(F)
     for (_,_,x,y) in t:
         print (x,y)
-    return (F,t,''.join([x for (_,_,x,_) in t]),''.join([y for (_,_,Y,y) in t]))
+    return (F,t,''.join([x for (_,_,x,_) in t])[::-1],''.join([y for (_,_,Y,y) in t])[::-1])
 
 if __name__=='__main__':
     F,path,s1,s2 = align('AGCT','AAGT')
