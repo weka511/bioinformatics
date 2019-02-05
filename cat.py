@@ -43,10 +43,33 @@ def catalan(n):
         c.append(sum([c[k]*c[n0-1-k] for k in range(n0)]))
     return c[n]
 
+def motzkin(n):
+    s=[1,1]
+    for n0 in range(1,n):
+        s.append(s[-1]+sum([s[k]*s[n0-1-k] for k in range(n0)]))
+        #print (s[-1])
+    return s[n]
+
+# >seq01
+#GCGCCGGCGGCCGCGUACAGUUAACAUUACGAUUAUGAUAAUAGCUUAUCGCUCAUAUGA
+#GCAUCGCCGGGCGCAGUACAUUGCAUGCGCGGUAUUAUAAGCCCAUGAUCUAUAGUGCCG
+#ACCAUGCAUAUAUAUAUUAGCGCGGCGAUCAUCGAUCGCGUACUCUGCAGAGAUUAGAUG
+#CACGCGCUCGAGUGCGCGCACGUGCGCCGACGGCUGCCGGAUAUAUCAUAUAUUAUAGCC
+#CGCGCGCGCGCCAUGGGC
+#
+# expect 412480
+
 def cat(s):
-    return catalan(int(len(s)/2))
+    return motzkin(len(s))
     
 if __name__=='__main__':
 #    print (cat('AUAU')%1000000)
-    for n in range(1,16):
-        print (n,catalan(n))
+    for n in range(2,21):
+        print (n,motzkin(n))
+    #print (cat("GCGCCGGCGGCCGCGUACAGUUAACAUUACGAUUAUGAUAAUAGCUUAUCGCUCAUAUGA"
+               #"GCAUCGCCGGGCGCAGUACAUUGCAUGCGCGGUAUUAUAAGCCCAUGAUCUAUAGUGCCG"
+               #"ACCAUGCAUAUAUAUAUUAGCGCGGCGAUCAUCGAUCGCGUACUCUGCAGAGAUUAGAUG"
+               #"CACGCGCUCGAGUGCGCGCACGUGCGCCGACGGCUGCCGGAUAUAUCAUAUAUUAUAGCC"
+               #"CGCGCGCGCGCCAUGGGC"
+               #)%1000000)
+        
