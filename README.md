@@ -1,7 +1,7 @@
 # Bioinformatics
 
 Code inspired by [Finding Hidden Messages in DNA (Bioinformatics I)](https://class.coursera.org/hiddenmessages-003) and from [Rosalind](http://rosalind.info). 
-NB: functions generally used zero based indexing; Rodalind used 1-based.
+NB: functions generally used zero based indexing; Rosalind uses 1-based.
 
 | Name | Description |
 | -------------------------- | ------------------------------------------------|
