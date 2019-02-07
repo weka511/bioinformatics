@@ -1,7 +1,7 @@
 '''
  Rosalind utilities
 
- Copyright (C) 2017 Greenweaves Software Pty Ltd
+ Copyright (C) 2017 Greenweaves Software Pty Ltd, (c) 2019 Greenweaves Software Limited
 
  This is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -279,8 +279,11 @@ class RosalindException(Exception):
     '''
     pass
 
-def factorial(n):
-    return n*factorial(n-1) if n>1 else 1
+#def factorial(n):
+#    return reduce(operator.mul,range(1,n+1))
+
+# Verify that string contains the same number of As as Us, and the same number of Cs as Gs;
+# hence, that it is possible to match all bases.
 
 def verify_counts_complete_graph(string):
     counts={
