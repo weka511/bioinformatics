@@ -21,8 +21,10 @@ def cc(graph):
     outs       = []
     unexplored = graph[1:]
     count      = 0
-    def explore(i):
+    def explore(i,component):
         nonlocal unexplored, outs
+        if not i in component:
+            component.append(i)
         #print (i)
         outs.append(i)
         reachable = []
@@ -32,35 +34,45 @@ def cc(graph):
             if a == i:
                 if not b in reachable:
                     reachable.append(b)
+                    if not b in component:
+                        component.append(b)                    
             else:
                 residue.append((a,b))
         unexplored = residue
         for b in reachable:
-            explore(b)
-            
-    for i in range(1,12):
+            component= explore(b,component)
+        return component
+ 
+    for i in range(1,m):
         if not i in outs:
  #           print ("top:", i)
-            explore(i)
+            print (explore(i,[]))
             count+=1
     return count
 
 if __name__=='__main__':
-    print(
-        cc([
-            (12, 13),
-            (1, 2),
-            (1, 5),
-            (5, 9),
-            (5, 10),
-            (9, 10),
-            (3, 4),
-            (3, 7),
-            (3, 8),
-            (4, 8),
-            (7, 11),
-            (8, 11),
-            (11, 12),
-            (8, 12)    
-    ]))
+    graph=[]
+    with open(r'C:\Users\Simon\Downloads\rosalind_cc.txt') as f:
+        for line in f:
+            ll =line.strip().split()
+            graph.append((int(ll[0]),int(ll[1])))
+        print (cc(graph))
+        
+    #print(
+        #cc([
+            #(12, 13),
+            #(1, 2),
+            #(1, 5),
+            #(5, 9),
+            #(5, 10),
+            #(9, 10),
+            #(3, 4),
+            #(3, 7),
+            #(3, 8),
+            #(4, 8),
+            #(7, 11),
+            #(8, 11),
+            #(11, 12),
+            #(8, 12)    
+    #]))
     
