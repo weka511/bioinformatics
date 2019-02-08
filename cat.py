@@ -16,6 +16,8 @@
 #    cat 	Catalan Numbers and RNA Secondary Structures 
 
 from rosalind import RosalindException,verify_counts_complete_graph
+from Bio import SeqIO
+import os.path
 
 # 1 2 5 14
 
@@ -60,16 +62,31 @@ def motzkin(n):
 # expect 412480
 
 def cat(s):
-    return motzkin(len(s))
-    
-if __name__=='__main__':
-#    print (cat('AUAU')%1000000)
-    for n in range(2,21):
-        print (n,motzkin(n))
-    #print (cat("GCGCCGGCGGCCGCGUACAGUUAACAUUACGAUUAUGAUAAUAGCUUAUCGCUCAUAUGA"
-               #"GCAUCGCCGGGCGCAGUACAUUGCAUGCGCGGUAUUAUAAGCCCAUGAUCUAUAGUGCCG"
-               #"ACCAUGCAUAUAUAUAUUAGCGCGGCGAUCAUCGAUCGCGUACUCUGCAGAGAUUAGAUG"
-               #"CACGCGCUCGAGUGCGCGCACGUGCGCCGACGGCUGCCGGAUAUAUCAUAUAUUAUAGCC"
-               #"CGCGCGCGCGCCAUGGGC"
-               #)%1000000)
+    return motzkin(int(len(s)/2))
+
+def perfect_matchings(s):
+    matches = {
+        'A':'U',
+        'U':'A',
+        'C':'G',
+        'G':'C'
+    }
+    s = ''.join([c for c in s if c in 'AUCG']) # purge white spaces and other junk
+    for i in range(len(s)):
+        for k in range(i+1,len(s)):
+            for j in range(k+1,len(s)):
+                for l in range(j+1,len(s)):
+                    print (i,k,j,l)
+
+def read_fasta(file,path=r'C:\Users\Simon\Downloads'):
+    with open(os.path.join(path,file),'rU') as handle:
+        for record in SeqIO.parse(handle, "fasta"):
+            return record.seq
         
+if __name__=='__main__':
+    print (cat('AUAU')%1000000)
+   
+    print (cat('CGGCUGCUACGCGUAAGCCGGCUGCUACGCGUAAGC')) # should be 736
+    
+    print(cat(read_fasta('data.fna')))
+
