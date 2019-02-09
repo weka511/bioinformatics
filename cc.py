@@ -15,64 +15,84 @@
 #
 #    cc 	Connected Components
 
-def cc(graph):
-    m,n        = graph[0]
-    components = []
-    outs       = []
-    unexplored = graph[1:]
-    count      = 0
-    def explore(i,component):
-        nonlocal unexplored, outs
-        if not i in component:
-            component.append(i)
-        #print (i)
-        outs.append(i)
-        reachable = []
-        ins       = []
-        residue   = []
-        for a,b in unexplored:
-            if a == i:
-                if not b in reachable:
-                    reachable.append(b)
-                    if not b in component:
-                        component.append(b)                    
-            else:
-                residue.append((a,b))
-        unexplored = residue
-        for b in reachable:
-            component= explore(b,component)
-        return component
+def create_adjacency(graph):
+    m,n      = graph[0]
+    product  = {}
+    for a in range(1,m+1):
+        product[a] = [a]
+    for a0,b0 in graph[1:]:
+        a = min(a0,b0)
+        b = max(a0,b0)
+        product[a].append(b)
+    return product
+
+def cc(graph):          
+    adjacency = create_adjacency(graph)
+  
+    for a,bs in adjacency.items():
+        print (a,bs)
  
-    for i in range(1,m):
-        if not i in outs:
- #           print ("top:", i)
-            print (explore(i,[]))
-            count+=1
-    return count
+    components = {}  # The connected components, with one element as key
+    index      = {}  # Which component does node belong to?
+        
+    for a,bs in adjacency.items():
+        # see whether any elements have been processed before,
+        # is so, use the earlier component
+        a0 = a
+        for b in bs:
+            if b in index:
+                a0 = index[b]
+                break
+        # Add items one by one
+        for b in bs:
+            if not b in index:
+                if not a0 in components:
+                    components[a0] = [a0]
+                if not b in components[a0]:
+                    components[a0].append(b)
+                    index[b] = a0
+
+    # Verify every node in connected or is a singleton
+    singletons=[c for c,d in components.items() if len(d)==1]
+    for s in singletons:
+        bs=adjacency[s]
+        assert len(bs)==1
+        for a,bs in adjacency.items():
+            assert not s in bs or a == s
+            
+    print ('S',len(singletons),singletons)
+    connected = list(set([item for _,d in components.items() if len(d)>1 for item in d]))
+    print ('C',len(connected), connected)
+    sum = set(singletons + connected)
+    assert len(sum) == len(singletons) + len(connected),\
+        "Singletons + connected should span set"
+    
+    for s in singletons:
+        if s in connected:
+            del components[s]
+            assert False, "I think this is redundant"
+            
+    count = 0
+    for c,d in components.items():
+        print (c,d)
+        count +=1
+        
+    return count,components
 
 if __name__=='__main__':
     graph=[]
-    with open(r'C:\Users\Simon\Downloads\rosalind_cc.txt') as f:
+    with open(r'C:\Users\Simon\Downloads\rosalind_cc(5).txt') as f:
         for line in f:
             ll =line.strip().split()
             graph.append((int(ll[0]),int(ll[1])))
-        print (cc(graph))
+        c,_=cc(graph)
+        print (c)
         
-    #print(
-        #cc([
-            #(12, 13),
-            #(1, 2),
-            #(1, 5),
-            #(5, 9),
-            #(5, 10),
-            #(9, 10),
-            #(3, 4),
-            #(3, 7),
-            #(3, 8),
-            #(4, 8),
-            #(7, 11),
-            #(8, 11),
-            #(11, 12),
-            #(8, 12)    
-    #]))
-    
+    #print (len(cc([(10 ,0),
+#(1, 2),
+#(2, 8),
+#(4, 10),
+#(5, 9),
+#(6, 10),
+#(7, 9)
+        #]).keys()))
