@@ -22,6 +22,7 @@ NB: functions generally used zero based indexing; Rosalind uses 1-based.
 | BA8E.py | Implement Hierarchical Clustering |
 | bfs.py  | 	Beadth First search !
 | BINS.py | 	 	Binary Search |
+| cc.py 	Connected Components |
 | CORR.py | 	Error Correction in Reads  | 
 | count-kmer-occurrences.py | Determine number of times each kmer appears in DNA, allowing for reverse complements and d-neighbourhoods |
 | ctbl.py | Creating a Character Table |
