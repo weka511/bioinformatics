@@ -78,7 +78,7 @@ def cc(graph):
 
 if __name__=='__main__':
     graph=[]
-    with open(r'C:\Users\Simon\Downloads\rosalind_cc(12).txt') as f: #132
+    with open(r'C:\Users\Simon\Downloads\rosalind_cc(12).txt') as f:
         for line in f:
             ll =line.strip().split()
             graph.append((int(ll[0]),int(ll[1])))
