@@ -20,73 +20,70 @@ def create_adjacency(graph):
     product  = {}
     for a in range(1,m+1):
         product[a] = [a]
-    for a0,b0 in graph[1:]:
-        a = min(a0,b0)
-        b = max(a0,b0)
-        product[a].append(b)
-    return product
+    for a,b in graph[1:]:
+        product[min(a,b)].append(max(a,b))
+    for a in range(1,m+1):
+        product[a].sort()    
+    return m,n,product
 
+def explore(a,adjacency,explored,component):
+#    print ("Exploring",a)
+    explored.add(a)
+    component.append(a)
+    for b in adjacency[a]:
+        if not b in explored:
+            explore(b,adjacency,explored,component)
+    return sorted(list(set(component)))
+        
 def cc(graph):          
-    adjacency = create_adjacency(graph)
+    m,_,adjacency = create_adjacency(graph)
   
     for a,bs in adjacency.items():
         print (a,bs)
- 
-    components = {}  # The connected components, with one element as key
-    index      = {}  # Which component does node belong to?
-        
-    for a,bs in adjacency.items():
-        # see whether any elements have been processed before,
-        # is so, use the earlier component
-        a0 = a
-        for b in bs:
-            if b in index:
-                a0 = index[b]
-                break
-        # Add items one by one
-        for b in bs:
-            if not b in index:
-                if not a0 in components:
-                    components[a0] = [a0]
-                if not b in components[a0]:
-                    components[a0].append(b)
-                    index[b] = a0
+    explored   = set()
 
-    # Verify every node in connected or is a singleton
-    singletons=[c for c,d in components.items() if len(d)==1]
-    for s in singletons:
-        bs=adjacency[s]
-        assert len(bs)==1
-        for a,bs in adjacency.items():
-            assert not s in bs or a == s
-            
-    print ('S',len(singletons),singletons)
-    connected = list(set([item for _,d in components.items() if len(d)>1 for item in d]))
-    print ('C',len(connected), connected)
-    sum = set(singletons + connected)
-    assert len(sum) == len(singletons) + len(connected),\
-        "Singletons + connected should span set"
-    
-    for s in singletons:
-        if s in connected:
-            del components[s]
-            assert False, "I think this is redundant"
-            
+    components = {}  # The connected components, with one element as key
+    for a,_ in adjacency.items():
+        if not a in explored:
+            component = explore(a,adjacency,explored,[])
+            for c in component:
+                components[c]=component
     count = 0
-    for c,d in components.items():
-        print (c,d)
-        count +=1
-        
-    return count,components
+    uniques = []
+    duplicates = []
+    for k,v in components.items():
+        if k in uniques:
+            duplicates.append(k)
+        else:
+            for vv in v:
+                uniques.append(vv)
+            print(k,v)
+            count+=1
+    for d in duplicates:
+        del components[d]
+   
+    nodes = sorted([v for k,vs in components.items() for v in vs])
+    assert len(nodes) ==m
+    v0=0
+    for v in nodes:
+        assert v == v0+1
+        v0=v
+    return count
 
 if __name__=='__main__':
     graph=[]
-    with open(r'C:\Users\Simon\Downloads\rosalind_cc(5).txt') as f:
+    with open(r'C:\Users\Simon\Downloads\rosalind_cc(8).txt') as f:
         for line in f:
             ll =line.strip().split()
             graph.append((int(ll[0]),int(ll[1])))
-        c,_=cc(graph)
+        c=cc(graph)
         print (c)
+        #ccs=set()
+        #for cc1,cc2 in components.items():
+            #ccs.add(str(cc2))
+        #for cccc in sorted(ccs):
+            #print (cccc)
+        #print (len(ccs))
         
     #print (len(cc([(10 ,0),
 #(1, 2),
