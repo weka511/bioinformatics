@@ -24,7 +24,7 @@ def bip(graph):
     print ('bip')
     def explore(node,adjacency,path,explored):
         #if node in explored: return (False,[])
-        print ('Explore',node,path)
+        #print ('Explore',node,path)
         if node in path:
             if len(path)>=2 and len(path)%2 == 1 and node==path[0]:
                 print ('Odd cycle',path+[node])
@@ -32,8 +32,9 @@ def bip(graph):
         else:
             explored.add(node)
             for next_node in adjacency[node]:
-                (found_odd,odd_cycle) = explore(next_node,adjacency,path+[node],explored)
-                if found_odd: return (found_odd,odd_cycle)
+                if not next_node in explored:
+                    (found_odd,odd_cycle) = explore(next_node,adjacency,path+[node],explored)
+                    if found_odd: return (found_odd,odd_cycle)
  
         return (False,[])
         
@@ -46,14 +47,35 @@ def bip(graph):
     return 1
     
 if __name__=='__main__':
-    graphs = ([
-            [[3, 3],
-             [1, 2],
-             [3, 2],
-             [3, 1]],
+    graphs = []#[[[3, 3],
+               #[1, 2],
+               #[3, 2],
+               #[3, 1]],
         
-            [[4, 3],
-             [1, 4],
-             [3, 1],
-             [1, 2]]])
-    print ([bip(g) for g in graphs])
+              #[[4, 3],
+               #[1, 4],
+               #[3, 1],
+               #[1, 2]]]
+    with open(r'C:\Users\Simon\Downloads\rosalind_bip.txt') as f:
+        graph = []
+        state = 0
+        for line in f:
+            ll =line.strip()
+            if state==0:
+                if len(ll)>0:
+                    state = 1
+                    continue
+            if state==1:
+                if len(ll)==0:
+                    state = 2
+                    graph = []
+                    continue
+            if state == 2:
+                if len(ll)==0:
+                    graphs.append(graph)
+                    graph=[]
+                else:
+                    lll =ll.split()
+                    graph.append((int(lll[0]),int(lll[1])))
+        graphs.append(graph)    
+        print ([bip(g) for g in graphs])
