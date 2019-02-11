@@ -1,8 +1,4 @@
-# $HeadURL: https://server/svn/sandbox/trunk/rosalind/helpers.py $
-# $LastChangedDate: 2016-10-02 09:36:14 +1300 (Sun, 02 Oct 2016) $
-# $LastChangedRevision: 1030 $
-
-# Copyright (C) 2015-2016 Greenweaves Software Pty Ltd
+# Copyright (C) 2015-2019 Greenweaves Software Limited
 
 # This is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -164,6 +160,9 @@ def read_list(file_name):
 def print_adjacency_graph(graph):
     for (a,b) in graph:
         print ('%(a)s -> %(b)s'%locals())
+        
+def format_list(list):
+    return ' '.join([str(l) for l in list])
 
 def print_adjacency_graph2(graph):
     for (a,b) in graph:
