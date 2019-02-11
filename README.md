@@ -27,6 +27,7 @@ NB: functions generally used zero based indexing; Rosalind uses 1-based.
 | CORR.py | 	Error Correction in Reads  | 
 | count-kmer-occurrences.py | Determine number of times each kmer appears in DNA, allowing for reverse complements and d-neighbourhoods |
 | ctbl.py | Creating a Character Table |
+| dag.py | Testing Acyclicity |
 | DBRU.py | 	 	Constructing a De Bruijn Graph |
 | DDEG.py | 	 	Double-Degree Array |
 | DEG.py | 	 	Degree Array |
@@ -34,6 +35,7 @@ NB: functions generally used zero based indexing; Rosalind uses 1-based.
 | GASM.py | 	 	Genome Assembly Using Reads |
 | GBK.py | 	GenBank Introduction |
 | GREP.py | 	 Genome Assembly with Perfect Coverage and Repeats|
+| helpers.py | Utilities for formatting output, parsing input, etc |
 | INS.py | 	 	Insertion Sort |
 | INV.py | 	Counting Inversions (WIP)|
 | kmp.py | Speeding Up Motif Finding |

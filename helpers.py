@@ -164,6 +164,25 @@ def print_adjacency_graph(graph):
 def format_list(list):
     return ' '.join([str(l) for l in list])
 
+# Create adjacency list, with both forward and backward links
+
+def create_adjacency(graph,back=True):
+    m,n       = graph[0]
+    product   = {}
+
+    for a in range(1,m+1):
+        product[a]   = [a]
+        
+    for a,b in graph[1:]:
+        product[a].append(b)
+        if back:
+            product[b].append(a)
+    for a in range(1,m+1):
+        product[a]=sorted(list(set(product[a])))
+
+    return m,n,product
+
+
 def print_adjacency_graph2(graph):
     for (a,b) in graph:
         succ=''
