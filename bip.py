@@ -18,7 +18,6 @@
 # A graph is bipartite if and only if it does not contain an odd cycle
 # https://en.wikipedia.org/wiki/Bipartite_graph#Characterization
 
-from sys import setrecursionlimit
 from helpers import format_list
 from cc import create_adjacency
 
@@ -45,13 +44,13 @@ def bip(graph):
                 
         return False
    
-    m,_,adjacency = create_adjacency(graph,back=False)
-    setrecursionlimit(2*m)
+    m,_,adjacency = create_adjacency(graph,back=True)
+ 
     cycles   = {}
     explored = set()
    
     for node in range(1,m+1):
-        if not node in explored:
+        if True or not node in explored:
             print ("Explore ",node)
             if explore(node,adjacency,[],explored,[]): return -1
     return 1
@@ -59,16 +58,18 @@ def bip(graph):
 
 
 if __name__=='__main__':
-    graphs = []#[[[3, 3],
-               #[1, 2],
-               #[3, 2],
-               #[3, 1]],
+    simple = [[[3, 3],
+               [1, 2],
+               [3, 2],
+               [3, 1]],
         
-              #[[4, 3],
-               #[1, 4],
-               #[3, 1],
-               #[1, 2]]]
-    with open(r'C:\Users\Simon\Downloads\rosalind_bip(2).txt') as f:
+              [[4, 3],
+               [1, 4],
+               [3, 1],
+               [1, 2]]]
+    print (format_list([bip(g) for g in simple]))
+    graphs = []
+    with open(r'C:\Users\Simon\Downloads\rosalind_bip(3).txt') as f:
         graph = []
         state = 0
         for line in f:
@@ -90,8 +91,5 @@ if __name__=='__main__':
                     lll =ll.split()
                     graph.append((int(lll[0]),int(lll[1])))
         graphs.append(graph) 
-        #print ([bip(graphs[0])])
-        #print (len(graphs))
-        #for graph in graphs:
-            #print (graph)
+    
         print (format_list([bip(g) for g in graphs]))
