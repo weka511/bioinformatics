@@ -18,27 +18,24 @@
 # A graph is bipartite if and only if it does not contain an odd cycle
 # https://en.wikipedia.org/wiki/Bipartite_graph#Characterization
 
-import cc, sys
+from sys import setrecursionlimit
+from helpers import format_list
+from cc import create_adjacency
 
 def bip(graph):
-    #print ('bip')
+
     def explore(node,adjacency,path,explored,edges):
-        def seen_before(a,b):
-            for x,y in edges:
-                if x==a and y ==b: return True
-                if x==b and y ==a: return True
-            return False
-        
+         
         #print ('X',node)
         explored.add(node)
         for linked in adjacency[node]:
             if linked==node: continue
             
-            if  seen_before(node,linked): continue
+            if  (node,linked) in edges or (linked,node) in edges: continue
            
             if len(path)>0 and linked==path[0]:
                 cycle = path+[node]
-                found_odd = len(cycle)>2 and len(cycle)%2==1
+                found_odd = len(cycle)%2==1
                 if found_odd:
                     print (cycle)
                 return found_odd
@@ -48,9 +45,9 @@ def bip(graph):
                 
         return False
    
-    m,_,adjacency = cc.create_adjacency(graph)
-    sys.setrecursionlimit(2*m)
-    cycles = {}
+    m,_,adjacency = create_adjacency(graph,back=False)
+    setrecursionlimit(2*m)
+    cycles   = {}
     explored = set()
    
     for node in range(1,m+1):
@@ -58,7 +55,9 @@ def bip(graph):
             print ("Explore ",node)
             if explore(node,adjacency,[],explored,[]): return -1
     return 1
-    
+
+
+
 if __name__=='__main__':
     graphs = []#[[[3, 3],
                #[1, 2],
@@ -69,7 +68,7 @@ if __name__=='__main__':
                #[1, 4],
                #[3, 1],
                #[1, 2]]]
-    with open(r'C:\Users\Simon\Downloads\rosalind_bip(1).txt') as f:
+    with open(r'C:\Users\Simon\Downloads\rosalind_bip(2).txt') as f:
         graph = []
         state = 0
         for line in f:
@@ -95,4 +94,4 @@ if __name__=='__main__':
         #print (len(graphs))
         #for graph in graphs:
             #print (graph)
-        print ([bip(g) for g in graphs])
+        print (format_list([bip(g) for g in graphs]))
