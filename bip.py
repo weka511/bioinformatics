@@ -18,32 +18,45 @@
 # A graph is bipartite if and only if it does not contain an odd cycle
 # https://en.wikipedia.org/wiki/Bipartite_graph#Characterization
 
-import cc
+import cc, sys
 
 def bip(graph):
-    print ('bip')
-    def explore(node,adjacency,path,explored):
-        #if node in explored: return (False,[])
-        #print ('Explore',node,path)
-        if node in path:
-            if len(path)>=2 and len(path)%2 == 1 and node==path[0]:
-                print ('Odd cycle',path+[node])
-                return (True,path+[node])
-        else:
-            explored.add(node)
-            for next_node in adjacency[node]:
-                if not next_node in explored:
-                    (found_odd,odd_cycle) = explore(next_node,adjacency,path+[node],explored)
-                    if found_odd: return (found_odd,odd_cycle)
- 
-        return (False,[])
+    #print ('bip')
+    def explore(node,adjacency,path,explored,edges):
+        def seen_before(a,b):
+            for x,y in edges:
+                if x==a and y ==b: return True
+                if x==b and y ==a: return True
+            return False
         
+        #print ('X',node)
+        explored.add(node)
+        for linked in adjacency[node]:
+            if linked==node: continue
+            
+            if  seen_before(node,linked): continue
+           
+            if len(path)>0 and linked==path[0]:
+                cycle = path+[node]
+                found_odd = len(cycle)>2 and len(cycle)%2==1
+                if found_odd:
+                    print (cycle)
+                return found_odd
+            else:
+                if linked in explored: return False
+                if explore(linked,adjacency,path+[node],explored,edges+[(node,linked)]): return True
+                
+        return False
+   
     m,_,adjacency = cc.create_adjacency(graph)
+    sys.setrecursionlimit(2*m)
     cycles = {}
     explored = set()
+   
     for node in range(1,m+1):
-        found_odd,odd_cycle = explore(node,adjacency,[],explored)
-        if found_odd: return -1
+        if not node in explored:
+            print ("Explore ",node)
+            if explore(node,adjacency,[],explored,[]): return -1
     return 1
     
 if __name__=='__main__':
@@ -56,7 +69,7 @@ if __name__=='__main__':
                #[1, 4],
                #[3, 1],
                #[1, 2]]]
-    with open(r'C:\Users\Simon\Downloads\rosalind_bip.txt') as f:
+    with open(r'C:\Users\Simon\Downloads\rosalind_bip(1).txt') as f:
         graph = []
         state = 0
         for line in f:
@@ -77,5 +90,9 @@ if __name__=='__main__':
                 else:
                     lll =ll.split()
                     graph.append((int(lll[0]),int(lll[1])))
-        graphs.append(graph)    
+        graphs.append(graph) 
+        #print ([bip(graphs[0])])
+        #print (len(graphs))
+        #for graph in graphs:
+            #print (graph)
         print ([bip(g) for g in graphs])
