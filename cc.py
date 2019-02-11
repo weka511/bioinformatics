@@ -17,7 +17,7 @@
 
 # Create adjacency list, with both forward and backward links
 
-def create_adjacency(graph):
+def create_adjacency(graph,back=True):
     m,n       = graph[0]
     product   = {}
 
@@ -26,7 +26,8 @@ def create_adjacency(graph):
         
     for a,b in graph[1:]:
         product[a].append(b)
-        product[b].append(a)
+        if back:
+            product[b].append(a)
     for a in range(1,m+1):
         product[a]=sorted(list(set(product[a])))
 
