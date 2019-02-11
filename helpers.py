@@ -543,3 +543,35 @@ if __name__=='__main__':
     print (Tree.parse('(dog,cat);'))
     print (Tree.parse('(cat)dog;'))
     print (Tree.parse('(dog:20, (elephant:30, horse:60):20):50;'))
+
+
+def parse_graphs(f):
+    product = []        
+    graph   = []
+    state   = 0
+    n       = -1
+    for line in f:
+        ll =line.strip()
+        if state==0:
+            if len(ll)>0:
+                n = int(ll)
+                state = 1
+                continue
+        if state==1:
+            if len(ll)==0:
+                state = 2
+                graph = []
+                continue
+        if state == 2:
+            if len(ll)==0:
+                product.append(graph)
+                graph=[]
+            else:
+                lll =ll.split()
+                graph.append((int(lll[0]),int(lll[1])))
+    product.append(graph) 
+    assert len(product)==n,'{0} {1}'.format(len(product),n)
+    for graph in product:
+        a,b=graph[0]
+        assert len(graph)==b+1,'{0} {1}'.format(len(graph),b)
+    return product

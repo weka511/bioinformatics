@@ -15,8 +15,7 @@
 
 #    dag Testing Acyclicity
 
-from helpers import format_list, create_adjacency
-from bip import parse_graphs
+from helpers import format_list, create_adjacency, parse_graphs
 
 def explore(node,adjacency,explored,path=[]):
     explored.add(node)
