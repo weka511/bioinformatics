@@ -165,18 +165,24 @@ def format_list(list):
     return ' '.join([str(l) for l in list])
 
 # Create adjacency list, with both forward and backward links
+#
+# Inputs:   edges    Edges in graph
+#           back     Indicates whether to create back links (undirected graph)
+#
+# Outputs:  Adjacency list, including loop a->a
 
-def create_adjacency(graph,back=True):
-    m,n       = graph[0]
+def create_adjacency(edges,back=True):
+    m,n       = edges[0]
     product   = {}
 
     for a in range(1,m+1):
         product[a]   = [a]
         
-    for a,b in graph[1:]:
+    for a,b in edges[1:]:
         product[a].append(b)
         if back:
             product[b].append(a)
+            
     for a in range(1,m+1):
         product[a]=sorted(list(set(product[a])))
 

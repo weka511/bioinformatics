@@ -27,7 +27,7 @@ NB: functions generally used zero based indexing; Rosalind uses 1-based.
 | CORR.py | 	Error Correction in Reads  | 
 | count-kmer-occurrences.py | Determine number of times each kmer appears in DNA, allowing for reverse complements and d-neighbourhoods |
 | ctbl.py | Creating a Character Table |
-| dag.py | Testing Acyclicity |
+| dag.py | [Testing Acyclicity](http://rosalind.info/problems/dag/) |
 | DBRU.py | 	 	Constructing a De Bruijn Graph |
 | DDEG.py | 	 	Double-Degree Array |
 | DEG.py | 	 	Degree Array |
