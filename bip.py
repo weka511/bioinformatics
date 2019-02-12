@@ -42,16 +42,14 @@ def bip(graph):
             if  (node,linked) in edges or (linked,node) in edges: continue
            
             if len(edges)>0 and linked==edges[0][0]:   # we have a cycle
-                explored.add(node)
-                edges     = edges + [(node,linked)]
+                edges = edges + [(node,linked)]
                 if len(edges)%2==1:                    # odd cycle
                     print (edges)
-                    return True
+                    return True,edges
             else:
                 if linked in explored:                 # we've already seen this link
                     explored.add(node)
-                    continue
-                if explore(linked,edges+[(node,linked)]): # add this link and continue
+                elif explore(linked,edges+[(node,linked)]): # add this link and continue
                     return True
         explored.add(node)        
         return False
@@ -61,8 +59,10 @@ def bip(graph):
     explored = set()
    
     for node in range(1,m+1):
-        if  len(adjacency[node])>1:
-            if explore(node,[]): return -1
+        if  len(adjacency[node])>1 and explore(node,[]):
+                return -1
+  
+    assert len([a for a in range(1,m+1) if not a in explored and len(adjacency[a])>1])==0,'Unprocessed elements!'
  
     return 1
 
@@ -82,6 +82,6 @@ if __name__=='__main__':
                [1, 2]]]
     print (format_list([bip(g) for g in simple]))
     sys.setrecursionlimit(2000)
-    with open(r'C:\Users\Simon\Downloads\rosalind_bip(10).txt') as f:
+    with open(r'C:\Users\Simon\Downloads\rosalind_bip(11).txt') as f:
         print (format_list([bip(g) for g in parse_graphs(f)]))
  
