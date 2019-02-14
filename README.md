@@ -39,6 +39,7 @@ NB: functions generally used zero based indexing; Rosalind uses 1-based.
 | INS.py | 	 	Insertion Sort |
 | INV.py | 	Counting Inversions (WIP)|
 | kmp.py | Speeding Up Motif Finding |
+| lcsq.py | 	[Finding a Shared Spliced Motif](http://rosalind.info/problems/lcsq/) |
 | LICENSE |	License Agreement|
 | LONG.py | 	Genome Assembly as Shortest Superstring |
 | maj.py |  [Majority Element](http://rosalind.info/problems/maj/) ||
