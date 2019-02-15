@@ -26,13 +26,13 @@ NB: functions generally used zero based indexing; Rosalind uses 1-based.
 | cc.py |	[Connected Components](http://rosalind.info/problems/cc/) |
 | CORR.py | 	Error Correction in Reads  | 
 | count-kmer-occurrences.py | Determine number of times each kmer appears in DNA, allowing for reverse complements and d-neighbourhoods |
-| ctbl.py | Creating a Character Table |
+| ctbl.py | [Creating a Character Table](http://rosalind.info/problems/ctbl/)  |
 | dag.py | [Testing Acyclicity](http://rosalind.info/problems/dag/) |
-| DBRU.py | 	 	Constructing a De Bruijn Graph |
-| DDEG.py | 	 	Double-Degree Array |
-| DEG.py | 	 	Degree Array |
-| FRMT.py | 	Data Formats|
-| GASM.py | 	 	Genome Assembly Using Reads |
+| DBRU.py |	[Constructing a De Bruijn Graph](http://rosalind.info/problems/ctbl/) |
+| DDEG.py | 	[Double-Degree Array](http://rosalind.info/problems/ddeg/) |
+| DEG.py | 	 	[Degree Array](http://rosalind.info/problems/deg/) |
+| FRMT.py | 	[Data Formats](http://rosalind.info/problems/frmt/)|
+| GASM.py | 	 	[Genome Assembly Using Reads](http://rosalind.info/problems/gasm/) |
 | GBK.py | 	GenBank Introduction |
 | GREP.py | 	 Genome Assembly with Perfect Coverage and Repeats|
 | helpers.py | Utilities for formatting output, parsing input, etc |
