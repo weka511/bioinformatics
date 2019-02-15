@@ -31,14 +31,15 @@ def lcsq_dp(s,t):
         j = len(t)-1
         seq = []
         while True:
-            if lcs[i][j-1] == lcs[i][j]: j -= 1
-            elif lcs[i-1][j] == lcs[i][j]: i -= 1
+            if get_lcs(i,j-1) == get_lcs(i,j): j -= 1
+            elif get_lcs(i-1,j) == get_lcs(i,j): i -= 1
             else:
                 assert s[i]==t[j]
                 seq.append(s[i])
                 i -= 1
                 j -= 1
-            if i<0 or j<0:
+            if  get_lcs(i,j)==0:
+                print (i,j)
                 return seq[::-1]
     populate()
     return extract()
@@ -65,7 +66,8 @@ def lcsq(s,t):
     return ''.join(lcsq_dp([s0 for s0 in s], [t0 for t0 in t]))
     
 if __name__=='__main__':
+    print (lcsq('GTTCCTAATA','CGATAATTGAGA'))
     print (lcsq('AACCTTGG','ACACTGTGA'))
     
-    #print (lcsq_dp(['A','B','A','Z','D','C'],['B','A','C','B','A','D']))
+    print (lcsq_dp(['A','B','A','Z','D','C'],['B','A','C','B','A','D']))
 
