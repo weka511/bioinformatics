@@ -31,6 +31,7 @@ NB: functions generally used zero based indexing; Rosalind uses 1-based.
 | DBRU.py |	[Constructing a De Bruijn Graph](http://rosalind.info/problems/ctbl/) |
 | DDEG.py | 	[Double-Degree Array](http://rosalind.info/problems/ddeg/) |
 | DEG.py | 	 	[Degree Array](http://rosalind.info/problems/deg/) |
+|EDIT |	[Edit Distance](http://rosalind.info/problems/edit/) |
 | FRMT.py | 	[Data Formats](http://rosalind.info/problems/frmt/)|
 | GASM.py | 	 	[Genome Assembly Using Reads](http://rosalind.info/problems/gasm/) |
 | GBK.py | 	GenBank Introduction |
