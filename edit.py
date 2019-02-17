@@ -15,7 +15,7 @@
 #
 # EDIT 	Edit Distance 
 
-def edit(s,t,indel_cost=1,replace_cost=lambda a,b: 1):
+def edit(s,t,indel_cost=1,replace_cost=lambda a,b: 1,show_matrix=False):
     
     def dynamic_programming(s,t):
         matrix=[[0 for j in range(len(t)+1)] for i in range(len(s)+1)]
@@ -28,46 +28,26 @@ def edit(s,t,indel_cost=1,replace_cost=lambda a,b: 1):
         for i in range(1,len(s)+1):
             for j in range(1,len(t)+1):
                 matrix[i][j] = min(
-                    matrix[i-1][j] + indel_cost,
-                    matrix[i][j-1] + indel_cost,
+                    matrix[i-1][j]   + indel_cost,
+                    matrix[i][j-1]   + indel_cost,
                     matrix[i-1][j-1] + (0 if s[i-1]==t[j-1] else replace_cost(s[i-1],t[j-1])))
                     
-        #for i in range(0,len(s)+1):
-            #ii = len(matrix)-i-1
-            #print (s[ii] if i>0 else '#',matrix[ii])
-        #print (' ',['#']+t)
+        if show_matrix:
+            for i in range(0,len(s)+1):
+                ii = len(matrix)-i-1
+                print (s[ii] if i>0 else '#',matrix[ii])
+            print (' ',['#']+t)
         
         return matrix[len(s)][len(t)]
             
     return dynamic_programming([s0 for s0 in s], [t0 for t0 in t])
 
 if __name__=='__main__':
-    #print (edit('PLEASANTLY','MEANLY'))
-    #print (edit('INTENTION','EXECUTION',replace_cost=lambda a,b:2))
-    print (edit(
-        'KNYAKSHGPWWEHEKYPTHFNHDVYHEDETEVDEYYITRPMNWFFRSWTNESMTFTSKWC'
-        'CHSHGGVEAKGKAMPCPETRMHGDNFGEARMKTGLTYWTMHQASSENPGKITFSNHCLPL'
-        'DQVFSVVVGYPTKLPYYWEHDNMHWGIGAWTEMNIVDQEAAQCPQGFANLGIHAYVGPGF'
-        'RRIGMYVVNMPWPYPMSPQEHINHWVQFHRGKADGYQPICIAPKNEHFCACTGNDYAMYV'
-        'GHDKLPSVTNLSFNDWMYWVLSERYTCCPPGEANKQKDREIKVPASSLIFIVMYWVSWDA'
-        'NKKYCNYEHAGRYTNPPEWTCEEHTNIYGEAYRLDHSEDFSSMWVMHCDVEHWLEPPIYW'
-        'PEAKHVLHLCCNSQSVAAEELMIFVQAHSVFARRGHLGVNLIKVGGPTMYEKCWWHTQGI'
-        'HDCKAEKMYTREAFHSRNQWQNVQSAGCTCFLERPWSLNYLDPSVIYQPKWFSVWGAETG'
-        'RYTSYWIPTREIYEYMGSEIEWIHAGHLEISNVNVNISFPPIIHVMPAEEVHMEVKVQLF'
-        'CEEQPKWMVATYGGNRSTNYEICLVGTYLAWPQRYPILPIKFQTGRATDDDTEWGRLWNM'
-        'EESTWASRNFMSMADLMAQRFGFENGYNFDPVKSFEKYYECKVTIYQCAKAHWAAHSKFT'
-        'DNNLWSKDNLKKGYQMTSGANISRFNPMIP',
-        'KNYAKSHGETEKYPTHFNHDVVHEDETEVDEYYITRPMNWFCRSWTNSMTFTPKWCGTTL'
-        'VCNFNIVCKFYYTYNRAYCYGKNWHQVTSTDNSDFTMKNFTITNTLDNSLIYSSWGAWID'
-        'NIDCMFARGKAMPCPETRMHGKTGLTYWTMGQASSENQLGSFHALKSTFSNHCLVLDQVF'
-        'SVVVGYDTYQFTKLPYYWEHDNMHWGIGAWTEMAQCPTNFANLGIHVYVMSGFRRIGMYV'
-        'VNMQWPYPMSPYEHINHWVQFHRPIMIAPKNEHCIAMYVGLPHVTLCYLSFNGERNKGKD'
-        'RFGKVPHSSRIFIVNAAPRNQYWVAWDYIIFKAYCNYEHAGRCQMTNFPEWTCEEHTNVF'
-        'GEAYRLDHSEDFSSMWVMHCDVEHHLEPPIYWLEAKHSLKQPSHAFLPLSTPVYNCNSWV'
-        'TTMSVFAELQIELIFVQSRGHKVGGPTMYFKCWRWQPMGIWLQVGQGIHDCKAPCFKMYT'
-        'REAFHSRNQWQNQMGDPAASERKWSLNYLDPFVIQLRYYVKAQPMWHHDEVLRTVWGVET'
-        'GRYTSYTCFNSQREMIPTREIDCVFNHYEYMGSEIEWIAAGHAISPDFGTWNVHMEVKVQ'
-        'LFCEEQPKMMRLGGGIGHCLVGTSLAVPMRSNVSGDCLPILPIKFQTGELPEWQQWEWRL'
-        'WNMEASMRNFMSMADCQSAYYWMTSNGYNYDPVKSFEKHYECKVVIYQCAKAHWAAHSSY'
-        'NHCSMYSPVQKTDNNLWSDDNLKKGYQMTSGANIIASHMDCLRMERQEQGPTYMIP'
-    ))
+    from Bio import SeqIO
+    inFile = open(r'C:\Users\Simon\Downloads\rosalind_edit(2).txt','r')
+    strings = []
+    for record in SeqIO.parse(inFile,'fasta'):
+        print (record.id)
+        print (str(record.seq))
+        strings.append(str(record.seq))
+    print(edit(strings[0],strings[1]))
