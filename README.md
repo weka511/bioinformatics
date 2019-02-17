@@ -34,17 +34,17 @@ NB: functions generally used zero based indexing; Rosalind uses 1-based.
 |EDIT |	[Edit Distance](http://rosalind.info/problems/edit/) |
 | FRMT.py | 	[Data Formats](http://rosalind.info/problems/frmt/)|
 | GASM.py | 	 	[Genome Assembly Using Reads](http://rosalind.info/problems/gasm/) |
-| GBK.py | 	GenBank Introduction |
-| GREP.py | 	 Genome Assembly with Perfect Coverage and Repeats|
+| GBK.py | 	[GenBank Introduction](http://rosalind.info/problems/gbk/) |
+| GREP.py | 	 [Genome Assembly with Perfect Coverage and Repeats](http://rosalind.info/problems/grep/)|
 | helpers.py | Utilities for formatting output, parsing input, etc |
-| INS.py | 	 	Insertion Sort |
-| INV.py | 	Counting Inversions (WIP)|
-| kmp.py | Speeding Up Motif Finding |
+| INS.py | 	 	[Insertion Sort](http://rosalind.info/problems/ins/) |
+| INV.py | 	[Counting Inversions](http://rosalind.info/problems/inv/) (WIP)|
+| kmp.py | [Speeding Up Motif Finding](http://rosalind.info/problems/kmp/) |
 | lcsq.py | 	[Finding a Shared Spliced Motif](http://rosalind.info/problems/lcsq/) |
 | LICENSE |	License Agreement|
-| LONG.py | 	Genome Assembly as Shortest Superstring |
+| LONG.py | 	[Genome Assembly as Shortest Superstring]() |
 | maj.py |  [Majority Element](http://rosalind.info/problems/maj/) ||
-| MED.py | 	Median|
+| MED.py | 	[Median](http://rosalind.info/problems/med/)|
 | mend.py | 	 Inferring a Genotype from a Pedigree |
 | MER.py |  	Merge Two Sorted Arrays |
 | MS.py | 	Mergesort|
