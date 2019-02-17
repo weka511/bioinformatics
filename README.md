@@ -42,21 +42,21 @@ NB: functions generally used zero based indexing; Rosalind uses 1-based.
 | kmp.py | [Speeding Up Motif Finding](http://rosalind.info/problems/kmp/) |
 | lcsq.py | 	[Finding a Shared Spliced Motif](http://rosalind.info/problems/lcsq/) |
 | LICENSE |	License Agreement|
-| LONG.py | 	[Genome Assembly as Shortest Superstring]() |
+| LONG.py | 	[Genome Assembly as Shortest Superstring](http://rosalind.info/problems/long/) |
 | maj.py |  [Majority Element](http://rosalind.info/problems/maj/) ||
 | MED.py | 	[Median](http://rosalind.info/problems/med/)|
-| mend.py | 	 Inferring a Genotype from a Pedigree |
-| MER.py |  	Merge Two Sorted Arrays |
-| MS.py | 	Mergesort|
-| newick.py | 	 | Parser for files in Newick format |
-| nwck.py | 	Distances in Trees |
-| PAR.py | 	 	2-Way Partition |
-| PAR3.py | 	 	3-Way Partition |
-| PCOV.py | 	 Genome Assembly with Perfect Coverage |
-| pmch.py| 	Perfect Matchings and RNA Secondary Structures |
-| PTRA.py | 	 	Protein Translation |
-| QS.py | 	Quicksort|
+| mend.py | 	 [Inferring a Genotype from a Pedigree](http://rosalind.info/problems/mend/) |
+| MER.py |  	[Merge Two Sorted Arrays](http://rosalind.info/problems/mer/) |
+| MS.py | 	[Mergesort](http://rosalind.info/problems/ms/)|
+| newick.py 	 | Parser for files in Newick format |
+| nwck.py | 	[Distances in Trees](http://rosalind.info/problems/nwck/) |
+| PAR.py | 	 [2-Way Partition](http://rosalind.info/problems/par/) |
+| PAR3.py | 	 [3-Way Partition](http://rosalind.info/problems/par3/) |
+| PCOV.py | 	 [Genome Assembly with Perfect Coverage](http://rosalind.info/problems/pcov/) |
+| pmch.py| 	[Perfect Matchings and RNA Secondary Structures](http://rosalind.info/problems/pmch/) |
+| PTRA.py | 	 [Protein Translation](http://rosalind.info/problems/ptra/) |
+| QS.py | 	[Quicksort](http://rosalind.info/problems/qs/)|
 | README.md 	|This file|
-| rear.py | Reversal distance |
+| rear.py | [Reversal distance](http://rosalind.info/problems/rear/) |
 | rosalind.py | 	Shared code|
 | rosalind.wpr | 	WingWare Project File |
