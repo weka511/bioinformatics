@@ -18,35 +18,32 @@
 # See http://www.cs.cmu.edu/afs/cs/academic/class/15451-s15/LectureNotes/lecture04.pdf, and
 # https://www.ics.uci.edu/~goodrich/teach/cs260P/notes/LCS.pdf
 
-def lcsq(s,t):
-    def dynamic_programming(s,t):
-        lcs=[[0 for j in t] for i in s]
-        def get_lcs(i,j):
-            return lcs[i][j] if i>=0 and j>=0 else 0
-        def populate():
-            for i in range(len(s)):
-                for j in range(len(t)):
-                    lcs[i][j] = (get_lcs(i-1,j-1) + 1) if s[i]==t[j] else max(get_lcs(i-1,j), get_lcs(i,j-1))
-                
-        def extract():        
-            i = len(s)-1
-            j = len(t)-1
-            seq = []
-            while True:
-                if get_lcs(i,j-1) == get_lcs(i,j): j -= 1
-                elif get_lcs(i-1,j) == get_lcs(i,j): i -= 1
-                else:
-                    assert s[i]==t[j]
-                    seq.append(s[i])
-                    i -= 1
-                    j -= 1
-                if  get_lcs(i,j)==0:
-                    return seq[::-1]
-        populate()
-        return extract()
+def dynamic(s,t,extract):
+    matrix=[[0 for j in t] for i in s]
+    def get_matrix(i,j):
+        return matrix[i][j] if i>=0 and j>=0 else 0            
+    for i in range(len(s)):
+        for j in range(len(t)):
+            matrix[i][j] = (get_matrix(i-1,j-1) + 1) if s[i]==t[j] else max(get_matrix(i-1,j), get_matrix(i,j-1))
+    return extract(s,t,get_matrix)
       
-    return ''.join(dynamic_programming([s0 for s0 in s], [t0 for t0 in t]))
-    
+def lcsq(s,t):
+    def extract(s,t,get_matrix):        
+        i = len(s)-1
+        j = len(t)-1
+        seq = []
+        while True:
+            if get_matrix(i,j-1) == get_matrix(i,j): j -= 1
+            elif get_matrix(i-1,j) == get_matrix(i,j): i -= 1
+            else:
+                assert s[i]==t[j]
+                seq.append(s[i])
+                i -= 1
+                j -= 1
+            if  get_matrix(i,j)==0:
+                return seq[::-1]    
+    return ''.join(dynamic([s0 for s0 in s], [t0 for t0 in t],extract))
+
 if __name__=='__main__':
     print (lcsq('GATTCAGAGAATGTTTTCGTAAGCTGTAATTCGGTTTGTATTTGCAACGAACGATTGACA'
                 'GAAAGAGGGATATAACGGCAGACGTACGGAAAGAACTCGAGCCATGCCATCATACGAACT'
