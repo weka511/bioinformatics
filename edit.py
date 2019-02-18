@@ -13,7 +13,7 @@
 #    You should have received a copy of the GNU General Public License
 #    along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>
 #
-# EDIT 	Edit Distance 
+# EDIT 	Edit Distance http://rosalind.info/problems/edit/
 
 def edit(s,t,indel_cost=1,replace_cost=lambda a,b: 1,show_matrix=False):
     
@@ -38,7 +38,7 @@ def edit(s,t,indel_cost=1,replace_cost=lambda a,b: 1,show_matrix=False):
                 print (s[ii] if i>0 else '#',matrix[ii])
             print (' ',['#']+t)
         
-        return matrix[len(s)][len(t)]
+        return matrix[len(s)][len(t)],matrix
             
     return dynamic_programming([s0 for s0 in s], [t0 for t0 in t])
 
@@ -50,12 +50,14 @@ if __name__=='__main__':
         #print (record.id)
         #print (str(record.seq))
         #strings.append(str(record.seq))
-    #print(edit(strings[0],strings[1]))
+        #d,_=edit(strings[0],strings[1])
+        #print(d)
     with open(r'C:\Users\Simon\Downloads\rosalind_ba5g(2).txt','r') as f:
         strings = []
         for line in f:
             strings.append(line.strip())
             print (line.strip())
-        print(edit(strings[0],strings[1]))
+        d,_=edit(strings[0],strings[1])
+        print(d)
             
         
