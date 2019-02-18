@@ -7,6 +7,17 @@ NB: functions generally used zero based indexing; Rosalind uses 1-based.
 
 | # | Location | Description |
 | ---- | -------------------------- | ------------------------------------------------|
+|BA1A|rosalind-old.py|	[Find the Most Frequent Words in a String](http://rosalind.info/problems/ba1a/) |
+|BA1D|rosalind-old.py|	[Find All Occurrences of a Pattern in a String](http://rosalind.info/problems/ba1d/) |
+|BA1E|rosalind-old.py|	[Find Patterns Forming Clumps in a String](http://rosalind.info/problems/ba1e/) |
+|BA1F|rosalind-old.py|	[Find a Position in a Genome Minimizing the Skew](http://rosalind.info/problems/ba1f/) |
+|BA1H|rosalind-old.py|	[Find All Approximate Occurrences of a Pattern in a String](http://rosalind.info/problems/ba1h/) |
+ |BA1I|rosalind-old.py|	[Find the Most Frequent Words with Mismatches in a String](http://rosalind.info/problems/ba1i/) |
+|BA1J|rosalind-old.py|	[Find Frequent Words with Mismatches and Reverse Complements](http://rosalind.info/problems/ba1j/) |
+ |BA1K|rosalind-old.py|	[Generate the Frequency Array of a Strings](http://rosalind.info/problems/ba1f/) |
+ |BA1L|rosalind-old.py|	[Implement PatternToNumber](http://rosalind.info/problems/ba1l/) |
+ |BA1M|rosalind-old.py|	[Implement NumberToPattern](http://rosalind.info/problems/ba1m/) |
+ |BA1N	|rosalind-old.py|[Generate the d-Neighborhood of a String](http://rosalind.info/problems/ba1n/) |
 | BA4M| ba4m.py |   [Solve the Turnpike Problem](http://rosalind.info/problems/ba4m/)  |
 |BA5A|rosalind-old.py|[Find the Minimum Number of Coins Needed to Make Change](http://rosalind.info/problems/ba5a/)|
 |BA5B|rosalind-old.py|[Find the Length of a Longest Path in a Manhattan-like Grid](http://rosalind.info/problems/ba5b/)|
@@ -43,7 +54,7 @@ NB: functions generally used zero based indexing; Rosalind uses 1-based.
 | CORR.py | [Error Correction in Reads](http://rosalind.info/problems/corr/)  | 
 | ctbl.py | [Creating a Character Table](http://rosalind.info/problems/ctbl/)  |
 | dag.py | [Testing Acyclicity](http://rosalind.info/problems/dag/) |
-| DBRU.py |	[Constructing a De Bruijn Graph](http://rosalind.info/problems/ctbl/) |
+| DBRU.py |	[Constructing a De Bruijn Graph](http://rosalind.info/problems/dbru/) |
 | DDEG.py | 	[Double-Degree Array](http://rosalind.info/problems/ddeg/) |
 | DEG.py | 	 	[Degree Array](http://rosalind.info/problems/deg/) |
 |edit.py |	[Edit Distance](http://rosalind.info/problems/edit/) |
