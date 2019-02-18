@@ -49,9 +49,9 @@ if __name__=='__main__':
     #for record in SeqIO.parse(inFile,'fasta'):
         #print (record.id)
         #print (str(record.seq))
-        #strings.append(str(record.seq))
-        #d,_=edit(strings[0],strings[1])
-        #print(d)
+    #strings.append(str(record.seq))
+    #d,_=edit(strings[0],strings[1])
+    #print(d)
     with open(r'C:\Users\Simon\Downloads\rosalind_ba5g(2).txt','r') as f:
         strings = []
         for line in f:

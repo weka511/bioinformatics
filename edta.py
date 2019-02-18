@@ -43,4 +43,15 @@ def edta(s,t,indel_cost=1,replace_cost=lambda a,b: 1):
     return (d,s1,t1)
 
 if __name__=='__main__':
-    print (edta('PRETTY','PRTTEIN'))
+    #print (edta('PRETTY','PRTTEIN'))
+    from Bio import SeqIO
+    inFile = open(r'C:\Users\Simon\Downloads\rosalind_edta.txt','r')
+    strings = []
+    for record in SeqIO.parse(inFile,'fasta'):
+        print (record.id)
+        print (str(record.seq))
+        strings.append(str(record.seq))
+    d,s,t=edta(strings[0],strings[1])
+    print(d)
+    print (s)
+    print (t)
