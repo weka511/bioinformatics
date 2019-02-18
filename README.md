@@ -6,25 +6,25 @@ NB: functions generally used zero based indexing; Rosalind uses 1-based.
 | Name | Description |
 | -------------------------- | ------------------------------------------------|
 | 2sum.py | [2SUM](http://rosalind.info/problems/2sum/) |
-| ASMQ.py | 	Assessing Assembly Quality with N50 and N75 |
-| BA4M.py |   Solve the Turnpike Problem  |
-| BA7A.py | Compute Distances Between Leaves |
-| BA7B.py | Limb Length Problem |
-| BA7C.py | Implement Additive Phylogeny |
-| BA7D.py |  Implement UPGMA |
-| BA7E.py | Implement the Neighbor Joining Algorithm |
-| BA7F.py | Implement SmallParsimony |
-| BA7G.py | Adapt SmallParsimony to Unrooted Trees |
-| BA8A.py | 	Implement FarthestFirstTraversal |
-| BA8B.py | 	Compute the Squared Error Distortion |
-| BA8C.py | Implement the Lloyd Algorithm for k-Means Clustering  |
-| BA8D.py | 	Implement the Soft k-Means Clustering Algorithm |
-| BA8E.py | Implement Hierarchical Clustering |
-| bfs.py  | 	Beadth First search |
+| ASMQ.py | 	[Assessing Assembly Quality with N50 and N75](http://rosalind.info/problems/asmq/) |
+| BA4M.py |   [Solve the Turnpike Problem](http://rosalind.info/problems/ba4m/)  |
+| BA7A.py | [Compute Distances Between Leaves](http://rosalind.info/problems/ba7a/) |
+| BA7B.py | [Limb Length Problem](http://rosalind.info/problems/ba7b/) |
+| BA7C.py | [Implement Additive Phylogeny](http://rosalind.info/problems/ba7c/) |
+| BA7D.py |  [Implement UPGMA](http://rosalind.info/problems/ba7d/) |
+| BA7E.py | [Implement the Neighbor Joining Algorithm](http://rosalind.info/problems/ba7e/) |
+| BA7F.py | [Implement SmallParsimony](http://rosalind.info/problems/ba7f/) |
+| BA7G.py | [Adapt SmallParsimony to Unrooted Trees](http://rosalind.info/problems/ba7g/) |
+| BA8A.py | [Implement FarthestFirstTraversal](http://rosalind.info/problems/ba8a/) |
+| BA8B.py | [Compute the Squared Error Distortion](http://rosalind.info/problems/ba7b/) |
+| BA8C.py | [Implement the Lloyd Algorithm for k-Means Clustering](http://rosalind.info/problems/ba8c/)  |
+| BA8D.py | [Implement the Soft k-Means Clustering Algorithm](http://rosalind.info/problems/ba8d/) |
+| BA8E.py | [Implement Hierarchical Clustering](http://rosalind.info/problems/ba8e/) |
+| bfs.py  | [Beadth First search](http://rosalind.info/problems/bfs/) |
 | bip.py | [Testing Bipartiteness](http://rosalind.info/problems/bip/)|
-| BINS.py | 	 	Binary Search |
+| BINS.py | [Binary Search](http://rosalind.info/problems/bfs/) |
 | cc.py |	[Connected Components](http://rosalind.info/problems/cc/) |
-| CORR.py | 	Error Correction in Reads  | 
+| CORR.py | [Error Correction in Reads](http://rosalind.info/problems/corr/)  | 
 | count-kmer-occurrences.py | Determine number of times each kmer appears in DNA, allowing for reverse complements and d-neighbourhoods |
 | ctbl.py | [Creating a Character Table](http://rosalind.info/problems/ctbl/)  |
 | dag.py | [Testing Acyclicity](http://rosalind.info/problems/dag/) |
