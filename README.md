@@ -8,12 +8,12 @@ NB: functions generally used zero based indexing; Rosalind uses 1-based.
 | # | Location | Description |
 | ---- | -------------------------- | ------------------------------------------------|
 | BA4M| ba4m.py |   [Solve the Turnpike Problem](http://rosalind.info/problems/ba4m/)  |
-|BA5A|rosalind-old.py|[Compute the Edit Distance Between Two Strings](http://rosalind.info/problems/ba5a/)|
-|BA5B|rosalind-old.py|[Compute the Edit Distance Between Two Strings](http://rosalind.info/problems/ba5b/)|
-|BA5C|rosalind-old.py|[Compute the Edit Distance Between Two Strings](http://rosalind.info/problems/ba5c/)|
-|BA5D|rosalind-old.py|[Compute the Edit Distance Between Two Strings](http://rosalind.info/problems/ba5d/)|
-|BA5E|rosalind-old.py|[Compute the Edit Distance Between Two Strings](http://rosalind.info/problems/ba5e/)|
-|BA5F|rosalind-old.py|[Compute the Edit Distance Between Two Strings](http://rosalind.info/problems/ba5f/)|
+|BA5A|rosalind-old.py|[Find the Minimum Number of Coins Needed to Make Change](http://rosalind.info/problems/ba5a/)|
+|BA5B|rosalind-old.py|[Find the Length of a Longest Path in a Manhattan-like Grid](http://rosalind.info/problems/ba5b/)|
+|BA5C|rosalind-old.py|[Find a Longest Common Subsequence of Two Strings](http://rosalind.info/problems/ba5c/)|
+|BA5D|rosalind-old.py|[Find the Longest Path in a DAG](http://rosalind.info/problems/ba5d/)|
+|BA5E|rosalind-old.py|[Find a Highest-Scoring Alignment of Two Strings](http://rosalind.info/problems/ba5e/)|
+|BA5F|rosalind-old.py|[Find a Highest-Scoring Local Alignment of Two Strings](http://rosalind.info/problems/ba5f/)|
 | BA5G | edit.py | [Compute the Edit Distance Between Two Strings](http://rosalind.info/problems/ba5g/) |
 | BA7A | .py | [Compute Distances Between Leaves](http://rosalind.info/problems/ba7a/) |
 | BA7B |.py | [Limb Length Problem](http://rosalind.info/problems/ba7b/) |
