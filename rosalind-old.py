@@ -2132,25 +2132,32 @@ def convolution_expanded(spectrum):
 # Input: An integer money and an array Coins of positive integers.
 #
 # Return: The minimum number of coins with denominations Coins that changes money.
+#
+# http://rosalind.info/problems/ba5a/
+
 def number_of_coins(money,coins):
-    number=[0]
-    for m in range(1,money+1):
-        nn=sys.float_info.max
-        for coin in coins:
+    number = [0]                           # We will use Dynamic Programming, and solve 
+                                           # the problem for each amount up to and including money
+    for m in range(1,money+1):             # solve for m
+        nn = sys.float_info.max            # Number of coins: assume that we haven't solved
+        for coin in coins:                 # Find a coin such that we can make change using it
+                                           # plus a previoudly comuted value
             if m>=coin:
                 if number[m-coin]+1<nn:
-                    nn=number[m-coin]+1
+                    nn = number[m-coin]+1
         number.append(nn)
     return number[money]
 
 # BA5B 	Find the Length of a Longest Path in a Manhattan-like Grid 
 #
-# Input: Integers n and m, followed by an n × (m+1) matrix Down and an
-# (n+1) × m matrix Right. The two matrices are separated by the "-" symbol.
+# Input: Integers n and m, followed by an n*(m+1) matrix Down and an
+#        (n+1)*m matrix Right. The two matrices are separated by the "-" symbol.
 #
 # Return: The length of a longest path from source (0, 0) to sink (n, m)
-# in the n × m rectangular grid whose edges are defined by the matrices
-# Down and Right.
+#        in the n*m rectangular grid whose edges are defined by the matrices
+#        Down and Right.
+#
+# http://rosalind.info/problems/ba5a/
 
 def longest_manhattan_path(n,m,down,right):
     s=[]
@@ -2174,6 +2181,8 @@ def longest_manhattan_path(n,m,down,right):
 # Input: Two strings.
 #
 # Return: A longest common subsequence of these strings.
+#
+# http://rosalind.info/problems/ba5a/
 
 def longest_common_subsequence(string1,string2):
 
@@ -2233,6 +2242,16 @@ def longest_common_subsequence(string1,string2):
     return construct_string(longest_path())
 
 # BA5D 	Find the Longest Path in a DAG  	
+#
+# Input: An integer representing the source node of a graph, followed by an integer
+#        representing the sink node of the graph, followed by an edge-weighted graph. 
+#        The graph is represented by a modified adjacency list in which the notation "0->1:7"
+#        indicates that an edge connects node 0 to node 1 with weight 7.
+#
+# Return: The length of a longest path in the graph, followed by a longest path. 
+#         (If multiple longest paths exist, you may return any one.)
+#
+# http://rosalind.info/problems/ba5d/
 
 def longest_path(source,sink,graph):
     def initialize_s():
