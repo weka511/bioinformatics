@@ -36,7 +36,6 @@ NB: functions generally used zero based indexing; Rosalind uses 1-based.
 | -------------------------- | ------------------------------------------------|
 | 2sum.py | [2SUM](http://rosalind.info/problems/2sum/) |
 | ASMQ.py | 	[Assessing Assembly Quality with N50 and N75](http://rosalind.info/problems/asmq/) |
-
 | bfs.py  | [Beadth First search](http://rosalind.info/problems/bfs/) |
 | bip.py | [Testing Bipartiteness](http://rosalind.info/problems/bip/)|
 | BINS.py | [Binary Search](http://rosalind.info/problems/bfs/) |
