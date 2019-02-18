@@ -87,5 +87,5 @@ NB: functions generally used zero based indexing; Rosalind uses 1-based.
 ## Other stuff
 
 | Name | Description |
-| -------------------------- | ------------------------------------------------|
+| ------------------------- | ------------------------------------------------|
 | count-kmer-occurrences.py | Determine number of times each kmer appears in DNA, allowing for reverse complements and d-neighbourhoods |
