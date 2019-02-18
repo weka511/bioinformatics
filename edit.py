@@ -43,11 +43,19 @@ def edit(s,t,indel_cost=1,replace_cost=lambda a,b: 1,show_matrix=False):
     return dynamic_programming([s0 for s0 in s], [t0 for t0 in t])
 
 if __name__=='__main__':
-    from Bio import SeqIO
-    inFile = open(r'C:\Users\Simon\Downloads\rosalind_edit(2).txt','r')
-    strings = []
-    for record in SeqIO.parse(inFile,'fasta'):
-        print (record.id)
-        print (str(record.seq))
-        strings.append(str(record.seq))
-    print(edit(strings[0],strings[1]))
+    #from Bio import SeqIO
+    #inFile = open(r'C:\Users\Simon\Downloads\rosalind_ba5g(1).txt','r')
+    #strings = []
+    #for record in SeqIO.parse(inFile,'fasta'):
+        #print (record.id)
+        #print (str(record.seq))
+        #strings.append(str(record.seq))
+    #print(edit(strings[0],strings[1]))
+    with open(r'C:\Users\Simon\Downloads\rosalind_ba5g(2).txt','r') as f:
+        strings = []
+        for line in f:
+            strings.append(line.strip())
+            print (line.strip())
+        print(edit(strings[0],strings[1]))
+            
+        

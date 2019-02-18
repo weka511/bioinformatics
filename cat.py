@@ -13,7 +13,7 @@
 #    You should have received a copy of the GNU General Public License
 #    along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>
 #
-#    cat 	Catalan Numbers and RNA Secondary Structures 
+#    cat 	Catalan Numbers and RNA Secondary Structures (WIP)
 
 from rosalind import RosalindException,verify_counts_complete_graph
 from Bio import SeqIO

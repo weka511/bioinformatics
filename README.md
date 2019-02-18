@@ -3,26 +3,44 @@
 Code inspired by [Finding Hidden Messages in DNA (Bioinformatics I)](https://class.coursera.org/hiddenmessages-003) and from [Rosalind](http://rosalind.info). 
 NB: functions generally used zero based indexing; Rosalind uses 1-based.
 
+## Textbook track
+
+| # | Location | Description |
+| ---- | -------------------------- | ------------------------------------------------|
+| BA4M| ba4m.py |   [Solve the Turnpike Problem](http://rosalind.info/problems/ba4m/)  |
+|BA5A|rosalind-old.py|[Compute the Edit Distance Between Two Strings](http://rosalind.info/problems/ba5a/)|
+|BA5B|rosalind-old.py|[Compute the Edit Distance Between Two Strings](http://rosalind.info/problems/ba5b/)|
+|BA5C|rosalind-old.py|[Compute the Edit Distance Between Two Strings](http://rosalind.info/problems/ba5c/)|
+|BA5D|rosalind-old.py|[Compute the Edit Distance Between Two Strings](http://rosalind.info/problems/ba5d/)|
+|BA5E|rosalind-old.py|[Compute the Edit Distance Between Two Strings](http://rosalind.info/problems/ba5e/)|
+|BA5F|rosalind-old.py|[Compute the Edit Distance Between Two Strings](http://rosalind.info/problems/ba5f/)|
+| BA5G | edit.py | [Compute the Edit Distance Between Two Strings](http://rosalind.info/problems/ba5g/) |
+| BA7A | .py | [Compute Distances Between Leaves](http://rosalind.info/problems/ba7a/) |
+| BA7B |.py | [Limb Length Problem](http://rosalind.info/problems/ba7b/) |
+| BA7C| .py | [Implement Additive Phylogeny](http://rosalind.info/problems/ba7c/) |
+| BA7D|.py |  [Implement UPGMA](http://rosalind.info/problems/ba7d/) |
+| BA7E|.py | [Implement the Neighbor Joining Algorithm](http://rosalind.info/problems/ba7e/) |
+| BA7F|.py | [Implement SmallParsimony](http://rosalind.info/problems/ba7f/) |
+| BA7G|.py | [Adapt SmallParsimony to Unrooted Trees](http://rosalind.info/problems/ba7g/) |
+| BA8A|.py | [Implement FarthestFirstTraversal](http://rosalind.info/problems/ba8a/) |
+| BA8B|.py | [Compute the Squared Error Distortion](http://rosalind.info/problems/ba7b/) |
+| BA8C|.py | [Implement the Lloyd Algorithm for k-Means Clustering](http://rosalind.info/problems/ba8c/)  |
+| BA8D|.py | [Implement the Soft k-Means Clustering Algorithm](http://rosalind.info/problems/ba8d/) |
+| BA8E|.py | [Implement Hierarchical Clustering](http://rosalind.info/problems/ba8e/) |
+
+## Other problems
+
+
+
 | Name | Description |
 | -------------------------- | ------------------------------------------------|
 | 2sum.py | [2SUM](http://rosalind.info/problems/2sum/) |
 | ASMQ.py | 	[Assessing Assembly Quality with N50 and N75](http://rosalind.info/problems/asmq/) |
-| BA4M.py |   [Solve the Turnpike Problem](http://rosalind.info/problems/ba4m/)  |
-| BA7A.py | [Compute Distances Between Leaves](http://rosalind.info/problems/ba7a/) |
-| BA7B.py | [Limb Length Problem](http://rosalind.info/problems/ba7b/) |
-| BA7C.py | [Implement Additive Phylogeny](http://rosalind.info/problems/ba7c/) |
-| BA7D.py |  [Implement UPGMA](http://rosalind.info/problems/ba7d/) |
-| BA7E.py | [Implement the Neighbor Joining Algorithm](http://rosalind.info/problems/ba7e/) |
-| BA7F.py | [Implement SmallParsimony](http://rosalind.info/problems/ba7f/) |
-| BA7G.py | [Adapt SmallParsimony to Unrooted Trees](http://rosalind.info/problems/ba7g/) |
-| BA8A.py | [Implement FarthestFirstTraversal](http://rosalind.info/problems/ba8a/) |
-| BA8B.py | [Compute the Squared Error Distortion](http://rosalind.info/problems/ba7b/) |
-| BA8C.py | [Implement the Lloyd Algorithm for k-Means Clustering](http://rosalind.info/problems/ba8c/)  |
-| BA8D.py | [Implement the Soft k-Means Clustering Algorithm](http://rosalind.info/problems/ba8d/) |
-| BA8E.py | [Implement Hierarchical Clustering](http://rosalind.info/problems/ba8e/) |
+
 | bfs.py  | [Beadth First search](http://rosalind.info/problems/bfs/) |
 | bip.py | [Testing Bipartiteness](http://rosalind.info/problems/bip/)|
 | BINS.py | [Binary Search](http://rosalind.info/problems/bfs/) |
+| cat.pt | [Catalan Numbers and RNA Secondary Structures ](http://rosalind.info/problems/cat/) (WIP)|
 | cc.py |	[Connected Components](http://rosalind.info/problems/cc/) |
 | CORR.py | [Error Correction in Reads](http://rosalind.info/problems/corr/)  | 
 | count-kmer-occurrences.py | Determine number of times each kmer appears in DNA, allowing for reverse complements and d-neighbourhoods |
@@ -31,7 +49,8 @@ NB: functions generally used zero based indexing; Rosalind uses 1-based.
 | DBRU.py |	[Constructing a De Bruijn Graph](http://rosalind.info/problems/ctbl/) |
 | DDEG.py | 	[Double-Degree Array](http://rosalind.info/problems/ddeg/) |
 | DEG.py | 	 	[Degree Array](http://rosalind.info/problems/deg/) |
-|EDIT |	[Edit Distance](http://rosalind.info/problems/edit/) |
+|edit.py |	[Edit Distance](http://rosalind.info/problems/edit/) |
+| edta.py | [Edit Distance Alignment](http://rosalind.info/problems/edta/) (WIP)|
 | FRMT.py | 	[Data Formats](http://rosalind.info/problems/frmt/)|
 | GASM.py | 	 	[Genome Assembly Using Reads](http://rosalind.info/problems/gasm/) |
 | GBK.py | 	[GenBank Introduction](http://rosalind.info/problems/gbk/) |
