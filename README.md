@@ -43,6 +43,18 @@ NB: functions generally used zero based indexing; Rosalind uses 1-based.
 |BA3I |rosalind-old.py|	[Find a k-Universal Circular String](http://rosalind.info/problems/ba3a/)
 |BA3J |rosalind-old.py|	[Reconstruct a String from its Paired Composition](http://rosalind.info/problems/ba3a/)
 |4|-|How do we assemble Genomes?|
+|BA4A|rosalind-old.py|[Translate an RNA String into an Amino Acid String](http://rosalind.info/problems/ba4a/)  |
+|BA4B|rosalind-old.py|[Find Substrings of a Genome Encoding a Given Amino Acid String](http://rosalind.info/problems/ba4b/)  |
+|BA4C|rosalind-old.py|[Generate the Theoretical Spectrum of a Cyclic Peptide](http://rosalind.info/problems/ba4c/)  |
+|BA4D|rosalind-old.py|[Compute the Number of Peptides of Given Total Mass](http://rosalind.info/problems/ba4d/)  |
+|BA4E |rosalind-old.py|	[Find a Cyclic Peptide with Theoretical Spectrum Matching an Ideal Spectrum](http://rosalind.info/problems/ba4e/)  |
+|BA4F |rosalind-old.py|	[Compute the Score of a Cyclic Peptide Against a Spectrum](http://rosalind.info/problems/ba4f/)  |
+|BA4G |rosalind-old.py|	[Implement LeaderboardCyclopeptideSequencing ](http://rosalind.info/problems/ba4g/)  |
+|BA4H |rosalind-old.py|	[Generate the Convolution of a Spectrum ](http://rosalind.info/problems/ba4h/)  |
+|BA4I |rosalind-old.py|	[Implement ConvolutionCyclopeptideSequencing](http://rosalind.info/problems/ba4i/)  |
+|BA4J |rosalind-old.py|	[Generate the Theoretical Spectrum of a Linear Peptide](http://rosalind.info/problems/ba4j/)  |
+|BA4K|rosalind-old.py|	[Compute the Score of a Linear Peptide ](http://rosalind.info/problems/ba4k/)  |
+|BA4L |rosalind-old.py|	[Trim a Peptide Leaderboard](http://rosalind.info/problems/ba4l/)  |
 | BA4M| ba4m.py |   [Solve the Turnpike Problem](http://rosalind.info/problems/ba4m/)  |
 |5|-|How do we compare Biological Sequences?|
 |BA5A|rosalind-old.py|[Find the Minimum Number of Coins Needed to Make Change](http://rosalind.info/problems/ba5a/)|
