@@ -550,7 +550,13 @@ if __name__=='__main__':
     print (Tree.parse('(cat)dog;'))
     print (Tree.parse('(dog:20, (elephant:30, horse:60):20):50;'))
 
-
+def parse_graph(f):
+    product = []        
+    for line in f:
+        parts =line.strip().split()
+        product.append((int(parts[0]),int(parts[1])))
+    return product
+    
 def parse_graphs(f):
     product = []        
     graph   = []
