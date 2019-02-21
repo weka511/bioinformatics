@@ -17,31 +17,48 @@
 
 import numpy as np
 
+# sum3
+#
+# Check array A to see whther 3 terms add up to 0
+#
+# The naive implmentation is diabolocally slow, so we'll use a lookup table for sum
 def sum3(A,n):
+    complement = {}
+    for r in range(n):
+        if not A[r] in complement:
+            complement[A[r]]=[r]
+        else:
+            complement[A[r]].append(r)
     for p in range(n):
         for q in range(p+1,n):
-            for r in range(q+1,n):
-                if A[p] + A[q] + A[r] ==0:
-                    return (p+1,q+1,r+1)
+            term = - A[p] - A[q]   # we need a value that is equal to this
+            if term in complement:
+                for r in complement[term]:
+                    if r != p and r !=q:
+                        return (p+1, q+1, r+1)
     return (-1,-1,-1)        
 
 if __name__=='__main__':
+    import time
+    start_time = time.time()
     k = -1
     n = -1
-    with open(r'c:/Users/Simon/Downloads/rosalind_3sum.txt') as f:
+    with open(r'c:/Users/Simon/Downloads/rosalind_3sum(1).txt') as f:
         for line in f:
             text = line.strip().split()
             if k==-1:
                 k = int(text[0])
                 n = int(text[1])
-                print (k,n)
             else:
-                A = np.zeros(n)
+                A = np.zeros(n,dtype=int)
                 i = 0
                 for s in text:
                     A[i] = int(s)
+                    i+=1
                 p,q,r = sum3(A,n)
                 if p==-1:
                     print (-1)
                 else:
                     print ('{0} {1} {2}'.format(p,q,r))
+    print ()                
+    print (time.time() - start_time)
