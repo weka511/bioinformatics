@@ -115,6 +115,7 @@ NB: functions generally used zero based indexing; Rosalind uses 1-based.
 | INV.py | 	[Counting Inversions](http://rosalind.info/problems/inv/) (WIP)|
 | kmp.py | [Speeding Up Motif Finding](http://rosalind.info/problems/kmp/) |
 | lcsq.py | 	[Finding a Shared Spliced Motif](http://rosalind.info/problems/lcsq/) |
+| loca.py | 	[Local Alignment with Scoring Matrix ](http://rosalind.info/problems/loca/) (WIP) |
 | LONG.py | 	[Genome Assembly as Shortest Superstring](http://rosalind.info/problems/long/) |
 | maj.py |  [Majority Element](http://rosalind.info/problems/maj/) ||
 | MED.py | 	[Median](http://rosalind.info/problems/med/)|
