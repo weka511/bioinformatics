@@ -17,7 +17,7 @@
 
 import numpy as np
 
-def ba5h(s,t,indel_cost=-1,replace_cost=lambda a,b: -1,show_scores=False):
+def ba5h(s,t,match_reward=1,indel_cost=-1,replace_cost=lambda a,b: -1,show_scores=False):
 
       def dynamic_programming(s,t):
             def create_scores():
@@ -31,7 +31,7 @@ def ba5h(s,t,indel_cost=-1,replace_cost=lambda a,b: -1,show_scores=False):
                   for i in range(1,len(s)+1):
                         for j in range(1,len(t)+1):
                               score[i][j] = max(
-                                    score[i-1][j]   + indel_cost,
+                                    score[i-1][j]   + indel_cost if 0<j and j<len(t) else 0,
                                     score[i][j-1]   + indel_cost,
                                     score[i-1][j-1] + (1 if s[i-1]==t[j-1] else replace_cost(s[i-1],t[j-1])))
                               
@@ -42,40 +42,31 @@ def ba5h(s,t,indel_cost=-1,replace_cost=lambda a,b: -1,show_scores=False):
                         print (' ',['#']+t) 
                   return score
             
-            def extract(s,t,matrix,m_max,m_min):
-                  m  = m_max
+            def extract(s,t,matrix):
+                  m  = len(matrix)-1
                   n  = len(matrix[0])-1
                   s1 = []
                   t1 = []
-                  starting_score = matrix[m][n]
-                  final_score = matrix[m][n]
-                  while m>m_min and n>0:
+                  while m>0 and n>0:
                         moves  = [(m-1,n),(m,n-1),(m-1,n-1)]
-                        scores = [
-                              matrix[m-1][n]+indel_cost,
-                              matrix[m][n-1]+indel_cost,
-                              matrix[m-1][n-1] + (1 if s[m-1]==t[n-1] else replace_cost(s[m-1],t[n-1]))]
+                        scores = [matrix[m-1][n]+indel_cost if 0 < n and n<len(t) else 0,
+                            matrix[m][n-1]+indel_cost ,
+                            matrix[m-1][n-1] + (0 if s[m-1]==t[n-1] else replace_cost(s[m-1],t[n-1]))]
                         ss     = [s[m-1],'-',s[m-1]]
                         ts     = ['-',t[n-1],t[n-1]]
-                        index  = np.argmax(scores)
+                        index  = np.argmin(scores)
                         m,n    = moves[index]
                         s1.append(ss[index])
                         t1.append(ts[index])
-                        final_score = matrix[m][n]
                   s1.reverse()
                   t1.reverse()
-                  return starting_score-final_score,''.join(s1),''.join(t1) 
+                  return 0,''.join(s1),''.join(t1)
+                    
              
             score = create_scores()
-            for m_min in range(len(s)):
-                  for m_len in range (len(t),len(t)+5):
-                        try:
-                              d,s1,t1 = extract(s,t,score,m_len+m_min,m_min)
-                              print (m_min,m_len,d,s1,t1)
-                        except:
-                              pass
+  
                    
-            return 0,[],[]
+            return  extract(s,t,score)
       
       d,s1,t1=dynamic_programming([s0 for s0 in s], [t0 for t0 in t])
       return d,''.join(s1),''.join(t1)
