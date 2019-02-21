@@ -70,7 +70,7 @@ NB: functions generally used zero based indexing; Rosalind uses 1-based.
 |BA5K 	|TBP|[Find a Middle Edge in an Alignment Graph in Linear Space](http://rosalind.info/problems/ba5k/) |
 |BA5L 	|TBP|[Align Two Strings Using Linear Space](http://rosalind.info/problems/ba5l/) |                          
 |BA5M 	|TBP|[Find a Highest-Scoring Multiple Sequence Alignment](http://rosalind.info/problems/ba5m/) | 
-| BA5N |rosalind_old.py|[Find a Topological Ordering of a DAG]((http://rosalind.info/problems/ba5n/) | 
+|BA5N |rosalind_old.py|[Find a Topological Ordering of a DAG](http://rosalind.info/problems/ba5n/) | 
 |7|-|How do we locate disease causing mutations|
 | BA7A | BA7A.py | [Compute Distances Between Leaves](http://rosalind.info/problems/ba7a/) |
 | BA7B |BA7B.py | [Limb Length Problem](http://rosalind.info/problems/ba7b/) |
@@ -109,7 +109,7 @@ NB: functions generally used zero based indexing; Rosalind uses 1-based.
 | FRMT.py | 	[Data Formats](http://rosalind.info/problems/frmt/)|
 | GASM.py | 	 	[Genome Assembly Using Reads](http://rosalind.info/problems/gasm/) |
 | GBK.py | 	[GenBank Introduction](http://rosalind.info/problems/gbk/) |
-| GLOB.py | 	[Global Alignment with Scoring Matrix](http://rosalind.info/problems/glob/) |
+| GLOB.py | 	[Global Alignment with Scoring Matrix](http://rosalind.info/problems/glob/) -- test harness only|
 | GREP.py | 	 [Genome Assembly with Perfect Coverage and Repeats](http://rosalind.info/problems/grep/)|
 | INS.py | 	 	[Insertion Sort](http://rosalind.info/problems/ins/) |
 | INV.py | 	[Counting Inversions](http://rosalind.info/problems/inv/) (WIP)|
