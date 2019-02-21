@@ -63,7 +63,14 @@ NB: functions generally used zero based indexing; Rosalind uses 1-based.
 |BA5D|rosalind_old.py|[Find the Longest Path in a DAG](http://rosalind.info/problems/ba5d/)|
 |BA5E|rosalind_old.py|[Find a Highest-Scoring Alignment of Two Strings](http://rosalind.info/problems/ba5e/)|
 |BA5F|rosalind_old.py|[Find a Highest-Scoring Local Alignment of Two Strings](http://rosalind.info/problems/ba5f/)|
-| BA5G | edit.py | [Compute the Edit Distance Between Two Strings](http://rosalind.info/problems/ba5g/) |
+|BA5G | edit.py | [Compute the Edit Distance Between Two Strings](http://rosalind.info/problems/ba5g/) |
+|BA5H| BA5H.py | [Find a Highest-Scoring Fitting Alignment of Two Strings](http://rosalind.info/problems/ba5h/) (WIP) |                       
+|BA5I 	|TBP|[Find a Highest-Scoring Overlap Alignment of Two Strings](http://rosalind.info/problems/ba5i/) |                          
+|BA5J 	|TBP|[Align Two Strings Using Affine Gap Penalties](http://rosalind.info/problems/ba5j/) |                         
+|BA5K 	|TBP|[Find a Middle Edge in an Alignment Graph in Linear Space](http://rosalind.info/problems/ba5k/) |
+|BA5L 	|TBP|[Align Two Strings Using Linear Space](http://rosalind.info/problems/ba5l/) |                          
+|BA5M 	|TBP|[Find a Highest-Scoring Multiple Sequence Alignment](http://rosalind.info/problems/ba5m/) | 
+| BA5N |rosalind_old.py|[Find a Topological Ordering of a DAG]((http://rosalind.info/problems/ba5n/) | 
 |7|-|How do we locate disease causing mutations|
 | BA7A | BA7A.py | [Compute Distances Between Leaves](http://rosalind.info/problems/ba7a/) |
 | BA7B |BA7B.py | [Limb Length Problem](http://rosalind.info/problems/ba7b/) |
@@ -87,7 +94,7 @@ NB: functions generally used zero based indexing; Rosalind uses 1-based.
 | 2sum.py | [2SUM](http://rosalind.info/problems/2sum/) |
 | ASMQ.py | 	[Assessing Assembly Quality with N50 and N75](http://rosalind.info/problems/asmq/) |
 | bfs.py  | [Beadth First search](http://rosalind.info/problems/bfs/) |
-| bip.py | [Testing Bipartiteness](http://rosalind.info/problems/bip/)|
+| bip.py | [Testing Bipartiteness](http://rosalind.info/problems/bip/) (WIP)|
 | BINS.py | [Binary Search](http://rosalind.info/problems/bfs/) |
 | cat.pt | [Catalan Numbers and RNA Secondary Structures ](http://rosalind.info/problems/cat/) (WIP)|
 | cc.py |	[Connected Components](http://rosalind.info/problems/cc/) |
@@ -121,6 +128,7 @@ NB: functions generally used zero based indexing; Rosalind uses 1-based.
 | PTRA.py | 	 [Protein Translation](http://rosalind.info/problems/ptra/) |
 | QS.py | 	[Quicksort](http://rosalind.info/problems/qs/)|
 | rear.py | [Reversal distance](http://rosalind.info/problems/rear/) |
+| ts.py | [Topological sort](http://rosalind.info/problems/ts/) test harness only--see BA5N |
 
 
 ## Support
