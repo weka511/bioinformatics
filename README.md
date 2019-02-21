@@ -92,6 +92,7 @@ NB: functions generally used zero based indexing; Rosalind uses 1-based.
 | Name | Description |
 | -------------------------- | ------------------------------------------------|
 | 2sum.py | [2SUM](http://rosalind.info/problems/2sum/) |
+| 3sum.py | [3SUM](http://rosalind.info/problems/3sum/) WIP |
 | ASMQ.py | 	[Assessing Assembly Quality with N50 and N75](http://rosalind.info/problems/asmq/) |
 | bfs.py  | [Beadth First search](http://rosalind.info/problems/bfs/) |
 | bip.py | [Testing Bipartiteness](http://rosalind.info/problems/bip/) (WIP)|
