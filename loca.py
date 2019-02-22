@@ -28,4 +28,4 @@ if __name__=='__main__':
     print(d)
     print (s)
     print (t)    
-    print (highest_scoring_local_alignment('MEANLYPRTEINSTRING','PLEASANTLYEINSTEIN'))
+    print (highest_scoring_local_alignment('MEANLYPRTEINSTRING','PLEASANTLYEINSTEIN',sigma=5.1))

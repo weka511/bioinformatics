@@ -100,6 +100,7 @@ NB: functions generally used zero based indexing; Rosalind uses 1-based.
 | cat.pt | [Catalan Numbers and RNA Secondary Structures ](http://rosalind.info/problems/cat/) (WIP)|
 | cc.py |	[Connected Components](http://rosalind.info/problems/cc/) |
 | CORR.py | [Error Correction in Reads](http://rosalind.info/problems/corr/)  | 
+| cstr.py | [Creating a Character Table from Genetic Strings](http://rosalind.info/problems/cstr/)|
 | ctbl.py | [Creating a Character Table](http://rosalind.info/problems/ctbl/)  |
 | dag.py | [Testing Acyclicity](http://rosalind.info/problems/dag/) |
 | DBRU.py |	[Constructing a De Bruijn Graph](http://rosalind.info/problems/dbru/) |

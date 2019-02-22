@@ -57,11 +57,17 @@ def cstr(strings):
     return result
  
 if __name__=='__main__': 
-    for row in cstr([
-        'ATGCTACC',
-        'CGTTTACC',
-        'ATTCGACC',
-        'AGTCTCCC',
-        'CGTCTATC'    
-        ]):
-        print (row)
+    #for row in cstr([
+        #'ATGCTACC',
+        #'CGTTTACC',
+        #'ATTCGACC',
+        #'AGTCTCCC',
+        #'CGTCTATC'    
+        #]):
+        #print (row)
+    with open('c:/Users/Simon/Downloads/rosalind_cstr.txt') as f:
+        strings=[]
+        for line in f:
+            strings.append(line.strip())
+        for row in cstr(strings):
+            print (row)
