@@ -48,16 +48,16 @@ def inv(n,A):
                 
         return sorted_list + head[i:] + tail[j:],count
     
-    # Split, perform count for each half, then merge
+    # Split array, calculate count for each half, then merge
     
     def merge_sort(A):
         if len(A)==1: return A,0
             
-        head,count1        = merge_sort(A[:len(A)//2])
-        tail,count2        = merge_sort(A[len(A)//2:])
-        sorted_list,count3 = merge(head,tail)   
+        head,count_left          = merge_sort(A[:len(A)//2])
+        tail,count_right         = merge_sort(A[len(A)//2:])
+        sorted_list,count_merged = merge(head,tail)   
         
-        return sorted_list,count1 + count2 + count3
+        return sorted_list,count_left + count_right + count_merged
     
     return merge_sort(A)
 
