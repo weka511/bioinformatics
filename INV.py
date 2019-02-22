@@ -13,25 +13,55 @@
 # You should have received a copy of the GNU General Public License
 # along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>
 
+# INV Counting Inversions
+
 import timeit, numpy as np
 
+# inv
+#
+# Input: A positive integer and an array A[1..n] of integers
+#
+# Return: The number of inversions in A
+
 def inv(n,A):
-    print (np.argsort(A))
-    count = 0
-    i     = 0
+    #
+    # Divide and conquer
+    #
+    # Split array in half, solve for each arrar, then merge, counting swaps
     
-    while (i<n-1):
-        if (A[i]>A[i+1]):
-            count+=1
+    def merge_sort(A):
+        if len(A)==1: return A,0
         
-        i+=1
-    return count
+        head = A[:len(A)//2]
+        tail = A[len(A)//2:]
+        
+        head,count1 = merge_sort(head)
+        tail,count2 = merge_sort(tail)
+        
+        sorted_list = []
+        count       = count1 + count2
+        i           = 0
+        j           = 0
+        
+        while i<len(head) and j < len(tail):
+            if head[i]<=tail[j]:
+                sorted_list.append(head[i])
+                i+=1
+            else:
+                sorted_list.append(tail[j])
+                j+=1
+                count+=(len(head)-i)
+                
+        return sorted_list + head[i:] + tail[j:],count
+    
+    return merge_sort(A)
+
 
 if __name__=='__main__':
     
-    print (inv(5,[-6, 1, 15, 8, 10]))
+    #print (inv(5,[-6, 1, 15, 8, 10]))
     
-    with open('c:/Users/Simon/Downloads/rosalind_inv(1).txt') as f:
+    with open('c:/Users/Simon/Downloads/rosalind_inv(2).txt') as f:
         start_time = timeit.default_timer()
         i=0
         n=0
@@ -44,7 +74,7 @@ if __name__=='__main__':
             else:
                 A=[int(t) for t in text.split(' ')]
             i+=1
-        nn=inv(n,A)
+        _,nn=inv(n,A)
         print (nn)
 
         elapsed = timeit.default_timer() - start_time

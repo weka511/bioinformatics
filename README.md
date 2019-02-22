@@ -114,7 +114,7 @@ NB: functions generally used zero based indexing; Rosalind uses 1-based.
 | GLOB.py | 	[Global Alignment with Scoring Matrix](http://rosalind.info/problems/glob/) -- test harness only|
 | GREP.py | 	 [Genome Assembly with Perfect Coverage and Repeats](http://rosalind.info/problems/grep/)|
 | INS.py | 	 	[Insertion Sort](http://rosalind.info/problems/ins/) |
-| INV.py | 	[Counting Inversions](http://rosalind.info/problems/inv/) (WIP)|
+| INV.py | 	[Counting Inversions](http://rosalind.info/problems/inv/) |
 | kmp.py | [Speeding Up Motif Finding](http://rosalind.info/problems/kmp/) |
 | lcsq.py | 	[Finding a Shared Spliced Motif](http://rosalind.info/problems/lcsq/) |
 | loca.py | 	[Local Alignment with Scoring Matrix ](http://rosalind.info/problems/loca/) (WIP) |
