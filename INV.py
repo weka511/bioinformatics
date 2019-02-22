@@ -22,24 +22,18 @@ import timeit, numpy as np
 # Input: A positive integer and an array A[1..n] of integers
 #
 # Return: The number of inversions in A
+#
+# Divide and conquer
+#
+# Split array in half, solve for each array, then merge, counting swaps
 
 def inv(n,A):
-    #
-    # Divide and conquer
-    #
-    # Split array in half, solve for each arrar, then merge, counting swaps
     
-    def merge_sort(A):
-        if len(A)==1: return A,0
-        
-        head = A[:len(A)//2]
-        tail = A[len(A)//2:]
-        
-        head,count1 = merge_sort(head)
-        tail,count2 = merge_sort(tail)
-        
+    # Merge the two halves of the original array
+    
+    def merge(head,tail):
+        count       = 0
         sorted_list = []
-        count       = count1 + count2
         i           = 0
         j           = 0
         
@@ -50,9 +44,20 @@ def inv(n,A):
             else:
                 sorted_list.append(tail[j])
                 j+=1
-                count+=(len(head)-i)
+                count+=(len(head)-i)  
                 
         return sorted_list + head[i:] + tail[j:],count
+    
+    # Split, perform count for each half, then merge
+    
+    def merge_sort(A):
+        if len(A)==1: return A,0
+            
+        head,count1        = merge_sort(A[:len(A)//2])
+        tail,count2        = merge_sort(A[len(A)//2:])
+        sorted_list,count3 = merge(head,tail)   
+        
+        return sorted_list,count1 + count2 + count3
     
     return merge_sort(A)
 
@@ -61,7 +66,7 @@ if __name__=='__main__':
     
     #print (inv(5,[-6, 1, 15, 8, 10]))
     
-    with open('c:/Users/Simon/Downloads/rosalind_inv(2).txt') as f:
+    with open('c:/Users/Simon/Downloads/rosalind_inv(3).txt') as f:
         start_time = timeit.default_timer()
         i=0
         n=0
