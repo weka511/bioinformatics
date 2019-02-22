@@ -18,20 +18,50 @@
 from rosalind import hamm
 
 def cstr(strings):
-    def c(i):
-        choices= list(set([s[i] for s in strings]))
-        return [len([s[i] for s in strings if s[i]==choice]) for choice in choices]
-    counts= ([c(i) for i in range(len(strings[0]))])
-    print (counts)
-    for i in range(len(strings)):
-        for j in range(i):
-            print (i,j,hamm(strings[i], strings[j]))
-                   
+    def trivial(split):
+        if len(split)<2: return True
+        for k,v in split.items():
+            if v<2: return True
+        return False
+    
+    choices = [[] for s in strings[0]]
+    counts  = [{} for s in strings[0]]
+    for i in range(len(strings[0])):
+        for s in strings:
+            if not s[i] in choices[i]:
+                choices[i].append(s[i])
+            if s[i] in counts[i]:
+                counts[i][s[i]] += 1
+            else:
+                counts[i][s[i]] = 1
+    
+    splits=[]
+    for i in range(len(strings[0])):
+        split = {}
+        for c in choices[i]:
+            split[c] = 0
+        for s in strings:
+            for c in choices[i]:
+                if s[i]==c:
+                    split[c]+=1
+        splits.append(split)
+    result=[]
+    for i in range(len(strings[0])):
+        character = []
+        split = splits[i]
+        if not trivial(split):
+            chs = list(split.keys())
+            for s in strings:
+                character.append('0' if s[i]==chs[0] else '1')  
+            result.append(''.join(character))
+    return result
+ 
 if __name__=='__main__': 
-    cstr([
+    for row in cstr([
         'ATGCTACC',
         'CGTTTACC',
         'ATTCGACC',
         'AGTCTCCC',
         'CGTCTATC'    
-    ])
+        ]):
+        print (row)
