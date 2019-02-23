@@ -18,7 +18,7 @@
 if __name__=='__main__':
     from  rosalind_old import highest_scoring_local_alignment
     from Bio import SeqIO
-    inFile = open(r'C:\Users\Simon\Downloads\rosalind_loca.txt','r')
+    inFile = open(r'C:\Users\Simon\Downloads\rosalind_loca(2).txt','r')
     strings = []
     for record in SeqIO.parse(inFile,'fasta'):
         print (record.id)
@@ -26,6 +26,6 @@ if __name__=='__main__':
         strings.append(str(record.seq))
     d,s,t=highest_scoring_local_alignment(strings[0],strings[1])
     print(d)
-    print (s)
-    print (t)    
-    print (highest_scoring_local_alignment('MEANLYPRTEINSTRING','PLEASANTLYEINSTEIN',sigma=5.1))
+    print (s.replace('-',''))
+    print (t.replace('-',''))    
+    #print (highest_scoring_local_alignment('MEANLYPRTEINSTRING','PLEASANTLYEINSTEIN',sigma=5))
