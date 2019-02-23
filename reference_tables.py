@@ -153,7 +153,9 @@ def createBLOSUM62():
             weights[(amino_acids[i],amino_acids[j])]=raw_weights[i][j]            
     return weights
  
-
+# PAM250
+#
+# populate the PAM250 scoring table
 def createPAM250():
     amino_acids=['A', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'K', 'L', 'M', 'N',\
           'P', 'Q', 'R', 'S', 'T', 'V', 'W', 'Y']
@@ -184,7 +186,18 @@ def createPAM250():
         for j in range(len(amino_acids)):
             weights[(amino_acids[i],amino_acids[j])]=raw_weights[i][j]            
     return weights
-    
+
+# Populate a simple scoring table
+
+def createSimpleDNASubst():
+    bases=['A', 'T', 'G', 'C']
+ 
+    weights={}
+    for i in range(len(bases)):
+        for j in range(len(bases)):
+            weights[(bases[i],bases[j])] = +1 if i==j else -1          
+    return weights
+
 if __name__=='__main__':
     for a in amino_acids.values():
         print (a)
