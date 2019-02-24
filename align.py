@@ -26,7 +26,6 @@ def create_distance_matrix(nrows,ncolumns):
     for i in range(nrows):
         distances.append([0]*ncolumns)
  
-    distances[0][0] = 0
     return distances
 
 def build_matrix(s,t,matrix,replace_score=createSimpleDNASubst(),indel_cost=1):

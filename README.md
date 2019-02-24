@@ -64,7 +64,7 @@ NB: functions generally used zero based indexing; Rosalind uses 1-based.
 |BA5E|rosalind_old.py|[Find a Highest-Scoring Alignment of Two Strings](http://rosalind.info/problems/ba5e/)|
 |BA5F|rosalind_old.py|[Find a Highest-Scoring Local Alignment of Two Strings](http://rosalind.info/problems/ba5f/)|
 |BA5G | edit.py | [Compute the Edit Distance Between Two Strings](http://rosalind.info/problems/ba5g/) |
-|BA5H| BA5H.py | [Find a Highest-Scoring Fitting Alignment of Two Strings](http://rosalind.info/problems/ba5h/) (WIP) |                       
+|BA5H| BA5H.py | [Find a Highest-Scoring Fitting Alignment of Two Strings](http://rosalind.info/problems/ba5h/) |                       
 |BA5I 	|TBP|[Find a Highest-Scoring Overlap Alignment of Two Strings](http://rosalind.info/problems/ba5i/) |                          
 |BA5J 	|TBP|[Align Two Strings Using Affine Gap Penalties](http://rosalind.info/problems/ba5j/) |                         
 |BA5K 	|TBP|[Find a Middle Edge in an Alignment Graph in Linear Space](http://rosalind.info/problems/ba5k/) |
