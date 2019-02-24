@@ -13,9 +13,12 @@
 #    You should have received a copy of the GNU General Public License
 #    along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>
 
+# Common code for alignment problems
+
 import numpy as np, sys
 
-from reference_tables import createSimpleDNASubst,createBLOSUM62
+from reference_tables import createSimpleDNASubst
+
 
 # create_distance_matrix
 def create_distance_matrix(nrows,ncolumns,initial_value=-sys.float_info.max):
@@ -33,6 +36,11 @@ def create_distance_matrix(nrows,ncolumns,initial_value=-sys.float_info.max):
 
 def build_matrix(s,t,matrix,replace_score=createSimpleDNASubst(),indel_cost=1):
     moves = {}
+    def score(pair):
+        def reverse(pair):
+            a,b=pair
+            return (b,a)
+        return replace_score[pair] if pair in replace_score else replace_score[reverse(pair)] 
     for i in range(len(s)+1):
         for j in range(len(t)+1):
             if i==0 and j==0: next
@@ -45,7 +53,7 @@ def build_matrix(s,t,matrix,replace_score=createSimpleDNASubst(),indel_cost=1):
             else:
                 scores       = [matrix[i-1][j]   - indel_cost,
                                 matrix[i][j-1]   - indel_cost,
-                                matrix[i-1][j-1] + replace_score[(s[i-1],t[j-1])]]
+                                matrix[i-1][j-1] + score((s[i-1],t[j-1]))]
                 froms        = [(i-1,j,-1,0),
                                 (i,j-1,0,-1),
                                 (i-1,j-1,-1,-1)]
@@ -61,10 +69,6 @@ def backtrack(s,t,matrix,moves):
     score = matrix[i][j]
     s1    = []
     t1    = []
-    for k,v in moves.items():
-        a,b=k
-        if a==0 or b==0:
-            print (k,v)
     while i>0 or j>0:
         i,j,di,dj = moves[(i,j)]
         if di==0:
@@ -85,5 +89,6 @@ def align(s,t,replace_score=createSimpleDNASubst(),indel_cost=1,build_matrix=bui
     return backtrack(s,t,distances,moves)
 
 if __name__=='__main__':
-    score,s1,s2=align('PLEASANTLY','MEANLY',replace_score=createBLOSUM62(),indel_cost=5)
+    from Bio.SubsMat.MatrixInfo import blosum62
+    score,s1,s2=align('PLEASANTLY','MEANLY',replace_score=blosum62,indel_cost=5)
     print (score,s1,s2)

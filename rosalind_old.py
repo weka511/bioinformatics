@@ -2342,11 +2342,11 @@ def calculate_scores_for_alignment(s,string1, string2, weights,sigma,init_predec
     return (s,predecessors)
 
 def create_alignment(string1, string2,s_predecessors,i_start=-1,j_start=-1):
-    s,predecessors=s_predecessors
-    result1=[]
-    result2=[]
-    i=len(string1) if i_start==-1 else i_start
-    j=len(string2) if j_start==-1 else j_start
+    s,predecessors = s_predecessors
+    result1        = []
+    result2        = []
+    i              = len(string1) if i_start==-1 else i_start
+    j              = len(string2) if j_start==-1 else j_start
     while i>0 or j>0:
         x,y,i,j=predecessors[(i,j)]
         if x==-1 and y==0:
@@ -2391,7 +2391,7 @@ def highest_scoring_global_alignment(string1,string2,weights=rrt.createBLOSUM62(
 #
 # Return: The maximum score of a local alignment of the strings, followed by
 # a local alignment of these strings achieving the maximum score. Use the
-# PAM250 scoring matrix and indel penalty σ = 5. (If multiple local alignments
+# PAM250 scoring matrix and indel penalty  5. (If multiple local alignments
 # achieving the maximum score exist, you may return any one.)
 
 def highest_scoring_local_alignment(string1,string2,weights=rrt.createPAM250(),sigma=5):
