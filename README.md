@@ -111,6 +111,7 @@ NB: functions generally used zero based indexing; Rosalind uses 1-based.
 | FRMT.py | 	[Data Formats](http://rosalind.info/problems/frmt/)|
 | GASM.py | 	 	[Genome Assembly Using Reads](http://rosalind.info/problems/gasm/) |
 | GBK.py | 	[GenBank Introduction](http://rosalind.info/problems/gbk/) |
+| gcon.py | [Global Alignment with Constant Gap Penalty](http://rosalind.info/problems/gcon/) (WIP)|
 | GLOB.py | 	[Global Alignment with Scoring Matrix](http://rosalind.info/problems/glob/) -- test harness only|
 | GREP.py | 	 [Genome Assembly with Perfect Coverage and Repeats](http://rosalind.info/problems/grep/)|
 | INS.py | 	 	[Insertion Sort](http://rosalind.info/problems/ins/) |
