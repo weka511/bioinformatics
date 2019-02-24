@@ -15,21 +15,16 @@
 
 # Common code for alignment problems
 
-import numpy as np, sys
+import numpy as np
 
 from reference_tables import createSimpleDNASubst
 
 
 # create_distance_matrix
-def create_distance_matrix(nrows,ncolumns,initial_value=-sys.float_info.max):
+def create_distance_matrix(nrows,ncolumns):
     distances = []
     for i in range(nrows):
-        row  = []
-        mrow = []
-        for j in range(ncolumns):
-            row.append(initial_value)  
-            mrow.append([])
-        distances.append(row)
+        distances.append([0]*ncolumns)
  
     distances[0][0] = 0
     return distances
