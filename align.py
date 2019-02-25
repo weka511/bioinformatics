@@ -28,7 +28,16 @@ def create_distance_matrix(nrows,ncolumns):
  
     return distances
 
-def build_matrix(s,t,matrix,replace_score=createSimpleDNASubst(),indel_cost=1):
+def get_indel_cost(sigma,delta,i,j,di,dj,moves):
+    return di,dj,sigma
+
+def build_matrix(s,t,matrix,replace_score=createSimpleDNASubst(),indel_cost=1,get_indel_cost=get_indel_cost):
+    def init_indel_costs():
+        if isinstance(indel_cost,tuple):
+            return indel_cost
+        return indel_cost,None
+    
+    sigma,delta = init_indel_costs()
     moves = {}
     def score(pair):
         def reverse(pair):
@@ -38,32 +47,39 @@ def build_matrix(s,t,matrix,replace_score=createSimpleDNASubst(),indel_cost=1):
     for i in range(len(s)+1):
         for j in range(len(t)+1):
             if i==0 and j==0: next
-            elif i==0: 
-                matrix[i][j] = matrix[i][j-1] - indel_cost
-                moves[(i,j)]  = (0,j-1,0,-1)
+            elif i==0:
+                di,dj,cost   = get_indel_cost(sigma,delta,i,j,0,-1,moves)
+                matrix[i][j] = matrix[i+di][j+dj] - cost
+                moves[(i,j)] = (i+di,j+dj,di,dj)
             elif j==0:
-                matrix[i][j] = matrix[i-1][j] - indel_cost
-                moves[(i,j)]  = (i-1,0,-1,0)
+                di,dj,cost   = get_indel_cost(sigma,delta,i,j,-1,0,moves)
+                matrix[i][j] = matrix[i+di][j+dj] - cost
+                moves[(i,j)] = (i+di,j+dj,di,dj)
             else:
-                scores       = [matrix[i-1][j]   - indel_cost,
-                                matrix[i][j-1]   - indel_cost,
-                                matrix[i-1][j-1] + score((s[i-1],t[j-1]))]
-                froms        = [(i-1,j,-1,0),
-                                (i,j-1,0,-1),
-                                (i-1,j-1,-1,-1)]
-                index        = np.argmax(scores)
-                matrix[i][j] = scores[index]
-                moves[(i,j)]  = froms[index]
+                di_down,dj_down,cost_down   = get_indel_cost(sigma,delta,i,j,-1,0,moves)
+                di_left,dj_left,cost_left   = get_indel_cost(sigma,delta,i,j,0,-1,moves)
+                scores                      = [matrix[i+di_down][j+dj_down]   - cost_down,
+                                               matrix[i+di_left][j+dj_left]   - cost_left,
+                                               matrix[i-1][j-1] + score((s[i-1],t[j-1]))]
+                froms                       = [(i+di_down,j+dj_down,di_down,dj_down),
+                                               (i+di_left,j+dj_left,di_left,dj_left),
+                                               (i-1,j-1,-1,-1)]
+                index                       = np.argmax(scores)
+                matrix[i][j]                = scores[index]
+                moves[(i,j)]                = froms[index]
 
     return matrix,moves
 
-def backtrack(s,t,matrix,moves):
+def backtrack(s,t,matrix,moves,showPath=False):
     i     = len(s)
     j     = len(t)
     score = matrix[i][j]
     s1    = []
     t1    = []
-    while i>0 or j>0:
+    if showPath:
+        print ('Path')
+        print (i,j)
+    while i>0 and j>0:
         i,j,di,dj = moves[(i,j)]
         if di==0:
             s1.append('-')
@@ -74,13 +90,26 @@ def backtrack(s,t,matrix,moves):
         else:
             s1.append(s[i])
             t1.append(t[j])
-
+        if showPath:
+            print (i,j,di,dj,s1[-1],t1[-1] )
     return score,s1[::-1],t1[::-1]
 
-def align(s,t,replace_score=createSimpleDNASubst(),indel_cost=1,build_matrix=build_matrix,backtrack=backtrack):
+def align(s,t,
+          replace_score= createSimpleDNASubst(),
+          indel_cost     = 1,
+          build_matrix   = build_matrix,
+          backtrack      = backtrack,
+          get_indel_cost = get_indel_cost,
+          showScores     = False,
+          showPath       = False):
     distances = create_distance_matrix(len(s)+1,len(t)+1)
-    distances,moves = build_matrix(s,t,distances,replace_score=replace_score,indel_cost=indel_cost)
-    return backtrack(s,t,distances,moves)
+    distances,moves = build_matrix(s,t,distances,replace_score=replace_score,indel_cost=indel_cost,get_indel_cost=get_indel_cost)
+    if showScores:
+        for row in distances:
+            print (row)
+        for k,v in moves.items():
+            print (k,v)
+    return backtrack(s,t,distances,moves,showPath=showPath)
 
 if __name__=='__main__':
     from Bio.SubsMat.MatrixInfo import blosum62

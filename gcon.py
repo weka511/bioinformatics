@@ -17,7 +17,40 @@
 
 from align import align
 
+def get_indel_cost(sigma,delta,i,j,di,dj,moves):
+    i1   = i
+    j1   = j
+    di1  = di
+    dj1  = dj
+    cost = sigma
+    while True:
+        i1+=di
+        j1+=dj
+        if (i1,j1) in moves:
+            _,_,di0,dj0 = moves[(i1,j1)]
+            if (di0==0 and di1==0 and dj1!=0) or (dj0==0 and dj1==0 and di1!=0):
+                di1+=di
+                dj1+=dj
+                continue
+
+        return di1,dj1,cost
+
+def get_score(s,t,matrix,moves,showPath=False):
+    return matrix[len(s)][len(t)],[],[]
+
 if __name__=='__main__':
     from Bio.SubsMat.MatrixInfo import blosum62
-    score,s1,s2=align('PLEASANTLY','MEANLY',replace_score=blosum62,indel_cost=(5,0))
-    print (score,s1,s2)
+    from Bio import SeqIO
+    score,_,_=align('PLEASANTLY','MEANLY',
+                    replace_score=blosum62,indel_cost=(5,0),get_indel_cost=get_indel_cost,
+                    backtrack=get_score,showScores=False,showPath=False)    
+    #inFile = open(r'C:\Users\Simon\Downloads\rosalind_gcon.txt','r')
+    #strings = []
+    #for record in SeqIO.parse(inFile,'fasta'):
+        #print (record.id)
+        #print (str(record.seq))
+        #strings.append(str(record.seq))    
+    #score,_,_=align(strings[0],strings[1],
+                    #replace_score=blosum62,indel_cost=(5,0),get_indel_cost=get_indel_cost,
+                    #backtrack=get_score,showScores=False,showPath=False)
+    print (score)

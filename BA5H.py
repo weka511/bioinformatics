@@ -49,7 +49,7 @@ def build_matrix(s,t,matrix,replace_score=createSimpleDNASubst(),indel_cost=1):
 
       return matrix,moves      
 
-def backtrack(s,t,matrix,moves):
+def backtrack(s,t,matrix,moves,showPath=False):
       
       score = max([matrix[i][-1] for i in range(len(s)+1)])
       i     = -1
