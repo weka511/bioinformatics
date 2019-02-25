@@ -17,7 +17,7 @@
 
 from align import align
 
-def get_indel_cost(sigma,delta,i,j,di,dj,moves):
+def get_indel_cost_with_skips(sigma,delta,i,j,di,dj,moves):
     i1   = i
     j1   = j
     di1  = di
@@ -41,16 +41,29 @@ def get_score(s,t,matrix,moves,showPath=False):
 if __name__=='__main__':
     from Bio.SubsMat.MatrixInfo import blosum62
     from Bio import SeqIO
-    score,_,_=align('PLEASANTLY','MEANLY',
-                    replace_score=blosum62,indel_cost=(5,0),get_indel_cost=get_indel_cost,
-                    backtrack=get_score,showScores=False,showPath=False)    
-    #inFile = open(r'C:\Users\Simon\Downloads\rosalind_gcon.txt','r')
-    #strings = []
-    #for record in SeqIO.parse(inFile,'fasta'):
-        #print (record.id)
-        #print (str(record.seq))
-        #strings.append(str(record.seq))    
-    #score,_,_=align(strings[0],strings[1],
-                    #replace_score=blosum62,indel_cost=(5,0),get_indel_cost=get_indel_cost,
-                    #backtrack=get_score,showScores=False,showPath=False)
-    print (score)
+    import sys,os
+    if sys.argv[1]=='--sample':
+        score,_,_=align('PLEASANTLY','MEANLY',
+                            replace_score=blosum62,
+                            indel_cost=(5,0),
+                            get_indel_cost=get_indel_cost_with_skips,
+                            backtrack=get_score,
+                            showScores=False,showPath=False)
+        print (score)
+    elif sys.argv[1]=='--test':
+        name,_ = os.path.splitext(os.path.basename(sys.argv[0]))
+        if len(sys.argv)>2:
+            name = name + '({0})'.format(int(sys.argv[2])) 
+        inFile  = open(os.path.join(r'C:\Users\Simon\Downloads','rosalind_{0}.txt'.format(name)),'r')
+        strings = []
+        for record in SeqIO.parse(inFile,'fasta'):
+            print (record.id)
+            print (str(record.seq))
+            strings.append(str(record.seq))    
+        score,_,_=align(strings[0],strings[1],
+                        replace_score=blosum62,
+                        indel_cost=(5,0),
+                        get_indel_cost=get_indel_cost_with_skips,
+                        backtrack=get_score,
+                        showScores=False,showPath=False)
+        print (score)
