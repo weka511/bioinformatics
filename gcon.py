@@ -18,22 +18,15 @@
 from align import align
 
 def get_indel_cost_with_skips(sigma,delta,i,j,di,dj,moves):
-    i1   = i
-    j1   = j
-    di1  = di
-    dj1  = dj
-    cost = sigma
-    while True:
-        i1+=di
-        j1+=dj
-        if (i1,j1) in moves:
-            _,_,di0,dj0 = moves[(i1,j1)]
-            if (di0==0 and di1==0 and dj1!=0) or (dj0==0 and dj1==0 and di1!=0):
-                di1+=di
-                dj1+=dj
-                continue
+    i_previous = i+di
+    j_previous = j+dj
+    
+    if (i_previous,j_previous) in moves:
+        _,_,di_previous,dj_previous = moves[(i_previous,j_previous)]
+        if (di_previous==0 and di==0) or (dj_previous==0 and dj==0):
+            return di+di_previous,dj+dj_previous,sigma
 
-        return di1,dj1,cost
+    return di,dj,sigma
 
 def get_score(s,t,matrix,moves,showPath=False):
     return matrix[len(s)][len(t)],[],[]
@@ -54,16 +47,25 @@ if __name__=='__main__':
         name,_ = os.path.splitext(os.path.basename(sys.argv[0]))
         if len(sys.argv)>2:
             name = name + '({0})'.format(int(sys.argv[2])) 
-        inFile  = open(os.path.join(r'C:\Users\Simon\Downloads','rosalind_{0}.txt'.format(name)),'r')
-        strings = []
-        for record in SeqIO.parse(inFile,'fasta'):
-            print (record.id)
-            print (str(record.seq))
-            strings.append(str(record.seq))    
-        score,_,_=align(strings[0],strings[1],
+        with open(os.path.join(r'C:\Users\Simon\Downloads','rosalind_{0}.txt'.format(name)),'r') as f:
+            print ('Processing {0}'.format(f.name))
+            strings = [] 
+            for record in SeqIO.parse(f,'fasta'):
+                print (record.id)
+                print (str(record.seq))
+                strings.append(str(record.seq))    
+            score,_,_=align(strings[0],strings[1],
+                            replace_score=blosum62,
+                            indel_cost=(5,0),
+                            get_indel_cost=get_indel_cost_with_skips,
+                            backtrack=get_score,
+                            showScores=False,showPath=False)
+            print (score)
+    else:
+        score,_,_=align(sys.argv[1],sys.argv[2],
                         replace_score=blosum62,
                         indel_cost=(5,0),
                         get_indel_cost=get_indel_cost_with_skips,
                         backtrack=get_score,
                         showScores=False,showPath=False)
-        print (score)
+        print (score)         
