@@ -24,7 +24,7 @@ def get_indel_cost_with_skips(sigma,delta,i,j,di,dj,moves):
     if (i_previous,j_previous) in moves:
         _,_,di_previous,dj_previous = moves[(i_previous,j_previous)]
         if (di_previous==0 and di==0) or (dj_previous==0 and dj==0):
-            return di+di_previous,dj+dj_previous,sigma
+            return i_previous-i,j_previous-j,delta
 
     return di,dj,sigma
 
