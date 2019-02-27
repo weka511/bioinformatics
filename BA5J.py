@@ -15,6 +15,9 @@
 
 from align import create_distance_matrix
 from Bio.SubsMat.MatrixInfo import blosum62
+import numpy as np
+
+# https://web.stanford.edu/class/cs262/presentations/lecture2.pdf
 
 def san_kai(s,t, replace_score=blosum62,sigma=11,epsilon=1):
     def score(pair):
@@ -22,32 +25,40 @@ def san_kai(s,t, replace_score=blosum62,sigma=11,epsilon=1):
             a,b=pair
             return (b,a)
         return replace_score[pair] if pair in replace_score else replace_score[reverse(pair)]     
-    lower  =  create_distance_matrix(len(s)+1,len(t)+1)
-    middle =  create_distance_matrix(len(s)+1,len(t)+1)
-    upper  =  create_distance_matrix(len(s)+1,len(t)+1)
-    for i in range(len(s)+1):
-        for j in range(len(t)+1):
-            #if i==0 and j==0:
-                #pass
-            #elif i==0:
-            if i==0:
-                lower[i][j] = - (sigma + epsilon *(j-1))
-                upper[i][j] = - (sigma + epsilon *(j-1)) 
- 
-            elif j==0:
-                lower[i][j] = - (sigma + epsilon *(i-1))
-                upper[i][j] = - (sigma + epsilon *(i-1))
-
-            else:
-                lower[i][j]  = max(lower[i-1][j]    - epsilon,
-                                   middle[i-1][j]   - sigma)
-                middle[i][j] = max(lower[i][j],
-                                   middle[i-1][j-1] + score((s[i-1],t[i-1])) ,
-                                   upper[i][j])     
-                upper[i][j]  = max(upper[i][j-1]    - epsilon,
-                                   middle[i][j-1]   - sigma)
+    F     = create_distance_matrix(len(s)+1,len(t)+1)
+    G     = create_distance_matrix(len(s)+1,len(t)+1)
+    H     = create_distance_matrix(len(s)+1,len(t)+1)
+    V     = create_distance_matrix(len(s)+1,len(t)+1)
+    moves = {}
+    for i in range(1,len(s)+1):
+        V[i][0] = - (sigma + epsilon *(i-1))
         
-    return middle[len(s)][len(t)],[],[]
+    for j in range(1,len(t)+1):
+        V[0][j] = - (sigma + epsilon *(j-1))
+        
+    for i in range(1,len(s)+1):
+        for j in range(1,len(t)+1):
+            history = []
+            F[i][j] = V[i-1][j-1] + score((s[i-1],t[j-1]))
+            history.append((i-1,j-1,s[i-1],t[j-1]))
+            G[i][j] = max(V[i-1][j]-sigma, G[i-1][j]-epsilon)
+            history.append((i-1,j,s[i-1],'-'))
+            H[i][j] = max(V[i][j-1]-sigma, H[i][j-1]-epsilon)
+            history.append((i,j-1,'-',t[j-1]))
+            choices = [F[i][j], G[i][j], H[i][j]]
+            index   = np.argmax(choices)
+            V[i][j] = choices[index]
+            moves[(i,j)] = history[index]
+    
+    i  = len(s)
+    j  = len(t)
+    ss = []
+    ts = []
+    while i>0 or j > 0:
+        i,j,s0,t0=moves[(i,j)]
+        ss.append(s0)
+        ts.append(t0)
+    return V[len(s)][len(t)],ss[::-1],ts[::-1]
 
 def ba5j(s,t):
     score,s1,t1 = san_kai([s0 for s0 in s],[t0 for t0 in t])
