@@ -54,7 +54,7 @@ def san_kai(s,t, replace_score=blosum62,sigma=11,epsilon=1):
     j  = len(t)
     ss = []
     ts = []
-    while i>0 or j > 0:
+    while i>0 and j > 0:
         i,j,s0,t0=moves[(i,j)]
         ss.append(s0)
         ts.append(t0)
@@ -65,5 +65,13 @@ def ba5j(s,t):
     return score,''.join(s1),''.join(t1)
 
 if __name__=='__main__':
-    print(ba5j('NGHVRQQIPQYGAIHSRCPQNIMMCNPDNSYDSCKQDLNKNKNEKQFWQVCRMEGDIALLHAIVAWDNPCEWLGWFYPCI',
-               'NGHGAIKEHSRCPQNIMMCNPDNSYCSNNKQFWQVCRMEGDSNALLHAKVAWDNPAPCI'))
+    import os, os.path
+    with open(os.path.join(r'C:\Users\Simon\Downloads','rosalind_ba5j(4).txt'),'r') as f:
+        strings=[]
+        for line in f:
+            strings.append(line.strip())
+        score,s,t=ba5j(strings[0],strings[1])
+        with open('ba5j.txt','w') as o:
+            o.write('{0}\n'.format(score))
+            o.write('{0}\n'.format(s))
+            o.write('{0}\n'.format(t))

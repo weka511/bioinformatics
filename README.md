@@ -71,6 +71,8 @@ NB: functions generally used zero based indexing; Rosalind uses 1-based.
 |BA5L 	|TBP|[Align Two Strings Using Linear Space](http://rosalind.info/problems/ba5l/) |                          
 |BA5M 	|TBP|[Find a Highest-Scoring Multiple Sequence Alignment](http://rosalind.info/problems/ba5m/) | 
 |BA5N |rosalind_old.py|[Find a Topological Ordering of a DAG](http://rosalind.info/problems/ba5n/) | 
+|BA6F| BA6F.py| [Implement Chromosome to Cycle](http://rosalind.info/problems/ba6f/)|
+|BA6G| BA6G.py| [Implement Cycle to Chromosome](http://rosalind.info/problems/ba6g/)|
 |7|-|How do we locate disease causing mutations|
 | BA7A | BA7A.py | [Compute Distances Between Leaves](http://rosalind.info/problems/ba7a/) |
 | BA7B |BA7B.py | [Limb Length Problem](http://rosalind.info/problems/ba7b/) |
