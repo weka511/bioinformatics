@@ -71,6 +71,12 @@ NB: functions generally used zero based indexing; Rosalind uses 1-based.
 |BA5L 	|TBP|[Align Two Strings Using Linear Space](http://rosalind.info/problems/ba5l/) |                          
 |BA5M 	|TBP|[Find a Highest-Scoring Multiple Sequence Alignment](http://rosalind.info/problems/ba5m/) | 
 |BA5N |rosalind_old.py|[Find a Topological Ordering of a DAG](http://rosalind.info/problems/ba5n/) | 
+|6|-|Are there fragile regions in the human genome?|
+|BA6A|TBP| [Implement GreedySorting to Sort a Permutation by Reversals ](http://rosalind.info/problems/ba6a/)|
+|BA6B| TBP | [Compute the 2-Break Distance Between a Pair of Genomes](http://rosalind.info/problems/ba6b/)|
+|BA6C| TBP| [Compute the 2-Break Distance Between a Pair of Genomes](http://rosalind.info/problems/ba6c/)|
+|BA6D| TBP| [Find a Shortest Transformation of One Genome into Another by 2-Breaks](http://rosalind.info/problems/ba6d/)|
+|BA6E| TBP| [Implement ColoredEdges](http://rosalind.info/problems/ba6e/)|
 |BA6F| BA6F.py| [Implement Chromosome to Cycle](http://rosalind.info/problems/ba6f/)|
 |BA6G| BA6G.py| [Implement Cycle to Chromosome](http://rosalind.info/problems/ba6g/)|
 |7|-|How do we locate disease causing mutations|
