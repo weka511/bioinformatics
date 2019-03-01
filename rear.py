@@ -19,39 +19,35 @@ REAR 	Reversal Distance
 import time
 
 
-#def rear(s1,s2):
-    #def reverse(s,i0,i1):
-        #if i0<i1:
-            #return s[:i0] + s[i0:i1][::-1] + s[i1:]
-    #def generate_single_reversals(s):
-        #return [reverse(s,i0,i1) for i0 in range(len(s)) for i1 in range(i0+1,len(s)+1)]
-    #if s1==s2:
-        #return 0
-    #history=set()
-    #history.add(str(s2))
-    #candidates=[s2]
-    #for depth in range(25):
-        #print (depth, len(candidates), len(history))
-        #for s in candidates:
-            #if s1==s:
-                #return depth        
-        #next_generation=[]
-        #for s in candidates:
-            #for rr in generate_single_reversals(s):
-                #key= str(rr)
-                #if not key in history:
-                    #next_generation.append(rr)
-                    #history.add(key)
-        ##for s in next_generation:
-            ##if s1==s:
-                ##return depth            
-        #candidates=next_generation
-    #return None
+def GreedySorting(P,signed=False):
+    def kReverse(k):
+        pos = P.index(k if k in P else -k)
+        return P[0:k-1] + [-P[j] if signed else P[j] for j in range(pos,k-2,-1)] + P[pos+1:]
+    def format():
+        def f(p):
+            return str(p) if not signed or p<0 else '+' + str(p)
+        return '(' + ' '.join(f(p) for p in P) + ')'
+    reversalDistance = 0
+    for k in range(1,len(P)+1):
+        if k!=P[k-1]:
+            P=kReverse(k)
+            reversalDistance+=1
+            print (format())
+            if P[k-1]==-k:
+                P[k-1]=k
+                reversalDistance+=1
+                print (format())
+    return reversalDistance
+
 
 def rear(s1,s2):
-    return -1
-
-
+    def sorted(S):
+        for i in range(1,len(S)):
+            if S[i-1]>S[i]: return False
+        return True
+    if sorted(s2): return GreedySorting(s1)
+    if sorted(s1): return GreedySorting(s2)
+    return GreedySorting([s2.index(p)+1 for p in s1],signed=False)    
 
 if __name__=='__main__':
     def parse(line):
@@ -82,17 +78,18 @@ if __name__=='__main__':
     it = iter(data)
     result = []
     for a in it:
+        print ('----')
         result.append(rear(a,next(it)))
     print (result)
- #   with open (r'C:\Users\Simon\Downloads\rosalind_rear.txt') as f:
-#    with open (r'rear.txt') as f:
-        #for line in f:
-            #if i%3==0:
-                #original=parse(line)
-            #if i%3==1:
-                #result.append(rear(original,parse(line)))
-                #print("--- {0} seconds ---".format(time.time() - start_time))
-            #i+=1
+    with open (r'C:\Users\Simon\Downloads\rosalind_rear(1).txt') as f:
+        result = []
+        for line in f:
+            if i%3==0:
+                original=parse(line)
+            if i%3==1:
+                result.append(rear(original,parse(line)))
+                print("--- {0} seconds ---".format(time.time() - start_time))
+            i+=1
     
-    #print(result)
+        print(result)
         
