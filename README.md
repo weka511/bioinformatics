@@ -145,7 +145,7 @@ NB: functions generally used zero based indexing; Rosalind uses 1-based.
 | pmch.py| 	[Perfect Matchings and RNA Secondary Structures](http://rosalind.info/problems/pmch/) |
 | PTRA.py | 	 [Protein Translation](http://rosalind.info/problems/ptra/) |
 | QS.py | 	[Quicksort](http://rosalind.info/problems/qs/)|
-| rear.py | [Reversal distance](http://rosalind.info/problems/rear/) |
+| rear.py | [Reversal distance](http://rosalind.info/problems/rear/) (WIP)|
 | ts.py | [Topological sort](http://rosalind.info/problems/ts/) test harness only--see BA5N |
 
 
