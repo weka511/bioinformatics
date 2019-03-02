@@ -16,7 +16,11 @@
 #    BA6C Compute the 2-Break Distance Between a Pair of Genomes
 
 def ba6c(a,b):
-    pass
+    def blocks():
+        return 0
+    def cycles():
+        return 0
+    return blocks()-cycles()
 
 if __name__=='__main__':
     print (ba6c(
