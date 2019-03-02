@@ -74,7 +74,7 @@ NB: functions generally used zero based indexing; Rosalind uses 1-based.
 |6|-|Are there fragile regions in the human genome?|
 |BA6A|BA6A.py| [Implement GreedySorting to Sort a Permutation by Reversals ](http://rosalind.info/problems/ba6a/)|
 |BA6B| BA6B.py | [Compute the Number of Breakpoints in a Permutation](http://rosalind.info/problems/ba6b/)|
-|BA6C| TBP| [Compute the 2-Break Distance Between a Pair of Genomes](http://rosalind.info/problems/ba6c/)|
+|BA6C| BA6C.py| [Compute the 2-Break Distance Between a Pair of Genomes](http://rosalind.info/problems/ba6c/) (WIP)|
 |BA6D| TBP| [Find a Shortest Transformation of One Genome into Another by 2-Breaks](http://rosalind.info/problems/ba6d/)|
 |BA6E| BA6E.py| [Find All Shared k-mers of a Pair of Strings ](http://rosalind.info/problems/ba6e/)|
 |BA6F| BA6F.py| [Implement Chromosome to Cycle](http://rosalind.info/problems/ba6f/)|
