@@ -14,3 +14,30 @@
 #    along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>
 #
 #    HEA buiding a heap
+
+def hea(n,A):
+    def next_free(T):
+        pass
+    def insert(a,T,current):
+        if len(T)==0:
+            T.append((-1,1,2,a))
+            return 0
+        else:
+            parent,left,right,_=T[current]
+            if len(T)<=left:
+                T.append((current,2*left+1,2*left+2,a))
+                return current
+            if len(T)<=right:
+                T.append((current,2*right+1,2*right+2,a))
+                return next_free(T)            
+    def linearize(T):
+        return []
+    T   = []
+    ptr = -1
+    
+    for a in A:
+        ptr=insert(a,T,ptr)
+    return linearize(T)
+
+if __name__=='__main__':
+    print (hea(5,[1, 3, 5, 7, 20]))
