@@ -16,28 +16,43 @@
 #    HEA buiding a heap
 
 def hea(n,A):
-    def next_free(T):
-        pass
-    def insert(a,T,current):
-        if len(T)==0:
-            T.append((-1,1,2,a))
-            return 0
-        else:
-            parent,left,right,_=T[current]
-            if len(T)<=left:
-                T.append((current,2*left+1,2*left+2,a))
-                return current
-            if len(T)<=right:
-                T.append((current,2*right+1,2*right+2,a))
-                return next_free(T)            
-    def linearize(T):
-        return []
-    T   = []
-    ptr = -1
-    
-    for a in A:
-        ptr=insert(a,T,ptr)
-    return linearize(T)
+    def parent(i):
+        return (i-1)//2
+    def leftChild(i):
+        return 2*i+1
+    def rightChild(i):
+        return 2*i + 2
+    def swap(i,j):
+        x    = A[i]
+        y    = A[j]
+        A[i] = y
+        A[j] = x
+        
+    def siftDown(start,end):
+        root = start
+        while leftChild(root)<end:
+            child     = leftChild(root)
+            swap_with = root
+            if A[swap_with]<A[child]:
+                swap_with = child
+            if child+1<=end and A[swap_with]<A[child+1]:
+                swap_with = child+1
+            if swap_with==root:
+                return
+            else:
+                swap(root,swap_with)
+                root = swap_with
+                
+    start = parent(n - 1)
+    while start >= 0:
+        siftDown(start,n-1)
+        start -=1
+        
+    return A
+
 
 if __name__=='__main__':
-    print (hea(5,[1, 3, 5, 7, 20]))
+    with open('/Users/Simon/Downloads/rosalind_hea(1).txt') as f:
+        n=int(f.readline().strip())
+        A = [int(a) for a in f.readline().strip().split(' ')]
+        print (' '.join(str(a) for a in hea(n,A)))
