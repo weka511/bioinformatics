@@ -15,7 +15,8 @@
 #
 #    HEA buiding a heap
 
-def hea(n,A):
+def heapsort(n,A):
+    
     def parent(i):
         return (i-1)//2
     def leftChild(i):
@@ -30,7 +31,7 @@ def hea(n,A):
         
     def siftDown(start,end):
         root = start
-        while leftChild(root)<end:
+        while leftChild(root)<=end:
             child     = leftChild(root)
             swap_with = root
             if A[swap_with]<A[child]:
@@ -42,17 +43,26 @@ def hea(n,A):
             else:
                 swap(root,swap_with)
                 root = swap_with
-                
-    start = parent(n - 1)
-    while start >= 0:
-        siftDown(start,n-1)
-        start -=1
-        
+    
+    def hea():            
+        start = parent(n - 1)
+        while start >= 0:
+            siftDown(start,n-1)
+            start -=1
+            
+        return A
+    
+    hea()
+    end = n-1
+    while end>0:
+        swap(end,0)
+        end-=1
+        siftDown(0,end)
     return A
 
-
 if __name__=='__main__':
-    with open('/Users/Simon/Downloads/rosalind_hea(1).txt') as f:
+    #print (heapsort(9,[2, 6, 7, 1, 3, 5, 4, 8, 9]))
+    with open('/Users/Simon/Downloads/rosalind_hs(3).txt') as f:
         n=int(f.readline().strip())
         A = [int(a) for a in f.readline().strip().split(' ')]
-        print (' '.join(str(a) for a in hea(n,A)))
+        print (' '.join(str(a) for a in heapsort(n,A)))

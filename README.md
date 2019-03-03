@@ -126,7 +126,7 @@ NB: functions generally used zero based indexing; Rosalind uses 1-based.
 | gcon.py | [Global Alignment with Constant Gap Penalty](http://rosalind.info/problems/gcon/) (WIP)|
 | GLOB.py | 	[Global Alignment with Scoring Matrix](http://rosalind.info/problems/glob/) -- test harness only|
 | GREP.py | 	 [Genome Assembly with Perfect Coverage and Repeats](http://rosalind.info/problems/grep/)|
-|HEA.py| [Building a Heap](http://rosalind.info/problems/hea/)
+|HEA.py| [Building a Heap](http://rosalind.info/problems/hea/ and [Heap Sort](http://rosalind.info/problems/hs/)
 | INS.py | 	 	[Insertion Sort](http://rosalind.info/problems/ins/) |
 | INV.py | 	[Counting Inversions](http://rosalind.info/problems/inv/) |
 | kmp.py | [Speeding Up Motif Finding](http://rosalind.info/problems/kmp/) |
