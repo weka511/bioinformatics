@@ -15,25 +15,57 @@
 #
 #    BA6C Compute the 2-Break Distance Between a Pair of Genomes
 
-from fragile import count_synteny_blocks,get_synteny_blocks
+from fragile import count_synteny_blocks,get_synteny_blocks,ColouredEdges
 
-def extract_all_edges(chromosome):
-    def extract_edges(graph):
-        return list(zip(graph,graph[1:]+graph[0:]))
-    return [extract_edges(graph) for graph in chromosome]
+#def extract_all_edges(chromosome):
+    #def extract_edges(graph):
+        #return list(zip(graph,graph[1:]+graph[0:]))
+    #return [extract_edges(graph) for graph in chromosome]
     
 def d2break(a,b):
-    def cycles():
-        return 0
+    def update(index,edges,x,y,max_node):
+        edges.append((x,y))
+        if x in index:
+            index[x].append(y)
+        else:
+            index[x]=[y] 
+        if x>max_node:
+            max_node=x
+        return max_node
+    
+    def build_cycle(start,i,index,cycle):
+        maybe_start = False
+        cycle.append(i)
+        for link in index[i]:
+            if link==start:
+                maybe_start = True
+            else:
+                if not link in cycle:
+                    build_cycle(start,link,index,cycle)
+                    maybe_start = False
+        index.pop(i)
+        
     blocks = get_synteny_blocks(a)
     n      = count_synteny_blocks(a)
     nb     = count_synteny_blocks(b)
     assert (n==nb),'Mismatched synteny blocks {0} != {1}'.format(n,nb)
-    e1     = extract_all_edges(a)
-    e2     = extract_all_edges(b)
-    print (e1)
-    print (e2)
-    return n-cycles()
+
+    edges = []
+    index = {}
+    max_node = -1
+    for (x,y) in ColouredEdges(a) + ColouredEdges(b):       
+        max_node = update(index,edges,x,y,max_node)
+        max_node = update(index,edges,y,x,max_node)
+ 
+    print (edges)
+    print (index)
+    print (max_node)
+    
+    cycles = []
+    for i in range(1,max_node+1):
+        if i in index:
+            cycles.append(build_cycle(i,i,index,[]))
+    return n - len(cycles)
 
 if __name__=='__main__':
     print (
