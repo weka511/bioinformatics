@@ -34,7 +34,7 @@ NB: functions generally used zero based indexing; Rosalind uses 1-based.
 |3|-|Which DNA Patterna play the Role of Molecular Clocks?|
 |BA3A|rosalind_old.py|	[Generate the k-mer Composition of a String](http://rosalind.info/problems/ba3a/) |
 |BA3B|rosalind_old.py|	[Reconstruct a String from its Genome Path](http://rosalind.info/problems/ba3a/)
-|BA3C	|rosalind_old.py|[Construct the Overlap Graph of a Collection of k-mers](http://rosalind.info/problems/ba3a/)
+|BA3C|rosalind_old.py|[Construct the Overlap Graph of a Collection of k-mers](http://rosalind.info/problems/ba3a/)
 |BA3D |rosalind_old.py|	[Construct the De Bruijn Graph of a String ](http://rosalind.info/problems/ba3a/)
 |BA3E |rosalind_old.py|	[Construct the De Bruijn Graph of a Collection of k-mers](http://rosalind.info/problems/ba3a/)
 |BA3F |rosalind_old.py|	[Find an Eulerian Cycle in a Graph](http://rosalind.info/problems/ba3a/)
@@ -43,19 +43,19 @@ NB: functions generally used zero based indexing; Rosalind uses 1-based.
 |BA3I |rosalind_old.py|	[Find a k-Universal Circular String](http://rosalind.info/problems/ba3a/)
 |BA3J |rosalind_old.py|	[Reconstruct a String from its Paired Composition](http://rosalind.info/problems/ba3a/)
 |4|-|How do we assemble Genomes?|
-|BA4A|rosalind_old.py|[Translate an RNA String into an Amino Acid String](http://rosalind.info/problems/ba4a/)  |
-|BA4B|rosalind_old.py|[Find Substrings of a Genome Encoding a Given Amino Acid String](http://rosalind.info/problems/ba4b/)  |
-|BA4C|rosalind_old.py|[Generate the Theoretical Spectrum of a Cyclic Peptide](http://rosalind.info/problems/ba4c/)  |
-|BA4D|rosalind_old.py|[Compute the Number of Peptides of Given Total Mass](http://rosalind.info/problems/ba4d/)  |
-|BA4E |rosalind_old.py|	[Find a Cyclic Peptide with Theoretical Spectrum Matching an Ideal Spectrum](http://rosalind.info/problems/ba4e/)  |
-|BA4F |rosalind_old.py|	[Compute the Score of a Cyclic Peptide Against a Spectrum](http://rosalind.info/problems/ba4f/)  |
-|BA4G |rosalind_old.py|	[Implement LeaderboardCyclopeptideSequencing ](http://rosalind.info/problems/ba4g/)  |
-|BA4H |rosalind_old.py|	[Generate the Convolution of a Spectrum ](http://rosalind.info/problems/ba4h/)  |
-|BA4I |rosalind_old.py|	[Implement ConvolutionCyclopeptideSequencing](http://rosalind.info/problems/ba4i/)  |
-|BA4J |rosalind_old.py|	[Generate the Theoretical Spectrum of a Linear Peptide](http://rosalind.info/problems/ba4j/)  |
-|BA4K|rosalind_old.py|	[Compute the Score of a Linear Peptide ](http://rosalind.info/problems/ba4k/)  |
-|BA4L |rosalind_old.py|	[Trim a Peptide Leaderboard](http://rosalind.info/problems/ba4l/)  |
-| BA4M| ba4m.py |   [Solve the Turnpike Problem](http://rosalind.info/problems/ba4m/)  |
+|BA4A|rosalind_old.py|[Translate an RNA String into an Amino Acid String](http://rosalind.info/problems/ba4a/) |
+|BA4B|rosalind_old.py|[Find Substrings of a Genome Encoding a Given Amino Acid String](http://rosalind.info/problems/ba4b/) |
+|BA4C|rosalind_old.py|[Generate the Theoretical Spectrum of a Cyclic Peptide](http://rosalind.info/problems/ba4c/) |
+|BA4D|rosalind_old.py|[Compute the Number of Peptides of Given Total Mass](http://rosalind.info/problems/ba4d/) |
+|BA4E |rosalind_old.py|	[Find a Cyclic Peptide with Theoretical Spectrum Matching an Ideal Spectrum](http://rosalind.info/problems/ba4e/) |
+|BA4F |rosalind_old.py|	[Compute the Score of a Cyclic Peptide Against a Spectrum](http://rosalind.info/problems/ba4f/) |
+|BA4G |rosalind_old.py|	[Implement LeaderboardCyclopeptideSequencing ](http://rosalind.info/problems/ba4g/) |
+|BA4H |rosalind_old.py|	[Generate the Convolution of a Spectrum ](http://rosalind.info/problems/ba4h/) |
+|BA4I |rosalind_old.py|	[Implement ConvolutionCyclopeptideSequencing](http://rosalind.info/problems/ba4i/) |
+|BA4J |rosalind_old.py|	[Generate the Theoretical Spectrum of a Linear Peptide](http://rosalind.info/problems/ba4j/) |
+|BA4K|rosalind_old.py|	[Compute the Score of a Linear Peptide ](http://rosalind.info/problems/ba4k/) |
+|BA4L |rosalind_old.py|	[Trim a Peptide Leaderboard](http://rosalind.info/problems/ba4l/) |
+| BA4M| ba4m.py | [Solve the Turnpike Problem](http://rosalind.info/problems/ba4m/) |
 |5|-|How do we compare Biological Sequences?|
 |BA5A|rosalind_old.py|[Find the Minimum Number of Coins Needed to Make Change](http://rosalind.info/problems/ba5a/)|
 |BA5B|rosalind_old.py|[Find the Length of a Longest Path in a Manhattan-like Grid](http://rosalind.info/problems/ba5b/)|
@@ -64,14 +64,14 @@ NB: functions generally used zero based indexing; Rosalind uses 1-based.
 |BA5E|rosalind_old.py|[Find a Highest-Scoring Alignment of Two Strings](http://rosalind.info/problems/ba5e/)|
 |BA5F|rosalind_old.py|[Find a Highest-Scoring Local Alignment of Two Strings](http://rosalind.info/problems/ba5f/)|
 |BA5G | edit.py | [Compute the Edit Distance Between Two Strings](http://rosalind.info/problems/ba5g/) |
-|BA5H| BA5H.py | [Find a Highest-Scoring Fitting Alignment of Two Strings](http://rosalind.info/problems/ba5h/) |                       
-|BA5I 	|TBP|[Find a Highest-Scoring Overlap Alignment of Two Strings](http://rosalind.info/problems/ba5i/) |                          
-|BA5J 	|BA5J.py|[Align Two Strings Using Affine Gap Penalties](http://rosalind.info/problems/ba5j/) (wip)|                         
-|BA5K 	|TBP|[Find a Middle Edge in an Alignment Graph in Linear Space](http://rosalind.info/problems/ba5k/) |
-|BA5L 	|TBP|[Align Two Strings Using Linear Space](http://rosalind.info/problems/ba5l/) |                          
-|BA5M 	|TBP|[Find a Highest-Scoring Multiple Sequence Alignment](http://rosalind.info/problems/ba5m/) | 
+|BA5H| BA5H.py | [Find a Highest-Scoring Fitting Alignment of Two Strings](http://rosalind.info/problems/ba5h/) |   
+|BA5I|TBP|[Find a Highest-Scoring Overlap Alignment of Two Strings](http://rosalind.info/problems/ba5i/) |    
+|BA5J|BA5J.py|[Align Two Strings Using Affine Gap Penalties](http://rosalind.info/problems/ba5j/) (wip)|    
+|BA5K|TBP|[Find a Middle Edge in an Alignment Graph in Linear Space](http://rosalind.info/problems/ba5k/) |
+|BA5L|TBP|[Align Two Strings Using Linear Space](http://rosalind.info/problems/ba5l/) |    
+|BA5M|TBP|[Find a Highest-Scoring Multiple Sequence Alignment](http://rosalind.info/problems/ba5m/) | 
 |BA5N |rosalind_old.py|[Find a Topological Ordering of a DAG](http://rosalind.info/problems/ba5n/) | 
-|6|-|Are there fragile regions in the human genome?|
+|6|fragile.py|Are there fragile regions in the human genome?|
 |BA6A|BA6A.py| [Implement GreedySorting to Sort a Permutation by Reversals ](http://rosalind.info/problems/ba6a/)|
 |BA6B| BA6B.py | [Compute the Number of Breakpoints in a Permutation](http://rosalind.info/problems/ba6b/)|
 |BA6C| BA6C.py| [Compute the 2-Break Distance Between a Pair of Genomes](http://rosalind.info/problems/ba6c/) (WIP)|
@@ -87,14 +87,14 @@ NB: functions generally used zero based indexing; Rosalind uses 1-based.
 | BA7A | BA7A.py | [Compute Distances Between Leaves](http://rosalind.info/problems/ba7a/) |
 | BA7B |BA7B.py | [Limb Length Problem](http://rosalind.info/problems/ba7b/) |
 | BA7C| BA7C.py | [Implement Additive Phylogeny](http://rosalind.info/problems/ba7c/) |
-| BA7D|BA7D.py |  [Implement UPGMA](http://rosalind.info/problems/ba7d/) |
+| BA7D|BA7D.py | [Implement UPGMA](http://rosalind.info/problems/ba7d/) |
 | BA7E|BA7E.py | [Implement the Neighbor Joining Algorithm](http://rosalind.info/problems/ba7e/) |
 | BA7F|BA7F.py | [Implement SmallParsimony](http://rosalind.info/problems/ba7f/) |
 | BA7G|BA7.py | [Adapt SmallParsimony to Unrooted Trees](http://rosalind.info/problems/ba7g/) |
 |8|-|How did Yeast become a Winemaker?|
 | BA8A|BA8A.py | [Implement FarthestFirstTraversal](http://rosalind.info/problems/ba8a/) |
 | BA8B|BA8B.py | [Compute the Squared Error Distortion](http://rosalind.info/problems/ba8b/) |
-| BA8C|BA8C.py | [Implement the Lloyd Algorithm for k-Means Clustering](http://rosalind.info/problems/ba8c/)  |
+| BA8C|BA8C.py | [Implement the Lloyd Algorithm for k-Means Clustering](http://rosalind.info/problems/ba8c/) |
 | BA8D|BA8D.py | [Implement the Soft k-Means Clustering Algorithm](http://rosalind.info/problems/ba8d/) |
 | BA8E|BA8E.py | [Implement Hierarchical Clustering](http://rosalind.info/problems/ba8e/) |
 
@@ -104,48 +104,48 @@ NB: functions generally used zero based indexing; Rosalind uses 1-based.
 | Name | Description |
 | -------------------------- | ------------------------------------------------|
 | 2sum.py | [2SUM](http://rosalind.info/problems/2sum/) |
-| 3sum.py | [3SUM](http://rosalind.info/problems/3sum/)  |
+| 3sum.py | [3SUM](http://rosalind.info/problems/3sum/) |
 | ASMQ.py | 	[Assessing Assembly Quality with N50 and N75](http://rosalind.info/problems/asmq/) |
-| bfs.py  | [Beadth First search](http://rosalind.info/problems/bfs/) |
+| bfs.py | [Beadth First search](http://rosalind.info/problems/bfs/) |
 | bip.py | [Testing Bipartiteness](http://rosalind.info/problems/bip/) (WIP)|
 | BINS.py | [Binary Search](http://rosalind.info/problems/bfs/) |
 | cat.pt | [Catalan Numbers and RNA Secondary Structures ](http://rosalind.info/problems/cat/) (WIP)|
 | cc.py |	[Connected Components](http://rosalind.info/problems/cc/) |
-| CORR.py | [Error Correction in Reads](http://rosalind.info/problems/corr/)  | 
+| CORR.py | [Error Correction in Reads](http://rosalind.info/problems/corr/) | 
 | cstr.py | [Creating a Character Table from Genetic Strings](http://rosalind.info/problems/cstr/)|
-| ctbl.py | [Creating a Character Table](http://rosalind.info/problems/ctbl/)  |
+| ctbl.py | [Creating a Character Table](http://rosalind.info/problems/ctbl/) |
 | dag.py | [Testing Acyclicity](http://rosalind.info/problems/dag/) |
 | DBRU.py |	[Constructing a De Bruijn Graph](http://rosalind.info/problems/dbru/) |
-| DDEG.py | 	[Double-Degree Array](http://rosalind.info/problems/ddeg/) |
-| DEG.py | 	 	[Degree Array](http://rosalind.info/problems/deg/) |
+| DDEG.py | [Double-Degree Array](http://rosalind.info/problems/ddeg/) |
+| DEG.py | 	[Degree Array](http://rosalind.info/problems/deg/) |
 | edit.py |	[Edit Distance](http://rosalind.info/problems/edit/) |
 | edta.py | [Edit Distance Alignment](http://rosalind.info/problems/edta/)|
-| FRMT.py | 	[Data Formats](http://rosalind.info/problems/frmt/)|
-| GASM.py | 	 	[Genome Assembly Using Reads](http://rosalind.info/problems/gasm/) |
+| FRMT.py | [Data Formats](http://rosalind.info/problems/frmt/)|
+| GASM.py | [Genome Assembly Using Reads](http://rosalind.info/problems/gasm/) |
 | GBK.py | 	[GenBank Introduction](http://rosalind.info/problems/gbk/) |
 | gcon.py | [Global Alignment with Constant Gap Penalty](http://rosalind.info/problems/gcon/) (WIP)|
-| GLOB.py | 	[Global Alignment with Scoring Matrix](http://rosalind.info/problems/glob/) -- test harness only|
-| GREP.py | 	 [Genome Assembly with Perfect Coverage and Repeats](http://rosalind.info/problems/grep/)|
+| GLOB.py | [Global Alignment with Scoring Matrix](http://rosalind.info/problems/glob/) -- test harness only|
+| GREP.py | [Genome Assembly with Perfect Coverage and Repeats](http://rosalind.info/problems/grep/)|
 |HEA.py| [Building a Heap](http://rosalind.info/problems/hea/) and [Heap Sort](http://rosalind.info/problems/hs/)
-| INS.py | 	 	[Insertion Sort](http://rosalind.info/problems/ins/) |
+| INS.py | 	[Insertion Sort](http://rosalind.info/problems/ins/) |
 | INV.py | 	[Counting Inversions](http://rosalind.info/problems/inv/) |
 | kmp.py | [Speeding Up Motif Finding](http://rosalind.info/problems/kmp/) |
-| lcsq.py | 	[Finding a Shared Spliced Motif](http://rosalind.info/problems/lcsq/) |
-| ling.py | 	[Linguistic Complexity of a Genome](http://rosalind.info/problems/ling/) (WIP)|
-| loca.py | 	[Local Alignment with Scoring Matrix ](http://rosalind.info/problems/loca/) |
-| LONG.py | 	[Genome Assembly as Shortest Superstring](http://rosalind.info/problems/long/) |
-| maj.py |  [Majority Element](http://rosalind.info/problems/maj/) ||
+| lcsq.py | [Finding a Shared Spliced Motif](http://rosalind.info/problems/lcsq/) |
+| ling.py | [Linguistic Complexity of a Genome](http://rosalind.info/problems/ling/) (WIP)|
+| loca.py | [Local Alignment with Scoring Matrix ](http://rosalind.info/problems/loca/) |
+| LONG.py | [Genome Assembly as Shortest Superstring](http://rosalind.info/problems/long/) |
+| maj.py | [Majority Element](http://rosalind.info/problems/maj/) ||
 | MED.py | 	[Median](http://rosalind.info/problems/med/)|
-| mend.py | 	 [Inferring a Genotype from a Pedigree](http://rosalind.info/problems/mend/) |
-| MER.py |  	[Merge Two Sorted Arrays](http://rosalind.info/problems/mer/) |
+| mend.py |  [Inferring a Genotype from a Pedigree](http://rosalind.info/problems/mend/) |
+| MER.py | 	[Merge Two Sorted Arrays](http://rosalind.info/problems/mer/) |
 | MS.py | 	[Mergesort](http://rosalind.info/problems/ms/)|
-| nwck.py | 	[Distances in Trees](http://rosalind.info/problems/nwck/) |
+| nwck.py | [Distances in Trees](http://rosalind.info/problems/nwck/) |
 | PAR.py | 	 [2-Way Partition](http://rosalind.info/problems/par/) |
-| PAR3.py | 	 [3-Way Partition](http://rosalind.info/problems/par3/) |
-| PCOV.py | 	 [Genome Assembly with Perfect Coverage](http://rosalind.info/problems/pcov/) |
+| PAR3.py |  [3-Way Partition](http://rosalind.info/problems/par3/) |
+| PCOV.py |  [Genome Assembly with Perfect Coverage](http://rosalind.info/problems/pcov/) |
 | pmch.py| 	[Perfect Matchings and RNA Secondary Structures](http://rosalind.info/problems/pmch/) |
-| ps.py | 	[Partial sort](http://rosalind.info/problems/ps/) (WIP)|
-| PTRA.py | 	 [Protein Translation](http://rosalind.info/problems/ptra/) |
+| ps.py | 	[Partial sort](http://rosalind.info/problems/ps/)|
+| PTRA.py |  [Protein Translation](http://rosalind.info/problems/ptra/) |
 | QS.py | 	[Quicksort](http://rosalind.info/problems/qs/)|
 | rear.py | [Reversal distance](http://rosalind.info/problems/rear/) (WIP)|
 | ts.py | [Topological sort](http://rosalind.info/problems/ts/) test harness only--see BA5N |
@@ -158,11 +158,11 @@ NB: functions generally used zero based indexing; Rosalind uses 1-based.
 | align.py | Common functions for alignment |
 | helpers.py | Utilities for formatting output, parsing input, etc |
 | LICENSE |	License Agreement|
-| newick.py 	 | Parser for files in [Newick format](http://evolution.genetics.washington.edu/phylip/newicktree.html) |
-| README.md 	|This file|
-| rosalind.py | 	Shared code|
-| rosalind_old.py | 	Code from the early days of project, including much of the textbook track|
-| rosalind.wpr | 	WingWare Project File |
+| newick.py | Parser for files in [Newick format](http://evolution.genetics.washington.edu/phylip/newicktree.html) |
+| README.md |This file|
+| rosalind.py | Shared code|
+| rosalind_old.py | Code from the early days of project, including much of the textbook track|
+| rosalind.wpr | WingWare Project File |
 
 ## Other stuff
 
