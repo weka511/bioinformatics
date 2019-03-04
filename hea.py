@@ -15,50 +15,68 @@
 #
 #    HEA buiding a heap
 
-def heapsort(n,A):
-    
-    def parent(i):
-        return (i-1)//2
-    def leftChild(i):
-        return 2*i+1
-    def rightChild(i):
-        return 2*i + 2
-    def swap(i,j):
-        x    = A[i]
-        y    = A[j]
-        A[i] = y
-        A[j] = x
+def parent(i):
+    return (i-1)//2
+
+def leftChild(i):
+    return 2*i+1
+
+def rightChild(i):
+    return 2*i + 2
+
+def swap(i,j,A):
+    x    = A[i]
+    y    = A[j]
+    A[i] = y
+    A[j] = x
+ 
+def siftDown(start,end,A):
+    root = start
+    while leftChild(root)<=end:
+        child     = leftChild(root)
+        swap_with = root
+        if A[swap_with]<A[child]:
+            swap_with = child
+        if child+1<=end and A[swap_with]<A[child+1]:
+            swap_with = child+1
+        if swap_with==root:
+            return
+        else:
+            swap(root,swap_with,A)
+            root = swap_with
+
+def siftUp(start,end,A):
+    child = end
+    while child>start:
+        par = parent(child)
+        if A[par]<A[child]:
+            swap(par,child,A)
+            child = par
+        else:
+            return
         
-    def siftDown(start,end):
-        root = start
-        while leftChild(root)<=end:
-            child     = leftChild(root)
-            swap_with = root
-            if A[swap_with]<A[child]:
-                swap_with = child
-            if child+1<=end and A[swap_with]<A[child+1]:
-                swap_with = child+1
-            if swap_with==root:
-                return
-            else:
-                swap(root,swap_with)
-                root = swap_with
-    
-    def hea():            
-        start = parent(n - 1)
-        while start >= 0:
-            siftDown(start,n-1)
-            start -=1
-            
-        return A
-    
-    hea()
+def hea(n,A):            
+    start = parent(n - 1)
+    while start >= 0:
+        siftDown(start,n-1,A)
+        start -=1
+        
+    return A
+
+def heapsort(n,A):
+    hea(n,A)
     end = n-1
     while end>0:
-        swap(end,0)
+        swap(end,0,A)
         end-=1
-        siftDown(0,end)
+        siftDown(0,end,A)
     return A
+
+def is_heap(n,A):
+    for i in range(1,n):
+        if A[parent(i)]<A[i]:
+            return i
+    return 0
 
 if __name__=='__main__':
     #print (heapsort(9,[2, 6, 7, 1, 3, 5, 4, 8, 9]))

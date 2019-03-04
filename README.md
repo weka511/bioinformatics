@@ -126,7 +126,7 @@ NB: functions generally used zero based indexing; Rosalind uses 1-based.
 | gcon.py | [Global Alignment with Constant Gap Penalty](http://rosalind.info/problems/gcon/) (WIP)|
 | GLOB.py | 	[Global Alignment with Scoring Matrix](http://rosalind.info/problems/glob/) -- test harness only|
 | GREP.py | 	 [Genome Assembly with Perfect Coverage and Repeats](http://rosalind.info/problems/grep/)|
-|HEA.py| [Building a Heap](http://rosalind.info/problems/hea/ and [Heap Sort](http://rosalind.info/problems/hs/)
+|HEA.py| [Building a Heap](http://rosalind.info/problems/hea/) and [Heap Sort](http://rosalind.info/problems/hs/)
 | INS.py | 	 	[Insertion Sort](http://rosalind.info/problems/ins/) |
 | INV.py | 	[Counting Inversions](http://rosalind.info/problems/inv/) |
 | kmp.py | [Speeding Up Motif Finding](http://rosalind.info/problems/kmp/) |
@@ -144,6 +144,7 @@ NB: functions generally used zero based indexing; Rosalind uses 1-based.
 | PAR3.py | 	 [3-Way Partition](http://rosalind.info/problems/par3/) |
 | PCOV.py | 	 [Genome Assembly with Perfect Coverage](http://rosalind.info/problems/pcov/) |
 | pmch.py| 	[Perfect Matchings and RNA Secondary Structures](http://rosalind.info/problems/pmch/) |
+| ps.py | 	[Partial sort](http://rosalind.info/problems/ps/) (WIP)|
 | PTRA.py | 	 [Protein Translation](http://rosalind.info/problems/ptra/) |
 | QS.py | 	[Quicksort](http://rosalind.info/problems/qs/)|
 | rear.py | [Reversal distance](http://rosalind.info/problems/rear/) (WIP)|
