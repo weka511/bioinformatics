@@ -53,3 +53,41 @@ def ColouredEdges(P):
             Edges.append((i,next(it)))
     return Edges
 
+# BA6I Implement Graph to Genome
+
+def GraphToGenome(GenomeGraph):
+    def diff(a,b):
+        _,x=a
+        y,_=b
+        return abs(x-y)
+    def build_cycle(pair,dcycles):
+        result = [pair]
+        while pair in dcycles:
+            pair = dcycles[pair]
+            result.append(pair)
+        return result
+    def black_edges(cycle):
+        result=[]
+        for i in range(len(cycle)):
+            a,_ = cycle[i]
+            _,b = cycle[i-1]
+            result.append((b,a))
+        return result
+ 
+    extract = [(a,b,diff(a,b)) for (a,b) in zip([GenomeGraph[-1]]+GenomeGraph[0:],GenomeGraph)]
+    gaps    = [(a,b) for (a,b,diff) in extract if diff>1]
+    cycles  = [(a,b) for (a,b,diff) in extract if diff==1]
+    dcycles = {}
+    for (a,b) in cycles:
+        dcycles[a]=b
+    P       = [build_cycle(pair,dcycles) for _,pair in gaps]
+    Q       = [black_edges(p) for p in P]
+    next_node = 1
+    R = []
+    for q in Q:
+        r = []
+        for a,b in q:
+            r.append(next_node if a<b else -next_node)
+            next_node+=1
+        R.append(r)
+    return R

@@ -15,7 +15,7 @@
 #
 #    BA6C Compute the 2-Break Distance Between a Pair of Genomes
 
-from fragile import count_synteny_blocks,get_synteny_blocks,ColouredEdges
+from fragile import count_synteny_blocks,get_synteny_blocks,ColouredEdges,GraphToGenome
 
 #def extract_all_edges(chromosome):
     #def extract_edges(graph):
@@ -33,17 +33,32 @@ def d2break(a,b):
             max_node=x
         return max_node
     
-    def build_cycle(start,i,index,cycle):
-        maybe_start = False
-        cycle.append(i)
-        for link in index[i]:
-            if link==start:
-                maybe_start = True
-            else:
-                if not link in cycle:
-                    build_cycle(start,link,index,cycle)
-                    maybe_start = False
-        index.pop(i)
+    def build_cycle(start,index):
+        cycle=[]
+        ins = [start]
+        while len(ins)>0:
+            j = ins[0]
+            if not j in cycle:
+                cycle.append(j)
+                for link in index[j]:
+                    if not link in cycle:
+                        ins.append(link)
+            ins.pop(0)
+        for i in cycle:
+            index.pop(i)
+        return cycle
+    
+    #def build_cycle(start,i,index,cycle):
+        #maybe_start = False
+        #cycle.append(i)
+        #for link in index[i]:
+            #if link==start:
+                #maybe_start = True
+            #else:
+                #if not link in cycle:
+                    #build_cycle(start,link,index,cycle)
+                    #maybe_start = False
+        #index.pop(i)
         
     blocks = get_synteny_blocks(a)
     n      = count_synteny_blocks(a)
@@ -56,20 +71,28 @@ def d2break(a,b):
     for (x,y) in ColouredEdges(a) + ColouredEdges(b):       
         max_node = update(index,edges,x,y,max_node)
         max_node = update(index,edges,y,x,max_node)
- 
-    print (edges)
-    print (index)
-    print (max_node)
-    
+
+    #for k,v in index.items():
+        #print (k,v)
     cycles = []
     for i in range(1,max_node+1):
         if i in index:
-            cycles.append(build_cycle(i,i,index,[]))
+            cycle=build_cycle(i,index)
+            cycles.append(cycle)
+            #cycles.append(build_cycle(i,i,index,[]))
     return n - len(cycles)
 
 if __name__=='__main__':
-    print (
-        d2break(
-            [[+1, +2, +3, +4, +5, +6]],
-            [[+1, -3, -6, -5],[+2, -4]]
-    ))
+    def conv(xx):
+        return [int(s) for s in xx]
+    def parse(line):
+        ff=line[1:-1].split(')(')
+        result=[conv(fff.split(' ')) for fff in ff]
+        return result
+    with open('/Users/Simon/Downloads/2BreakDistance.txt') as f:
+        f.readline()
+        print (
+            d2break(
+               parse(f.readline().strip()),
+                parse(f.readline().strip())
+        ))
