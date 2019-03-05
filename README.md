@@ -80,7 +80,7 @@ NB: functions generally used zero based indexing; Rosalind uses 1-based.
 |BA6F| BA6F.py| [Implement Chromosome to Cycle](http://rosalind.info/problems/ba6f/)|
 |BA6G| BA6G.py| [Implement Cycle to Chromosome](http://rosalind.info/problems/ba6g/)|
 |BA6H| BA6H.py| [Implement Coloured Edges](http://rosalind.info/problems/ba6h/)|
-|BA6I| BA6I.py| [Implement GraphToGenome ](http://rosalind.info/problems/ba6i/) (WIP)|
+|BA6I| BA6I.py| [Implement GraphToGenome ](http://rosalind.info/problems/ba6i/)|
 |BA6J| TBP| [Implement 2-BreakOnGenomeGraph ](http://rosalind.info/problems/ba6j/)|
 |BA6K| TBP| [Implement 2-BreakOnGenome ](http://rosalind.info/problems/ba6k/)|
 |7|-|How do we locate disease causing mutations|
