@@ -8,7 +8,7 @@ NB: functions generally used zero based indexing; Rosalind uses 1-based.
 | # | Location | Description |
 | ---- | -------------------------- | ------------------------------------------------|
 |1|-| Where in the Genome does DNA replication begin?|
-|BA1A|rosalind_old.py|	[Compute the Number of Times a Pattern Appears in a Text](http://rosalind.info/problems/ba1a/) |
+|BA1A|rosalind.py|	[Compute the Number of Times a Pattern Appears in a Text](http://rosalind.info/problems/ba1a/) |
 |BA1B|rosalind_old.py|	[Find the Most Frequent Words in a String](http://rosalind.info/problems/ba1b/) |
 |BA1C|rosalind_old.py|	[Find the Reverse Complement of a String](http://rosalind.info/problems/ba1c/) |
 |BA1D|rosalind_old.py|	[Find All Occurrences of a Pattern in a String](http://rosalind.info/problems/ba1d/) |
@@ -76,7 +76,7 @@ NB: functions generally used zero based indexing; Rosalind uses 1-based.
 |BA6B| BA6B.py | [Compute the Number of Breakpoints in a Permutation](http://rosalind.info/problems/ba6b/)|
 |BA6C| BA6C.py| [Compute the 2-Break Distance Between a Pair of Genomes](http://rosalind.info/problems/ba6c/)|
 |BA6D| TBP| [Find a Shortest Transformation of One Genome into Another by 2-Breaks](http://rosalind.info/problems/ba6d/)|
-|BA6E| BA6E.py| [Find All Shared k-mers of a Pair of Strings ](http://rosalind.info/problems/ba6e/)|
+|BA6E| fragile.py| [Find All Shared k-mers of a Pair of Strings ](http://rosalind.info/problems/ba6e/)|
 |BA6F| BA6F.py| [Implement Chromosome to Cycle](http://rosalind.info/problems/ba6f/)|
 |BA6G| BA6G.py| [Implement Cycle to Chromosome](http://rosalind.info/problems/ba6g/)|
 |BA6H| BA6H.py| [Implement Coloured Edges](http://rosalind.info/problems/ba6h/)|
@@ -155,14 +155,16 @@ NB: functions generally used zero based indexing; Rosalind uses 1-based.
 
 | Name | Description |
 | -------------------------- | ------------------------------------------------|
-| align.py | Common functions for alignment |
-| helpers.py | Utilities for formatting output, parsing input, etc |
-| LICENSE |	License Agreement|
-| newick.py | Parser for files in [Newick format](http://evolution.genetics.washington.edu/phylip/newicktree.html) |
-| README.md |This file|
-| rosalind.py | Shared code|
-| rosalind_old.py | Code from the early days of project, including much of the textbook track|
-| rosalind.wpr | WingWare Project File |
+| align.py || Common functions for alignment |
+| helpers.py || Utilities for formatting output, parsing input, etc |
+| LICENSE ||	License Agreement|
+| newick.py || Parser for files in [Newick format](http://evolution.genetics.washington.edu/phylip/newicktree.html) |
+| README.md ||This file|
+| rosalind.py || Shared code|
+|  |revc| [Complementing a Strand of DNA](http://rosalind.info/problems/revc/)|
+|  |subs|[Finding a Motif in DNA](http://rosalind.info/problems/subs/) |
+| rosalind_old.py || Code from the early days of project, including much of the textbook track|
+| rosalind.wpr || WingWare Project File |
 
 ## Other stuff
 

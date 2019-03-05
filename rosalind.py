@@ -33,6 +33,7 @@
 '''
 
 import re
+from helpers import translate
 
 def revc(dna):
     return dna.translate({
@@ -298,3 +299,47 @@ def verify_counts_complete_graph(string):
         return counts
     else:
         raise RosalindException('Mismatched counts {0}/{1} or {2}/{3}'.format(counts['A'],counts['U'],counts['C'],counts['G']))
+    
+# REVC	Complementing a Strand of DNA
+# BA1C	Find the Reverse Complement of a String
+#       In DNA strings, symbols 'A' and 'T' are complements of each other,
+#       as are 'C' and 'G'.
+#       The reverse complement of a DNA string s is the string sc formed by
+#       reversing the symbols of s, then taking the complement of each symbol
+#       (e.g., the reverse complement of "GTCA" is "TGAC").
+#
+#       Input:  A DNA string s of length at most 1000 bp.
+#       Return: The reverse complement sc of s.
+
+def revc(dna):
+    return translate(dna,{'A': 'T', 'C': 'G', 'G':'C', 'T': 'A'})[::-1]
+
+#SUBS	Finding a Motif in DNA
+#
+# Given two strings s and t, t is a substring of s if t is contained as a 
+# contiguous collection of symbols in s (as a result, t must be no longer than s).
+#
+# The position of a symbol in a string is the total number of symbols found to its left, 
+# including itself (e.g., the positions of all occurrences of 'U' in "AUGCUUCAGAAAGGUCUUACG"
+# are 2, 5, 6, 15, 17, and 18). The symbol at position i of s is denoted by s[i].
+#
+# A substring of s can be represented as s[j:k], where j and k represent the starting
+# and ending positions of the substring in s; for example,
+# if s = "AUGCUUCAGAAAGGUCUUACG", then s[2:5] = "UGCU".
+
+# The location of a substring s[j:k] is its beginning position j; note that t
+# will have multiple locations in s if it occurs more than once as a substring of s.
+#
+# Input: Two DNA strings s and t (each of length at most 1 kbp).
+#
+# Return: All locations of t as a substring of s.
+
+def subs(s,t):
+    matches=[]
+    start=0
+    while start>-1:
+        start=s.find(t,start)
+        if start>-1:
+            start+=1
+            matches.append(start)
+    return matches

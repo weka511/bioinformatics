@@ -48,19 +48,7 @@ def count_nucleotides(s):
 def dna_to_rna(dna):
     return rh.translate(dna,{'A': 'A', 'C': 'C', 'G':'G', 'T': 'U'})
 
-# REVC	Complementing a Strand of DNA
-# BA1C	Find the Reverse Complement of a String
-#       In DNA strings, symbols 'A' and 'T' are complements of each other,
-#       as are 'C' and 'G'.
-#       The reverse complement of a DNA string s is the string sc formed by
-#       reversing the symbols of s, then taking the complement of each symbol
-#       (e.g., the reverse complement of "GTCA" is "TGAC").
-#
-#       Input:  A DNA string s of length at most 1000 bp.
-#       Return: The reverse complement sc of s.
 
-def revc(dna):
-    return rh.translate(dna,{'A': 'T', 'C': 'G', 'G':'C', 'T': 'A'})[::-1]
 
 # GC	Computing GC Content
 #
@@ -90,35 +78,7 @@ def gc(fasta):
 def hamm(s,t):
     return len([a for (a,b) in zip(s,t) if a!=b])
 
-#SUBS	Finding a Motif in DNA
-#
-# Given two strings s and t, t is a substring of s if t is contained as a 
-# contiguous collection of symbols in s (as a result, t must be no longer than s).
-#
-# The position of a symbol in a string is the total number of symbols found to its left, 
-# including itself (e.g., the positions of all occurrences of 'U' in "AUGCUUCAGAAAGGUCUUACG"
-# are 2, 5, 6, 15, 17, and 18). The symbol at position i of s is denoted by s[i].
-#
-# A substring of s can be represented as s[j:k], where j and k represent the starting
-# and ending positions of the substring in s; for example,
-# if s = "AUGCUUCAGAAAGGUCUUACG", then s[2:5] = "UGCU".
 
-# The location of a substring s[j:k] is its beginning position j; note that t
-# will have multiple locations in s if it occurs more than once as a substring of s.
-#
-# Input: Two DNA strings s and t (each of length at most 1 kbp).
-#
-# Return: All locations of t as a substring of s.
-
-def subs(s,t):
-    matches=[]
-    start=0
-    while start>-1:
-        start=s.find(t,start)
-        if start>-1:
-            start+=1
-            matches.append(start)
-    return matches
 
 # LCSM	Finding a Shared Motif
 #
@@ -2477,41 +2437,7 @@ def topological_order(graph):
     
     return ordering
 
-# BA6E	Find All Shared k-mers of a Pair of Strings
-#
-# We say that a k-mer is shared by two genomes if either the k-mer or its
-# reverse complement appears in each genome. In Figure 1 are four pairs of
-# 3-mers that are shared by "AAACTCATC" and "TTTCAAATC".
-#
-# A shared k-mer can be represented by an ordered pair (x, y), where x is the
-# starting position of the k-mer in the first genome and y is the starting
-# position of the k-mer in the second genome. For the genomes "AAACTCATC" and 
-# "TTTCAAATC", these shared k-mers are (0,4), (0,0), (4,2), and (6,6).
-#
-# Input: An integer k and two strings.
-#
-# Return: All k-mers shared by these strings, in the form of ordered pairs
-#         (x, y) corresponding to starting positions of these k-mers in the
-#         respective strings.
 
-def find_shared_kmers(k,s1,s2):
-    def create_matches():
-        freq1=rh.create_frequency_table(s1,k)
-        freq2=rh.create_frequency_table(s2,k)
-        matches=[]
-        for kmer in freq1:
-            if kmer in freq2:
-                matches.append((kmer,kmer))
-            remk=revc(kmer)
-            if remk in freq2:
-                matches.append((kmer,remk))
-        return matches
-    index_pairs=[]
-    for k1,k2 in create_matches():
-        for i1 in subs(s1,k1):
-            for i2 in subs(s2,k2):
-                index_pairs.append((i1-1,i2-1))
-    return sorted(index_pairs)
 
 
 
@@ -2519,7 +2445,7 @@ def find_shared_kmers(k,s1,s2):
 
 if __name__=='__main__':
  
-    import unittest
+    import unittest,fragile
     
     class TestRosalind(unittest.TestCase):
         def test_dna(self):
@@ -2847,7 +2773,7 @@ if __name__=='__main__':
             self.assertIn(97,positions)
         
         def test_ba6e(self):
-            pairs=find_shared_kmers(3,'AAACTCATC','TTTCAAATC')
+            pairs=fragile.find_shared_kmers(3,'AAACTCATC','TTTCAAATC')
             self.assertIn((0, 4),pairs)
             self.assertIn((0, 0),pairs)
             self.assertIn((4, 2),pairs)
