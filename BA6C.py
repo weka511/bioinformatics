@@ -15,12 +15,8 @@
 #
 #    BA6C Compute the 2-Break Distance Between a Pair of Genomes
 
-from fragile import count_synteny_blocks,get_synteny_blocks,ColouredEdges,GraphToGenome
+from fragile import count_synteny_blocks,get_synteny_blocks,ColouredEdges
 
-#def extract_all_edges(chromosome):
-    #def extract_edges(graph):
-        #return list(zip(graph,graph[1:]+graph[0:]))
-    #return [extract_edges(graph) for graph in chromosome]
     
 def d2break(a,b):
     def update(index,edges,x,y,max_node):
@@ -48,17 +44,6 @@ def d2break(a,b):
             index.pop(i)
         return cycle
     
-    #def build_cycle(start,i,index,cycle):
-        #maybe_start = False
-        #cycle.append(i)
-        #for link in index[i]:
-            #if link==start:
-                #maybe_start = True
-            #else:
-                #if not link in cycle:
-                    #build_cycle(start,link,index,cycle)
-                    #maybe_start = False
-        #index.pop(i)
         
     blocks = get_synteny_blocks(a)
     n      = count_synteny_blocks(a)
@@ -72,14 +57,12 @@ def d2break(a,b):
         max_node = update(index,edges,x,y,max_node)
         max_node = update(index,edges,y,x,max_node)
 
-    #for k,v in index.items():
-        #print (k,v)
     cycles = []
     for i in range(1,max_node+1):
         if i in index:
             cycle=build_cycle(i,index)
             cycles.append(cycle)
-            #cycles.append(build_cycle(i,i,index,[]))
+            
     return n - len(cycles)
 
 if __name__=='__main__':
@@ -89,8 +72,8 @@ if __name__=='__main__':
         ff=line[1:-1].split(')(')
         result=[conv(fff.split(' ')) for fff in ff]
         return result
-    with open('/Users/Simon/Downloads/2BreakDistance.txt') as f:
-        f.readline()
+    with open('/Users/Simon/Downloads/rosalind_ba6c.txt') as f:
+ 
         print (
             d2break(
                parse(f.readline().strip()),
