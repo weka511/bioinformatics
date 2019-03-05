@@ -153,8 +153,8 @@ NB: functions generally used zero based indexing; Rosalind uses 1-based.
 
 ## Support
 
-| Name | Description |
-| -------------------------- | ------------------------------------------------|
+| Name | |Description |
+| -------------------------- | ---- | ------------------------------------------------|
 | align.py || Common functions for alignment |
 | helpers.py || Utilities for formatting output, parsing input, etc |
 | LICENSE ||	License Agreement|
