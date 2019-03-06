@@ -32,11 +32,111 @@ def getBreakPoints(P):
 
 # BA6C Compute the 2-Break Distance Between a Pair of Genomes
 
+#  get_synteny_blocks
+#
+# Input: a genome with circular chromosomes, e.g. 
+#        (+1 +2 +3 +4 +5 +6), or
+#        (+1 -3 -6 -5)(+2 -4)
+#
+# Returns: list of synteny blocks, e.g. [1,2,3,4,5,6]
+
 def get_synteny_blocks(a):
     return [j for i in a for j in i] 
 
+#  count_synteny_blocks
+#
+# Input: a genome with circular chromosomes, e.g. 
+#        (+1 +2 +3 +4 +5 +6), or
+#        (+1 -3 -6 -5)(+2 -4)
+#
+# Returns: Number of synteny blocks
+
 def count_synteny_blocks(a):
     return max(abs(b) for b in get_synteny_blocks(a))
+
+# d2break
+#
+# Find the 2-break distance between two genomes.
+#
+# Input: Two genomes with circular chromosomes on the same set of synteny blocks.
+#
+# Return: The 2-break distance between these two genomes.
+
+def d2break(a,b):
+    # update   Used to add one edge to the coloured graph
+    #
+    # Inputs: adjacency    Used to lookup all edges for one node
+    #         edges    List of edges
+    #         x        Defines start of one edge
+    #         y        Defines end of one edge x->y
+    #         max_node Hightest node number encountered
+    #
+    # Returns: Hightest node number encountered
+    
+    def update(adjacency,edges,x,y,max_node):
+        edges.append((x,y))
+        
+        if x in adjacency:
+            adjacency[x].append(y)
+        else:
+            adjacency[x]=[y] 
+            
+        if x>max_node:
+            max_node=x
+        return max_node
+
+    # build_cycle
+    #
+    # Build one cycle from adjacency list,
+    # and delete the edges gthat have been used
+    #
+    # Inputs:
+    #         start     First node of graph
+    #         adjacency Adjacency list for noded and edges
+    #
+    # Returns: newly constructed graph
+    #       
+    
+    def build_cycle(start,adjacency):
+        cycle=[]
+        ins = [start]
+        while len(ins)>0:
+            j = ins[0]
+            if not j in cycle:
+                cycle.append(j)
+                for link in adjacency[j]:
+                    if not link in cycle:
+                        ins.append(link)
+            ins.pop(0)
+        for i in cycle:
+            adjacency.pop(i)
+        return cycle
+    
+    # Verify that the two genomes share the same synteny blocks
+    
+    blocks = get_synteny_blocks(a)
+    n      = count_synteny_blocks(a)
+    nb     = count_synteny_blocks(b)
+    assert (n==nb),'Mismatched synteny blocks {0} != {1}'.format(n,nb)
+
+    # Combines coloured edges from both chromosomes
+    
+    edges     = []
+    adjacency = {}
+    max_node  = -1
+    for (x,y) in ColouredEdges(a) + ColouredEdges(b):       
+        max_node = update(adjacency,edges,x,y,max_node)
+        max_node = update(adjacency,edges,y,x,max_node)
+
+    # Count cycles
+    
+    cycles = []
+    for i in range(1,max_node+1):
+        if i in adjacency:
+            cycle=build_cycle(i,adjacency)
+            cycles.append(cycle)
+            
+    return n - len(cycles)
 
 # BA6E	Find All Shared k-mers of a Pair of Strings
 #

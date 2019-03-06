@@ -15,55 +15,8 @@
 #
 #    BA6C Compute the 2-Break Distance Between a Pair of Genomes
 
-from fragile import count_synteny_blocks,get_synteny_blocks,ColouredEdges
+from fragile import d2break
 
-    
-def d2break(a,b):
-    def update(index,edges,x,y,max_node):
-        edges.append((x,y))
-        if x in index:
-            index[x].append(y)
-        else:
-            index[x]=[y] 
-        if x>max_node:
-            max_node=x
-        return max_node
-    
-    def build_cycle(start,index):
-        cycle=[]
-        ins = [start]
-        while len(ins)>0:
-            j = ins[0]
-            if not j in cycle:
-                cycle.append(j)
-                for link in index[j]:
-                    if not link in cycle:
-                        ins.append(link)
-            ins.pop(0)
-        for i in cycle:
-            index.pop(i)
-        return cycle
-    
-        
-    blocks = get_synteny_blocks(a)
-    n      = count_synteny_blocks(a)
-    nb     = count_synteny_blocks(b)
-    assert (n==nb),'Mismatched synteny blocks {0} != {1}'.format(n,nb)
-
-    edges = []
-    index = {}
-    max_node = -1
-    for (x,y) in ColouredEdges(a) + ColouredEdges(b):       
-        max_node = update(index,edges,x,y,max_node)
-        max_node = update(index,edges,y,x,max_node)
-
-    cycles = []
-    for i in range(1,max_node+1):
-        if i in index:
-            cycle=build_cycle(i,index)
-            cycles.append(cycle)
-            
-    return n - len(cycles)
 
 if __name__=='__main__':
     def conv(xx):
