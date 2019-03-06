@@ -53,9 +53,18 @@ def PrefixTreeMatching(Text,Tree):
                 return False
             
 def MatchTries(s,t):
-    return [i for i in range(len(s)) if PrefixTreeMatching(s[i:],t) ]
+    return [i for i in range(len(s)-1) if PrefixTreeMatching(s[i:],t) ]
                 
 if __name__=='__main__':
-    s = 'AATCGGGTTCAATCGGGGT'
-    t = trie(['ATCG','GGGT'],one_based=False)
-    print (MatchTries(s,t))
+    #s = 'AATCGGGTTCAATCGGGGT'
+    #t = trie(['ATCG','GGGT'],one_based=False)
+    #print (MatchTries(s,t))
+    with open('/Users/Simon/Downloads/rosalind_ba9b.txt') as f:
+        strings=[]
+        #f.readline()
+        text = f.readline().strip()
+        for line in f:
+            #if line.startswith('Output'): break
+            strings.append(line.strip())
+        matches = MatchTries(text,trie(strings,one_based=False))
+        print (' '.join([str(m) for m in matches]))
