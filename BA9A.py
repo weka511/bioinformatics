@@ -18,5 +18,13 @@
 from rosalind import trie
 
 if __name__=='__main__':
-    for a,b,c in trie(['ATAGA','ATC','GAT'],one_based=False):
-        print ('{0}->{1}:{2}'.format(a,b,c))
+    #for a,b,c in trie(['ATAGA','ATC','GAT'],one_based=False):
+        #print ('{0}->{1}:{2}'.format(a,b,c))
+    with open('/Users/Simon/Downloads/rosalind_ba9a.txt') as f:
+        strings=[]
+        #f.readline()
+        for line in f:
+            #if line.startswith('Output'): break
+            strings.append(line.strip())
+        for a,b,c in trie(strings,one_based=False):
+            print ('{0}->{1}:{2}'.format(a,b,c))        

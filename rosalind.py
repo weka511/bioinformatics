@@ -349,6 +349,7 @@ def subs(s,t):
 # trie
 #
 # Given: A list of at most 100 DNA strings of length at most 100 bp, none of which is a prefix of another.
+#         one_based Indicates whther numnering of nodes should start at 1 or zero
 #
 # Return: The adjacency list corresponding to the trie T
 #         for these patterns, in the following format. 
