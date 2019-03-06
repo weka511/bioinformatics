@@ -1,7 +1,8 @@
 # Bioinformatics
 
-Code inspired by [Finding Hidden Messages in DNA (Bioinformatics I)](https://class.coursera.org/hiddenmessages-003) and from [Rosalind](http://rosalind.info). 
-NB: functions generally used zero based indexing; Rosalind uses 1-based.
+Code inspired by [Finding Hidden Messages in DNA (Bioinformatics I)](https://class.coursera.org/hiddenmessages-003) and 
+from [Rosalind](http://rosalind.info). 
+NB: functions generally use zero based indexing; Rosalind uses 1-based.
 
 ## Textbook track
 
@@ -47,15 +48,15 @@ NB: functions generally used zero based indexing; Rosalind uses 1-based.
 |BA4B|rosalind_old.py|[Find Substrings of a Genome Encoding a Given Amino Acid String](http://rosalind.info/problems/ba4b/) |
 |BA4C|rosalind_old.py|[Generate the Theoretical Spectrum of a Cyclic Peptide](http://rosalind.info/problems/ba4c/) |
 |BA4D|rosalind_old.py|[Compute the Number of Peptides of Given Total Mass](http://rosalind.info/problems/ba4d/) |
-|BA4E |rosalind_old.py|	[Find a Cyclic Peptide with Theoretical Spectrum Matching an Ideal Spectrum](http://rosalind.info/problems/ba4e/) |
-|BA4F |rosalind_old.py|	[Compute the Score of a Cyclic Peptide Against a Spectrum](http://rosalind.info/problems/ba4f/) |
-|BA4G |rosalind_old.py|	[Implement LeaderboardCyclopeptideSequencing ](http://rosalind.info/problems/ba4g/) |
-|BA4H |rosalind_old.py|	[Generate the Convolution of a Spectrum ](http://rosalind.info/problems/ba4h/) |
-|BA4I |rosalind_old.py|	[Implement ConvolutionCyclopeptideSequencing](http://rosalind.info/problems/ba4i/) |
-|BA4J |rosalind_old.py|	[Generate the Theoretical Spectrum of a Linear Peptide](http://rosalind.info/problems/ba4j/) |
+|BA4E|rosalind_old.py|	[Find a Cyclic Peptide with Theoretical Spectrum Matching an Ideal Spectrum](http://rosalind.info/problems/ba4e/) |
+|BA4F|rosalind_old.py|	[Compute the Score of a Cyclic Peptide Against a Spectrum](http://rosalind.info/problems/ba4f/) |
+|BA4G|rosalind_old.py|	[Implement LeaderboardCyclopeptideSequencing ](http://rosalind.info/problems/ba4g/) |
+|BA4H|rosalind_old.py|	[Generate the Convolution of a Spectrum ](http://rosalind.info/problems/ba4h/) |
+|BA4I|rosalind_old.py|	[Implement ConvolutionCyclopeptideSequencing](http://rosalind.info/problems/ba4i/) |
+|BA4J|rosalind_old.py|	[Generate the Theoretical Spectrum of a Linear Peptide](http://rosalind.info/problems/ba4j/) |
 |BA4K|rosalind_old.py|	[Compute the Score of a Linear Peptide ](http://rosalind.info/problems/ba4k/) |
-|BA4L |rosalind_old.py|	[Trim a Peptide Leaderboard](http://rosalind.info/problems/ba4l/) |
-| BA4M| ba4m.py | [Solve the Turnpike Problem](http://rosalind.info/problems/ba4m/) |
+|BA4L|rosalind_old.py|	[Trim a Peptide Leaderboard](http://rosalind.info/problems/ba4l/) |
+|BA4M|ba4m.py| [Solve the Turnpike Problem](http://rosalind.info/problems/ba4m/) |
 |5|-|How do we compare Biological Sequences?|
 |BA5A|rosalind_old.py|[Find the Minimum Number of Coins Needed to Make Change](http://rosalind.info/problems/ba5a/)|
 |BA5B|rosalind_old.py|[Find the Length of a Longest Path in a Manhattan-like Grid](http://rosalind.info/problems/ba5b/)|
@@ -83,7 +84,7 @@ NB: functions generally used zero based indexing; Rosalind uses 1-based.
 |BA6I| BA6I.py| [Implement GraphToGenome ](http://rosalind.info/problems/ba6i/)|
 |BA6J| BA6J.py| [Implement 2-BreakOnGenomeGraph ](http://rosalind.info/problems/ba6j/)|
 |BA6K| BA6K| [Implement 2-BreakOnGenome ](http://rosalind.info/problems/ba6k/) (WIP)|
-|7|-|How do we locate disease causing mutations|
+|7|-|Which animal gave us SARS?|
 | BA7A | BA7A.py | [Compute Distances Between Leaves](http://rosalind.info/problems/ba7a/) |
 | BA7B |BA7B.py | [Limb Length Problem](http://rosalind.info/problems/ba7b/) |
 | BA7C| BA7C.py | [Implement Additive Phylogeny](http://rosalind.info/problems/ba7c/) |
@@ -97,9 +98,10 @@ NB: functions generally used zero based indexing; Rosalind uses 1-based.
 | BA8C|BA8C.py | [Implement the Lloyd Algorithm for k-Means Clustering](http://rosalind.info/problems/ba8c/) |
 | BA8D|BA8D.py | [Implement the Soft k-Means Clustering Algorithm](http://rosalind.info/problems/ba8d/) |
 | BA8E|BA8E.py | [Implement Hierarchical Clustering](http://rosalind.info/problems/ba8e/) |
-|8|-|How do we locate disease causing mutations?|
+|9|-|How do we locate disease causing mutations?|
 | BA9A|BA9A.py | [Construct a Trie from a Collection of Patterns](http://rosalind.info/problems/ba9a/) |
-
+|10|-|Why have biologists still not developed an HIV vaccine?|
+|11|-|Was T.rex just a big chicken?|
 
 ## Other Rosalind problems
 
