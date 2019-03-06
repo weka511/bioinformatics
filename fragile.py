@@ -217,6 +217,12 @@ def CycleToChromosome(Nodes):
     return Chromosome
 
 # BA6H Implement ColoredEdges
+#
+# ColouredEdges
+#
+# Input: P  A genome containing one or more Chromosomes, e.g. [[+1, -2, -3][+4 +5 -6]] - directed synteny blocks
+#
+# Returns: A collection of edges [(2, 4), (3, 6), (5, 1), (8, 9), (10, 12), (11, 7)]
 
 def ColouredEdges(P):
     Edges = []
@@ -228,7 +234,11 @@ def ColouredEdges(P):
     return Edges
 
 # BA6I Implement Graph to Genome
-
+#
+# GraphToGenome
+#
+#    Input: The colored edges ColoredEdges of a genome graph. [(2, 4), (3, 6), (5, 1), (8, 9), (10, 12), (11, 7)]
+#    Returns: The genome P corresponding to this genome graph. [[+1, -2, -3][+4 +5 -6]]
 def GraphToGenome(GenomeGraph):
     def diff(a,b):
         _,x=a
