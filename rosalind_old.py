@@ -763,43 +763,7 @@ def sseq(fasta):
     _,motif=fasta[1]
     return [i+1 for i in find_indices_of_motif(text,motif)[-1::-1]]
 
-#TRIE  Pattern matching
 
-def trie(strings):
-    def find_string_in_adjacency_list(string, adjacency_list):
-        index=0
-        parent=0
-        path=[]
-        for cc in string:
-            matched=False
-            while index<len(adjacency_list) and not matched:
-                a,b,c=adjacency_list[index]
-                if a==parent and c==cc:
-                    matched=True
-                    path.append(index)
-                    parent=b
-                else:
-                    index+=1
-        return (parent,path)
-    
-    def create_suffix(parent,path,string,b):
-        result=[]
-        a = parent
-        for i in range(len(path),len(string)):
-            b+=1
-            result.append((a,b,string[i]))
-            a=b
-
-        return result
-    
-    def merge_string_with_adjacency_list(adjacency_list,string):
-        parent,path=find_string_in_adjacency_list(string, adjacency_list)
-        return adjacency_list+create_suffix(parent,path,string,len(adjacency_list))
-    
-    def increment_indices(adjacency_list):
-        return [(a+1,b+1,c) for (a,b,c) in adjacency_list] 
-    
-    return increment_indices(functools.reduce(merge_string_with_adjacency_list,strings,[]))
 
 
 ### Where in the Genome does DNA raplication begin? ###

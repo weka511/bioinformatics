@@ -97,6 +97,8 @@ NB: functions generally used zero based indexing; Rosalind uses 1-based.
 | BA8C|BA8C.py | [Implement the Lloyd Algorithm for k-Means Clustering](http://rosalind.info/problems/ba8c/) |
 | BA8D|BA8D.py | [Implement the Soft k-Means Clustering Algorithm](http://rosalind.info/problems/ba8d/) |
 | BA8E|BA8E.py | [Implement Hierarchical Clustering](http://rosalind.info/problems/ba8e/) |
+|8|-|How do we locate disease causing mutations?|
+| BA9A|BA9A.py | [Construct a Trie from a Collection of Patterns](http://rosalind.info/problems/ba9a/) |
 
 
 ## Other Rosalind problems
@@ -163,6 +165,7 @@ NB: functions generally used zero based indexing; Rosalind uses 1-based.
 | rosalind.py || Shared code|
 |  |revc| [Complementing a Strand of DNA](http://rosalind.info/problems/revc/)|
 |  |subs|[Finding a Motif in DNA](http://rosalind.info/problems/subs/) |
+|  |trie|[Introduction to Pattern Matching](http://rosalind.info/problems/trie/) |
 | rosalind_old.py || Code from the early days of project, including much of the textbook track|
 | rosalind.wpr || WingWare Project File |
 
