@@ -93,13 +93,14 @@ NB: functions generally use zero based indexing; Rosalind uses 1-based.
 | BA7F|BA7F.py | [Implement SmallParsimony](http://rosalind.info/problems/ba7f/) |
 | BA7G|BA7.py | [Adapt SmallParsimony to Unrooted Trees](http://rosalind.info/problems/ba7g/) |
 |8|-|How did Yeast become a Winemaker?|
-| BA8A|BA8A.py | [Implement FarthestFirstTraversal](http://rosalind.info/problems/ba8a/) |
-| BA8B|BA8B.py | [Compute the Squared Error Distortion](http://rosalind.info/problems/ba8b/) |
-| BA8C|BA8C.py | [Implement the Lloyd Algorithm for k-Means Clustering](http://rosalind.info/problems/ba8c/) |
-| BA8D|BA8D.py | [Implement the Soft k-Means Clustering Algorithm](http://rosalind.info/problems/ba8d/) |
-| BA8E|BA8E.py | [Implement Hierarchical Clustering](http://rosalind.info/problems/ba8e/) |
+|BA8A|BA8A.py | [Implement FarthestFirstTraversal](http://rosalind.info/problems/ba8a/) |
+|BA8B|BA8B.py | [Compute the Squared Error Distortion](http://rosalind.info/problems/ba8b/) |
+|BA8C|BA8C.py | [Implement the Lloyd Algorithm for k-Means Clustering](http://rosalind.info/problems/ba8c/) |
+|BA8D|BA8D.py | [Implement the Soft k-Means Clustering Algorithm](http://rosalind.info/problems/ba8d/) |
+|BA8E|BA8E.py | [Implement Hierarchical Clustering](http://rosalind.info/problems/ba8e/) |
 |9|-|How do we locate disease causing mutations?|
-| BA9A|BA9A.py | [Construct a Trie from a Collection of Patterns](http://rosalind.info/problems/ba9a/) |
+|BA9A|BA9A.py | [Construct a Trie from a Collection of Patterns](http://rosalind.info/problems/ba9a/) |
+|BA9B|BA9B.py | [Implement TrieMatching](http://rosalind.info/problems/ba9b/) |
 |10|-|Why have biologists still not developed an HIV vaccine?|
 |11|-|Was T.rex just a big chicken?|
 
