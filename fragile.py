@@ -129,14 +129,14 @@ def d2break(a,b):
         max_node = update(adjacency,edges,y,x,max_node)
 
     # Count cycles
-    
-    cycles = []
+    # We'll do this by building each cycle and pruning the ajacency list
+    count = 0
     for i in range(1,max_node+1):
         if i in adjacency:
-            cycle=build_cycle(i,adjacency)
-            cycles.append(cycle)
+            build_cycle(i,adjacency)
+            count +=1
             
-    return n - len(cycles)
+    return n - count
 
 # BA6E	Find All Shared k-mers of a Pair of Strings
 #
@@ -175,6 +175,12 @@ def find_shared_kmers(k,s1,s2):
     return sorted(index_pairs)
 
 # BA6F Implement Chromosome to Cycle
+#
+# ChromosomeToCycle
+#
+# Inputs: Chromosome  A chromsome represented as signed synteny blocks e.g. [+1, -2, -3, +4]
+#
+# Returns: A string representing block x as 2x(head), and 2x-1 (tail). E.g. [1, 2, 4, 3, 6, 5, 7, 8]
 
 def ChromosomeToCycle(Chromosome):
     Nodes = []
@@ -187,6 +193,28 @@ def ChromosomeToCycle(Chromosome):
             Nodes.append(-2*i-1)
         
     return Nodes
+
+# BA6G Implement Cycle to Chromosome
+#
+# CycleToChromosome
+#
+# Invert ChromosomeToCycle
+#
+# Input:  Nodes - fraph in form 2x,2x-1 e.g. [1, 2, 4, 3, 6, 5, 7, 8]
+#
+# Returns: Chromosome e.g. [+1, -2, -3, +4]
+
+def CycleToChromosome(Nodes):
+    Chromosome = []
+    it =iter(Nodes)
+    for i in it:
+        a,b = (i, next(it))
+        if a<b:
+            Chromosome.append(b//2)
+        else:
+            Chromosome.append(-a//2)
+        
+    return Chromosome
 
 # BA6H Implement ColoredEdges
 

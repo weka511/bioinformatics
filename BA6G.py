@@ -15,19 +15,8 @@
 
 # BA6G Implement Cycle to Chromosome 
 
-from BA6F import ChromosomeToCycle
+from fragile import CycleToChromosome,ChromosomeToCycle
 
-def CycleToChromosome(Nodes):
-    Chromosome = []
-    it =iter(Nodes)
-    for i in it:
-        a,b = (i, next(it))
-        if a<b:
-            Chromosome.append(b//2)
-        else:
-            Chromosome.append(-a//2)
-        
-    return Chromosome
 
 if __name__=='__main__':
     def disp(i):
