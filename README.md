@@ -112,7 +112,7 @@ NB: functions generally use zero based indexing; Rosalind uses 1-based.
 | 3sum.py | [3SUM](http://rosalind.info/problems/3sum/) |
 | ASMQ.py | 	[Assessing Assembly Quality with N50 and N75](http://rosalind.info/problems/asmq/) |
 | bfs.py | [Beadth First search](http://rosalind.info/problems/bfs/) |
-| bip.py | [Testing Bipartiteness](http://rosalind.info/problems/bip/) (WIP)|
+| bip.py | [Testing Bipartiteness](http://rosalind.info/problems/bip/) |
 | BINS.py | [Binary Search](http://rosalind.info/problems/bfs/) |
 | cat.pt | [Catalan Numbers and RNA Secondary Structures ](http://rosalind.info/problems/cat/) (WIP)|
 | cc.py |	[Connected Components](http://rosalind.info/problems/cc/) |

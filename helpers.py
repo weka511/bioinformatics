@@ -171,12 +171,12 @@ def format_list(list):
 #
 # Outputs:  Adjacency list, including loop a->a
 
-def create_adjacency(edges,back=True):
+def create_adjacency(edges,back=True,self=True):
     m,n       = edges[0]
     product   = {}
 
     for a in range(1,m+1):
-        product[a]   = [a]
+        product[a]   = [a] if self else []
         
     for a,b in edges[1:]:
         product[a].append(b)

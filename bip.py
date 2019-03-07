@@ -16,61 +16,53 @@
 # BIP Testing Bipartiteness
 
 from helpers import format_list, create_adjacency, parse_graphs
+from collections import deque
 
 # bip
 #
 # Input: a graph in edgelist form
 #
-# Output:  1 if praph is bipartite, otherwise -1
+# Output:  1 if graph is bipartite, otherwise -1
 #
-# A graph is bipartite if and only if it does not contain an odd cycle
-# https://en.wikipedia.org/wiki/Bipartite_graph#Characterization
 
 def bip(graph):
-
-    # explore
-    #
-    # Inputs: node
-    #         edges
-    #
-    # Outputs: True iff there is an odd cycle
+    red  = set()
+    blue = set()
     
-    def explore(node,edges):
-        for linked in adjacency[node]:
-            if linked==node: continue
+    # colour
+    #
+    # Attempt to assign this node, and all reachable nodes, to one colour or t'other
+    def colour(node,isBlue):
+        if isBlue:
+            if node in red: return False
+            if node in blue: return True
+            blue.add(node)
+        else:
+            if node in blue: return False
+            if node in red: return True
+            red.add(node)            
+        for link in adjacency[node]:
+            if not colour(link,not isBlue): return False
+        return True
             
-            if  (node,linked) in edges or (linked,node) in edges: continue
-           
-            if len(edges)>0 and linked==edges[0][0]:   # we have a cycle
-                edges = edges + [(node,linked)]
-                if len(edges)%2==1:                    # odd cycle
-                    print (edges)
-                    return True,edges
-            else:
-                if linked in explored:                 # we've already seen this link
-                    explored.add(node)
-                elif explore(linked,edges+[(node,linked)]): # add this link and continue
-                    return True
-        explored.add(node)        
-        return False
-   
-    m,_,adjacency = create_adjacency(graph,back=True)
+    _,_,adjacency = create_adjacency(graph,back=True,self=False)
+    for k in [k for k,v in adjacency.items() if len(v)==0]:
+        adjacency.pop(k)
+    #for k,v in adjacency.items():
+        #print (k,v)
 
-    explored = set()
-   
-    for node in range(1,m+1):
-        if  len(adjacency[node])>1 and explore(node,[]):
+    for node in adjacency.keys():
+        if node in red or node in blue: continue
+        red.add(node)
+        for link in adjacency[node]:
+            coloured = colour(link,True)
+            if not coloured:
                 return -1
-  
-    assert len([a for a in range(1,m+1) if not a in explored and len(adjacency[a])>1])==0,'Unprocessed elements!'
- 
-    return 1
-
-
-
+            
+    return 1  # assume bipartite, i.e. no odd cycles
 
 if __name__=='__main__':
-    import sys
+
     simple = [[[3, 3],
                [1, 2],
                [3, 2],
@@ -80,8 +72,12 @@ if __name__=='__main__':
                [1, 4],
                [3, 1],
                [1, 2]]]
-    print (format_list([bip(g) for g in simple]))
-    sys.setrecursionlimit(2000)
-    with open(r'C:\Users\Simon\Downloads\rosalind_bip(11).txt') as f:
+    
+
+    #print (format_list([bip(g) for g in simple]))
+    
+    with open(r'C:\Users\Simon\Downloads\rosalind_bip(3).txt') as f:
+        #gs = parse_graphs(f)
+        #bip(gs[0])
         print (format_list([bip(g) for g in parse_graphs(f)]))
  
