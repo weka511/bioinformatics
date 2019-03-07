@@ -24,6 +24,7 @@ from collections import deque
 #
 # Output:  1 if graph is bipartite, otherwise -1
 #
+# Strategy: try to partition graph into two colours
 
 def bip(graph):
     red  = set()
@@ -32,6 +33,9 @@ def bip(graph):
     # colour
     #
     # Attempt to assign this node, and all reachable nodes, to one colour or t'other
+    #
+    # Inputs:  node    The node we are assigning
+    #          isBlue  Indicates whether we are trying Red or Blue
     def colour(node,isBlue):
         if isBlue:
             if node in red: return False
@@ -46,11 +50,14 @@ def bip(graph):
         return True
             
     _,_,adjacency = create_adjacency(graph,back=True,self=False)
+    
+    # Purge isolated nodes
+    
     for k in [k for k,v in adjacency.items() if len(v)==0]:
         adjacency.pop(k)
-    #for k,v in adjacency.items():
-        #print (k,v)
 
+    # Try to colour nodes
+    
     for node in adjacency.keys():
         if node in red or node in blue: continue
         red.add(node)
@@ -59,25 +66,11 @@ def bip(graph):
             if not coloured:
                 return -1
             
-    return 1  # assume bipartite, i.e. no odd cycles
+    return 1  # assume bipartite unless we fail
 
 if __name__=='__main__':
 
-    simple = [[[3, 3],
-               [1, 2],
-               [3, 2],
-               [3, 1]],
-        
-              [[4, 3],
-               [1, 4],
-               [3, 1],
-               [1, 2]]]
-    
-
-    #print (format_list([bip(g) for g in simple]))
     
     with open(r'C:\Users\Simon\Downloads\rosalind_bip(3).txt') as f:
-        #gs = parse_graphs(f)
-        #bip(gs[0])
         print (format_list([bip(g) for g in parse_graphs(f)]))
  
