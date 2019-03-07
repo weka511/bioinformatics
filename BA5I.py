@@ -31,7 +31,7 @@ def overlap_assignment(v,w,match_bonus=+1,mismatch_cost=2,indel_cost=2):
                 index           = argmax(scores)
                 distances[i][j] = scores[index]
                 path[(i,j)]      = moves[index]
-            print (distances[i])
+            #print (distances[i])
         
         i = len(v)
         j = argmax(distances[i])
@@ -39,9 +39,10 @@ def overlap_assignment(v,w,match_bonus=+1,mismatch_cost=2,indel_cost=2):
         v1 = []
         w1 = []
         while i>0 and j>0:
-            i,j = path[(i,j)]
-            v1.append(v[i])
-            w1.append(w[j])
+            i1,j1 = path[(i,j)]
+            v1.append(v[i1] if i1<i else '-')
+            w1.append(w[j1] if j1<j else '-')
+            i,j=i1,j1
     
         return distance,v1[::-1],w1[::-1]
     
@@ -49,5 +50,15 @@ def overlap_assignment(v,w,match_bonus=+1,mismatch_cost=2,indel_cost=2):
     return score,''.join(u1),''.join(v1)
 
 if __name__=='__main__':
-    print (overlap_assignment('PAWHEAE','HEAGAWGHEE'))
+
+    strings = []
+ 
+    with open(r'C:\Users\Simon\Downloads\rosalind_ba5i(1).txt','r') as f:
+        for line in f:
+            strings.append(line.strip())
+
+    d,s1,t1 = overlap_assignment(strings[0],strings[1])      
+    print ('{0}'.format(d))
+    print (s1)
+    print (t1)    
     
