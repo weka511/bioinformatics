@@ -589,13 +589,29 @@ def parse_graphs(f):
         assert len(graph)==b+1,'{0} {1}'.format(len(graph),b)
     return product
 
+# create_strings
+#
+# Read test data from file
+#
+# Inputs:   problem  Name of Rosalind problem
+#           path     Location of test data
+#           ext      Ext used to identify additional datasets - 1, 2, 3...
+#           fasta    File is in FASTA format, so skip FASTA ids
 
-def create_strings(problem,path=r'C:\Users\Simon\Downloads', ext=None): 
-    label     = problem if ext==None else '{0}({1})'.format(problem,ext)
-    base      = 'rosalind_{0}.txt'.format(label)
-    file_name = os.path.join(path,base)
-    product   = []
+def create_strings(problem,
+                   path=os.path.join(os.path.expanduser('~'),'Downloads'),
+                   ext=None,
+                   fasta=False): 
+    label        = problem if ext==None else '{0}({1})'.format(problem,ext)
+    base         = 'rosalind_{0}.txt'.format(label)
+    file_name    = os.path.join(path,base)
+    product      = []
+    fasta_header = fasta
     with open(file_name,'r') as f:
         for line in f:
+            if fasta_header:
+                fasta_header=False
+                continue
             product.append(line.strip())
+            fasta_header = fasta
     return product
