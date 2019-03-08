@@ -165,6 +165,36 @@ def edta(s,t,indel_cost=1,replace_cost=lambda a,b: 1):
     d,matrix = edit(s,t,indel_cost,replace_cost)
     s1,t1    = extract([s0 for s0 in s], [t0 for t0 in t],matrix)
     return (d,s1,t1)
+
+def overlap_assignment(v,w,match_bonus=+1,mismatch_cost=2,indel_cost=2):
+    def dynamic_programming(v,w):
+        distances = create_distance_matrix(len(v)+1,len(w)+1)
+        path      = {}
+        for i in range(1,len(v)+1):
+            for j in range(1,len(w)+1):
+                moves           = [(i-1,j),(i,j-1),(i-1,j-1)]
+                scores          = [distances[i-1][j]   - indel_cost,
+                                   distances[i][j-1]   - indel_cost,
+                                   distances[i-1][j-1] + (match_bonus if v[i-1]==w[j-1] else -mismatch_cost)]
+                index           = np.argmax(scores)
+                distances[i][j] = scores[index]
+                path[(i,j)]      = moves[index]
+        
+        i        = len(v)
+        j        = np.argmax(distances[i])
+        distance = distances[i][j]
+        v1       = []
+        w1       = []
+        while i>0 and j>0:
+            i1,j1 = path[(i,j)]
+            v1.append(v[i1] if i1<i else '-')
+            w1.append(w[j1] if j1<j else '-')
+            i,j=i1,j1
+    
+        return distance,v1[::-1],w1[::-1]
+    
+    score,u1,v1=dynamic_programming([vv for vv in v],[ww for ww in w])
+    return score,''.join(u1),''.join(v1)
     
 if __name__=='__main__':
     from Bio.SubsMat.MatrixInfo import blosum62
