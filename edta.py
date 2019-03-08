@@ -15,41 +15,13 @@
 #
 # EDTA Edit Distance Alignment http://rosalind.info/problems/edta/
 
-from edit import edit
-import numpy as np
-
-def edta(s,t,indel_cost=1,replace_cost=lambda a,b: 1):
-    def extract(s,t,matrix):
-        m  = len(matrix)-1
-        n  = len(matrix[0])-1
-        s1 = []
-        t1 = []
-        while m>0 and n>0:
-            moves  = [(m-1,n),(m,n-1),(m-1,n-1)]
-            scores = [matrix[m-1][n]+indel_cost,
-                      matrix[m][n-1]+indel_cost,
-                      matrix[m-1][n-1] + (0 if s[m-1]==t[n-1] else replace_cost(s[m-1],t[n-1]))]
-            ss     = [s[m-1],'-',s[m-1]]
-            ts     = ['-',t[n-1],t[n-1]]
-            index  = np.argmin(scores)
-            m,n    = moves[index]
-            s1.append(ss[index])
-            t1.append(ts[index])
-        s1.reverse()
-        t1.reverse()
-        return ''.join(s1),''.join(t1)
-    d,matrix = edit(s,t,indel_cost,replace_cost)
-    s1,t1    = extract([s0 for s0 in s], [t0 for t0 in t],matrix)
-    return (d,s1,t1)
+from align import edta
 
 if __name__=='__main__':
-    #print (edta('PRETTY','PRTTEIN'))
     from Bio import SeqIO
     inFile = open(r'C:\Users\Simon\Downloads\rosalind_edta.txt','r')
     strings = []
     for record in SeqIO.parse(inFile,'fasta'):
-        print (record.id)
-        print (str(record.seq))
         strings.append(str(record.seq))
     d,s,t=edta(strings[0],strings[1])
     print(d)

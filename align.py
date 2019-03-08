@@ -111,6 +111,61 @@ def align(s,t,
             print (k,v)
     return backtrack(s,t,distances,moves,showPath=showPath)
 
+# EDIT 	Edit Distance http://rosalind.info/problems/edit/
+
+def edit(s,t,indel_cost=1,replace_cost=lambda a,b: 1,show_matrix=False):
+    
+    def dynamic_programming(s,t):
+        matrix=[[0 for j in range(len(t)+1)] for i in range(len(s)+1)]
+    
+        for j in range(len(t)+1):
+            matrix[0][j]=j
+        for i in range(len(s)+1):
+            matrix[i][0]=i
+
+        for i in range(1,len(s)+1):
+            for j in range(1,len(t)+1):
+                matrix[i][j] = min(
+                    matrix[i-1][j]   + indel_cost,
+                    matrix[i][j-1]   + indel_cost,
+                    matrix[i-1][j-1] + (0 if s[i-1]==t[j-1] else replace_cost(s[i-1],t[j-1])))
+                    
+        if show_matrix:
+            for i in range(0,len(s)+1):
+                ii = len(matrix)-i-1
+                print (s[ii] if i>0 else '#',matrix[ii])
+            print (' ',['#']+t)
+        
+        return matrix[len(s)][len(t)],matrix
+            
+    return dynamic_programming([s0 for s0 in s], [t0 for t0 in t])
+
+# EDTA Edit Distance Alignment http://rosalind.info/problems/edta/
+
+def edta(s,t,indel_cost=1,replace_cost=lambda a,b: 1):
+    def extract(s,t,matrix):
+        m  = len(matrix)-1
+        n  = len(matrix[0])-1
+        s1 = []
+        t1 = []
+        while m>0 and n>0:
+            moves  = [(m-1,n),(m,n-1),(m-1,n-1)]
+            scores = [matrix[m-1][n]+indel_cost,
+                      matrix[m][n-1]+indel_cost,
+                      matrix[m-1][n-1] + (0 if s[m-1]==t[n-1] else replace_cost(s[m-1],t[n-1]))]
+            ss     = [s[m-1],'-',s[m-1]]
+            ts     = ['-',t[n-1],t[n-1]]
+            index  = np.argmin(scores)
+            m,n    = moves[index]
+            s1.append(ss[index])
+            t1.append(ts[index])
+        s1.reverse()
+        t1.reverse()
+        return ''.join(s1),''.join(t1)
+    d,matrix = edit(s,t,indel_cost,replace_cost)
+    s1,t1    = extract([s0 for s0 in s], [t0 for t0 in t],matrix)
+    return (d,s1,t1)
+    
 if __name__=='__main__':
     from Bio.SubsMat.MatrixInfo import blosum62
     score,s1,s2=align('PLEASANTLY','MEANLY',replace_score=blosum62,indel_cost=5)
