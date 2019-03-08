@@ -13,13 +13,15 @@
 #    You should have received a copy of the GNU General Public License
 #    along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>
 
+# BA5J.py Align Two Strings Using Affine Gap Penalties
+
 from align import create_distance_matrix
 from Bio.SubsMat.MatrixInfo import blosum62
 from numpy import argmax
 
-# https://web.stanford.edu/class/cs262/presentations/lecture2.pdf
 
-def score(pair,replace_score=blosum62):
+
+def match(pair,replace_score=blosum62):
     def reverse(pair):
         a,b=pair
         return (b,a)
@@ -30,7 +32,7 @@ def san_kai(s,t, replace_score=blosum62,sigma=11,epsilon=1):
     lower    = create_distance_matrix(len(s)+1,len(t)+1)
     middle   = create_distance_matrix(len(s)+1,len(t)+1)
     upper    = create_distance_matrix(len(s)+1,len(t)+1)
-    #path  = create_distance_matrix(len(s)+1,len(t)+1)
+
     moves = {}
     lower[0][0]  = -float('inf')
     middle[0][0] = 0
@@ -52,52 +54,22 @@ def san_kai(s,t, replace_score=blosum62,sigma=11,epsilon=1):
             upper[i][j]  =  max(upper[i][j-1] - epsilon,
                                middle[i][j-1] - sigma)
             
-            middle[i][j] = max(lower[i][j],
-                               middle[i-1][j-1] + score((s[i-1],t[j-1])),
-                               upper[i][j])
-            
-            #history      = []
-            #F[i][j]      = V[i-1][j-1] + score((s[i-1],t[j-1]))
-            #history.append((i-1,j-1,s[i-1],t[j-1]))
-            
-            #G[i][j]      = max(V[i-1][j] - sigma, 
-                               #G[i-1][j] - epsilon)
-            #history.append((i-1,j,s[i-1],'-'))
-            
-            #H[i][j]      = max(V[i][j-1] - sigma,
-                               #H[i][j-1] - epsilon)
-            #history.append((i,j-1,'-',t[j-1]))
-            
             choices      = [lower[i][j], 
-                            middle[i-1][j-1] + score((s[i-1],t[j-1])),
+                            middle[i-1][j-1] + match((s[i-1],t[j-1])),
                             upper[i][j]]
             index        = argmax(choices)
-            history=[(i-1,j,s[i-1],'-'),(i-1,j-1,s[i-1],t[j-1]),(i,j-1,'-',t[j-1])]
-            #V[i][j]      = choices[index]
+            middle[i][j] = choices[index]
+            history      = [(i-1,j,s[i-1],'-'),
+                            (i-1,j-1,s[i-1],t[j-1]),
+                            (i,j-1,'-',t[j-1])]
             moves[(i,j)] = history[index]
-            #path[i][j]   = index
-        #print (V[i])
-        #print (path[i])
+
     i  = len(s)
     j  = len(t)
     ss = []
     ts = []
 
     while i>0 and j > 0:
-        #direction = path[i][j]
-        #if direction==0: #->i,->j
-            #ss.append(s[i-1])
-            #ts.append(t[j-1])
-            #i-=1
-            #j-=1
-        #elif direction==1: #->i
-            #ss.append(s[i-1])
-            #ts.append('-')
-            #i-=1
-        #else:               #->j
-            #ss.append('-')
-            #ts.append(t[j-1])
-            #j-=1
         i,j,s0,t0=moves[(i,j)]
         ss.append(s0)
         ts.append(t0)
@@ -110,26 +82,13 @@ def ba5j(s,t):
 
 if __name__=='__main__':
     from helpers import create_strings    
-    import os, os.path
-    score,s,t=ba5j('PRTEINS','PRTWPSEIN')
-    #score,s,t=ba5j('AHRQPQ','AHED')  # supposedly should align AHRQPQ AHE--D
-    #score,s,t=ba5j('YHFDVPDCWAHRYWVENPQAIAQMEQICFNWFPSMMMKQPHVFKVDHHMSCRWLPIRGKKCSSCCTRMRVRTVWE',
-                #'YHEDVAHEDAIAQMVNTFGFVWQICLNQFPSMMMKIYWIAVLSAHVADRKTWSKHMSCRWLPIISATCARMRVRTVWE')    
-#    144
-#    YHFDVPDCWAHRYWVENPQAIAQM------E-QICFNWFPSMMMK-------QPHVF---KVDHHMSCRWLPIRGKKCSSCCTRMRVRTVWE
-#    YHEDV----AH-----E-DAIAQMVNTFGFVWQICLNQFPSMMMKIYWIAVLSAHVADRKTWSKHMSCRWLPI----ISATCARMRVRTVWE
-# File has:
-#    YHFDVPDCWAHRYWVENPQAIAQME-------QICFNWFPSMMMK-------QPHVFKV---DHHMSCRWLPIRGKKCSSCCTRMRVRTVWE
-#    YHEDV----AHE------DAIAQMVNTFGFVWQICLNQFPSMMMKIYWIAVLSAHVADRKTWSKHMSCRWLPI----ISATCARMRVRTVWE
-#
-# I tried replacing blossum62 to no avail
 
-    #strings  = create_strings('ba5j',ext=4)
-    #score,s,t=ba5j(strings[0],strings[1])
+    strings  = create_strings('ba5j',ext=5)
+    score,s,t=ba5j(strings[0],strings[1])
     print (score)
     print (s)
     print (t)        
-        #with open('ba5j.txt','w') as o:
-            #o.write('{0}\n'.format(score))
-            #o.write('{0}\n'.format(s))
-            #o.write('{0}\n'.format(t))
+    with open('ba5j.txt','w') as o:
+        o.write('{0}\n'.format(score))
+        o.write('{0}\n'.format(s))
+        o.write('{0}\n'.format(t))
