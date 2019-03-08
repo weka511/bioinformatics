@@ -15,14 +15,13 @@
 #
 # EDIT 	Edit Distance http://rosalind.info/problems/edit/
 
-
+from align import edit
 
 if __name__=='__main__':
-    with open(r'C:\Users\Simon\Downloads\rosalind_ba5g(2).txt','r') as f:
+    with open(r'C:\Users\Simon\Downloads\rosalind_ba5g.txt','r') as f:
         strings = []
         for line in f:
             strings.append(line.strip())
-            print (line.strip())
         d,_=edit(strings[0],strings[1])
         print(d)
             
