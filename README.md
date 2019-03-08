@@ -145,6 +145,8 @@ NB: functions generally use zero based indexing; Rosalind uses 1-based.
 | MER.py | 	[Merge Two Sorted Arrays](http://rosalind.info/problems/mer/) |
 | MS.py | 	[Mergesort](http://rosalind.info/problems/ms/)|
 | nwck.py | [Distances in Trees](http://rosalind.info/problems/nwck/) |
+| oap.py | [Overlap Alignment](http://rosalind.info/problems/oap/) (wip)|
+| orfr.py | [Finding Genes with Open Reading Frames](http://rosalind.info/problems/orfr/) (wip)|
 | PAR.py | 	 [2-Way Partition](http://rosalind.info/problems/par/) |
 | PAR3.py |  [3-Way Partition](http://rosalind.info/problems/par3/) |
 | PCOV.py |  [Genome Assembly with Perfect Coverage](http://rosalind.info/problems/pcov/) |
