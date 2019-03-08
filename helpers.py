@@ -24,6 +24,7 @@ import operator as op
 import sys
 import matplotlib.pyplot as plt
 import re
+import os.path
 
 def read_dna(name):
     with open(name,'r') as f:
@@ -586,4 +587,15 @@ def parse_graphs(f):
     for graph in product:
         a,b=graph[0]
         assert len(graph)==b+1,'{0} {1}'.format(len(graph),b)
+    return product
+
+
+def create_strings(problem,path=r'C:\Users\Simon\Downloads', ext=None): 
+    label     = problem if ext==None else '{0}({1})'.format(problem,ext)
+    base      = 'rosalind_{0}.txt'.format(label)
+    file_name = os.path.join(path,base)
+    product   = []
+    with open(file_name,'r') as f:
+        for line in f:
+            product.append(line.strip())
     return product

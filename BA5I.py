@@ -50,13 +50,9 @@ def overlap_assignment(v,w,match_bonus=+1,mismatch_cost=2,indel_cost=2):
     return score,''.join(u1),''.join(v1)
 
 if __name__=='__main__':
-
-    strings = []
- 
-    with open(r'C:\Users\Simon\Downloads\rosalind_ba5i(1).txt','r') as f:
-        for line in f:
-            strings.append(line.strip())
-
+    from helpers import create_strings
+    
+    strings  = create_strings('ba5i',ext=1)
     d,s1,t1 = overlap_assignment(strings[0],strings[1])      
     print ('{0}'.format(d))
     print (s1)
