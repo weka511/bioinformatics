@@ -189,13 +189,13 @@ def createPAM250():
 
 # Populate a simple scoring table
 
-def createSimpleDNASubst():
+def createSimpleDNASubst(match=+1,subst=1):
     bases=['A', 'T', 'G', 'C']
  
     weights={}
     for i in range(len(bases)):
         for j in range(len(bases)):
-            weights[(bases[i],bases[j])] = +1 if i==j else -1          
+            weights[(bases[i],bases[j])] = +match if i==j else -subst          
     return weights
 
 if __name__=='__main__':
