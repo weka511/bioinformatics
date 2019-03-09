@@ -15,7 +15,8 @@
 
 # Common code for alignment problems
 
-import numpy as np,sys
+from numpy import argmax,argmin
+from sys import float_info
 from Bio.SubsMat.MatrixInfo import blosum62
 from reference_tables import createSimpleDNASubst,createBLOSUM62,createPAM250
 from helpers import zeroes,sign
@@ -32,7 +33,7 @@ def number_of_coins(money,coins):
     number = [0]                           # We will use Dynamic Programming, and solve 
                                            # the problem for each amount up to and including money
     for m in range(1,money+1):             # solve for m
-        nn = sys.float_info.max            # Number of coins: assume that we haven't solved
+        nn = float_info.max            # Number of coins: assume that we haven't solved
         for coin in coins:                 # Find a coin such that we can make change using it
                                            # plus a previoudly comuted value
             if m>=coin:
@@ -150,8 +151,8 @@ def longest_path(source,sink,graph):
     def initialize_s():
         s={}
         for a,b,_ in graph:
-            s[a]=-sys.float_info.max
-            s[b]=-sys.float_info.max
+            s[a]=-float_info.max
+            s[b]=-float_info.max
         s[source]=0
         return s
     
@@ -202,7 +203,7 @@ def longest_path(source,sink,graph):
 
 # BA5E 	Find a Highest-Scoring Alignment of Two Strings
 # create_distance_matrix
-def create_distance_matrix(nrows,ncolumns,initial_value=-sys.float_info.max):
+def create_distance_matrix(nrows,ncolumns,initial_value=-float_info.max):
     s=[]
     for i in range(nrows):
         row=[]
@@ -369,7 +370,7 @@ def build_matrix(s,t,matrix,replace_score=createSimpleDNASubst(),indel_cost=1,ge
                 froms                       = [(i+di_down,j+dj_down,di_down,dj_down),
                                                (i+di_left,j+dj_left,di_left,dj_left),
                                                (i-1,j-1,-1,-1)]
-                index                       = np.argmax(scores)
+                index                       = argmax(scores)
                 matrix[i][j]                = scores[index]
                 moves[(i,j)]                = froms[index]
 
@@ -460,7 +461,7 @@ def edta(s,t,indel_cost=1,replace_cost=lambda a,b: 1):
                       matrix[m-1][n-1] + (0 if s[m-1]==t[n-1] else replace_cost(s[m-1],t[n-1]))]
             ss     = [s[m-1],'-',s[m-1]]
             ts     = ['-',t[n-1],t[n-1]]
-            index  = np.argmin(scores)
+            index  = argmin(scores)
             m,n    = moves[index]
             s1.append(ss[index])
             t1.append(ts[index])
@@ -481,12 +482,12 @@ def overlap_assignment(v,w,match_bonus=+1,mismatch_cost=2,indel_cost=2):
                 scores          = [distances[i-1][j]   - indel_cost,
                                    distances[i][j-1]   - indel_cost,
                                    distances[i-1][j-1] + (match_bonus if v[i-1]==w[j-1] else -mismatch_cost)]
-                index           = np.argmax(scores)
+                index           = argmax(scores)
                 distances[i][j] = scores[index]
                 path[(i,j)]      = moves[index]
         
         i        = len(v)
-        j        = np.argmax(distances[i])
+        j        = argmax(distances[i])
         distance = distances[i][j]
         v1       = []
         w1       = []
@@ -582,13 +583,13 @@ def san_kai(s,t, replace_score=blosum62,sigma=11,epsilon=1,backtrack=unwind_move
             choices      = [lower[i][j], 
                             middle[i-1][j-1] + match((s[i-1],t[j-1])),
                             upper[i][j]]
-            index        = np.argmax(choices)
+            index        = argmax(choices)
             middle[i][j] = choices[index]
             moves[(i,j)] = [(i-1, j,   s[i-1], '-'),     # Comes from lower
                             (i-1, j-1, s[i-1], t[j-1]),  # Comes from middle
                             (i,   j-1, '-',    t[j-1]    # Comes from upper
                              )][index]
- 
+
     return backtrack(moves,middle[len(s)][len(t)],len(s),len(t))
 
 
