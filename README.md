@@ -126,6 +126,7 @@ NB: functions generally use zero based indexing; Rosalind uses 1-based.
 | edit.py |	[Edit Distance](http://rosalind.info/problems/edit/) |
 | edta.py | [Edit Distance Alignment](http://rosalind.info/problems/edta/)|
 | FRMT.py | [Data Formats](http://rosalind.info/problems/frmt/)|
+| gaff.py | [Global Alignment with Scoring Matrix and Affine Gap Penalty](http://rosalind.info/problems/gaff/) (WIP)|
 | GASM.py | [Genome Assembly Using Reads](http://rosalind.info/problems/gasm/) |
 | GBK.py | 	[GenBank Introduction](http://rosalind.info/problems/gbk/) |
 | gcon.py | [Global Alignment with Constant Gap Penalty](http://rosalind.info/problems/gcon/)|
