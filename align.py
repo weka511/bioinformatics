@@ -15,9 +15,10 @@
 
 # Common code for alignment problems
 
-import numpy as np,sys, reference_tables as rrt
+import numpy as np,sys
 from Bio.SubsMat.MatrixInfo import blosum62
-from reference_tables import createSimpleDNASubst
+from reference_tables import createSimpleDNASubst,createBLOSUM62,createPAM250
+from helpers import zeroes,sign
 
 # BA5A 	Find the Minimum Number of Coins Needed to Make Change 	
 #
@@ -54,7 +55,7 @@ def number_of_coins(money,coins):
 def longest_manhattan_path(n,m,down,right):
     s=[]
     for i in range(n+1):
-        s.append(rh.zeroes(m+1))
+        s.append(zeroes(m+1))
 
     for i in range(1,n+1):
         s[i][0]=s[i-1][0]+down[i-1][0]
@@ -265,12 +266,11 @@ def create_alignment(string1, string2,s_predecessors,i_start=-1,j_start=-1):
 #         and indel penalty σ = 5. (If multiple alignments achieving the maximum 
 #         score exist, you may return any one.)
 
-def highest_scoring_global_alignment(string1,string2,weights=rrt.createBLOSUM62(),sigma=5):
+def highest_scoring_global_alignment(string1,string2,weights=createBLOSUM62(),sigma=5):
     return create_alignment(string1,
                             string2,
                             calculate_scores_for_alignment(
-                                create_distance_matrix(len(string1)+1,\
-                                                       len(string2)+1),\
+                                create_distance_matrix(len(string1)+1,len(string2)+1),\
                                 string1,\
                                 string2,\
                                 weights,\
@@ -286,7 +286,7 @@ def highest_scoring_global_alignment(string1,string2,weights=rrt.createBLOSUM62(
 # PAM250 scoring matrix and indel penalty  5. (If multiple local alignments
 # achieving the maximum score exist, you may return any one.)
 
-def highest_scoring_local_alignment(string1,string2,weights=rrt.createPAM250(),sigma=5):
+def highest_scoring_local_alignment(string1,string2,weights=createPAM250(),sigma=5):
     def find_best_substring(s):
         s_right=0    
         i_best=-1
@@ -298,8 +298,8 @@ def highest_scoring_local_alignment(string1,string2,weights=rrt.createPAM250(),s
                     i_best=i
                     j_best=j
                     s_right=s[i][j]
-                    predecessor=(rh.sign(len(string1)-i_best),\
-                                 rh.sign(len(string2)-j_best),\
+                    predecessor=(sign(len(string1)-i_best),\
+                                 sign(len(string2)-j_best),\
                                  i_best,\
                                  j_best)
         if s_right>s[len(string1)][len(string2)]:
@@ -311,7 +311,7 @@ def highest_scoring_local_alignment(string1,string2,weights=rrt.createPAM250(),s
         return (i_best,j_best,s,predecessor)
    
     s,predecessors=calculate_scores_for_alignment(
-        create_distance_matrix(len(string1)+1,len(string2)+1,0),
+        create_distance_matrix(len(string1)+1,len(string2)+1),
         string1,
         string2,
         weights,
@@ -594,5 +594,185 @@ def san_kai(s,t, replace_score=blosum62,sigma=11,epsilon=1,backtrack=unwind_move
 
 if __name__=='__main__':
     from Bio.SubsMat.MatrixInfo import blosum62
-    score,s1,s2=align('PLEASANTLY','MEANLY',replace_score=blosum62,indel_cost=5)
-    print (score,s1,s2)
+    import unittest
+
+    class AlignTest(unittest.TestCase):
+        
+# Simple test
+        def test_simple(self):
+            score,s1,s2=align('PLEASANTLY','MEANLY',replace_score=blosum62,indel_cost=5)
+            self.assertEqual(8,score)
+            self.assertEqual('LEASANTLY',''.join(s1))
+            self.assertEqual('MEA--N-LY',''.join(s2))
+            
+# BA5A 	Find the Minimum Number of Coins Needed to Make Change 	
+        def test_ba5a(self):
+            self.assertEqual(2,number_of_coins(40,[1,5,10,20,25,50]))
+            self.assertEqual(338,number_of_coins(8074,[24,13,12,7,5,3,1]))
+            
+# BA5B 	Find the Length of a Longest Path in a Manhattan-like Grid  	
+        def test_ba5b(self):
+            self.assertEqual(34,\
+                             longest_manhattan_path(4,\
+                                                    4,\
+                                                    [[1, 0, 2, 4, 3],\
+                                                     [4, 6, 5, 2, 1],\
+                                                     [4, 4, 5, 2, 1],\
+                                                     [5, 6, 8, 5, 3]],\
+                                                    [[3, 2, 4, 0],\
+                                                     [3, 2, 4, 2],\
+                                                     [0, 7, 3, 3],\
+                                                     [3, 3, 0, 2],\
+                                                     [1, 3, 2, 2]]))
+            self.assertEqual(84,\
+                             longest_manhattan_path(17,\
+                                                    9,\
+                                                    [[2,3,4,0,3,1,1,1,1,1],
+                                                     [4,2,3,4,3,3,0,4,1,1],\
+                                                     [4,4,0,1,4,3,2,0,2,2],\
+                                                     [4,3,0,3,4,4,3,2,4,4],\
+                                                     [0,1,0,1,3,0,3,0,3,4],\
+                                                     [3,2,4,4,4,3,1,0,0,0],\
+                                                     [3,4,3,1,2,3,0,0,4,0],\
+                                                     [2,4,3,4,1,2,0,3,2,0],\
+                                                     [1,4,4,1,4,4,3,1,1,4],\
+                                                     [3,1,2,2,3,3,0,4,0,0],\
+                                                     [0,2,1,4,1,3,1,3,1,0],\
+                                                     [1,0,4,0,4,3,3,2,3,1],\
+                                                     [2,0,0,4,3,4,0,3,0,0],\
+                                                     [4,1,0,4,3,2,1,1,3,1],\
+                                                     [2,4,4,3,3,4,0,0,4,3],\
+                                                     [1,0,2,3,3,0,4,0,2,0],\
+                                                     [3,1,0,3,2,3,2,2,1,4]],\
+                                                    [[1,0,4,4,3,3,1,0,4],\
+                                                     [0,2,0,3,3,0,1,2,1],\
+                                                     [3,2,3,1,1,4,2,4,4],\
+                                                     [1,3,4,4,2,1,1,1,4],\
+                                                     [1,4,2,2,3,1,3,2,3],\
+                                                     [0,3,1,0,1,0,4,1,4],\
+                                                     [1,3,4,4,1,0,3,2,1],\
+                                                     [2,3,1,2,3,2,2,2,3],\
+                                                     [3,2,1,4,0,2,4,2,4],\
+                                                     [4,0,2,0,1,3,1,4,4],\
+                                                     [1,3,0,2,2,1,0,3,2],\
+                                                     [1,4,0,4,4,1,2,4,2],\
+                                                     [0,2,4,3,4,0,3,2,2],\
+                                                     [2,3,4,4,0,4,3,0,4],\
+                                                     [1,0,4,1,3,3,1,4,2],\
+                                                     [4,3,4,3,2,3,2,2,0],\
+                                                     [0,1,2,2,4,4,2,4,2],\
+                                                     [2,3,1,4,4,3,4,0,3]]))            
+                             
+# BA5C 	Find a Longest Common Subsequence of Two Strings  	
+        def test_ba5c(self):
+            self.assertEqual('ACCTTG',
+                             longest_common_subsequence('AACCTTGG',
+                                                    'ACACTGTGA'))            
+# BA5D 	Find the Longest Path in a DAG  	
+        def test_ba5d(self):
+            n,path=longest_path(0,4,
+                                [
+                                    (0,1,7),
+                                    (0,2,4),
+                                    (2,3,2),
+                                    (1,4,1),
+                                    (3,4,3)
+                                ])
+            self.assertEqual(9,n)
+            self.assertEqual([0,2,3,4],path)
+            n,path=longest_path(11,18,
+                                [(21,33,29),
+                                 (5,19,8),
+                                 (11,17,25),
+                                 (10,35,33),
+                                 (14,27,19),
+                                 (6,27,20),
+                                 (6,20,32),
+                                 (14,23,4),
+                                 (7,8,29),
+                                 (12,18,9),
+                                 (20,27,16),
+                                 (15,35,39),
+                                 (1,27,2),
+                                 (9,19,37),
+                                 (12,14,20),
+                                 (30,34,9),
+                                 (2,9,5),
+                                 (24,31,37),
+                                 (8,18,33),
+                                 (8,13,20),
+                                 (17,23,20),
+                                 (6,34,13),
+                                 (9,29,20),
+                                 (16,29,12),
+                                 (1,22,8),
+                                 (2,32,27),
+                                 (13,26,25),
+                                 (3,21,2),
+                                 (13,20,22),
+                                 (3,23,20),
+                                 (8,9,13),
+                                 (12,16,30),
+                                 (3,29,22),
+                                 (1,3,2),
+                                 (19,35,7),
+                                 (14,19,36),
+                                 (10,21,38),
+                                 (19,30,38),
+                                 (23,32,3),
+                                 (5,6,19),
+                                 (9,33,2),
+                                 (6,10,17),
+                                 (21,24,8),
+                                 (9,15,36),
+                                 (10,27,17),
+                                 (25,33,20),
+                                 (9,11,1),
+                                 (0,10,39),
+                                 (6,31,39),
+                                 (6,16,24),
+                                 (0,6,34),
+                                 (14,15,30),
+                                 (1,7,0),
+                                 (0,22,3),
+                                 (4,30,3),
+                                 (4,15,20),
+                                 (0,21,18),
+                                 (0,26,28),
+                                 (22,27,20),
+                                 (3,32,32),
+                                 (3,33,10),
+                                 (5,28,13),
+                                 (17,32,33),
+                                 (7,13,25),
+                                 (17,18,37),
+                                 (8,31,33),
+                                 (7,18,20),
+                                 (20,35,20)
+                                 ])
+                                            
+            self.assertEqual(62,n)
+            self.assertEqual([11,17,18],path)  
+        
+# BA5E 	Find a Highest-Scoring Alignment of Two Strings  	
+        def test_ba5e(self):
+            score,s1,s2=highest_scoring_global_alignment('PLEASANTLY','MEANLY')
+            self.assertEqual(8,score)
+            self.assertEqual('PLEASANTLY',s1)
+            self.assertEqual('-MEA--N-LY',s2)
+            
+# BA5F 	Find a Highest-Scoring Local Alignment of Two Strings 
+        def test_ba5f(self):
+            score,s1,s2=highest_scoring_local_alignment('MEANLY','PENALTY')
+            self.assertEqual(15,score)
+            self.assertEqual('EANL-Y',s1)
+            self.assertEqual('ENALTY',s2)
+            score,s1,s2=highest_scoring_local_alignment(\
+                'AMTAFRYRQGNPRYVKHFAYEIRLSHIWLLTQMPWEFVMGIKMPEDVFQHWRVYSVCTAEPMRSDETYEQKPKPMAKWSGMTIMYQAGIIRQPPRGDRGVSDRNYSQCGKQNQAQLDNNPTWTKYEIEWRVQILPPGAGVFEGDNGQNQCLCPNWAWEQPCQWGALHSNEQYPNRIHLWAPMSKLHIKIEKSSYNRNAQFPNRCMYECEFPSYREQVDSCHYENVQIAFTIFSGAEQKRKFCSCHFWSNFIDQAVFSTGLIPWCYRRDDHSAFFMPNWNKQYKHPQLQFRVAGEGTQCRPFYTREMFTKVSAWRIAGRFAGPYERHHDAHLELWYQHHKVRTGQQLGIIWNNRDKTRNPCPFSAYYNKLPWWKINQNAFYNCLQNIAHSTHDETHEFNPVKCIDWLQGTMVPTECKKGFVHEKCECYRNPGPPLHDMYHQMEDIFGVRFDCLTGWKHLSDYNPCQERRNINDFYIFAYEIAPAVKNLVLSPQPLADATKKCAFNYTPLDQSPVVIACKWYIHQPICMLLIVLICAMDKYNAHMIVIRTTEGQQPMHACRMTEGPGMCMKEPLVTFTLPAQWQWPNHEFKYVYMYVLNYHLSQYTYTDEGHAGGQHYSFNVAVDVGMAWGHNRCYCQPACYSQQETQTRTIDYEKWQYMKHQAFKWGLWFCEQERHAWFKGQNRCEMFTAKMTRMGADSNLDQYKLMLAQNYEEQWEQPIMECGMSEIIEIDPPYRSELIFTFWPFCTYSPWQNLIKCRCNNVIEEMDQCVPLTFIGFGVKQAGGIQAWAFYKEEWTSTYYLMCQCMKSDKAQYPYEIILFWMQPMDTGEQEPPQQNMWIFLPHSWFFDWCCNAPWSEICSSRHDHGQCQDAFYPCELFTVFDDIFTAEPVVCSCFYDDPM',\
+                'WQEKAVDGTVPSRHQYREKEDRQGNEIGKEFRRGPQVCEYSCNSHSCGWMPIFCIVCMSYVAFYCGLEYPMSRKTAKSQFIEWCDWFCFNHWTNWAPLSIVRTSVAFAVWGHCWYPCGGVCKTNRCKDDFCGRWRKALFAEGPRDWKCCKNDLQNWNPQYSQGTRNTKRMVATTNQTMIEWKQSHIFETWLFCHVIIEYNWSAFWMWMNRNEAFNSIIKSGYPKLLLTQYPLSQGSTPIVKPLIRRDQGKFWAWAQMWWFREPTNIPTADYCHSWWQSRADLQNDRDMGPEADASFYVEFWYWVRCAARTYGQQLGIIWNNRLKTRNPCPYSADGIQNKENYVFWWKNMCTKSHIAFYYCLQNVAHYTHDVTAEFNPVKCIDWLQGHMVLSSWFKYNTECKKLFVHEKCECYRMFCGVVEDIFGVRFHTGWKHLSTAKPVPHVCVYNPSVQERRNINDFYIFYEIAPAVKNLVLSAQPLHDYTKKCAFNYTPITITRIISTRNQIIWAHVVIACQFYSPHQMLLIELAMDKYCADMNVRRSTEGHQPMHACRSTFGPGMAAKEPLVTFTLVAFWQWPNHEFQYVYMYTEDKIIQIGPHLSNGCEMVEYCVDCYAKRPCYRAYSAEAQYWRMITEAEDYSYKTRNAIAATATVRGQYCHPFRWLGIVWMAHHDCFFANECGTICIPQMAEMRPPETTPYEIDIIFMMFWKEHMSTTILDVVGMYRPATFSHWHDAHHQCEPYLTPLMCQSKLVFDAAFTQVGVKGVWYHTEKLELMAGFNHMKFKKEEAQQSCFYWFQDCPDYDPPDAVRKTDEKHIRAHGEIWWLMRYYCMYHILHIASRHEWMHLRWDQACTNPGYELFEFIPWVLRRYVVYDKIRYNYSYRNSASMEFV')
+            self.assertEqual(1062,score)
+            self.maxDiff=None
+            self.assertEqual('YQAGIIRQPPRGD-RGVSDRNYSQCGKQ-NQ-AQLDNNPTWTKYEIEWRVQI-LPPGAGVFEGDNGQNQCLCPNW--A-W-EQPCQW----GALHS-NEQYPNRIHLWAPMSKLHIKIEKSSYN-RNAQ-FPNRCMYECE-FPSY-REQVDSCHYENVQIAF-TIFSGAEQKRKFCSCHFWSNFIDQAVFSTGLI-PWCYRRDDHSAFFMPNWNKQ--YKHPQLQFRVAGEGTQCRPFYTREMFTKVSAWRIAGRFAGPYERHHDAHLELWY-QHHKVRT-GQQLGIIWNNRDKTRNPCPFSAY-Y-NK--LP-WWK-I-NQ-N-AFYNCLQNIAHSTHDETHEFNPVKCIDWLQGTMV-P------TECKKGFVHEKCECYRNPGPPLHDMYHQMEDIFGVRFDCLTGWKHLS------D---YNPC-QERRNINDFYIFAYEIAPAVKNLVLSPQPLADATKKCAFNYTPLDQSPVVIACK---WYIHQPI-CMLL----IVLIC-AMDKYNAHMIVIRTTEGQQPMHACRMTEGPGMCMKEPLVTFTLPAQWQWPNHEFKYVYMYVLNYHLSQYTYTDEGHAGGQHYSFNVAVDVGMAWGHNRCYCQPACYSQQETQTRTIDYEKWQYMKHQAFKWGLWFCEQER-HA--WFKGQNRCEMFTAKMTRMGADSNLDQYKLMLAQNYEEQWEQPIMECGMSEIIEIDPPYRSELIFTFWPFCTYSPWQNLIKCRCNNVIEEMDQCVP-LTF-IGFGVKQAGGIQA-WAFYKE--EWTSTYYLMCQCMKSDKAQYPYEIILFWMQ--P-MDTGE--QEPPQQNMWIFLPHSWFFDWCCNAPWSEICSSRHD--H---GQ-CQDAFYPCELFTVF',s1)
+            self.assertEqual('Y-P-MSRKTAKSQFIEWCDW-F--CFNHWTNWAPLSIVRTSVAFAV-W-GHCWYPCG-GVCKTNRCKDD-FCGRWRKALFAEGPRDWKCCKNDLQNWNPQYSQGTR--NTK-RMVATTNQTMIEWKQSHIFETW-LF-CHVIIEYNWSAF-W-MWMNRNEAFNSIIKSGYPKLLL-T-QY-P-L-SQG--STPIVKPL-IRRD-QGKFW-A-WAQMWWFREPT-NIPTA-D-Y-CHSW--WQ--SR-ADLQ-NDRDMGP-EADASFYVEFWYWVRCAARTYGQQLGIIWNNRLKTRNPCPYSADGIQNKENYVFWWKNMCTKSHIAFYYCLQNVAHYTHDVTAEFNPVKCIDWLQGHMVLSSWFKYNTECKKLFVHEKCECYRM----FCGV---VEDIFGVRFH--TGWKHLSTAKPVPHVCVYNPSVQERRNINDFYIF-YEIAPAVKNLVLSAQPLHDYTKKCAFNYTPITITRIISTRNQIIW-AHVVIACQFYSPHQMLLIELAMDKYCADMNVRRSTEGHQPMHACRSTFGPGMAAKEPLVTFTLVAFWQWPNHEFQYVYMYTED-KIIQIG-PHLSN-GCEMVEYCVDC-YAK-RPCYRAYSAEAQYWRMITEAEDYSYKTRNAIAATATVRGQ-YCHPFRWLGIVWM-AHHDC-FFANECGTICI-PQMAEMRPPETTPYEI--DIIFMMF-WKE--HMSTTIL-DVVGMYRP-ATFSHWHDAHH-QCEPYLTPL-MCQSKLVFDAAFT--QVG-VKGVW-YHTEKLELMAGFNHM-K-FKKEEAQ---QSCFYWFQDCPDYDPPDAVRKTDEKHIRAHGEIWWLMRYYCMYHILHI-ASRHEWMHLRWDQACTNPGY--ELFE-F',s2)
+ 
+    unittest.main()   
