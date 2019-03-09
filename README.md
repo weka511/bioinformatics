@@ -57,15 +57,15 @@ NB: functions generally use zero based indexing; Rosalind uses 1-based.
 |BA4K|rosalind_old.py|	[Compute the Score of a Linear Peptide ](http://rosalind.info/problems/ba4k/) |
 |BA4L|rosalind_old.py|	[Trim a Peptide Leaderboard](http://rosalind.info/problems/ba4l/) |
 |BA4M|ba4m.py| [Solve the Turnpike Problem](http://rosalind.info/problems/ba4m/) |
-|5|-|How do we compare Biological Sequences?|
-|BA5A|rosalind_old.py|[Find the Minimum Number of Coins Needed to Make Change](http://rosalind.info/problems/ba5a/)|
-|BA5B|rosalind_old.py|[Find the Length of a Longest Path in a Manhattan-like Grid](http://rosalind.info/problems/ba5b/)|
-|BA5C|rosalind_old.py|[Find a Longest Common Subsequence of Two Strings](http://rosalind.info/problems/ba5c/)|
-|BA5D|rosalind_old.py|[Find the Longest Path in a DAG](http://rosalind.info/problems/ba5d/)|
-|BA5E|rosalind_old.py|[Find a Highest-Scoring Alignment of Two Strings](http://rosalind.info/problems/ba5e/)|
-|BA5F|rosalind_old.py|[Find a Highest-Scoring Local Alignment of Two Strings](http://rosalind.info/problems/ba5f/)|
-|BA5G | edit.py | [Compute the Edit Distance Between Two Strings](http://rosalind.info/problems/ba5g/) |
-|BA5H| BA5H.py | [Find a Highest-Scoring Fitting Alignment of Two Strings](http://rosalind.info/problems/ba5h/) |   
+|5|align.py|How do we compare Biological Sequences?|
+|BA5A|align.py|[Find the Minimum Number of Coins Needed to Make Change](http://rosalind.info/problems/ba5a/)|
+|BA5B|align.py|[Find the Length of a Longest Path in a Manhattan-like Grid](http://rosalind.info/problems/ba5b/)|
+|BA5C|align.py|[Find a Longest Common Subsequence of Two Strings](http://rosalind.info/problems/ba5c/)|
+|BA5D|align.py|[Find the Longest Path in a DAG](http://rosalind.info/problems/ba5d/)|
+|BA5E|align.py|[Find a Highest-Scoring Alignment of Two Strings](http://rosalind.info/problems/ba5e/)|
+|BA5F|align.py|[Find a Highest-Scoring Local Alignment of Two Strings](http://rosalind.info/problems/ba5f/)|
+|BA5G |edit.py| [Compute the Edit Distance Between Two Strings](http://rosalind.info/problems/ba5g/) |
+|BA5H|BA5H.py| [Find a Highest-Scoring Fitting Alignment of Two Strings](http://rosalind.info/problems/ba5h/) |   
 |BA5I|BA5I.py|[Find a Highest-Scoring Overlap Alignment of Two Strings](http://rosalind.info/problems/ba5i/)|    
 |BA5J|BA5J.py|[Align Two Strings Using Affine Gap Penalties](http://rosalind.info/problems/ba5j/)|    
 |BA5K|TBP|[Find a Middle Edge in an Alignment Graph in Linear Space](http://rosalind.info/problems/ba5k/) |
@@ -73,25 +73,25 @@ NB: functions generally use zero based indexing; Rosalind uses 1-based.
 |BA5M|TBP|[Find a Highest-Scoring Multiple Sequence Alignment](http://rosalind.info/problems/ba5m/) | 
 |BA5N |align.py|[Find a Topological Ordering of a DAG](http://rosalind.info/problems/ba5n/) | 
 |6|fragile.py|Are there fragile regions in the human genome?|
-|BA6A|BA6A.py| [Implement GreedySorting to Sort a Permutation by Reversals ](http://rosalind.info/problems/ba6a/)|
-|BA6B| BA6B.py | [Compute the Number of Breakpoints in a Permutation](http://rosalind.info/problems/ba6b/)|
-|BA6C| BA6C.py| [Compute the 2-Break Distance Between a Pair of Genomes](http://rosalind.info/problems/ba6c/)|
-|BA6D| TBP| [Find a Shortest Transformation of One Genome into Another by 2-Breaks](http://rosalind.info/problems/ba6d/)|
-|BA6E| fragile.py| [Find All Shared k-mers of a Pair of Strings ](http://rosalind.info/problems/ba6e/)|
-|BA6F| BA6F.py| [Implement Chromosome to Cycle](http://rosalind.info/problems/ba6f/)|
-|BA6G| BA6G.py| [Implement Cycle to Chromosome](http://rosalind.info/problems/ba6g/)|
-|BA6H| BA6H.py| [Implement Coloured Edges](http://rosalind.info/problems/ba6h/)|
-|BA6I| BA6I.py| [Implement GraphToGenome ](http://rosalind.info/problems/ba6i/)|
-|BA6J| BA6J.py| [Implement 2-BreakOnGenomeGraph ](http://rosalind.info/problems/ba6j/)|
-|BA6K| BA6K| [Implement 2-BreakOnGenome ](http://rosalind.info/problems/ba6k/) (WIP)|
+|BA6A|BA6A.py|[Implement GreedySorting to Sort a Permutation by Reversals ](http://rosalind.info/problems/ba6a/)|
+|BA6B|BA6B.py|[Compute the Number of Breakpoints in a Permutation](http://rosalind.info/problems/ba6b/)|
+|BA6C|BA6C.py|[Compute the 2-Break Distance Between a Pair of Genomes](http://rosalind.info/problems/ba6c/)|
+|BA6D|TBP|[Find a Shortest Transformation of One Genome into Another by 2-Breaks](http://rosalind.info/problems/ba6d/)|
+|BA6E|fragile.py| [Find All Shared k-mers of a Pair of Strings ](http://rosalind.info/problems/ba6e/)|
+|BA6F|BA6F.py|[Implement Chromosome to Cycle](http://rosalind.info/problems/ba6f/)|
+|BA6G|BA6G.py|[Implement Cycle to Chromosome](http://rosalind.info/problems/ba6g/)|
+|BA6H|BA6H.py|[Implement Coloured Edges](http://rosalind.info/problems/ba6h/)|
+|BA6I|BA6I.py|[Implement GraphToGenome ](http://rosalind.info/problems/ba6i/)|
+|BA6J|BA6J.py|[Implement 2-BreakOnGenomeGraph ](http://rosalind.info/problems/ba6j/)|
+|BA6K|BA6K| [Implement 2-BreakOnGenome ](http://rosalind.info/problems/ba6k/) (WIP)|
 |7|-|Which animal gave us SARS?|
-| BA7A | BA7A.py | [Compute Distances Between Leaves](http://rosalind.info/problems/ba7a/) |
-| BA7B |BA7B.py | [Limb Length Problem](http://rosalind.info/problems/ba7b/) |
-| BA7C| BA7C.py | [Implement Additive Phylogeny](http://rosalind.info/problems/ba7c/) |
-| BA7D|BA7D.py | [Implement UPGMA](http://rosalind.info/problems/ba7d/) |
-| BA7E|BA7E.py | [Implement the Neighbor Joining Algorithm](http://rosalind.info/problems/ba7e/) |
-| BA7F|BA7F.py | [Implement SmallParsimony](http://rosalind.info/problems/ba7f/) |
-| BA7G|BA7.py | [Adapt SmallParsimony to Unrooted Trees](http://rosalind.info/problems/ba7g/) |
+|BA7A|BA7A.py|[Compute Distances Between Leaves](http://rosalind.info/problems/ba7a/)|
+|BA7B|BA7B.py|[Limb Length Problem](http://rosalind.info/problems/ba7b/)|
+|BA7C|BA7C.py|[Implement Additive Phylogeny](http://rosalind.info/problems/ba7c/)|
+|BA7D|BA7D.py|[Implement UPGMA](http://rosalind.info/problems/ba7d/)|
+|BA7E|BA7E.py|[Implement the Neighbor Joining Algorithm](http://rosalind.info/problems/ba7e/)|
+|BA7F|BA7F.py|[Implement SmallParsimony](http://rosalind.info/problems/ba7f/)|
+|BA7G|BA7.py [Adapt SmallParsimony to Unrooted Trees](http://rosalind.info/problems/ba7g/)|
 |8|-|How did Yeast become a Winemaker?|
 |BA8A|BA8A.py | [Implement FarthestFirstTraversal](http://rosalind.info/problems/ba8a/) |
 |BA8B|BA8B.py | [Compute the Squared Error Distortion](http://rosalind.info/problems/ba8b/) |
