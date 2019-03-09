@@ -1,8 +1,4 @@
-# $HeadURL: https://server/svn/sandbox/trunk/rosalind/reference_tables.py $
-# $LastChangedDate: 2016-01-18 09:22:31 +1300 (Mon, 18 Jan 2016) $
-# $LastChangedRevision: 762 $
-
-# Copyright (C) 2015-2016 Greenweaves Software Pty Ltd
+# Copyright (C) 2015-2019 Greenweaves Software Limited
 
 # This is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -33,11 +29,11 @@ codon_table={
      'UCG': 'S',      'CCG': 'P',      'ACG': 'T',      'GCG': 'A',
      'UAU': 'Y',      'CAU': 'H',      'AAU': 'N',      'GAU': 'D',
      'UAC': 'Y',      'CAC': 'H',      'AAC': 'N',      'GAC': 'D',
-     'UAA': ';',   'CAA': 'Q',      'AAA': 'K',      'GAA': 'E',
-     'UAG': ';',   'CAG': 'Q',      'AAG': 'K',      'GAG': 'E',
+     'UAA': ';',      'CAA': 'Q',      'AAA': 'K',      'GAA': 'E',
+     'UAG': ';',      'CAG': 'Q',      'AAG': 'K',      'GAG': 'E',
      'UGU': 'C',      'CGU': 'R',      'AGU': 'S',      'GGU': 'G',
      'UGC': 'C',      'CGC': 'R',      'AGC': 'S',      'GGC': 'G',
-     'UGA': ';',   'CGA': 'R',      'AGA': 'R',      'GGA': 'G',
+     'UGA': ';',      'CGA': 'R',      'AGA': 'R',      'GGA': 'G',
      'UGG': 'W',      'CGG': 'R',      'AGG': 'R',      'GGG': 'G'
  }
 
@@ -187,11 +183,14 @@ def createPAM250():
             weights[(amino_acids[i],amino_acids[j])]=raw_weights[i][j]            
     return weights
 
+# createSimpleDNASubst
+#
 # Populate a simple scoring table
 
-def createSimpleDNASubst(match=+1,subst=1):
-    bases=['A', 'T', 'G', 'C']
- 
+# Inputs:   match    Reward for matching
+#           subst    Penalty for a mismatch
+#           bases    Replace with 'AUGC' for RNA
+def createSimpleDNASubst(match=+1,subst=1,bases='ATGC'):
     weights={}
     for i in range(len(bases)):
         for j in range(len(bases)):
