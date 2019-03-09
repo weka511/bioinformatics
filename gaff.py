@@ -22,9 +22,9 @@ def gaff(s,t):
     return score,''.join(s1),''.join(t1)
 
 if __name__=='__main__':
-    from helpers import create_strings    
+    from helpers import create_strings
     #score,s,t = gaff('PRTEINS','PRTWPSEIN')
-    strings   = create_strings('gaff',ext=2,fasta=True)
+    strings   = create_strings(ext=2,fasta=True)
     #print (strings[0])
     #print (strings[1])
     score,s,t = gaff(strings[0],strings[1])

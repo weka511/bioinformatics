@@ -595,11 +595,12 @@ def parse_graphs(f):
 # Read test data from file
 #
 # Inputs:   problem  Name of Rosalind problem
+#                    - defaults to name of script callling this method
 #           path     Location of test data
 #           ext      Ext used to identify additional datasets - 1, 2, 3...
 #           fasta    File is in FASTA format, so skip FASTA ids
 
-def create_strings(problem,
+def create_strings(problem=os.path.basename(sys.argv[0]).split('.')[0],
                    path=os.path.join(os.path.expanduser('~'),'Downloads'),
                    ext=None,
                    fasta=False): 
