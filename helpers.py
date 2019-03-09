@@ -25,7 +25,8 @@ import sys
 import matplotlib.pyplot as plt
 import re
 import os.path
-
+from Bio import SeqIO
+    
 def read_dna(name):
     with open(name,'r') as f:
         return f.read().strip()
@@ -602,16 +603,15 @@ def create_strings(problem,
                    path=os.path.join(os.path.expanduser('~'),'Downloads'),
                    ext=None,
                    fasta=False): 
+    product      = []
     label        = problem if ext==None else '{0}({1})'.format(problem,ext)
     base         = 'rosalind_{0}.txt'.format(label)
     file_name    = os.path.join(path,base)
-    product      = []
-    fasta_header = fasta
     with open(file_name,'r') as f:
-        for line in f:
-            if fasta_header:
-                fasta_header=False
-                continue
-            product.append(line.strip())
-            fasta_header = fasta
+        if fasta:
+            for record in SeqIO.parse(f,'fasta'):
+                product.append(str(record.seq))                
+        else:
+            for line in f:
+                product.append(line.strip())
     return product
