@@ -71,7 +71,7 @@ NB: functions generally use zero based indexing; Rosalind uses 1-based.
 |BA5K|TBP|[Find a Middle Edge in an Alignment Graph in Linear Space](http://rosalind.info/problems/ba5k/) |
 |BA5L|TBP|[Align Two Strings Using Linear Space](http://rosalind.info/problems/ba5l/) |    
 |BA5M|TBP|[Find a Highest-Scoring Multiple Sequence Alignment](http://rosalind.info/problems/ba5m/) | 
-|BA5N |rosalind_old.py|[Find a Topological Ordering of a DAG](http://rosalind.info/problems/ba5n/) | 
+|BA5N |align.py|[Find a Topological Ordering of a DAG](http://rosalind.info/problems/ba5n/) | 
 |6|fragile.py|Are there fragile regions in the human genome?|
 |BA6A|BA6A.py| [Implement GreedySorting to Sort a Permutation by Reversals ](http://rosalind.info/problems/ba6a/)|
 |BA6B| BA6B.py | [Compute the Number of Breakpoints in a Permutation](http://rosalind.info/problems/ba6b/)|

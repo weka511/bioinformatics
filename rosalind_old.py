@@ -2370,36 +2370,7 @@ def highest_scoring_local_alignment(string1,string2,weights=rrt.createPAM250(),s
 	  	  	 
 # BA5M 	Find a Highest-Scoring Multiple Sequence Alignment 	 	
 	  	  	 
-# BA5N 	Find a Topological Ordering of a DAG 
-#
-# Input: The adjacency list of a graph (with nodes represented by integers).
-#
-# Return: A topological ordering of this graph.
 
-def topological_order(graph):
-    def number_incoming(node):
-        n=0
-        for out in graph.values():
-            if node in out:
-                n+=1
-        return n
-    
-    ordering=[]
-    candidates=[node for node in graph.keys() if number_incoming(node)==0]
-    while len(candidates)>0:
-        a=candidates.pop()
-        ordering.append(a)
-        if a in graph:
-            bs=[b for b in graph[a]]
-            del graph[a]
-            for b in bs:
-                if number_incoming(b)==0:
-                    candidates.append(b)
-                    
-    if len(graph)>0:
-        raise RosalindException('Input graph is not a DAG')
-    
-    return ordering
 
 
 

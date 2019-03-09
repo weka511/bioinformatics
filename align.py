@@ -200,3 +200,34 @@ if __name__=='__main__':
     from Bio.SubsMat.MatrixInfo import blosum62
     score,s1,s2=align('PLEASANTLY','MEANLY',replace_score=blosum62,indel_cost=5)
     print (score,s1,s2)
+    
+# BA5N 	Find a Topological Ordering of a DAG 
+#
+# Input: The adjacency list of a graph (with nodes represented by integers).
+#
+# Return: A topological ordering of this graph.
+
+def topological_order(graph):
+    def number_incoming(node):
+        n=0
+        for out in graph.values():
+            if node in out:
+                n+=1
+        return n
+    
+    ordering=[]
+    candidates=[node for node in graph.keys() if number_incoming(node)==0]
+    while len(candidates)>0:
+        a=candidates.pop()
+        ordering.append(a)
+        if a in graph:
+            bs=[b for b in graph[a]]
+            del graph[a]
+            for b in bs:
+                if number_incoming(b)==0:
+                    candidates.append(b)
+                    
+    if len(graph)>0:
+        raise RosalindException('Input graph is not a DAG')
+    
+    return ordering

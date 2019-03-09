@@ -15,11 +15,11 @@
 #
 #    TS Topological  sort
 
-from rosalind_old import topological_order
+from align import topological_order
 from helpers import parse_graph, create_adjacency, format_list
                
 if __name__=='__main__':
-     with open(r'C:\Users\Simon\Downloads\rosalind_ts(1).txt') as f:
+     with open(r'C:\Users\Simon\Downloads\rosalind_ts.txt') as f:
           g = parse_graph(f)
 
           _,_,adj = create_adjacency(g,back=False)
@@ -29,5 +29,3 @@ if __name__=='__main__':
 
           t = topological_order(adj)
           print (format_list(t))
-
-
