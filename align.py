@@ -16,7 +16,7 @@
 # Common code for alignment problems
 
 import numpy as np
-
+from Bio.SubsMat.MatrixInfo import blosum62
 from reference_tables import createSimpleDNASubst
 
 
@@ -228,6 +228,64 @@ def topological_order(graph):
         raise RosalindException('Input graph is not a DAG')
     
     return ordering
+
+
+def unwind_moves(moves,score,i,j):
+    ss = []
+    ts = []
+
+    while i>0 and j > 0:
+        i,j,s0,t0=moves[(i,j)]
+        ss.append(s0)
+        ts.append(t0)
+    return score,ss[::-1],ts[::-1]
+    
+def san_kai(s,t, replace_score=blosum62,sigma=11,epsilon=1,backtrack=unwind_moves):
+    
+    def match(pair,replace_score=replace_score):
+        def reverse(pair):
+            a,b=pair
+            return (b,a)
+        return replace_score[pair] if pair in replace_score else replace_score[reverse(pair)]
+
+    lower        = create_distance_matrix(len(s)+1,len(t)+1)
+    middle       = create_distance_matrix(len(s)+1,len(t)+1)
+    upper        = create_distance_matrix(len(s)+1,len(t)+1)
+
+    moves        = {}
+    lower[0][0]  = -float('inf')
+    middle[0][0] = 0
+    upper[0][0]  = -float('inf')
+    
+    for i in range(1,len(s)+1):
+        lower[i][0]  = - (sigma + epsilon *(i-1))
+        middle[i][0] =  - (sigma + epsilon *(i-1)) #-float('inf')
+        upper[i][0]  =  - (sigma + epsilon *(i-1))# -float('inf')
+    for j in range(1,len(t)+1):
+        lower[0][j]  =  - (sigma + epsilon *(j-1))#-float('inf')
+        middle[0][j] =  - (sigma + epsilon *(j-1)) #-float('inf')
+        upper[0][j]  = - (sigma + epsilon *(j-1))
+        
+    for i in range(1,len(s)+1):
+        for j in range(1,len(t)+1):
+            lower[i][j]  = max(lower[i-1][j] - epsilon,
+                               middle[i-1][j] - sigma)
+            
+            upper[i][j]  =  max(upper[i][j-1] - epsilon,
+                               middle[i][j-1] - sigma)
+            
+            choices      = [lower[i][j], 
+                            middle[i-1][j-1] + match((s[i-1],t[j-1])),
+                            upper[i][j]]
+            index        = np.argmax(choices)
+            middle[i][j] = choices[index]
+            moves[(i,j)] = [(i-1, j,   s[i-1], '-'),     # Comes from lower
+                            (i-1, j-1, s[i-1], t[j-1]),  # Comes from middle
+                            (i,   j-1, '-',    t[j-1]    # Comes from upper
+                             )][index]
+ 
+    return backtrack(moves,middle[len(s)][len(t)],len(s),len(t))
+
 
 if __name__=='__main__':
     from Bio.SubsMat.MatrixInfo import blosum62

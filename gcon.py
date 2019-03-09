@@ -16,7 +16,7 @@
 # GCON Global Alignment with Constant Gap Penalty
 
 from helpers import create_strings
-from BA5J import san_kai
+from align import san_kai
 
 def gcon(s,t):
     score,s1,t1 = san_kai([s0 for s0 in s],[t0 for t0 in t],sigma=5,epsilon=0)
