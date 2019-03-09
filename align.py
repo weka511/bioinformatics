@@ -196,10 +196,7 @@ def overlap_assignment(v,w,match_bonus=+1,mismatch_cost=2,indel_cost=2):
     score,u1,v1=dynamic_programming([vv for vv in v],[ww for ww in w])
     return score,''.join(u1),''.join(v1)
     
-if __name__=='__main__':
-    from Bio.SubsMat.MatrixInfo import blosum62
-    score,s1,s2=align('PLEASANTLY','MEANLY',replace_score=blosum62,indel_cost=5)
-    print (score,s1,s2)
+
     
 # BA5N 	Find a Topological Ordering of a DAG 
 #
@@ -231,3 +228,8 @@ def topological_order(graph):
         raise RosalindException('Input graph is not a DAG')
     
     return ordering
+
+if __name__=='__main__':
+    from Bio.SubsMat.MatrixInfo import blosum62
+    score,s1,s2=align('PLEASANTLY','MEANLY',replace_score=blosum62,indel_cost=5)
+    print (score,s1,s2)

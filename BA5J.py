@@ -27,23 +27,34 @@ def match(pair,replace_score=blosum62):
         return (b,a)
     return replace_score[pair] if pair in replace_score else replace_score[reverse(pair)]
 
-def san_kai(s,t, replace_score=blosum62,sigma=11,epsilon=1):
-    
-    lower    = create_distance_matrix(len(s)+1,len(t)+1)
-    middle   = create_distance_matrix(len(s)+1,len(t)+1)
-    upper    = create_distance_matrix(len(s)+1,len(t)+1)
+def unwind_moves(moves,score,i,j):
+    ss = []
+    ts = []
 
-    moves = {}
+    while i>0 and j > 0:
+        i,j,s0,t0=moves[(i,j)]
+        ss.append(s0)
+        ts.append(t0)
+    return score,ss[::-1],ts[::-1]
+    
+def san_kai(s,t, replace_score=blosum62,sigma=11,epsilon=1,backtrack=unwind_moves):
+    
+    lower        = create_distance_matrix(len(s)+1,len(t)+1)
+    middle       = create_distance_matrix(len(s)+1,len(t)+1)
+    upper        = create_distance_matrix(len(s)+1,len(t)+1)
+
+    moves        = {}
     lower[0][0]  = -float('inf')
     middle[0][0] = 0
     upper[0][0]  = -float('inf')
+    
     for i in range(1,len(s)+1):
         lower[i][0]  = - (sigma + epsilon *(i-1))
-        middle[i][0] = -float('inf')
-        upper[i][0]  = -float('inf')
+        middle[i][0] =  - (sigma + epsilon *(i-1)) #-float('inf')
+        upper[i][0]  =  - (sigma + epsilon *(i-1))# -float('inf')
     for j in range(1,len(t)+1):
-        lower[0][j]  = -float('inf')
-        middle[0][j] = -float('inf')
+        lower[0][j]  =  - (sigma + epsilon *(j-1))#-float('inf')
+        middle[0][j] =  - (sigma + epsilon *(j-1)) #-float('inf')
         upper[0][j]  = - (sigma + epsilon *(j-1))
         
     for i in range(1,len(s)+1):
@@ -59,22 +70,12 @@ def san_kai(s,t, replace_score=blosum62,sigma=11,epsilon=1):
                             upper[i][j]]
             index        = argmax(choices)
             middle[i][j] = choices[index]
-            history      = [(i-1,j,s[i-1],'-'),
-                            (i-1,j-1,s[i-1],t[j-1]),
-                            (i,j-1,'-',t[j-1])]
-            moves[(i,j)] = history[index]
-
-    i  = len(s)
-    j  = len(t)
-    ss = []
-    ts = []
-
-    while i>0 and j > 0:
-        i,j,s0,t0=moves[(i,j)]
-        ss.append(s0)
-        ts.append(t0)
-    return middle[len(s)][len(t)],ss[::-1],ts[::-1]
-
+            moves[(i,j)] = [(i-1, j,   s[i-1], '-'),     # Comes from lower
+                            (i-1, j-1, s[i-1], t[j-1]),  # Comes from middle
+                            (i,   j-1, '-',    t[j-1]    # Comes from upper
+                             )][index]
+ 
+    return backtrack(moves,middle[len(s)][len(t)],len(s),len(t))
 
 def ba5j(s,t):
     score,s1,t1 = san_kai([s0 for s0 in s],[t0 for t0 in t])
@@ -83,7 +84,7 @@ def ba5j(s,t):
 if __name__=='__main__':
     from helpers import create_strings    
 
-    strings  = create_strings('ba5j',ext=5)
+    strings  = create_strings('ba5j',ext=7)
     score,s,t=ba5j(strings[0],strings[1])
     print (score)
     print (s)

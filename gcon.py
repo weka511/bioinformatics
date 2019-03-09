@@ -16,6 +16,8 @@
 # GCON Global Alignment with Constant Gap Penalty
 
 from align import align
+from helpers import create_strings
+from BA5J import san_kai
 
 def get_indel_cost_with_skips(sigma,delta,i,j,di,dj,moves):
     i_previous = i+di
@@ -31,36 +33,39 @@ def get_indel_cost_with_skips(sigma,delta,i,j,di,dj,moves):
 def get_score(s,t,matrix,moves,showPath=False):
     return matrix[len(s)][len(t)],[],[]
 
+def gcon(s,t):
+    score,s1,t1 = san_kai([s0 for s0 in s],[t0 for t0 in t],sigma=5,epsilon=0)
+    return score,''.join(s1),''.join(t1) 
+
 if __name__=='__main__':
     from Bio.SubsMat.MatrixInfo import blosum62
     from Bio import SeqIO
     import sys,os
     if sys.argv[1]=='--sample':
-        score,_,_=align('PLEASANTLY','MEANLY',
-                            replace_score=blosum62,
-                            indel_cost=(5,0),
-                            get_indel_cost=get_indel_cost_with_skips,
-                            backtrack=get_score,
-                            showScores=False,showPath=False)
+        score,_,_=gcon('PLEASANTLY','MEANLY')
+        #score,_,_=align('PLEASANTLY','MEANLY',
+                            #replace_score=blosum62,
+                            #indel_cost=(5,0),
+                            #get_indel_cost=get_indel_cost_with_skips,
+                            #backtrack=get_score,
+                            #showScores=False,showPath=False)
         print (score)
     elif sys.argv[1]=='--test':
-        name,_ = os.path.splitext(os.path.basename(sys.argv[0]))
-        if len(sys.argv)>2:
-            name = name + '({0})'.format(int(sys.argv[2])) 
-        with open(os.path.join(r'C:\Users\Simon\Downloads','rosalind_{0}.txt'.format(name)),'r') as f:
-            print ('Processing {0}'.format(f.name))
-            strings = [] 
-            for record in SeqIO.parse(f,'fasta'):
-                print (record.id)
-                print (str(record.seq))
-                strings.append(str(record.seq))    
-            score,_,_=align(strings[0],strings[1],
-                            replace_score=blosum62,
-                            indel_cost=(5,0),
-                            get_indel_cost=get_indel_cost_with_skips,
-                            backtrack=get_score,
-                            showScores=False,showPath=False)
-            print (score)
+        inFile = open(r'C:\Users\Simon\Downloads\rosalind_gcon(3).txt','r')
+        strings = []
+        for record in SeqIO.parse(inFile,'fasta'):
+            print (record.id)
+            print (str(record.seq))
+            strings.append(str(record.seq))        
+        #strings=create_strings('gcon',fasta=True,ext=2)
+        score,_,_=gcon(strings[0],strings[1])
+        #score,_,_=align(strings[0],strings[1],
+                        #replace_score=blosum62,
+                        #indel_cost=(5,0),
+                        #get_indel_cost=get_indel_cost_with_skips,
+                        #backtrack=get_score,
+                        #showScores=False,showPath=False)
+        print (score)
     else:
         score,_,_=align(sys.argv[1],sys.argv[2],
                         replace_score=blosum62,
