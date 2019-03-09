@@ -16,11 +16,11 @@
 #    BA5H Find a Highest-Scoring Fitting Alignment of Two Strings
 
 from reference_tables import createSimpleDNASubst
-from rosalind_old import highest_scoring_global_alignment
-from align import align
+from align import align,highest_scoring_global_alignment
 import numpy as np
+from helpers import create_strings
 
-def build_matrix(s,t,matrix,replace_score=createSimpleDNASubst(),indel_cost=1):
+def build_matrix(s,t,matrix,replace_score=createSimpleDNASubst(),indel_cost=1,get_indel_cost=None):
       moves = {}
       def score(pair):
             def reverse(pair):
@@ -79,28 +79,11 @@ def ba5h(s,t):
       d,s1,t1 =align([s0 for s0 in s], [t0 for t0 in t],build_matrix=build_matrix,backtrack=backtrack)
       return (d,''.join(s1),''.join(t1))
 
-def ba5h_naive(s,t):
-      best = -9999999
-      s0   = ''
-      t0   = ''
-      for i in range(len(s)-len(t)):
-            for j in range(len(t),2*len(t)):
-                  score,s1,t1=highest_scoring_global_alignment(s[i:i+j],t,weights=createSimpleDNASubst(),sigma=1)
-                  if score>best:
-                        best = score
-                        s0   = s1
-                        t0   = t1
-      return best,s0,t0
 
 if __name__=='__main__':
       import timeit
-      start_time = timeit.default_timer()
-                     
-      strings = []
-      with open(r'C:\Users\Simon\Downloads\rosalind_ba5h(5).txt','r') as f:
-            for line in f:
-                  strings.append(line.strip())
-
+      start_time = timeit.default_timer()      
+      strings   = create_strings(ext=1)              
       d,s1,t1 = ba5h(strings[0],strings[1])      
       print ('Score = {0}'.format(d))
       print (s1)
