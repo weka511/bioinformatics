@@ -24,16 +24,16 @@ NB: functions generally use zero based indexing; Rosalind uses 1-based.
 |BA1M|rosalind_old.py|	[Implement NumberToPattern](http://rosalind.info/problems/ba1m/) |
 |BA1N|rosalind_old.py|[Generate the d-Neighborhood of a String](http://rosalind.info/problems/ba1n/) |
 |2|-|How do we sequence Antibiotics?|
-|BA2A|rosalind_old.py| 	[Implement MotifEnumeration](http://rosalind.info/problems/ba2a/) |
-|BA2B |rosalind_old.py|	[Find a Median String ](http://rosalind.info/problems/ba1j/)
-|BA2C |rosalind_old.py|	[Find a Profile-most Probable k-mer in a String	](http://rosalind.info/problems/ba2c/)
-|BA2D |rosalind_old.py|	[Implement GreedyMotifSearch](http://rosalind.info/problems/ba2d/)
-|BA2E |rosalind_old.py|[Implement GreedyMotifSearch with Pseudocounts](http://rosalind.info/problems/ba2e/)
-|BA2F |rosalind_old.py|	[Implement RandomizedMotifSearch](http://rosalind.info/problems/ba2f/)	
-|BA2G |rosalind_old.py|	[Implement GibbsSampler](http://rosalind.info/problems/ba2g/)
-|BA2H |rosalind_old.py|	[Implement DistanceBetweenPatternAndStrings](http://rosalind.info/problems/ba2h/) 
+|BA2A|rosalind.py|[Implement MotifEnumeration](http://rosalind.info/problems/ba2a/) |
+|BA2B |rosalind.py|[Find a Median String ](http://rosalind.info/problems/ba1j/)
+|BA2C |rosalind.py|[Find a Profile-most Probable k-mer in a String	](http://rosalind.info/problems/ba2c/)
+|BA2D |rosalind.py|[Implement GreedyMotifSearch](http://rosalind.info/problems/ba2d/)
+|BA2E |rosalind.py|[Implement GreedyMotifSearch with Pseudocounts](http://rosalind.info/problems/ba2e/)
+|BA2F |rosalind.py|[Implement RandomizedMotifSearch](http://rosalind.info/problems/ba2f/)	
+|BA2G |rosalind.py|[Implement GibbsSampler](http://rosalind.info/problems/ba2g/)
+|BA2H |rosalind.py|[Implement DistanceBetweenPatternAndStrings](http://rosalind.info/problems/ba2h/) 
 |3|-|Which DNA Patterna play the Role of Molecular Clocks?|
-|BA3A|rosalind_old.py|	[Generate the k-mer Composition of a String](http://rosalind.info/problems/ba3a/) |
+|BA3A|rosalind.py|	[Generate the k-mer Composition of a String](http://rosalind.info/problems/ba3a/) |
 |BA3B|rosalind_old.py|	[Reconstruct a String from its Genome Path](http://rosalind.info/problems/ba3a/)
 |BA3C|rosalind_old.py|[Construct the Overlap Graph of a Collection of k-mers](http://rosalind.info/problems/ba3a/)
 |BA3D |rosalind_old.py|	[Construct the De Bruijn Graph of a String ](http://rosalind.info/problems/ba3a/)
