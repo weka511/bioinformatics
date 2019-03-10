@@ -7,22 +7,22 @@ NB: functions generally use zero based indexing; Rosalind uses 1-based.
 ## Textbook track
 
 | # | Location | Description |
-| ---- | -------------------------- | ------------------------------------------------|
+| ---- | ----------- | ------------------------------------------------|
 |1|-| Where in the Genome does DNA replication begin?|
-|BA1A|rosalind.py|	[Compute the Number of Times a Pattern Appears in a Text](http://rosalind.info/problems/ba1a/) |
-|BA1B|rosalind.py|	[Find the Most Frequent Words in a String](http://rosalind.info/problems/ba1b/) |
-|BA1C|rosalind_old.py|	[Find the Reverse Complement of a String](http://rosalind.info/problems/ba1c/) |
-|BA1D|rosalind_old.py|	[Find All Occurrences of a Pattern in a String](http://rosalind.info/problems/ba1d/) |
+|BA1A|rosalind.py|[Compute the Number of Times a Pattern Appears in a Text](http://rosalind.info/problems/ba1a/) |
+|BA1B|rosalind.py|[Find the Most Frequent Words in a String](http://rosalind.info/problems/ba1b/) |
+|BA1C|rosalind.py|[Find the Reverse Complement of a String](http://rosalind.info/problems/ba1c/) |
+|BA1D|rosalind.py|[Find All Occurrences of a Pattern in a String](http://rosalind.info/problems/ba1d/) |
 |BA1E|rosalind.py|[Find Patterns Forming Clumps in a String](http://rosalind.info/problems/ba1e/)|
 |BA1F|rosalind.py|[Find a Position in a Genome Minimizing the Skew](http://rosalind.info/problems/ba1f/)|
 |BA1G|rosalind.py|[Compute the Hamming Distance Between Two Strings](http://rosalind.info/problems/ba1g/)|
 |BA1H|rosalind.py|[Find All Approximate Occurrences of a Pattern in a String](http://rosalind.info/problems/ba1h/) |
 |BA1I|rosalind.py|[Find the Most Frequent Words with Mismatches in a String](http://rosalind.info/problems/ba1i/) |
-|BA1J|rosalind.py|	[Find Frequent Words with Mismatches and Reverse Complements](http://rosalind.info/problems/ba1j/) |
-|BA1K|rosalind_old.py|	[Generate the Frequency Array of a Strings](http://rosalind.info/problems/ba1f/) |
-|BA1L|rosalind_old.py|	[Implement PatternToNumber](http://rosalind.info/problems/ba1l/) |
-|BA1M|rosalind_old.py|	[Implement NumberToPattern](http://rosalind.info/problems/ba1m/) |
-|BA1N|rosalind_old.py|[Generate the d-Neighborhood of a String](http://rosalind.info/problems/ba1n/) |
+|BA1J|rosalind.py|[Find Frequent Words with Mismatches and Reverse Complements](http://rosalind.info/problems/ba1j/) |
+|BA1K|rosalind.py|[Generate the Frequency Array of a Strings](http://rosalind.info/problems/ba1f/) |
+|BA1L|rosalind.py|[Implement PatternToNumber](http://rosalind.info/problems/ba1l/) |
+|BA1M|rosalind.py|[Implement NumberToPattern](http://rosalind.info/problems/ba1m/) |
+|BA1N|rosalind.py|[Generate the d-Neighborhood of a String](http://rosalind.info/problems/ba1n/) |
 |2|-|How do we sequence Antibiotics?|
 |BA2A|rosalind.py|[Implement MotifEnumeration](http://rosalind.info/problems/ba2a/) |
 |BA2B |rosalind.py|[Find a Median String ](http://rosalind.info/problems/ba1j/)
@@ -33,29 +33,29 @@ NB: functions generally use zero based indexing; Rosalind uses 1-based.
 |BA2G |rosalind.py|[Implement GibbsSampler](http://rosalind.info/problems/ba2g/)
 |BA2H |rosalind.py|[Implement DistanceBetweenPatternAndStrings](http://rosalind.info/problems/ba2h/) 
 |3|-|Which DNA Patterna play the Role of Molecular Clocks?|
-|BA3A|rosalind.py|	[Generate the k-mer Composition of a String](http://rosalind.info/problems/ba3a/) |
-|BA3B|rosalind.py|	[Reconstruct a String from its Genome Path](http://rosalind.info/problems/ba3a/)
+|BA3A|rosalind.py|[Generate the k-mer Composition of a String](http://rosalind.info/problems/ba3a/) |
+|BA3B|rosalind.py|[Reconstruct a String from its Genome Path](http://rosalind.info/problems/ba3a/)
 |BA3C|rosalind.py|[Construct the Overlap Graph of a Collection of k-mers](http://rosalind.info/problems/ba3a/)
-|BA3D |rosalind.py|	[Construct the De Bruijn Graph of a String ](http://rosalind.info/problems/ba3a/)
-|BA3E |rosalind.py|	[Construct the De Bruijn Graph of a Collection of k-mers](http://rosalind.info/problems/ba3a/)
-|BA3F |rosalind.py|	[Find an Eulerian Cycle in a Graph](http://rosalind.info/problems/ba3a/)
-|BA3G |rosalind.py|	[Find an Eulerian Path in a Graph](http://rosalind.info/problems/ba3a/)
-|BA3H |rosalind.py|	[Reconstruct a String from its k-mer Composition](http://rosalind.info/problems/ba3a/)
-|BA3I |rosalind.py|	[Find a k-Universal Circular String](http://rosalind.info/problems/ba3a/)
-|BA3J |rosalind.py|	[Reconstruct a String from its Paired Composition](http://rosalind.info/problems/ba3a/)
+|BA3D |rosalind.py|[Construct the De Bruijn Graph of a String ](http://rosalind.info/problems/ba3a/)
+|BA3E |rosalind.py|[Construct the De Bruijn Graph of a Collection of k-mers](http://rosalind.info/problems/ba3a/)
+|BA3F |rosalind.py|[Find an Eulerian Cycle in a Graph](http://rosalind.info/problems/ba3a/)
+|BA3G |rosalind.py|[Find an Eulerian Path in a Graph](http://rosalind.info/problems/ba3a/)
+|BA3H |rosalind.py|[Reconstruct a String from its k-mer Composition](http://rosalind.info/problems/ba3a/)
+|BA3I |rosalind.py|[Find a k-Universal Circular String](http://rosalind.info/problems/ba3a/)
+|BA3J |rosalind.py|[Reconstruct a String from its Paired Composition](http://rosalind.info/problems/ba3a/)
 |4|-|How do we assemble Genomes?|
-|BA4A|rosalind_old.py|[Translate an RNA String into an Amino Acid String](http://rosalind.info/problems/ba4a/) |
-|BA4B|rosalind_old.py|[Find Substrings of a Genome Encoding a Given Amino Acid String](http://rosalind.info/problems/ba4b/) |
-|BA4C|rosalind_old.py|[Generate the Theoretical Spectrum of a Cyclic Peptide](http://rosalind.info/problems/ba4c/) |
-|BA4D|rosalind_old.py|[Compute the Number of Peptides of Given Total Mass](http://rosalind.info/problems/ba4d/) |
-|BA4E|rosalind_old.py|	[Find a Cyclic Peptide with Theoretical Spectrum Matching an Ideal Spectrum](http://rosalind.info/problems/ba4e/) |
-|BA4F|rosalind_old.py|	[Compute the Score of a Cyclic Peptide Against a Spectrum](http://rosalind.info/problems/ba4f/) |
-|BA4G|rosalind_old.py|	[Implement LeaderboardCyclopeptideSequencing ](http://rosalind.info/problems/ba4g/) |
-|BA4H|rosalind_old.py|	[Generate the Convolution of a Spectrum ](http://rosalind.info/problems/ba4h/) |
-|BA4I|rosalind_old.py|	[Implement ConvolutionCyclopeptideSequencing](http://rosalind.info/problems/ba4i/) |
-|BA4J|rosalind_old.py|	[Generate the Theoretical Spectrum of a Linear Peptide](http://rosalind.info/problems/ba4j/) |
-|BA4K|rosalind_old.py|	[Compute the Score of a Linear Peptide ](http://rosalind.info/problems/ba4k/) |
-|BA4L|rosalind_old.py|	[Trim a Peptide Leaderboard](http://rosalind.info/problems/ba4l/) |
+|BA4A|rosalind.py|[Translate an RNA String into an Amino Acid String](http://rosalind.info/problems/ba4a/) |
+|BA4B|rosalind.py|[Find Substrings of a Genome Encoding a Given Amino Acid String](http://rosalind.info/problems/ba4b/) |
+|BA4C|rosalind.py|[Generate the Theoretical Spectrum of a Cyclic Peptide](http://rosalind.info/problems/ba4c/) |
+|BA4D|rosalind.py|[Compute the Number of Peptides of Given Total Mass](http://rosalind.info/problems/ba4d/) |
+|BA4E|rosalind.py|[Find a Cyclic Peptide with Theoretical Spectrum Matching an Ideal Spectrum](http://rosalind.info/problems/ba4e/) |
+|BA4F|rosalind.py|[Compute the Score of a Cyclic Peptide Against a Spectrum](http://rosalind.info/problems/ba4f/) |
+|BA4G|rosalind.py|[Implement LeaderboardCyclopeptideSequencing ](http://rosalind.info/problems/ba4g/) |
+|BA4H|rosalind.py|[Generate the Convolution of a Spectrum ](http://rosalind.info/problems/ba4h/) |
+|BA4I|rosalind.py|[Implement ConvolutionCyclopeptideSequencing](http://rosalind.info/problems/ba4i/) |
+|BA4J|rosalind.py|[Generate the Theoretical Spectrum of a Linear Peptide](http://rosalind.info/problems/ba4j/) |
+|BA4K|rosalind.py|[Compute the Score of a Linear Peptide ](http://rosalind.info/problems/ba4k/) |
+|BA4L|rosalind.py|[Trim a Peptide Leaderboard](http://rosalind.info/problems/ba4l/) |
 |BA4M|ba4m.py| [Solve the Turnpike Problem](http://rosalind.info/problems/ba4m/) |
 |5|align.py|How do we compare Biological Sequences?|
 |BA5A|align.py|[Find the Minimum Number of Coins Needed to Make Change](http://rosalind.info/problems/ba5a/)|
