@@ -33,7 +33,9 @@
 '''
 
 import re,functools
-from helpers import translate
+from helpers import translate,count_subset,create_frequency_table,best,triplets
+from fasta import FastaContent
+from reference_tables import codon_table
 
 def revc(dna):
     return dna.translate({
@@ -396,3 +398,302 @@ def trie(strings,one_based=True):
         return [(a+incr,b+incr,c) for (a,b,c) in adjacency_list] 
     
     return increment_indices(functools.reduce(merge_string_with_adjacency_list,strings,[]))
+
+# DNA	  Counting DNA Nucleotides
+#
+# Input:  A DNA string s of length at most 1000 nt.
+# Return: Four integers (separated by spaces) counting the respective number
+#         of times that the symbols 'A', 'C', 'G', and 'T' occur in s.
+
+def count_nucleotides(s):
+    return count_subset(s,'ACGT')
+
+# RNA	Transcribing DNA into RNA
+# An RNA string is a string formed from the alphabet containing 'A', 'C', 'G', and 'U'.
+# Given a DNA string t corresponding to a coding strand, its transcribed RNA
+# string u is formed by replacing all occurrences of 'T' in t with 'U' in u.
+#
+# Input: A DNA string t having length at most 1000 nt.
+# Return: The transcribed RNA string of t.
+
+def dna_to_rna(dna):
+    return translate(dna,{'A': 'A', 'C': 'C', 'G':'G', 'T': 'U'})
+
+# BA1B	Find the Most Frequent Words in a String
+#
+# We say that Pattern is a most frequent k-mer in Text if it maximizes
+# Count(Text, Pattern) among all k-mers. For example, "ACTAT" is a most 
+# frequent 5-mer in "ACAACTATGCATCACTATCGGGAACTATCCT", and "ATA" is a most
+# frequent 3-mer of "CGATATATCCATAG".
+#
+# Input: A DNA string Text and an integer k.
+#
+# Output: All most frequent k-mers in Text (in any order).
+
+def find_most_frequent_words(string,k):
+    most_frequent_words=[]
+    max_k=-1
+    for kmer,count in create_frequency_table(string,k).items():
+        if count>max_k:
+            max_k=count
+            most_frequent_words=[]
+        if count==max_k:
+            most_frequent_words.append(kmer)
+    return most_frequent_words
+
+# GC	Computing GC Content
+#
+#       The GC-content of a DNA string is given by the percentage of symbols in the string 
+#       that are 'C' or 'G'. For example, the GC-content of "AGCTATAG" is 37.5%.
+#       Note that the reverse complement of any DNA string has the same GC-content.
+#
+#       Input: At most 10 DNA strings in FASTA format (of length at most 1 kbp each).
+#
+#       Return: The ID of the string having the highest GC-content, followed by
+#       the GC-content of that string. 
+
+def gc(fasta):
+    return best(\
+        [(k,100*float(sum(count_subset(s,'GC')))/len(s)) for (k,s) in fasta]\
+    )
+
+#SSEQ  Finding a spliced motif
+# Input: Two DNA strings s and t (each of length at most 1 kbp) in FASTA format.
+# 
+# Return: One collection of indices of s in which the symbols of t appear
+# as a subsequence of s. If multiple solutions exist, you may return any one.
+
+def sseq(fasta,bases=['A','C','G','T']):
+    def find_all(text,motif):
+        def find_occurenences():
+            occurrences = {}
+            for base in bases:
+                occurrences[base]=[]
+            for i in range(len(text)):
+                occurrences[text[i]].append(i)
+            return occurrences
+
+        occurrences = find_occurenences()
+        result = [occurrences[motif[0]][0]]
+        for m in motif[1:]:
+            for i in range(len(occurrences[m])):
+                j = occurrences[m][i]
+                if j>result[-1]:
+                    result.append(j)
+                    break
+        return [a + 1 for a in result]
+  
+    _,text=fasta[0]
+    _,motif=fasta[1]
+    return find_all([t for t in text],[m for m in motif])
+
+# LCSM	Finding a Shared Motif
+#
+# A common substring of a collection of strings is a substring of every member
+# of the collection. We say that a common substring is a longest common substring
+# if there does not exist a longer common substring. For example, "CG" is a common
+# substring of "ACGTACGT" and "AACCGGTATA", but it is not as long as possible;
+# in this case, "GTA" is a longest common substring of "ACGTACGT" and "AACCGTATA".
+#
+# Note that the longest common substring is not necessarily unique; for a simple
+# example, "AA" and "CC" are both longest common substrings of "AACC" and "CCAA".
+#
+# Input: A collection of k DNA strings of length at most 1 kbp each in FASTA format.
+#
+# Return: A longest common substring of the collection.
+# (If multiple solutions exist, you may return any single solution.)
+
+def lcsm(fasta):
+    def matches(kmer,strings):
+        for s in strings:
+            if not kmer in s:
+                return False
+        return True  
+    strings=[value for (_,value) in fasta]    
+    best=['A','C','G','T']
+    while len(best[0])<min(len(string) for  string in strings):
+        nn=[]
+        for s in best:
+            for t in ['A','C','G','T']:
+                st=s+t
+                if matches(st,strings):
+                    nn.append(st)
+        if len(nn)>0:
+            best=nn
+        else:
+            return best
+    return best
+
+def hamm(s,t):
+    return len([a for (a,b) in zip(s,t) if a!=b])
+
+
+# BA4A	Translate an RNA String into an Amino Acid String
+# PROT Translating RNA into Protein
+#
+# The 20 commonly occurring amino acids are abbreviated by using 20 letters from
+# the Roman alphabet (all letters except for B, J, O, U, X, and Z). Protein strings
+# are constructed from these 20 symbols. Henceforth, the term genetic string will
+# incorporate protein strings along with DNA strings and RNA strings.
+#
+# The RNA codon table dictates the details regarding the encoding of specific
+# codons into the amino acid alphabet.
+#
+# Input: An RNA string s corresponding to a strand of mRNA (of length at most 10 kbp).
+#
+# Return: The protein string encoded by s.
+#
+# NB: I have allowed an extra parameter to deal with alternatives, such as the 
+# Mitochundrial codes (http://www.ncbi.nlm.nih.gov/Taxonomy/Utils/wprintgc.cgi)
+
+def prot(rna,table=codon_table):
+    return ''.join([table[codon] for codon in triplets(rna) if table[codon]!=';'])
+
+# MRNA	Inferring mRNA from Protein
+#
+# Given: A protein string of length at most 1000 aa.
+#
+# Return: The total number of different RNA strings from which the protein could
+# have been translated, modulo 1,000,000.
+# (Don't neglect the importance of the stop codon in protein translation.)
+
+def mrna(string,modulus=1000000,table=codon_table):
+    nodoc={}
+    for key in list(set(table.values())):
+        nodoc[key]=0
+    for k,v in table.items():
+        nodoc[v]+=1
+    product=1
+    for c in string:
+        product*=nodoc[c]
+        product=product%modulus
+    return (product*nodoc[';'])%modulus
+
+# IPRB	Mendel's First Law
+#
+# Input: Three positive integers k, m, and n, representing a population
+#        containing k+m+n organisms: k individuals are homozygous dominant for a factor,
+#        m are heterozygous, and n are homozygous recessive.
+#
+# Return: The probability that two randomly selected mating organisms will 
+# produce an individual possessing a dominant allele (and thus displaying 
+# the dominant phenotype). Assume that any two organisms can mate.
+
+def iprb(k,m,n):
+    return 1.0 -                                \
+           1.0 * n* (n-1)/((k+m+n)*(k+m+n-1)) - \
+           0.5 * n * m /((k+m+n)*(k+m+n-1))   - \
+           0.5 * m * n /((k+m+n)*(k+m+n-1))   - \
+           0.25 * m * (m-1) /((k+m+n)*(k+m+n-1))
+
+if __name__=='__main__':
+ 
+    import unittest
+    
+    class TestRosalind(unittest.TestCase):
+        def test_dna(self):
+            self.assertEqual([20, 12, 17, 21],\
+                             count_nucleotides(\
+                                 'AGCTTTTCATTCTGACTGCAACGGGCAATATGTCTCTGTGT'\
+                                 'GGATTAAAAAAAGAGTGTCTGATAGCAGC'))
+        
+        def test_rna(self):
+            self.assertEqual('GAUGGAACUUGACUACGUAAAUU',dna_to_rna('GATGGAACTTGACTACGTAAATT'))
+    
+        def test_revc(self):
+            self.assertEqual('ACCGGGTTTT',revc('AAAACCCGGT')) 
+            
+        def test_gc(self):
+            string='''>Rosalind_6404
+            CCTGCGGAAGATCGGCACTAGAATAGCCAGAACCGTTTCTCTGAGGCTTCCGGCCTTCCC
+            TCCCACTAATAATTCTGAGG
+            >Rosalind_5959
+            CCATCGGTAGCGCATCCTTAGTCCAATTAAGTCCCTATCCAGGCGCTCCGCCGAAGGTCT
+            ATATCCATTTGTCAGCAGACACGC
+            >Rosalind_0808
+            CCACCCTCGTGGTATGGCTAGGCATTCAGGAACCGGAGAACGCTTCAGACCAGCCCGGAC
+            TGGGAACCTGCGGGCAGTAGGTGGAAT'''
+            fasta = FastaContent(string.split('\n'))
+            r     = gc(fasta)
+            self.assertEqual('Rosalind_0808',r[0])
+            self.assertAlmostEqual(60.919540,r[1],places=5)
+            
+        def test_sseq(self):
+            string='''>Rosalind_14
+            ACGTACGTGACG
+            >Rosalind_18
+            GTA'''
+            fasta = FastaContent(string.split('\n'))
+            ss    = sseq(fasta)
+ 
+            self.assertEqual(3,len(ss))
+            self.assertEqual(3,ss[0])
+            self.assertEqual(4,ss[1])
+            self.assertEqual(5,ss[2])
+            
+            # HAMM	Counting Point Mutations
+            # BA1G	Compute the Hamming Distance Between Two Strings
+            #
+            # Given two strings s and t of equal length, the Hamming distance between s and t,
+            # denoted dH(s,t), is the number of corresponding symbols that differ in s and t.
+            #
+            # Input: Two DNA strings s and t of equal length (not exceeding 1 kbp).
+            # Return: The Hamming distance dH(s,t).
+            
+         
+        def test_hamm(self):
+            self.assertEqual(7,hamm('GAGCCTACTAACGGGAT','CATCGTAATGACGGCCT'))
+            
+        def test_subs(self):
+            self.assertEqual([2,4,10],subs('GATATATGCATATACTT','ATAT')) 
+            
+        def test_lcsm(self):
+            string='''>Rosalind_1
+            GATTACA
+            >Rosalind_2
+            TAGACCA
+            >Rosalind_3
+            ATACA'''
+            fasta=FastaContent(string.split('\n'))
+            self.assertEqual(set(['TA', 'CA', 'AC']),set(lcsm(fasta)))
+            
+        def test_prot(self):
+            self.assertEqual('MAMAPRTEINSTRING',prot('AUGGCCAUGGCGCCCAGAACUGAGAUCAAUAGUACCCGUAUUAACGGGUGA'))        
+          
+        def test_mrna(self):
+            self.assertEqual(12,mrna("MA"))
+            
+        def test_iprb(self):
+            self.assertAlmostEqual(0.78333,iprb(2,2,2),places=5)        
+            
+    ### Where in the Genome does DNA replication begin? ###
+    
+    class Test_1_Replication(unittest.TestCase):                    
+        def test_ba1b(self):
+            most_frequent_words=find_most_frequent_words('ACGTTGCATGTCGCATGATGCATGAGAGCT',4)
+            self.assertIn('CATG',most_frequent_words)
+            self.assertIn('GCAT',most_frequent_words)
+            most_frequent_words= find_most_frequent_words('ACATCTGGCGCCCATCGCCCATCTGACGGTTCTGACGGTTCTGACGGTTAGCAGCTCTGACGGTTCTGACGGTTCTGACGGTTCTGACGGTTCTGACGGTTTCGCGACCGCCCATCTGACGGTTCGCCCATACATCTGGTCGCGACCTGACGGTTACATCTGGCGCCCATCTGACGGTTCGCCCATAGCAGCTCTGACGGTTTCGCGACCGCCCATACATCTGGCTGACGGTTTCGCGACTCGCGACACATCTGGAGCAGCTACATCTGGTCGCGACCTGACGGTTAGCAGCTCGCCCATAGCAGCTCTGACGGTTAGCAGCTCTGACGGTTACATCTGGACATCTGGCGCCCATCGCCCATTCGCGACACATCTGGAGCAGCTCGCCCATTCGCGACTCGCGACAGCAGCTACATCTGGTCGCGACACATCTGGCGCCCATCTGACGGTTACATCTGGTCGCGACACATCTGGCGCCCATTCGCGACACATCTGGACATCTGGAGCAGCTACATCTGGTCGCGACAGCAGCTACATCTGGTCGCGACCTGACGGTTACATCTGGCTGACGGTTCGCCCATCGCCCATCGCCCATTCGCGACAGCAGCTTCGCGACCTGACGGTTACATCTGGCGCCCATACATCTGGTCGCGACAGCAGCTTCGCGACTCGCGACCTGACGGTTTCGCGACACATCTGGCTGACGGTTCTGACGGTTCGCCCATAGCAGCTCTGACGGTTCTGACGGTTAGCAGCTACATCTGGAGCAGCTCGCCCATCGCCCATAGCAGCTAGCAGCTTCGCGACACATCTGGCGCCCATCTGACGGTTTCGCGACAGCAGCT',14)
+            self.assertIn('CGGTTCTGACGGTT',most_frequent_words)
+            self.assertIn('GACGGTTCTGACGG',most_frequent_words)
+            self.assertIn('TGACGGTTCTGACG',most_frequent_words)
+            self.assertIn('ACGGTTCTGACGGT',most_frequent_words)
+            self.assertIn('CTGACGGTTCTGAC',most_frequent_words)
+            most_frequent_words=find_most_frequent_words('CGGAAGCGAGATTCGCGTGGCGTGATTCCGGCGGGCGTGGAGAAGCGAGATTCATTCAAGCCGGGAGGCGTGGCGTGGCGTGGCGTGCGGATTCAAGCCGGCGGGCGTGATTCGAGCGGCGGATTCGAGATTCCGGGCGTGCGGGCGTGAAGCGCGTGGAGGAGGCGTGGCGTGCGGGAGGAGAAGCGAGAAGCCGGATTCAAGCAAGCATTCCGGCGGGAGATTCGCGTGGAGGCGTGGAGGCGTGGAGGCGTGCGGCGGGAGATTCAAGCCGGATTCGCGTGGAGAAGCGAGAAGCGCGTGCGGAAGCGAGGAGGAGAAGCATTCGCGTGATTCCGGGAGATTCAAGCATTCGCGTGCGGCGGGAGATTCAAGCGAGGAGGCGTGAAGCAAGCAAGCAAGCGCGTGGCGTGCGGCGGGAGAAGCAAGCGCGTGATTCGAGCGGGCGTGCGGAAGCGAGCGG',12)
+            self.assertIn('CGGCGGGAGATT',most_frequent_words)
+            self.assertIn('CGGGAGATTCAA',most_frequent_words) 
+            self.assertIn('CGTGCGGCGGGA',most_frequent_words)
+            self.assertIn('CGTGCGGCGGGA',most_frequent_words)  
+            self.assertIn('CGTGGAGGCGTG',most_frequent_words)
+            self.assertIn('CGTGGCGTGCGG',most_frequent_words)             
+            self.assertIn('GCGTGCGGCGGG',most_frequent_words)
+            self.assertIn('GCGTGGAGGCGT',most_frequent_words)  
+            self.assertIn('GCGTGGCGTGCG',most_frequent_words)
+            self.assertIn('GGAGAAGCGAGA',most_frequent_words)  
+            self.assertIn('GGAGATTCAAGC',most_frequent_words)
+            self.assertIn('GGCGGGAGATTC',most_frequent_words) 
+            self.assertIn('GGGAGATTCAAG',most_frequent_words)
+            self.assertIn('GTGCGGCGGGAG',most_frequent_words)
+            self.assertIn('TGCGGCGGGAGA',most_frequent_words) 
+            
+    unittest.main() 
