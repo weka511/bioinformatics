@@ -32,8 +32,10 @@
  (Each correction must be a single symbol substitution, and you may return the corrections in any order.)
 '''
 
-import re,functools
-from helpers import translate,count_subset,create_frequency_table,best,triplets,binomial_coefficients,prod,zeroes,k_mers
+import re,functools,math
+from helpers import translate,count_subset,create_frequency_table,best,triplets,binomial_coefficients
+from helpers import prod,zeroes,k_mers,iterate_markov,create_wf_initial_probabilites,create_wf_transition_matrix
+from helpers import create_binomial,binomial_index
 from fasta import FastaContent
 from reference_tables import codon_table,skew_step,bases
 
@@ -982,7 +984,422 @@ def cons(fasta):
     
     profile=create_profile()
     return (create_consensus(profile),profile)
+
+#IEV	Calculating Expected Offspring
+#
+# Input: six positive integers, each of which does not exceed 20,000. The
+#        integers correspond to the number of couples in a population possessing each
+#        genotype pairing for a given factor. In order, the six given integers
+#        represent the number of couples having the following genotypes:
+#    AA-Aa
+#    AA-aa
+#    Aa-Aa
+#    Aa-aa
+#
+# Return: The expected number of offspring displaying the dominant phenotype 
+# in the next generation, under the assumption that every couple has exactly
+# two offspring.
+
+def iev(ncopies):
+    return 2*sum(n*prob for (n,prob) in zip(ncopies,[1,1,1,0.75,0.5,0]))
+
+# REVP	Locating Restriction Sites
+#
+# A DNA string is a reverse palindrome if it is equal to its reverse complement.
+# For instance, GCATGC is a reverse palindrome because its reverse complement is GCATGC.
+#
+# Input: A DNA string of length at most 1 kbp in FASTA format.
+#
+# Return: The position and length of every reverse palindrome in the string 
+#         having length between 4 and 12.
+#         You may return these pairs in any order.
+
+def revp(fasta,len1=4,len2=12):
     
+    # Test a substring to see whether it is a palindrome
+    def is_palindrome(dna,i,half_length):
+        return len(dna[i:i+half_length])==half_length and \
+               dna[i:i+half_length]==revc(dna[i+half_length:i+2*half_length])
+    
+    def find_palindrome(dna,half_length):
+        return [(i+1,2*half_length) for i in range(0,len(dna)+1)\
+                if is_palindrome(dna,i,half_length)]
+    
+    def extend(palindromes,half_length):
+        return [(i-1,2*half_length) for (i,_) in palindromes\
+                if is_palindrome(dna,i-2,half_length)]
+     
+    (_,dna)=fasta[0]
+    palindromes=find_palindrome(dna,len1//2)
+    extension=palindromes
+    for half_length in range(len1//2,len2//2):
+        extension=extend(extension,half_length+1)
+        if len(extension)==0:
+            return palindromes
+        else:
+            palindromes=palindromes + extension
+            latest=extension
+    return palindromes
+
+    
+# PROB 	Introduction to Random Strings
+#
+# Input: A DNA string s of length at most 100 bp and an array A containing
+#        at most 20 numbers between 0 and 1.
+#
+# Return: An array B having the same length as A in which B[k] represents the
+#         common logarithm of the probability that a random string constructed
+#         with the GC-content found in A[k] will match s exactly.
+
+def random_genome(s,a):
+    def log_probability(prob_gc):
+        log_prob={
+            'G' : math.log10(0.5*prob_gc),
+            'C' : math.log10(0.5*prob_gc),
+            'A' : math.log10(0.5*(1-prob_gc)),
+            'T' : math.log10(0.5*(1-prob_gc))
+        }
+        return sum([log_prob[ch] for ch in s])
+    return [log_probability(prob_gc) for prob_gc in a]
+
+# LGIS 	Longest Increasing Subsequence
+# A subsequence of a permutation is a collection of elements of the permutation
+# in the order in which they appear.
+# For example, (5, 3, 4) is a subsequence of (5, 1, 3, 4, 2).
+#
+# A subsequence is increasing if the elements of the subsequence increase, 
+# and decreasing if the elements decrease. For example, given the permutation
+# (8, 2, 1, 6, 5, 7, 4, 3, 9), an increasing subsequence is (2, 6, 7, 9),
+# and a decreasing subsequence is (8, 6, 5, 4, 3). You may verify that these 
+# two subsequences are as long as possible.
+#
+# Input: A positive integer n>=10000 followed by a permutation X of length n.
+#
+# Return: A longest increasing subsequence of X, followed by a longest
+#         decreasing subsequence of X.
+#
+# Uses algorithm at https://en.wikipedia.org/wiki/Longest_increasing_subsequence
+
+def longestIncreasingSubsequence(N,X):
+    def longestMonotoneSubsequence(ascending):
+        def ordered(x,y):
+            if ascending:
+                return x<y
+            else:
+                return y<x
+        P = zeroes(N)
+        M = zeroes(N+1)
+        L = 0
+        for i in range(N):
+            lo = 1
+            hi = L
+            while lo<=hi:
+                mid = math.ceil((lo+hi)/2)
+                if ordered(X[M[mid]],X[i]):
+                    lo = mid+1
+                else:
+                    hi = mid-1                
+            newL = lo    
+            P[i] = M[newL-1]
+            M[newL] = i
+            if newL > L:
+                L = newL
+                
+        S = zeroes(L)
+        k = M[L]
+        for i in range(L-1,-1,-1):
+            S[i] = X[k]
+            k = P[k]
+                
+        return S        
+    
+    return (longestMonotoneSubsequence(True),longestMonotoneSubsequence(False))
+
+# ORF 	Open Reading Frames
+#
+# Either strand of a DNA double helix can serve as the coding strand for RNA
+# transcription. Hence, a given DNA string implies six total reading frames,
+# or ways in which the same region of DNA can be translated into amino acids: 
+# three reading frames result from reading the string itself,
+# whereas three more result from reading its reverse complement.
+
+# An open reading frame (ORF) is one which starts from the start codon and ends
+# by stop codon, without any other stop codons in between. Thus, a candidate
+# protein string is derived by translating an open reading frame into amino
+# acids until a stop codon is reached.
+#
+# Input: A DNA string s of length at most 1 kbp in FASTA format.
+#
+# Return: Every distinct candidate protein string that can be translated from 
+#         ORFs of s. Strings can be returned in any order.
+
+def get_reading_frames(fasta):
+    def get_start_symbols(peptide,char='M'):
+        result=[]
+        index=peptide.find(char)
+        while index>-1:
+            result.append(index)
+            index=peptide.find(char,index+1)
+        return result
+    
+    def read_one_strand(rna):  
+        peptide=''.join([rrt.codon_table[codon]            \
+                         for codon in triplets(rna)     \
+                         if len(codon)==3])
+        starts=get_start_symbols(peptide)
+        ends=get_start_symbols(peptide,';')
+        result=[]
+        for start in starts:
+            for i in range(len(ends)):
+                if start<ends[i] and (i==0 or ends[i-1]<start):
+                    result.append(peptide[start:ends[i]])
+        return result
+        
+    def read_one_direction(dna):
+        return [val\
+                for sublist in [read_one_strand(dna_to_rna(dna)[i:])\
+                                for i in range(3)]\
+                for val in sublist]
+    
+    (_,dna)=fasta.pairs[0]
+    return list(set(read_one_direction(dna) + read_one_direction(revc(dna))))
+
+# KMER  Generalizing GC-Content
+#
+# Input: A DNA string s in FASTA format (having length at most 100 kbp).
+#
+# Return: The 4-mer composition of s.
+
+def lexig(k,fasta):
+    (a,b)=fasta[0]
+    counts=zeroes(4**k)
+    for index in [patternToNumber(kmer) for kmer in kmer_composition(k,b)]:
+        counts[index]+=1
+    return counts
+
+#def rear(pairs):
+    #def reversal_distance(a,b):
+        #return 0 if a==b else 1
+    #return [reversal_distance(a,b) for (a,b) in pairs]
+
+#TRAN Transitions and Transversions
+#
+# For DNA strings s1 and s2 having the same length, their
+# transition/transversion ratio R(s1,s2) is the ratio of the total
+# number of transitions to the total number of transversions, where
+# symbol substitutions are inferred from mismatched corresponding symbols
+# as when calculating Hamming distance (see Counting Point Mutations).
+#
+# Input: Two DNA strings s1 and s2 of equal length (at most 1 kbp).
+#
+# Return: The transition/transversion ratio R(s1,s2).
+def tran(fasta):
+    def is_transition(x,y):
+        return                      \
+               x=='A' and y=='G' or \
+               x=='G' and y=='A' or \
+               x=='C' and y=='T' or \
+               x=='T' and y=='C'
+    (_,a)=fasta[0]
+    (_,b)=fasta[1]
+    n_transitions=0
+    n_transversions=0
+    for (x,y) in zip(a,b):
+        if x!=y:
+            if is_transition(x,y):
+                n_transitions+=1
+            else:
+                n_transversions+=1
+    return n_transitions/n_transversions
+
+# PDST 	Creating a Distance Matrix 
+#
+# Input: A collection of nn (n≤10n≤10) DNA strings s1,…,sns1,…,sn of equal 
+# length (at most 1 kbp). Strings are given in FASTA format.
+#
+# Return: The matrix DD corresponding to the p-distance dpdp on the given 
+# strings. As always, note that your answer is allowed an absolute error of 0.001.
+
+def distance_matrix(fasta):
+    def get_string(i):
+        _,string=fasta[i]
+        return string
+    # For two strings s and t of equal length, the p-distance between them
+    # is the proportion of corresponding symbols that differ between s and t.
+    def p_distance(s,t):
+        return hamm(s,t)/len(s)
+    def row(i):
+        return [p_distance(get_string(i),get_string(j)) for j in range(len(fasta))]
+    return [row(i) for i in range(len(fasta))]
+
+# ASPC 	Introduction to Alternative Splicing 
+def aspc(n,m):
+    c=create_binomial(n+1)
+    return sum (c[binomial_index(n,k)] for k in range(m,n+1))%1000000
+
+# PPER 	Partial Permutations 
+def pper(n,k):
+    return n if k==1 else n*pper(n-1,k-1)%1000000
+
+#INDC 	Independent Segregation of Chromosomes 
+def indc(n):
+    c=create_binomial(2*n+1)
+    mult=1.0
+    for i in range(2*n):
+        mult*=0.5
+    def p(k):
+        return c[binomial_index(2*n,k)]
+    def p_cumulative(k):
+        return sum(p(kk) for kk in range(k,2*n+1))*mult
+    return [math.log10(p_cumulative(k+1)) for k in range(2*n)]
+
+# AFRQ 	Counting Disease Carriers
+def afrq(ps):
+    def p_recessive(p):
+        return 2*math.sqrt(p)-p
+    return [p_recessive(p) for p in ps]
+
+# WFMD 	The Wright-Fisher Model of Genetic Drift 
+#
+# Return:  The probability that in a population of N diploid individuals
+# initially possessing m copies of a dominant allele, we will observe after
+# g generations at least k copies of a recessive allele.
+# Assume the Wright-Fisher model
+def wfmd(n,m,g,k):
+    
+    def accumulate(e):
+        return sum([e[j] for j in range(k,2*n+1)])
+
+    return  accumulate(
+       iterate_markov(
+           create_wf_initial_probabilites(n,m),
+           create_wf_transition_matrix(n),g,n))
+
+# EBIN 	Wright-Fisher's Expected Behavior 
+def ebin(n,P):
+    def expected(p):
+        return n*p
+    return [expected(p) for p in P]
+
+# FOUN 	The Founder Effect and Genetic Drift 
+def foun(N,m,A):
+    def prob(g,a):
+        if a==0:
+            return 1
+        final=iterate_markov(
+           create_wf_initial_probabilites(N,2*N-a),
+           create_wf_transition_matrix(N),
+           g,
+           N)
+        return final[0]
+    result=[]
+    for i in range(m):
+        result.append([math.log10(prob(i+1,a))  for a in A]) 
+    return result
+
+# SEXL 	Sex-Linked Inheritance 
+
+def sexl(A):
+    return [2*x*(1-x) for x in A]
+
+#SIGN 	Enumerating Oriented Gene Orderings 
+
+def sign(n):
+    def expand(p):
+        def expanded(bits):
+            return [pp if bb==0 else -pp  for pp,bb in zip(p,bits)]
+        return [expanded(binary(i,n)) for i in range(2**n)]
+    return flatten([expand(p) for p in perm(n)])
+
+# EVAL 	Expected Number of Restriction Sites 
+
+def eval (n,s,A):
+    mult=n-len(s)+1
+    def probability_of_match(a):
+        def prob_match(c):
+            return 0.5*(a if c=='C' or c=='G' else 1-a)
+        return prod([prob_match(c) for c in s])
+    return [mult*probability_of_match(a) for a in A]
+
+#PERM	Enumerating Gene Orders
+
+def perm(n):
+    def perms(symbols):
+        if len(symbols)==1:
+            return [symbols]
+        else:
+            result=[]
+            for s in symbols:
+                r=symbols.copy()
+                r.remove(s)
+                ps=perms(r)
+                for pp in ps:
+                    ppp=pp.copy()
+                    ppp.insert(0,s)
+                    result.append(ppp)
+            return result
+    return perms([n+1 for n in range(n)])
+
+# LEXF	Enumerating k-mers Lexicographically
+#
+# Input: A positive integer nÃ‚Â¡ÃƒÅ“7.
+# 
+# Return: The total number of permutations of length n, followed by a list of
+# all such permutations (in any order)
+
+def lexf(alphabet,k):
+    if k<=0:
+        return ['']
+    else:
+        result=[]
+        for ks in lexf(alphabet,k-1):
+            for l in alphabet.split(' '):
+                result.append(ks+l)
+    return result
+
+# LEXV 	Ordering Strings of Varying Length Lexicographically
+#
+# Input: A collection of at most 10 symbols defining an ordered alphabet, 
+#        and a positive integer n (nÃ‚Â¡ÃƒÅ“10).
+#
+# Return: All strings of length n that can be formed from the alphabet,
+#         ordered lexicographically.
+
+def lexv(alphabet,k):
+    if k<=0:
+        return ['']
+    elif k==1:
+        return alphabet.split(' ')
+    else:
+        result=[]
+        previous=lexv(alphabet,k-1)
+        for letter in alphabet.split(' '):
+            result.append(letter)
+            for string in previous:
+                result.append(letter+string)
+    return result
+
+ 
+
+def create_skews(genome):
+    skews=[]
+    skew=0
+    for nucleotide in genome:
+        skew+=rrt.skew_step[nucleotide]
+        skews.append(skew)       
+    return skews
+
+### 3. How do we assemble genomes?
+
+# BA3A	Generate the k-mer Composition of a String
+#
+# Input: An integer k and a string Text.
+#
+# Return: Compositionk(Text) (the k-mers can be provided in any order).
+
+def kmer_composition(k,dna):
+    return [dna[i:i+k] for i in range(1+len(dna)-k)] 
+
 if __name__=='__main__':
  
     import unittest
@@ -1128,6 +1545,167 @@ if __name__=='__main__':
             >Rosalind_15
             ATCGGTCGAGCGTGT'''
             self.assertEqual('MVYIADKQHVASREAYGHMFKVCA',splc(FastaContent(string.split('\n'))))    
+
+        def test_iev(self):
+            self.assertEqual(3.5,iev([1,0,0,1,0,1]))
+            
+        def test_revp(self):
+            string='''>Rosalind_24
+            TCAATGCATGCGGGTCTATATGCAT'''
+            palindromes=revp(FastaContent(string.split('\n')))
+            self.assertIn((4, 6),palindromes)
+            self.assertIn((5, 4),palindromes)
+            self.assertIn((6, 6),palindromes)
+            self.assertIn((7, 4),palindromes)
+            self.assertIn((17, 4),palindromes)
+            self.assertIn((18, 4),palindromes)
+            self.assertIn((20, 6),palindromes)
+            self.assertIn((21, 4),palindromes)
+            self.assertEqual(8,len(palindromes))
+
+# KMER  Generalizing GC-Content
+        def test_kmer(self):
+            string='''>>Rosalind_6431
+            CTTCGAAAGTTTGGGCCGAGTCTTACAGTCGGTCTTGAAGCAAAGTAACGAACTCCACGG
+            CCCTGACTACCGAACCAGTTGTGAGTACTCAACTGGGTGAGAGTGCAGTCCCTATTGAGT
+            TTCCGAGACTCACCGGGATTTTCGATCCAGCCTCAGTCCAGTCTTGTGGCCAACTCACCA
+            AATGACGTTGGAATATCCCTGTCTAGCTCACGCAGTACTTAGTAAGAGGTCGCTGCAGCG
+            GGGCAAGGAGATCGGAAAATGTGCTCTATATGCGACTAAAGCTCCTAACTTACACGTAGA
+            CTTGCCCGTGTTAAAAACTCGGCTCACATGCTGTCTGCGGCTGGCTGTATACAGTATCTA
+            CCTAATACCCTTCAGTTCGCCGCACAAAAGCTGGGAGTTACCGCGGAAATCACAG'''
+            fasta=FastaContent(string.split('\n'))
+            r=lexig(4,fasta)
+            self.assertEqual( \
+                [4, 1, 4, 3, 0, 1, 1, 5, 1, 3, 1, 2, 2, 1, 2, 0, 1, 1, 3, 1, 2,\
+                 1, 3, 1, 1, 1, 1, 2, 2, 5, 1, 3, 0, 2, 2, 1, 1, 1, 1, 3, 1, 0,\
+                 0, 1, 5, 5, 1, 5, 0, 2, 0, 2, 1, 2, 1, 1, 1, 2, 0, 1, 0, 0, 1,\
+                 1, 3, 2, 1, 0, 3, 2, 3, 0, 0, 2, 0, 8, 0, 0, 1, 0, 2, 1, 3, 0,\
+                 0, 0, 1, 4, 3, 2, 1, 1, 3, 1, 2, 1, 3, 1, 2, 1, 2, 1, 1, 1, 2,\
+                 3, 2, 1, 1, 0, 1, 1, 3, 2, 1, 2, 6, 2, 1, 1, 1, 2, 3, 3, 3, 2,\
+                 3, 0, 3, 2, 1, 1, 0, 0, 1, 4, 3, 0, 1, 5, 0, 2, 0, 1, 2, 1, 3,\
+                 0, 1, 2, 2, 1, 1, 0, 3, 0, 0, 4, 5, 0, 3, 0, 2, 1, 1, 3, 0, 3,\
+                 2, 2, 1, 1, 0, 2, 1, 0, 2, 2, 1, 2, 0, 2, 2, 5, 2, 2, 1, 1, 2,\
+                 1, 2, 2, 2, 2, 1, 1, 3, 4, 0, 2, 1, 1, 0, 1, 2, 2, 1, 1, 1, 5,\
+                 2, 0, 3, 2, 1, 1, 2, 2, 3, 0, 3, 0, 1, 3, 1, 2, 3, 0, 2, 1, 2,\
+                 2, 1, 2, 3, 0, 1, 2, 3, 1, 1, 3, 1, 0, 1, 1, 3, 0, 2, 1, 2, 2,\
+                 0, 2, 1, 1],
+                r)  
+
+        #def test_rear(self):
+            #self.assertEqual([9, 4, 5, 7, 0],
+                        #rear([
+                            #([1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+                            #[3, 1, 5, 2, 7, 4, 9, 6, 10, 8]),
+                            
+                            #([3, 10, 8, 2, 5, 4, 7, 1, 6, 9],
+                            #[5, 2, 3, 1, 7, 4, 10, 8, 6, 9]),
+                            
+                            #([8, 6, 7, 9, 4, 1, 3, 10, 2, 5],
+                            #[8, 2, 7, 6, 9, 1, 5, 3, 10, 4]),
+                            
+                            #([3, 9, 10, 4, 1, 8, 6, 7, 5, 2],
+                            #[2, 9, 8, 5, 1, 7, 3, 4, 6, 10]),
+                            
+                            #([1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+                            #[1, 2, 3, 4, 5, 6, 7, 8, 9, 10])                            
+                        #]))
+        
+        def test_tran(self):
+            string='''>Rosalind_0209
+            GCAACGCACAACGAAAACCCTTAGGGACTGGATTATTTCGTGATCGTTGTAGTTATTGGA
+            AGTACGGGCATCAACCCAGTT
+            >Rosalind_2200
+            TTATCTGACAAAGAAAGCCGTCAACGGCTGGATAATTTCGCGATCGTGCTGGTTACTGGC
+            GGTACGAGTGTTCCTTTGGGT'''
+            fasta=FastaContent(string.split('\n'))            
+            self.assertAlmostEqual(1.21428571429,tran(fasta),places=5)
+
+# PDST 	Creating a Distance Matrix 
+        def test_pdst(self):
+            string='''>Rosalind_9499
+            TTTCCATTTA
+            >Rosalind_0942
+            GATTCATTTC
+            >Rosalind_6568
+            TTTCCATTTT
+            >Rosalind_1833
+            GTTCCATTTA'''
+            fasta=FastaContent(string.split('\n'))            
+            self.assertEqual([[0.00000, 0.40000, 0.10000, 0.10000],
+                              [0.40000, 0.00000, 0.40000, 0.30000],
+                              [0.10000, 0.40000, 0.00000, 0.20000],
+                              [0.10000, 0.30000, 0.20000, 0.00000]],
+                             distance_matrix(fasta))
+
+# ASPC 	Introduction to Alternative Splicing 
+
+        def test_aspc(self):
+            self.assertEqual(42,aspc(6,3))
+ 
+# PPER 	Partial Permutations        
+        def test_pper(self):
+            self.assertEqual(51200,pper(21,7))            
+
+#INDC 	Independent Segregation of Chromosomes 
+        def test_indc(self):
+            ii=indc(5)
+            self.assertAlmostEqual(0.000,ii[0],3)
+            self.assertAlmostEqual(-0.004,ii[1],2)
+            self.assertAlmostEqual(-0.024,ii[2],2)
+            self.assertAlmostEqual(-0.082,ii[3],3)
+            self.assertAlmostEqual(-0.206,ii[4],2)
+            self.assertAlmostEqual(-0.424,ii[5],3)
+            self.assertAlmostEqual(-0.765,ii[6],3)
+            self.assertAlmostEqual(-1.262,ii[7],3)
+            self.assertAlmostEqual(-1.969,ii[8],3)
+            self.assertAlmostEqual(-3.010,ii[9],3)
+
+# AFRQ 	Counting Disease Carriers
+        def test_afrq(self):
+            aa=afrq([0.1, 0.25, 0.5])
+            self.assertAlmostEqual(0.532,aa[0],3)
+            self.assertAlmostEqual(0.75,aa[1],3)
+            self.assertAlmostEqual(0.914,aa[2],3)
+
+# WFMD 	The Wright-Fisher Model of Genetic Drift
+        def test_wfmd(self):
+            self.assertAlmostEqual(0.772,wfmd(4, 6, 2, 1),3)
+
+# EBIN 	Wright-Fisher's Expected Behavior
+        def test_ebin(self):
+            B=ebin(17,[0.1, 0.2, 0.3])
+            self.assertAlmostEqual(1.7,B[0],3)
+            self.assertAlmostEqual(3.4,B[1],3)
+            self.assertAlmostEqual( 5.1,B[2],3)
+
+# FOUN 	The Founder Effect and Genetic Drift
+        def test_foun(self):
+            B=foun(4,3,[0,1,2])
+            self.assertAlmostEqual(0.0,              B[0][0],5)
+            self.assertAlmostEqual(-0.463935575821,  B[0][1],5)
+            self.assertAlmostEqual(-0.999509892866,  B[0][2],5)
+            self.assertAlmostEqual(0.0,              B[1][0],5)
+            self.assertAlmostEqual(-0.301424998891,  B[1][1],5)
+            self.assertAlmostEqual(-0.641668367342,  B[1][2],5) 
+            self.assertAlmostEqual(0.0,              B[2][0],5)
+            self.assertAlmostEqual(-0.229066698008,  B[2][1],5)
+            self.assertAlmostEqual(-0.485798552456,  B[2][2],5)            
+ 
+# SEXL 	Sex-Linked Inheritance 
+        def test_sexl(self):
+            B=sexl([0.1, 0.5, 0.8])
+            self.assertAlmostEqual(0.18,B[0],3)
+            self.assertAlmostEqual(0.5,B[1],3)
+            self.assertAlmostEqual(0.32,B[2],3)
+
+# EVAL 	Expected Number of Restriction Sites   
+        def test_eval(self):
+            B=eval(10,'AG',[0.25, 0.5, 0.75])
+            self.assertAlmostEqual(0.422,B[0],3)
+            self.assertAlmostEqual(0.563,B[1],3)
+            self.assertAlmostEqual(0.422,B[2],3)
+            
+
             
     ### Where in the Genome does DNA replication begin? ###
     
