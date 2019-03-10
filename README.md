@@ -91,7 +91,7 @@ NB: functions generally use zero based indexing; Rosalind uses 1-based.
 |BA7D|BA7D.py|[Implement UPGMA](http://rosalind.info/problems/ba7d/)|
 |BA7E|BA7E.py|[Implement the Neighbor Joining Algorithm](http://rosalind.info/problems/ba7e/)|
 |BA7F|BA7F.py|[Implement SmallParsimony](http://rosalind.info/problems/ba7f/)|
-|BA7G|BA7.py [Adapt SmallParsimony to Unrooted Trees](http://rosalind.info/problems/ba7g/)|
+|BA7G|BA7G.py|[Adapt SmallParsimony to Unrooted Trees](http://rosalind.info/problems/ba7g/)|
 |8|-|How did Yeast become a Winemaker?|
 |BA8A|BA8A.py | [Implement FarthestFirstTraversal](http://rosalind.info/problems/ba8a/) |
 |BA8B|BA8B.py | [Compute the Squared Error Distortion](http://rosalind.info/problems/ba8b/) |
