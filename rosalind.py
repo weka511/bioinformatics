@@ -2718,8 +2718,25 @@ if __name__=='__main__':
             self.assertAlmostEqual(0.422,B[0],3)
             self.assertAlmostEqual(0.563,B[1],3)
             self.assertAlmostEqual(0.422,B[2],3)
-            
+                    #LGIS 	Longest Increasing Subsequence
+        def test_longestIncreasingSubsequence(self):
+            (a,d)=longestIncreasingSubsequence(5,[5, 1, 4, 2, 3])
+            self.assertEqual([1,2,3],a)
+            self.assertEqual([5,4,3],d)
+            (a,d)=longestIncreasingSubsequence(9,[8, 2, 1, 6, 5, 7, 4, 3, 9])
+            self.assertEqual([1, 5, 7, 9],a)
+            self.assertEqual([8, 6, 5, 4, 3],d)
 
+        def test_orf(self):
+            string='''>Rosalind_99
+            AGCCATGTAGCTAACTCAGGTTACATGGGGATGACCCCGCGACTTGGATTAGAGTCTCTTTTGGAATAAGCCTGAATGATCCGAGTAGCATCTCAG'''
+            fasta=FastaContent(string.split('\n'))            
+            peptides=get_reading_frames(fasta)
+            self.assertIn('MLLGSFRLIPKETLIQVAGSSPCNLS',peptides)
+            self.assertIn('M',peptides)
+            self.assertIn('MGMTPRLGLESLLE',peptides)
+            self.assertIn('MTPRLGLESLLE',peptides)            
+            self.assertEqual(4,len(peptides))
             
     ### Where in the Genome does DNA replication begin? ###
     

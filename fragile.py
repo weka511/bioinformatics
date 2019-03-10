@@ -275,3 +275,17 @@ def GraphToGenome(GenomeGraph):
             next_node+=1
         R.append(r)
     return R
+
+if __name__=='__main__':
+ 
+    import unittest
+    
+    class Test_6_Fragile(unittest.TestCase):
+        def test_ba6e(self):
+            pairs=find_shared_kmers(3,'AAACTCATC','TTTCAAATC')
+            self.assertIn((0, 4),pairs)
+            self.assertIn((0, 0),pairs)
+            self.assertIn((4, 2),pairs)
+            self.assertIn((6, 6),pairs)
+            
+    unittest.main()

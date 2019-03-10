@@ -137,16 +137,18 @@ NB: functions generally use zero based indexing; Rosalind uses 1-based.
 | INV.py | 	[Counting Inversions](http://rosalind.info/problems/inv/) |
 | kmp.py | [Speeding Up Motif Finding](http://rosalind.info/problems/kmp/) |
 | lcsq.py | [Finding a Shared Spliced Motif](http://rosalind.info/problems/lcsq/) |
+| lgis.py | [Longest Increasing Subsequence](http://rosalind.info/problems/lgis/) |
 | ling.py | [Linguistic Complexity of a Genome](http://rosalind.info/problems/ling/) (WIP)|
 | loca.py | [Local Alignment with Scoring Matrix ](http://rosalind.info/problems/loca/) |
 | LONG.py | [Genome Assembly as Shortest Superstring](http://rosalind.info/problems/long/) |
 | maj.py | [Majority Element](http://rosalind.info/problems/maj/) ||
-| MED.py | 	[Median](http://rosalind.info/problems/med/)|
-| mend.py |  [Inferring a Genotype from a Pedigree](http://rosalind.info/problems/mend/) |
-| MER.py | 	[Merge Two Sorted Arrays](http://rosalind.info/problems/mer/) |
-| MS.py | 	[Mergesort](http://rosalind.info/problems/ms/)|
+| MED.py |[Median](http://rosalind.info/problems/med/)|
+| mend.py |[Inferring a Genotype from a Pedigree](http://rosalind.info/problems/mend/) |
+| MER.py |[Merge Two Sorted Arrays](http://rosalind.info/problems/mer/) |
+| MS.py |[Mergesort](http://rosalind.info/problems/ms/)|
 | nwck.py | [Distances in Trees](http://rosalind.info/problems/nwck/) |
 | oap.py | [Overlap Alignment](http://rosalind.info/problems/oap/) (wip)|
+| orf.py | [Open Reading Frames](http://rosalind.info/problems/orf/)|
 | orfr.py | [Finding Genes with Open Reading Frames](http://rosalind.info/problems/orfr/) |
 | PAR.py | 	 [2-Way Partition](http://rosalind.info/problems/par/) |
 | PAR3.py |  [3-Way Partition](http://rosalind.info/problems/par3/) |
@@ -202,7 +204,6 @@ NB: functions generally use zero based indexing; Rosalind uses 1-based.
 |  |tran|[Transitions and Transversions](http://rosalind.info/problems/tran/) |
 |  |trie|[Introduction to Pattern Matching](http://rosalind.info/problems/trie/) |
 |  |wfmd|[The Wright-Fisher Model of Genetic Drift](http://rosalind.info/problems/wfmd/) |
-| rosalind_old.py || Code from the early days of project, including much of the textbook track|
 | rosalind.wpr || WingWare Project File |
 
 ## Other stuff
