@@ -695,5 +695,8 @@ if __name__=='__main__':
             self.assertIn('GGGAGATTCAAG',most_frequent_words)
             self.assertIn('GTGCGGCGGGAG',most_frequent_words)
             self.assertIn('TGCGGCGGGAGA',most_frequent_words) 
+         
+        def test_ba1g(self):
+            self.assertEqual(7,hamm('GAGCCTACTAACGGGAT','CATCGTAATGACGGCCT'))
             
     unittest.main() 

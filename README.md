@@ -10,12 +10,12 @@ NB: functions generally use zero based indexing; Rosalind uses 1-based.
 | ---- | -------------------------- | ------------------------------------------------|
 |1|-| Where in the Genome does DNA replication begin?|
 |BA1A|rosalind.py|	[Compute the Number of Times a Pattern Appears in a Text](http://rosalind.info/problems/ba1a/) |
-|BA1B|rosalind_old.py|	[Find the Most Frequent Words in a String](http://rosalind.info/problems/ba1b/) |
+|BA1B|rosalind.py|	[Find the Most Frequent Words in a String](http://rosalind.info/problems/ba1b/) |
 |BA1C|rosalind_old.py|	[Find the Reverse Complement of a String](http://rosalind.info/problems/ba1c/) |
 |BA1D|rosalind_old.py|	[Find All Occurrences of a Pattern in a String](http://rosalind.info/problems/ba1d/) |
 |BA1E|rosalind_old.py|	[Find Patterns Forming Clumps in a String](http://rosalind.info/problems/ba1e/) |
 |BA1F|rosalind_old.py|	[Find a Position in a Genome Minimizing the Skew](http://rosalind.info/problems/ba1f/) |
-|BA1G|rosalind_old.py|	[Compute the Hamming Distance Between Two Strings](http://rosalind.info/problems/ba1g/) |
+|BA1G|rosalind.py|	[Compute the Hamming Distance Between Two Strings](http://rosalind.info/problems/ba1g/) |
 |BA1H|rosalind_old.py|	[Find All Approximate Occurrences of a Pattern in a String](http://rosalind.info/problems/ba1h/) |
 |BA1I|rosalind_old.py|	[Find the Most Frequent Words with Mismatches in a String](http://rosalind.info/problems/ba1i/) |
 |BA1J|rosalind_old.py|	[Find Frequent Words with Mismatches and Reverse Complements](http://rosalind.info/problems/ba1j/) |
@@ -169,7 +169,16 @@ NB: functions generally use zero based indexing; Rosalind uses 1-based.
 | newick.py || Parser for files in [Newick format](http://evolution.genetics.washington.edu/phylip/newicktree.html) |
 | README.md ||This file|
 | rosalind.py || Shared code|
+|  |dna|[Counting DNA Nucleotides](http://rosalind.info/problems/dna/) |
+|  |gc|[Computing GC Content ](http://rosalind.info/problems/gc/) |
+|  |hamm|[Counting Point Mutations](http://rosalind.info/problems/hamm/) |
+|  |iprb|[Mendel's First Law](http://rosalind.info/problems/iprb/) |
+|  |lcsm|[Finding a Shared Motif](http://rosalind.info/problems/lcsm/) |
+|  |mrna|[Inferring mRNA from Protein](http://rosalind.info/problems/mrna/) |
+|  |prot|[Translating RNA into Protein](http://rosalind.info/problems/prot/) |
 |  |revc| [Complementing a Strand of DNA](http://rosalind.info/problems/revc/)|
+|  |rna|[Transcribing DNA into RNA ](http://rosalind.info/problems/rna/) |
+|  |sseq|[Finding a Spliced Motif](http://rosalind.info/problems/sseq/) |
 |  |subs|[Finding a Motif in DNA](http://rosalind.info/problems/subs/) |
 |  |trie|[Introduction to Pattern Matching](http://rosalind.info/problems/trie/) |
 | rosalind_old.py || Code from the early days of project, including much of the textbook track|
