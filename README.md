@@ -169,24 +169,39 @@ NB: functions generally use zero based indexing; Rosalind uses 1-based.
 | newick.py || Parser for files in [Newick format](http://evolution.genetics.washington.edu/phylip/newicktree.html) |
 | README.md ||This file|
 | rosalind.py || Shared code|
+|  |afrq|[Counting Disease Carriers](http://rosalind.info/problems/afrq/) |
+|  |aspc|[Introduction to Alternative Splicing](http://rosalind.info/problems/aspc/) |
 |  |dna|[Counting DNA Nucleotides](http://rosalind.info/problems/dna/) |
 |  |cons|[Consensus and Profile](http://rosalind.info/problems/cons/) |
+|  |ebin|[Wright-Fisher's Expected Behavior](http://rosalind.info/problems/ebin/) |
+|  |eval|[Expected Number of Restriction Sites](http://rosalind.info/problems/eval/) |
 |  |fib|[Rabbits and Recurrence Relations](http://rosalind.info/problems/fib/) |
 |  |fibd|[Mortal Fibonacci Rabbits](http://rosalind.info/problems/fibd/) |
+|  |foun|[The Founder Effect and Genetic Drift](http://rosalind.info/problems/foun/) |
 |  |gc|[Computing GC Content](http://rosalind.info/problems/gc/) |
 |  |grph|[Overlap Graphs](http://rosalind.info/problems/grph/) |
 |  |hamm|[Counting Point Mutations](http://rosalind.info/problems/hamm/) |
+|  |iev| [Calculating Expected Offspring](http://rosalind.info/problems/iev/)|
+|  |indq|[Independent Segregation of Chromosomes](http://rosalind.info/problems/indq/) |
 |  |iprb|[Mendel's First Law](http://rosalind.info/problems/iprb/) |
+|  |kmer|[Generalizing GC-Content](http://rosalind.info/problems/kmer/) |
 |  |lcsm|[Finding a Shared Motif](http://rosalind.info/problems/lcsm/) |
 |  |lia|[Independent Alleles](http://rosalind.info/problems/lia/) |
 |  |mrna|[Inferring mRNA from Protein](http://rosalind.info/problems/mrna/) |
+|  |pdst|[Creating a Distance Matrix ](http://rosalind.info/problems/pdst/) |
+|  |pper|[Partial Permutations](http://rosalind.info/problems/pper/) |
 |  |prot|[Translating RNA into Protein](http://rosalind.info/problems/prot/) |
 |  |revc| [Complementing a Strand of DNA](http://rosalind.info/problems/revc/)|
+|  |revp| [Locating Restriction Sites](http://rosalind.info/problems/revp/)|
 |  |rna|[Transcribing DNA into RNA](http://rosalind.info/problems/rna/) |
 |  |rstr|[Matching Random Motifs](http://rosalind.info/problems/rstr/) |
+|  |sexl|[Sex-Linked Inheritance ](http://rosalind.info/problems/sexl/) |
 |  |sseq|[Finding a Spliced Motif](http://rosalind.info/problems/sseq/) |
+|  |splc|[RNA Splicing](http://rosalind.info/problems/splc/) |
 |  |subs|[Finding a Motif in DNA](http://rosalind.info/problems/subs/) |
+|  |tran|[Transitions and Transversions](http://rosalind.info/problems/tran/) |
 |  |trie|[Introduction to Pattern Matching](http://rosalind.info/problems/trie/) |
+|  |wfmd|[The Wright-Fisher Model of Genetic Drift](http://rosalind.info/problems/wfmd/) |
 | rosalind_old.py || Code from the early days of project, including much of the textbook track|
 | rosalind.wpr || WingWare Project File |
 

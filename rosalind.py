@@ -1782,5 +1782,17 @@ if __name__=='__main__':
             self.assertIn('ACC', neighbours)
             self.assertIn('ACT', neighbours)
             self.assertIn('ACG', neighbours)        
-            
+
+### 3. How do we assemble genomes?
+ 
+    class Test_3_Assembly(unittest.TestCase): 
+        def test_ba3a(self):
+            kmers = kmer_composition(5,'CAATCCAAC')
+            self.assertEqual(5,len(kmers))
+            self.assertIn('AATCC', kmers) 
+            self.assertIn('ATCCA', kmers)
+            self.assertIn('CAATC', kmers)
+            self.assertIn('CCAAC', kmers)
+            self.assertIn('TCCAA', kmers)
+    
     unittest.main(exit=False) 
