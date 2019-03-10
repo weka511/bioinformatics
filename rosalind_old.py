@@ -97,198 +97,6 @@ def lexv(alphabet,k):
                 result.append(letter+string)
     return result
 
-
-
-# LIA 	Independent Alleles 
-#
-# Input: Two positive integers k (k≤7) and N (N≤2**k). In this problem, we begin
-# with Tom, who in the 0th generation has genotype Aa Bb. Tom has two children
-# in the 1st generation, each of whom has two children, and so on. Each organism
-# always mates with an organism having genotype Aa Bb.
-#
-# Return: The probability that at least N Aa Bb organisms will belong to the
-# k-th generation of Tom's family tree (don't count the Aa Bb mates at each
-# level). Assume that Mendel's second law holds for the factors.
-
-def lia(k,n):
-    transition_probabilities=[[2/4,1/4,0],[2/4,2/4,2/4],[0,1/4,2/4]]
-    k_probabilities=[0,1,0]
-    for kk in range(k-1):
-        new_probabilities=[0,0,0]
-        for j in range(3):
-            for i in range(3):
-                new_probabilities[j]+=transition_probabilities[j][i]*k_probabilities[i]
-        k_probabilities=new_probabilities
-    counts=rh.binomial_coefficients(2**k)
-    probability=0
-    prob_individual=k_probabilities[1]**2
-    for nn in range(n,2**k+1):
-        n1=2**k-nn
-        probability+=counts[nn]*(1-prob_individual)**n1*prob_individual**nn
-    return probability
-
-# RSTR 	Matching Random Motifs
-#
-# Given: A positive integer N<100000, a number x between 0 and 1, and 
-# a DNA string s of length at most 10 bp.
-#
-# Return: The probability that if N random DNA strings having the same length
-# as s are constructed with GC-content x (see Introduction to Random Strings),
-# then at least one of the strings equals s. We allow for the same random
-# string to be created more than once.
-#
-# NB "GC-content x" is interpreted as P(G)=P(C)=0.5*x, and similarly for A &T
-
-def rstr(n,x,string):
-
-    def prob_char(c):
-        return 0.5*x if c in ['C','G'] else 0.5*(1-x)
-    probability=rh.prod([prob_char(c) for c in string])
-    return 1-(1-probability)**n
-
-# CONS	Consensus and Profile
-#
-# Say that we have a collection of DNA strings, all having the same length n.
-# Their profile matrix is a  matrix P in which P[1,j] represents the number of
-# times that 'A' occurs in the jth position of one of the strings, P[2,j] represents
-# the number of times that C occurs in the jth position, and so on.
-#
-# A consensus string c is a string of length n formed from our collection by 
-# taking the most common symbol at each position; the jth symbol of c therefore 
-# corresponds to the symbol having the maximum value in the j-th column of the
-# profile matrix. Of course, there may be more than one most common symbol,
-# leading to multiple possible consensus strings.
-# Input: A collection of at most 10 DNA strings of equal length (at most 1 kbp)
-# in FASTA format.
-#
-# Return: A consensus string and profile matrix for the collection.
-#        (If several possible consensus strings exist, then you may return any one of them.)
-
-def cons(fasta):
-    (_,string)=fasta[0]
-    n=len(string)
-    
-    def create_profile():
-        product={}
-        for c in ['A','C','G','T']:
-            product[c]=rh.zeroes(n)
-        for _,string in fasta:
-            for i in range(len(string)):
-                row=product[string[i]]
-                row[i]+=1
-        return product
-    
-    def create_consensus(profile):
-        def most_common_in_column(i):
-            best_candidate = ''
-            maximum_count = -1
-            for candidated in ['A','C','G','T']:
-                if profile[candidated][i]>maximum_count:
-                    best_candidate = candidated
-                    maximum_count = profile[candidated][i]
-            return best_candidate
-        
-        return ''.join([most_common_in_column(i) for i in range(n)])
-    
-    profile=create_profile()
-    return (create_consensus(profile),profile)
-
-# FIB	Rabbits and Recurrence Relations
-#
-# Input: Positive integers nÃ¢â€°Â¤40 and kÃ¢â€°Â¤5.
-#
-# Return: The total number of rabbit pairs that will be present after n months
-# if we begin with 1 pair and in each generation, every pair of reproduction-age 
-# rabbits produces a litter of k rabbit pairs (instead of only 1 pair).
-#
-# When finding the n-th term of a sequence defined by a recurrence relation, 
-# we can simply use the recurrence relation to generate terms for progressively
-# larger values of n. This problem introduces us to the computational technique
-# of dynamic programming, which successively builds up solutions by using the
-# answers to smaller cases.
-
-def fib(n,k):
-    cache=[]
-    for i in range(n):
-        if i<2:
-            cache.append(1)
-        else:
-            cache.append(cache[i-1]+k*cache[i-2])
-    return cache[n-1]
-
-# FIBD	Mortal Fibonacci Rabbits
-#
-# Input: Positive integers nÃ¢â€°Â¤100 and mÃ¢â€°Â¤20.
-#
-# Return: The total number of pairs of rabbits that will remain after the n-th
-# month if all rabbits live for m months.
-
-def fibd(n,m):
-    def helper(p):
-        return [sum([p[i] for i in range(1,len(p))])] +\
-               [p[i] for i in range(0,len(p)-1)]
-        
-    state=[1]
-    while len(state)<m:
-        state.append(0)
-    for i in range(n-1):
-        state=helper(state)
-    return sum(state)
-
-# GRPH	Overlap Graphs
-#
-# A graph whose nodes have all been labeled can be represented by an adjacency list,
-# in which each row of the list contains the two node labels corresponding to a unique edge.
-#
-# A directed graph (or digraph) is a graph containing directed edges, each of
-# which has an orientation. That is, a directed edge is represented by an arrow
-# instead of a line segment; the starting and ending nodes of an edge form its
-# tail and head, respectively. The directed edge with tail v and head w is
-# represented by (v,w) (but not by (w,v)). A directed loop is a directed edge
-# of the form (v,v).
-#
-# For a collection of strings and a positive integer k, the overlap graph for
-# the strings is a directed graph Ok in which each string is represented by a node,
-# and string s is connected to string t with a directed edge when there is a
-# length k suffix of s that matches a length k prefix of t, as long as sÃ¢â€°Â t;
-# we demand sÃ¢â€°Â t to prevent directed loops in the overlap graph 
-# (although directed cycles may be present).
-#
-# Input : A collection of DNA strings in FASTA format having total length at most 10 kbp.
-#
-# Return: The adjacency list corresponding to O3. You may return edges in any order.
-
-def grph(fasta,k):
-    graph=[]
-    for name_s,s in fasta:
-        for name_t,t in fasta:
-            if s!=t and s[-k:]==t[:k]:
-                graph.append((name_s,name_t))
-            
-    return graph
-
-
-# SPLC	RNA Splicing
-#
-# After identifying the exons and introns of an RNA string, we only need to
-# delete the introns and concatenate the exons to form a new string
-# ready for translation.
-#
-# Input: A DNA string s (of length at most 1 kbp) and a collection of substrings
-#        of s acting as introns. All strings are given in FASTA format.
-#
-# Return: A protein string resulting from transcribing and translating the 
-#         exons of s. (Note: Only one solution will exist for the dataset provided.)
-
-def splc(fasta):
-    (_,dna)=fasta[0]
-    for i in range(1,len(fasta)):
-        (l,intron)=fasta[i]
-        fragments=dna.split(intron)
-        if len(fragments)>1:
-            dna=''.join(fragments)
-    return prot(dna_to_rna(dna))
-
 #IEV	Calculating Expected Offspring
 #
 # Input: six positive integers, each of which does not exceed 20,000. The
@@ -629,106 +437,12 @@ def eval (n,s,A):
 
 
 
-### Where in the Genome does DNA raplication begin? ###
-
-# BA1A	Compute the Number of Times a Pattern Appears in a Text
-#
-# We define Count(Text, Pattern) as the number of times that a k-mer Pattern 
-# appears as a substring of Text. For example,
-#
-# Count(ACAACTATGCATACTATCGGGAACTATCCT,ACTAT)=3.
-#
-# We note that Count(CGATATATCCATAG, ATA) is equal to 3 (not 2) since we should 
-# account for overlapping occurrences of Pattern in Text.
-#
-# To compute Count(Text, Pattern), our plan is to slide a window down Text,
-# checking whether each k-mer substring of Text matches Pattern. We will
-# therefore refer to the k-mer starting at position i of Text as Text(i, k).
-# Throughout this book, we will often use 0-based indexing, meaning that we
-# count starting at 0 instead of 1. In this case, Text begins at position 0
-# and ends at position |Text| - 1 (|Text| denotes the number of symbols in Text).
-# For example, if Text = GACCATACTG, then Text(4, 3) = ATA. Note that the last
-# k-mer of Text begins at position |Text| - k, e.g., the last 3-mer of
-# GACCATACTG starts at position 10 - 3 = 7.
-#
-# Input: {DNA strings}} Text and Pattern.
-#
-# Return: Count(Text, Pattern).
-
-def countOccurrences(pattern,string):
-    return len(findOccurences(pattern,string))
 
 
 
 
 
-# BA1D	Find All Occurrences of a Pattern in a String
-#
-# Input: Strings Pattern and Genome.
-#
-# Return: All starting positions in Genome where Pattern appears as a substring.
-#         Use 0-based indexing.
-def findOccurences(pattern,string):
-    return [pos-1 for pos in subs(string,pattern)]
 
-
-# BA1E	Find Patterns Forming Clumps in a String
-#
-# Given integers L and t, a string Pattern forms an (L, t)-clump inside a
-# (larger) string Genome if there is an interval of Genome of length L in which
-# Pattern appears at least t times. For example, TGCA forms a (25,3)-clump in
-# the following Genome: gatcagcataagggtcccTGCAATGCATGACAAGCCTGCAgttgttttac.
-#
-# Input: A string Genome, and integers k, L, and t.
-#
-# Return: All distinct k-mers forming (L, t)-clumps in Genome.
-
-def findClumps(genome,k,L,t):
-    def update_patterns(frequencies):
-        for (kmer,count) in frequencies.items():
-            if count>=t:
-                patterns.append(kmer) 
-                
-    patterns=[]
-    frequencies=rh.create_frequency_table(genome[0:L],k)
-    update_patterns(frequencies)
-    for i in range(1,len(genome)-L+1):
-        head=genome[i-1:i+k-1]
-        frequencies[head]-=1
-        tail=genome[i+L-k:i+L]
-        if tail in frequencies:
-            frequencies[tail]+=1
-        else:
-            frequencies[tail]=1        
-        update_patterns(frequencies)
-        
-    return list(set(patterns))
-
-# BA1F	Find a Position in a Genome Minimizing the Skew
-#
-# Define the skew of a DNA string Genome, denoted Skew(Genome), as the
-# difference between the total number of occurrences of 'G' and 'C' in Genome.
-#
-# Input: A DNA string Genome.
-#
-# Return: All integer(s) i minimizing Skew(Prefixi (Text)) over all values of
-#         i (from 0 to |Genome|).
-
-def find_minimum_skew(genome):
-    positions=[]
-    min_skew=2
-    skew=0
-    pos=0
-    for nucleotide in genome:
-        pos+=1
-        skew+=rrt.skew_step[nucleotide]
-        if min_skew>skew:
-            min_skew=skew
-            positions=[pos]
-        elif min_skew==skew:
-            positions.append(pos)
-
-    return positions, min_skew
 
 def create_skews(genome):
     skews=[]
@@ -738,117 +452,7 @@ def create_skews(genome):
         skews.append(skew)       
     return skews
 
-# BA1H	Find All Approximate Occurrences of a Pattern in a String
-#
-# Input: Strings Pattern and Text along with an integer d.
-#
-# Return: All starting positions where Pattern appears as a substring of Text
-#         with at most d mismatches.
 
-def findApproximateOccurrences(pattern,text,d):
-    return [i\
-            for i in range(len(text)-len(pattern)+1)\
-            if hamm(pattern,text[i:i+len(pattern)])<=d]
-
-
-# BA1I	Find the Most Frequent Words with Mismatches in a String
-# BA1J	Find Frequent Words with Mismatches and Reverse Complements
-#
-# A most frequent k-mer with up to d mismatches in Text is simply a string
-# Pattern maximizing Countd(Text, Pattern) among all k-mers. Note that Pattern
-# does not need to actually appear as a substring of Text; for example, AAAAA 
-# is the most frequent 5-mer with 1 mismatch in AACAAGCTGATAAACATTTAAAGAG,
-# even though AAAAA does not appear exactly in this string.
-#
-# Input: A string Text as well as integers k and d.
-#
-# Return: All most frequent k-mers with up to d mismatches in Text.
-
-# helper for BA1I
-def find_mismatches(pattern,text,d):
-    return findApproximateOccurrences(pattern,text,d)
-
-# helper for BA1J
-def find_mismatches_and_rc(pattern,text,d):
-    return findApproximateOccurrences(pattern,text,d) + \
-           findApproximateOccurrences(revc(pattern),text,d)
-
-def findMostFrequentWordsWithMismatches(text,k,d,find=find_mismatches):
-    matches=[]
-    max_count=-1
-    for pattern in rh.k_mers(k):
-        count=len(find(pattern,text,d))
-        if count>max_count:
-            max_count=count
-            matches=[]
-        if count==max_count:
-            matches.append(pattern)
-            
-    return (max_count,matches)
-
-
-# BA1K	Generate the Frequency Array of a Strings
-#
-# Given an integer k, we define the frequency array of a string Text as an 
-# array of length 4**k, where the i-th element of the array holds the number of
-# times that the i-th k-mer (in the lexicographic order) appears in Text.
-#
-# Input: A DNA string Text and an integer k.
-#
-# Return: The frequency array of k-mers in Text.
-
-def generateFrequencyArray(text,k):
-    frequencies=[]
-    for i in range(4**k):
-        frequencies.append(0)
-    for i in range(len(text)-k+1):
-        frequencies[patternToNumber(text[i:i+k])]+=1
-    return frequencies
-
-# BA1L	Implement PatternToNumber
-
-def patternToNumber(kmer):
-    n=0
-    for letter in kmer:
-        n*=4
-        n+=rrt.bases.find(letter)
-    return n
-
-# BA1M	Implement NumberToPattern
-
-def numberToPattern(n,k):
-    pattern=''
-    nn=n
-    for i in range(k):
-        pattern=pattern+rh.bases[nn%4]
-        nn//=4
-    return pattern[::-1]
-
-# BA1N	Generate the d-Neighborhood of a String
-#
-# The d-neighborhood Neighbors(Pattern, d) is the set of all k-mers whose
-# Hamming distance from Pattern does not exceed d.
-#
-# Input: A DNA string Pattern and an integer d.
-#
-# Return: The collection of strings Neighbors(Pattern, d).
-
-def generate_dNeighborhood(pattern,d):
-    def neighbours(p):
-        neighbours=[]
-        for i in range(len(p)):
-            for ch in rrt.bases:
-                neighbours.append(p[0:i]+ch+p[i+1:])
-        return neighbours
-    if d==0:
-        return [pattern]
-    else:
-        neighbourhood=[]
-        start=generate_dNeighborhood(pattern,d-1)
-        for p in start:
-            for n in neighbours(p):
-                neighbourhood.append(n)
-        return list(set(start+neighbourhood))
 
 ### Which DNA Patterns play the role of molecular clocks
 
@@ -1883,73 +1487,7 @@ if __name__=='__main__':
     import unittest,fragile
     
     class TestRosalind(unittest.TestCase):
-            
-
-
-# LIA 	Independent Alleles 
-
-        def test_lia(self):
-            self.assertAlmostEqual(0.684,lia(2,1),places=3)
-
-# RSTR 	Matching Random Motifs        
-        def test_rstr(self):
-            self.assertAlmostEqual(0.689,rstr(90000, 0.6,'ATAGCCGA'),places=3)
-            
-        def test_fib(self):
-            self.assertEqual(19,fib(5,3))
-            self.assertEqual(875089148811941,fib(35, 5))
-            
-        def test_cons(self):
-            string='''>Rosalind_1
-            ATCCAGCT
-            >Rosalind_2
-            GGGCAACT
-            >Rosalind_3
-            ATGGATCT
-            >Rosalind_4
-            AAGCAACC
-            >Rosalind_5
-            TTGGAACT
-            >Rosalind_6
-            ATGCCATT
-            >Rosalind_7
-            ATGGCACT'''
-            consensus,profile=cons(f.FastaContent(string.split('\n')))
-            self.assertEqual('ATGCAACT',consensus)
-            self.assertEqual(profile['T'],[1,5, 0, 0, 0, 1, 1, 6])
-            self.assertEqual(profile['G'],[1, 1, 6, 3, 0, 1, 0, 0])
-            self.assertEqual(profile['A'],[5, 1, 0, 0, 5, 5, 0, 0])
-            self.assertEqual(profile['C'],[0, 0, 1, 4, 2, 0, 6, 1])
-         
-        def test_fibd(self):
-            self.assertEqual(4,fibd(6,3))
-        
-        def test_grph(self):
-            string='''>Rosalind_0498
-            AAATAAA
-            >Rosalind_2391
-            AAATTTT
-            >Rosalind_2323
-            TTTTCCC
-            >Rosalind_0442
-            AAATCCC
-            >Rosalind_5013
-            GGGTGGG'''
-            graph=grph(f.FastaContent(string.split('\n')),3)
-            self.assertEqual(3,len(graph))
-            self.assertIn(('Rosalind_0498', 'Rosalind_2391'),graph)
-            self.assertIn(('Rosalind_0498', 'Rosalind_0442'),graph)
-            self.assertIn(('Rosalind_2391', 'Rosalind_2323'),graph)
-
-        def test_splc(self):
-            string='''>Rosalind_10
-            ATGGTCTACATAGCTGACAAACAGCACGTAGCAATCGGTCGAATCTCGAGAGGCATATGGTCACATGATCGGTCGAGCGTGTTTCAAAGTTTGCGCCTAG
-            >Rosalind_12
-            ATCGGTCGAA
-            >Rosalind_15
-            ATCGGTCGAGCGTGT'''
-            self.assertEqual('MVYIADKQHVASREAYGHMFKVCA',splc(f.FastaContent(string.split('\n'))))
-            
+              
         def test_iev(self):
             self.assertEqual(3.5,iev([1,0,0,1,0,1]))
             
@@ -2111,12 +1649,7 @@ if __name__=='__main__':
             
 
  
-        def test_ba1f(self):
-            positions,_=find_minimum_skew(\
-                'CCTATCGGTGGATTAGCATGTCCCTGTACGTTTCGCCGCGAACTAGTTCACACGGCT'\
-                'TGATGGCAAATGGTTTTTCCGGCGACCGTAATCGTCCACCGAG')
-            self.assertIn(53,positions)
-            self.assertIn(97,positions)
+
         
         def test_ba6e(self):
             pairs=fragile.find_shared_kmers(3,'AAACTCATC','TTTCAAATC')
@@ -2125,40 +1658,13 @@ if __name__=='__main__':
             self.assertIn((4, 2),pairs)
             self.assertIn((6, 6),pairs)
     
-        def test_ba1e(self):
-            clumps=findClumps('CGGACTCGACAGATGTGAAGAAATGTGAAGACTGAGTGAAGAGAAGAGGAAAC'\
-                              'ACGACACGACATTGCGACATAATGTACGAATGTAATGTGCCTATGGC',5,75,4)
-            self.assertIn('CGACA',clumps)
-            self.assertIn('GAAGA',clumps)
-            self.assertIn('AATGT',clumps)
+
         
-        def test_ba1h(self):
-            self.assertEqual([6, 7, 26, 27, 78],
-                             findApproximateOccurrences('ATTCTGGA',\
-                                                        'CGCCCGAATCCAGAACGCATTCCCATATTTCGGGACCACTGGCCTCCACGGTACGGACGTCAATCAAATGCCTAGCGGCTTGTGGTTTCTCCTACGCTCC',\
-                                                           3)) 
-        def test_ba1i(self):
-            _,matches=findMostFrequentWordsWithMismatches('ACGTTGCATGTCGCATGATGCATGAGAGCT',4,1)
-            self.assertIn('GATG',matches)
-            self.assertIn('ATGC',matches)
-            self.assertIn('ATGT',matches)
-        
-        def test_ba1k(self):
-            self.assertEqual([2,1,0,0,0,0,2,2,1,2,1,0,0,1,1,0],
-                             generateFrequencyArray('ACGCGGCTCTGAAA',2))
+
+ 
+
    
-        def test_ba1n(self):
-            neighbours=generate_dNeighborhood('ACG',1)
-            self.assertIn('CCG', neighbours)
-            self.assertIn('TCG', neighbours)
-            self.assertIn('GCG', neighbours)
-            self.assertIn('AAG', neighbours)
-            self.assertIn('ATG', neighbours)
-            self.assertIn('AGG', neighbours)
-            self.assertIn('ACA', neighbours)
-            self.assertIn('ACC', neighbours)
-            self.assertIn('ACT', neighbours)
-            self.assertIn('ACG', neighbours)
+  
 
 # BA2A 	Implement MotifEnumeration
 
