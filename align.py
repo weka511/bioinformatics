@@ -597,22 +597,19 @@ if __name__=='__main__':
     from Bio.SubsMat.MatrixInfo import blosum62
     import unittest
 
-    class AlignTest(unittest.TestCase):
+    class Test_5_Alignment(unittest.TestCase):
         
-# Simple test
-        def test_simple(self):
+        def test_simple(self): # Simple test
             score,s1,s2=align('PLEASANTLY','MEANLY',replace_score=blosum62,indel_cost=5)
             self.assertEqual(8,score)
             self.assertEqual('LEASANTLY',''.join(s1))
             self.assertEqual('MEA--N-LY',''.join(s2))
             
-# BA5A 	Find the Minimum Number of Coins Needed to Make Change 	
-        def test_ba5a(self):
+        def test_ba5a(self): # BA5A 	Find the Minimum Number of Coins Needed to Make Change 	
             self.assertEqual(2,number_of_coins(40,[1,5,10,20,25,50]))
             self.assertEqual(338,number_of_coins(8074,[24,13,12,7,5,3,1]))
             
-# BA5B 	Find the Length of a Longest Path in a Manhattan-like Grid  	
-        def test_ba5b(self):
+        def test_ba5b(self): # BA5B 	Find the Length of a Longest Path in a Manhattan-like Grid  	
             self.assertEqual(34,\
                              longest_manhattan_path(4,\
                                                     4,\
@@ -664,13 +661,13 @@ if __name__=='__main__':
                                                      [0,1,2,2,4,4,2,4,2],\
                                                      [2,3,1,4,4,3,4,0,3]]))            
                              
-# BA5C 	Find a Longest Common Subsequence of Two Strings  	
-        def test_ba5c(self):
+	
+        def test_ba5c(self): # BA5C 	Find a Longest Common Subsequence of Two Strings  
             self.assertEqual('ACCTTG',
                              longest_common_subsequence('AACCTTGG',
                                                     'ACACTGTGA'))            
-# BA5D 	Find the Longest Path in a DAG  	
-        def test_ba5d(self):
+	
+        def test_ba5d(self): # BA5D 	Find the Longest Path in a DAG  
             n,path=longest_path(0,4,
                                 [
                                     (0,1,7),
@@ -755,15 +752,15 @@ if __name__=='__main__':
             self.assertEqual(62,n)
             self.assertEqual([11,17,18],path)  
         
-# BA5E 	Find a Highest-Scoring Alignment of Two Strings  	
-        def test_ba5e(self):
+  	
+        def test_ba5e(self): # BA5E 	Find a Highest-Scoring Alignment of Two Strings
             score,s1,s2=highest_scoring_global_alignment('PLEASANTLY','MEANLY')
             self.assertEqual(8,score)
             self.assertEqual('PLEASANTLY',s1)
             self.assertEqual('-MEA--N-LY',s2)
             
-# BA5F 	Find a Highest-Scoring Local Alignment of Two Strings 
-        def test_ba5f(self):
+
+        def test_ba5f(self): # BA5F 	Find a Highest-Scoring Local Alignment of Two Strings 
             score,s1,s2=highest_scoring_local_alignment('MEANLY','PENALTY')
             self.assertEqual(15,score)
             self.assertEqual('EANL-Y',s1)
@@ -776,8 +773,8 @@ if __name__=='__main__':
             self.assertEqual('YQAGIIRQPPRGD-RGVSDRNYSQCGKQ-NQ-AQLDNNPTWTKYEIEWRVQI-LPPGAGVFEGDNGQNQCLCPNW--A-W-EQPCQW----GALHS-NEQYPNRIHLWAPMSKLHIKIEKSSYN-RNAQ-FPNRCMYECE-FPSY-REQVDSCHYENVQIAF-TIFSGAEQKRKFCSCHFWSNFIDQAVFSTGLI-PWCYRRDDHSAFFMPNWNKQ--YKHPQLQFRVAGEGTQCRPFYTREMFTKVSAWRIAGRFAGPYERHHDAHLELWY-QHHKVRT-GQQLGIIWNNRDKTRNPCPFSAY-Y-NK--LP-WWK-I-NQ-N-AFYNCLQNIAHSTHDETHEFNPVKCIDWLQGTMV-P------TECKKGFVHEKCECYRNPGPPLHDMYHQMEDIFGVRFDCLTGWKHLS------D---YNPC-QERRNINDFYIFAYEIAPAVKNLVLSPQPLADATKKCAFNYTPLDQSPVVIACK---WYIHQPI-CMLL----IVLIC-AMDKYNAHMIVIRTTEGQQPMHACRMTEGPGMCMKEPLVTFTLPAQWQWPNHEFKYVYMYVLNYHLSQYTYTDEGHAGGQHYSFNVAVDVGMAWGHNRCYCQPACYSQQETQTRTIDYEKWQYMKHQAFKWGLWFCEQER-HA--WFKGQNRCEMFTAKMTRMGADSNLDQYKLMLAQNYEEQWEQPIMECGMSEIIEIDPPYRSELIFTFWPFCTYSPWQNLIKCRCNNVIEEMDQCVP-LTF-IGFGVKQAGGIQA-WAFYKE--EWTSTYYLMCQCMKSDKAQYPYEIILFWMQ--P-MDTGE--QEPPQQNMWIFLPHSWFFDWCCNAPWSEICSSRHD--H---GQ-CQDAFYPCELFTVF',s1)
             self.assertEqual('Y-P-MSRKTAKSQFIEWCDW-F--CFNHWTNWAPLSIVRTSVAFAV-W-GHCWYPCG-GVCKTNRCKDD-FCGRWRKALFAEGPRDWKCCKNDLQNWNPQYSQGTR--NTK-RMVATTNQTMIEWKQSHIFETW-LF-CHVIIEYNWSAF-W-MWMNRNEAFNSIIKSGYPKLLL-T-QY-P-L-SQG--STPIVKPL-IRRD-QGKFW-A-WAQMWWFREPT-NIPTA-D-Y-CHSW--WQ--SR-ADLQ-NDRDMGP-EADASFYVEFWYWVRCAARTYGQQLGIIWNNRLKTRNPCPYSADGIQNKENYVFWWKNMCTKSHIAFYYCLQNVAHYTHDVTAEFNPVKCIDWLQGHMVLSSWFKYNTECKKLFVHEKCECYRM----FCGV---VEDIFGVRFH--TGWKHLSTAKPVPHVCVYNPSVQERRNINDFYIF-YEIAPAVKNLVLSAQPLHDYTKKCAFNYTPITITRIISTRNQIIW-AHVVIACQFYSPHQMLLIELAMDKYCADMNVRRSTEGHQPMHACRSTFGPGMAAKEPLVTFTLVAFWQWPNHEFQYVYMYTED-KIIQIG-PHLSN-GCEMVEYCVDC-YAK-RPCYRAYSAEAQYWRMITEAEDYSYKTRNAIAATATVRGQ-YCHPFRWLGIVWM-AHHDC-FFANECGTICI-PQMAEMRPPETTPYEI--DIIFMMF-WKE--HMSTTIL-DVVGMYRP-ATFSHWHDAHH-QCEPYLTPL-MCQSKLVFDAAFT--QVG-VKGVW-YHTEKLELMAGFNHM-K-FKKEEAQ---QSCFYWFQDCPDYDPPDAVRKTDEKHIRAHGEIWWLMRYYCMYHILHI-ASRHEWMHLRWDQACTNPGY--ELFE-F',s2)
  
-# BA5N 	Find a Topological Ordering of a DAG 
-        def test_ba5n(self):
+
+        def test_ba5n(self):  # BA5N 	Find a Topological Ordering of a DAG 
             self.assertEqual([5, 4, 1, 2, 3],
                              topological_order({
                                  1 : [2],
