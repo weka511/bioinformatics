@@ -599,6 +599,8 @@ def parse_graphs(f):
 #           path     Location of test data
 #           ext      Ext used to identify additional datasets - 1, 2, 3...
 #           fasta    File is in FASTA format, so skip FASTA ids
+#
+# Returns: A list of strings, one for each row
 
 def create_strings(problem=os.path.basename(sys.argv[0]).split('.')[0],
                    path=os.path.join(os.path.expanduser('~'),'Downloads'),
@@ -616,3 +618,52 @@ def create_strings(problem=os.path.basename(sys.argv[0]).split('.')[0],
             for line in f:
                 product.append(line.strip())
     return product
+
+# create_list
+#
+# Read test data from file
+#
+# Inputs:   problem  Name of Rosalind problem
+#                    - defaults to name of script callling this method
+#           path     Location of test data
+#           ext      Ext used to identify additional datasets - 1, 2, 3...
+#           fasta    File is in FASTA format, so skip FASTA ids
+#
+# Returns: A list of lists, one for each row
+
+def create_list(problem=os.path.basename(sys.argv[0]).split('.')[0],
+                   path=os.path.join(os.path.expanduser('~'),'Downloads'),
+                   ext=None,
+                   fasta=False):
+    g = []
+    for row in create_strings(problem=problem,path=path,ext=ext,fasta=fasta):
+        g.append([int(s) for s in row.split(" ")])
+    return g
+
+# create_strings
+#
+# Read test data from file
+#
+# Inputs:   problem  Name of Rosalind problem
+#                    - defaults to name of script callling this method
+#           path     Location of test data
+#           ext      Ext used to identify additional datasets - 1, 2, 3...
+#           fasta    File is in FASTA format, so skip FASTA ids
+#
+# Returns: A weighted adjactency list - e.g. http://rosalind.info/problems/ba7a/
+
+def create_weighted_adjacency_list(ext=None):
+    n=-1
+    T={}
+    p=re.compile('([0-9]+)->([0-9]+):([.0-9]+)')
+
+    for line in create_strings(ext=ext):
+        if n==-1:
+            n=int(line)
+        else:
+            m=p.match(line)
+            if  not int(m.group(1)) in T:
+                T[int(m.group(1))]=[(int(m.group(2)),int(m.group(3)))]
+            else:
+                T[int(m.group(1))].append((int(m.group(2)),int(m.group(3))))
+    return n,T

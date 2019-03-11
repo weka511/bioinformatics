@@ -42,8 +42,6 @@ if __name__=='__main__':
         #(2, 5, 3)  
     #]))
     
-    from helpers import create_strings    
-    g = []
-    for row in create_strings(ext=1):
-        g.append([int(s) for s in row.split(" ")])
-    print(' '.join([str(i) for i in dij(g)]))
+    from helpers import create_list    
+
+    print(' '.join([str(i) for i in dij(create_list(ext=1))]))
