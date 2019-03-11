@@ -112,7 +112,6 @@ NB: functions generally use zero based indexing; Rosalind uses 1-based.
 |aspc|[Introduction to Alternative Splicing](http://rosalind.info/problems/aspc/) |
 |cons|[Consensus and Profile](http://rosalind.info/problems/cons/) |
 |dna|[Counting DNA Nucleotides](http://rosalind.info/problems/dna/) |
-|dij|[Dijkstra's Algorithm](http://rosalind.info/problems/dij/) |
 |ebin|[Wright-Fisher's Expected Behavior](http://rosalind.info/problems/ebin/) |
 |eval|[Expected Number of Restriction Sites](http://rosalind.info/problems/eval/) |
 |fib|[Rabbits and Recurrence Relations](http://rosalind.info/problems/fib/) |
@@ -162,6 +161,7 @@ NB: functions generally use zero based indexing; Rosalind uses 1-based.
 | DBRU.py |	[Constructing a De Bruijn Graph](http://rosalind.info/problems/dbru/) |
 | DDEG.py | [Double-Degree Array](http://rosalind.info/problems/ddeg/) |
 | DEG.py | 	[Degree Array](http://rosalind.info/problems/deg/) |
+|dij|[Dijkstra's Algorithm](http://rosalind.info/problems/dij/) |
 | edit.py |	[Edit Distance](http://rosalind.info/problems/edit/) |
 | edta.py | [Edit Distance Alignment](http://rosalind.info/problems/edta/)|
 | FRMT.py | [Data Formats](http://rosalind.info/problems/frmt/)|
