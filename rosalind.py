@@ -254,16 +254,7 @@ def read_list(file_name):
     with open(file_name) as f:
         return [int(n) for n in f.read().split()]
 
-def read_matrix(file_name,conv=int,len_params=1):
-    params=[]
-    D=[]
-    with open(file_name) as f:
-        for line in f:
-            if len(params)<len_params:
-                params.append(int(line.strip()))
-            else:
-                D.append([conv(s) for s in line.strip().split()])
-    return (params,D)
+
 
 def write_list(numeric_list,out=None):
     text=' '.join(str(l) for l in numeric_list )

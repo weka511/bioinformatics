@@ -1,4 +1,4 @@
-# Copyright (C) 2017 Greenweaves Software Pty Ltd
+# Copyright (C) 2017-2019 Greenweaves Software Limited
 
 # This is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -15,11 +15,20 @@
 
 # BA7B Limb Length Problem
 
-from rosalind import read_matrix
+# ComputeLimbLength
+#
+# Inputs: n An integer n
+#         j an integer between 0 and n - 1,
+#         D a space-separated additive distance matrix D (whose elements are integers).
+#
+# Return: The limb length of the leaf in Tree(D) corresponding to row j of this distance matrix (use 0-based indexing).
+#
+# Uses the Limb Length Theorem: LimbLength(j) = min(D[i][j] + D[j][k]-D[i][k])/2 over all leaves i and k
 
 def ComputeLimbLength(n,j,D):
     return int(min([D[i][j]+D[j][k]-D[i][k] for i in range(n) for k in range(n) if j!=k and k!=i and i!=j])/2)
 
 if __name__=='__main__':
-    params,D=read_matrix('c:/Users/Weka/Downloads/rosalind_ba7b.txt',len_params=2)  
+    from helpers import read_matrix
+    params,D=read_matrix(len_params=2)  
     print (ComputeLimbLength(params[0],params[1],D))

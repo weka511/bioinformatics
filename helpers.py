@@ -652,12 +652,14 @@ def create_list(problem=os.path.basename(sys.argv[0]).split('.')[0],
 #
 # Returns: A weighted adjactency list - e.g. http://rosalind.info/problems/ba7a/
 
-def create_weighted_adjacency_list(ext=None):
+def create_weighted_adjacency_list(problem=os.path.basename(sys.argv[0]).split('.')[0],
+                                   path=os.path.join(os.path.expanduser('~'),'Downloads'),
+                                   ext=None):
     n=-1
     T={}
     p=re.compile('([0-9]+)->([0-9]+):([.0-9]+)')
 
-    for line in create_strings(ext=ext):
+    for line in create_strings(problem=problem,path=path,ext=ext):
         if n==-1:
             n=int(line)
         else:
@@ -667,3 +669,32 @@ def create_weighted_adjacency_list(ext=None):
             else:
                 T[int(m.group(1))].append((int(m.group(2)),int(m.group(3))))
     return n,T
+
+# read_matrix
+#
+# Read test data from file
+#
+# Inputs:   problem    Name of Rosalind problem
+#                      - defaults to name of script callling this method
+#           path       Location of test data
+#           ext        Ext used to identify additional datasets - 1, 2, 3...
+#           fasta      File is in FASTA format, so skip FASTA ids
+#           len_params Number of parameters that precede matrix
+#
+# Returns:  Paramters, followed by matrix - e.g. http://rosalind.info/problems/ba7b/
+
+def read_matrix(problem=os.path.basename(sys.argv[0]).split('.')[0],
+                path=os.path.join(os.path.expanduser('~'),'Downloads'),
+                ext=None,
+                conv=int,
+                len_params=1):
+    params=[]
+    D=[]
+
+    for line in create_strings(problem=problem,path=path,ext=ext):
+        if len(params)<len_params:
+            params.append(int(line))
+        else:
+            D.append([conv(s) for s in line.split()])
+            
+    return (params,D)
