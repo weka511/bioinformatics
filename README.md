@@ -110,8 +110,9 @@ NB: functions generally use zero based indexing; Rosalind uses 1-based.
 | -------------------------- | ------------------------------------------------|
 |afrq|[Counting Disease Carriers](http://rosalind.info/problems/afrq/) |
 |aspc|[Introduction to Alternative Splicing](http://rosalind.info/problems/aspc/) |
-|dna|[Counting DNA Nucleotides](http://rosalind.info/problems/dna/) |
 |cons|[Consensus and Profile](http://rosalind.info/problems/cons/) |
+|dna|[Counting DNA Nucleotides](http://rosalind.info/problems/dna/) |
+|dij|[Dijkstra's Algorithm](http://rosalind.info/problems/dij/) |
 |ebin|[Wright-Fisher's Expected Behavior](http://rosalind.info/problems/ebin/) |
 |eval|[Expected Number of Restriction Sites](http://rosalind.info/problems/eval/) |
 |fib|[Rabbits and Recurrence Relations](http://rosalind.info/problems/fib/) |
