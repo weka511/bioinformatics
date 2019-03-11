@@ -1928,7 +1928,7 @@ def reconstruct_from_kmers(k,patterns):
 # BA3I 	Find a k-Universal Circular String 
 # something off - I have taken this out of tests, even though the
 # website accepts may answers. A small test case appears to give differnt
-# answwrs on successive runs - maybe iterating through dict is not deterministic?
+# answers on successive runs - maybe iterating through dict is not deterministic?
 
 def k_universal_circular_string(k):
     def bits(i):
@@ -3036,42 +3036,42 @@ if __name__=='__main__':
             #self.assertEqual('0110010100001111',k_universal_circular_string(4))
 
 # BA3J 	Reconstruct a String from its Paired Composition 
-        #def test_ba3j(self):
-            #self.assertEqual("GTGGTCGTGAGATGTTGA",
-                             #reconstruct_from_paired_kmers(
-                                 #4,
-                                 #2,
-                                #['GAGA|TTGA',
-                                #'TCGT|GATG',
-                                #'CGTG|ATGT',
-                                #'TGGT|TGAG',
-                                #'GTGA|TGTT',
-                                #'GTGG|GTGA',
-                                #'TGAG|GTTG',
-                                #'GGTC|GAGA',
-                                #'GTCG|AGAT']))
-            #self.assertEqual('CACCGATACTGATTCTGAAGCTT',
-                             #reconstruct_from_paired_kmers(3,
-                                           #1,
-                                           #[
-                                              #'ACC|ATA', #(ACC|ATA) 
-                                              #'ACT|ATT', #(ACT|ATT)
-                                              #'ATA|TGA', #(ATA|TGA)
-                                              #'ATT|TGA', #(ATT|TGA)
-                                              #'CAC|GAT', #(CAC|GAT)
-                                              #'CCG|TAC', #(CCG|TAC)
-                                              #'CGA|ACT', #(CGA|ACT)
-                                              #'CTG|AGC', #(CTG|AGC)
-                                              #'CTG|TTC', #(CTG|TTC)
-                                              #'GAA|CTT', #(GAA|CTT)
-                                              #'GAT|CTG', #(GAT|CTG)
-                                              #'GAT|CTG', #(GAT|CTG)
-                                              #'TAC|GAT', #(TAC|GAT)
-                                              #'TCT|AAG', #(TCT|AAG)
-                                              #'TGA|GCT', #(TGA|GCT)
-                                              #'TGA|TCT', #(TGA|TCT)
-                                              #'TTC|GAA'  #(TTC|GAA)
-                                           #]))
+            #def test_ba3j(self):
+                #self.assertEqual("GTGGTCGTGAGATGTTGA",
+                                 #reconstruct_from_paired_kmers(
+                                     #4,
+                                     #2,
+                                    #['GAGA|TTGA',
+                                    #'TCGT|GATG',
+                                    #'CGTG|ATGT',
+                                    #'TGGT|TGAG',
+                                    #'GTGA|TGTT',
+                                    #'GTGG|GTGA',
+                                    #'TGAG|GTTG',
+                                    #'GGTC|GAGA',
+                                    #'GTCG|AGAT']))
+                #self.assertEqual('CACCGATACTGATTCTGAAGCTT',
+                                 #reconstruct_from_paired_kmers(3,
+                                               #1,
+                                               #[
+                                                  #'ACC|ATA', #(ACC|ATA) 
+                                                  #'ACT|ATT', #(ACT|ATT)
+                                                  #'ATA|TGA', #(ATA|TGA)
+                                                  #'ATT|TGA', #(ATT|TGA)
+                                                  #'CAC|GAT', #(CAC|GAT)
+                                                  #'CCG|TAC', #(CCG|TAC)
+                                                  #'CGA|ACT', #(CGA|ACT)
+                                                  #'CTG|AGC', #(CTG|AGC)
+                                                  #'CTG|TTC', #(CTG|TTC)
+                                                  #'GAA|CTT', #(GAA|CTT)
+                                                  #'GAT|CTG', #(GAT|CTG)
+                                                  #'GAT|CTG', #(GAT|CTG)
+                                                  #'TAC|GAT', #(TAC|GAT)
+                                                  #'TCT|AAG', #(TCT|AAG)
+                                                  #'TGA|GCT', #(TGA|GCT)
+                                                  #'TGA|TCT', #(TGA|TCT)
+                                                  #'TTC|GAA'  #(TTC|GAA)
+                                               #]))
 
 # BA3K 	Generate Contigs from a Collection of Reads
         def test_ba3k(self):
