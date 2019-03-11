@@ -28,29 +28,22 @@ def dij(g):
     return D[1:]
 
 if __name__=='__main__':
-    print (dij([
-        (6, 10),
-        (3, 4, 4),
-        (1, 2, 4),
-        (1, 3, 2),
-        (2, 3, 3),
-        (6, 3, 2),
-        (3, 5, 5),
-        (5, 4, 1),
-        (3, 2, 1),
-        (2, 4, 2),
-        (2, 5, 3)  
-    ]))
+    #print (dij([
+        #(6, 10),
+        #(3, 4, 4),
+        #(1, 2, 4),
+        #(1, 3, 2),
+        #(2, 3, 3),
+        #(6, 3, 2),
+        #(3, 5, 5),
+        #(5, 4, 1),
+        #(3, 2, 1),
+        #(2, 4, 2),
+        #(2, 5, 3)  
+    #]))
     
-#def explore(start,adj,D):
-    #for node,w in adj[explore]:
-        #length_this_path = D[start-1] + w 
-        #if D[node-1]==-1 or D[node-1]>length_this_path:
-            #D[node-1] = length_this_path
-        
-#adj = {}
-#n,_ = g[0]
-#for i in range(1,n+1):
-    #adj[i]=[]
-#for (a,b,w) in g[1:]:
-    #adj[a].append((b,w))    
+    from helpers import create_strings    
+    g = []
+    for row in create_strings(ext=1):
+        g.append([int(s) for s in row.split(" ")])
+    print(' '.join([str(i) for i in dij(g)]))
