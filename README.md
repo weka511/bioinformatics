@@ -204,7 +204,7 @@ NB: functions generally use zero based indexing; Rosalind uses 1-based.
 
 | Name |Description |
 | -------------------------- | ------------------------------------------------|
-| align.py  Common functions for alignment |
+| align.py | Common functions for alignment |
 | helpers.py | Utilities for formatting output, parsing input, etc |
 | LICENSE |	License Agreement|
 | newick.py | Parser for files in [Newick format](http://evolution.genetics.washington.edu/phylip/newicktree.html) |
