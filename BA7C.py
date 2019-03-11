@@ -1,4 +1,4 @@
-# Copyright (C) 2017 Greenweaves Software Pty Ltd
+# Copyright (C) 2017-2019 Greenweaves Software Limited
 
 # This is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -14,15 +14,22 @@
 # along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>
 
 # BA7C Implement Additive Phylogeny
+
 from BA7B import ComputeLimbLength
 
-from rosalind import Tree,read_matrix  
-    
+from rosalind import Tree
+
+# AdditivePhylogeny
+#
+# Inputs: n and a tab-delimited n x n additive matrix.
+#
+# Return: A weighted adjacency list for the simple tree fitting this matrix.   
+
 def AdditivePhylogeny(D,n,N=-1):
+    # find_ikn
+    #
+    # Find three leaves such that Di,k = Di,n + Dn,k
     def find_ikn(DD):
-        '''
-        Find three leaves such that Di,k = Di,n + Dn,k
-        '''
         for i in range(n):
             for k in range(n):
                 if DD[i][k]==DD[i][n-1]+DD[n-1][k] and i!=k:
@@ -54,9 +61,8 @@ def AdditivePhylogeny(D,n,N=-1):
             D_bald[n-1][j]-=limbLength
             D_bald[j][n-1]=D_bald[n-1][j]  
          
-        i,k,node,x=find_ikn(D_bald)
-        #x=D_bald[i][n-1]
-        
+        i,k,node,x=find_ikn(D_bald)  #x=D_bald[i][n-1]
+       
         D_Trimmed=[D_bald[l][:-1] for l in range(n-1)]
         
         T=AdditivePhylogeny(D_Trimmed,n-1,N)
@@ -76,14 +82,15 @@ def AdditivePhylogeny(D,n,N=-1):
             T.unlink(l0,l1)
             T.link(v,l0,x-d)
             T.link(v,l1,d0-x)
-        # add leaf n back to T by creating a limb (v, n) of length limbLength
-        T.link(node,v,limbLength)
+        
+        T.link(node,v,limbLength) # add leaf n back to T by creating a limb (v, n) of length limbLength
         
         return T
  
 
 
 if __name__=='__main__':
-    params,D=read_matrix('c:/Users/Weka/Downloads/rosalind_ba7c(8).txt')           
-    AdditivePhylogeny(D,params[0]).print()
+    from helpers import read_matrix  
+    params,D=read_matrix()           
+    AdditivePhylogeny(D,params[0]).print_adjacency()
     

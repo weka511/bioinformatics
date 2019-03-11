@@ -123,7 +123,7 @@ class Tree(object):
     def are_linked(self,a,b):
         return len([e for (e,w) in self.edges[a] if e == b])>0
         
-    def print(self,includeNodes=False):
+    def print_adjacency(self,includeNodes=False):
         print('-----------------')
         self.nodes.sort()
         if includeNodes:
