@@ -210,7 +210,7 @@ NB: functions generally use zero based indexing; Rosalind uses 1-based.
 | newick.py | Parser for files in [Newick format](http://evolution.genetics.washington.edu/phylip/newicktree.html) |
 | README.md |This file|
 | rosalind.py | Shared code|
-| rosalind.wpr  WingWare Project File |
+| rosalind.wpr | WingWare Project File |
 
 ## Other stuff
 
