@@ -146,58 +146,58 @@ NB: functions generally use zero based indexing; Rosalind uses 1-based.
 
 | Name | Description |
 | -------------------------- | ------------------------------------------------|
-| 2sum.py | [2SUM](http://rosalind.info/problems/2sum/) |
-| 3sum.py | [3SUM](http://rosalind.info/problems/3sum/) |
-| ASMQ.py | 	[Assessing Assembly Quality with N50 and N75](http://rosalind.info/problems/asmq/) |
-| bfs.py | [Beadth First search](http://rosalind.info/problems/bfs/) |
-| bip.py | [Testing Bipartiteness](http://rosalind.info/problems/bip/) |
-| BINS.py | [Binary Search](http://rosalind.info/problems/bfs/) |
-| cat.pt | [Catalan Numbers and RNA Secondary Structures ](http://rosalind.info/problems/cat/) (WIP)|
-| cc.py |	[Connected Components](http://rosalind.info/problems/cc/) |
-| CORR.py | [Error Correction in Reads](http://rosalind.info/problems/corr/) | 
-| cstr.py | [Creating a Character Table from Genetic Strings](http://rosalind.info/problems/cstr/)|
-| ctbl.py | [Creating a Character Table](http://rosalind.info/problems/ctbl/) |
-| dag.py | [Testing Acyclicity](http://rosalind.info/problems/dag/) |
-| DBRU.py |	[Constructing a De Bruijn Graph](http://rosalind.info/problems/dbru/) |
-| DDEG.py | [Double-Degree Array](http://rosalind.info/problems/ddeg/) |
-| DEG.py | 	[Degree Array](http://rosalind.info/problems/deg/) |
-|dij|[Dijkstra's Algorithm](http://rosalind.info/problems/dij/) |
-| edit.py |	[Edit Distance](http://rosalind.info/problems/edit/) |
-| edta.py | [Edit Distance Alignment](http://rosalind.info/problems/edta/)|
-| FRMT.py | [Data Formats](http://rosalind.info/problems/frmt/)|
-| gaff.py | [Global Alignment with Scoring Matrix and Affine Gap Penalty](http://rosalind.info/problems/gaff/) (WIP)|
-| GASM.py | [Genome Assembly Using Reads](http://rosalind.info/problems/gasm/) |
-| GBK.py | 	[GenBank Introduction](http://rosalind.info/problems/gbk/) |
-| gcon.py | [Global Alignment with Constant Gap Penalty](http://rosalind.info/problems/gcon/)|
-| GLOB.py | [Global Alignment with Scoring Matrix](http://rosalind.info/problems/glob/) -- test harness only|
-| GREP.py | [Genome Assembly with Perfect Coverage and Repeats](http://rosalind.info/problems/grep/)|
-|HEA.py| [Building a Heap](http://rosalind.info/problems/hea/) and [Heap Sort](http://rosalind.info/problems/hs/)
-| INS.py | 	[Insertion Sort](http://rosalind.info/problems/ins/) |
-| INV.py | 	[Counting Inversions](http://rosalind.info/problems/inv/) |
-| kmp.py | [Speeding Up Motif Finding](http://rosalind.info/problems/kmp/) |
-| lcsq.py | [Finding a Shared Spliced Motif](http://rosalind.info/problems/lcsq/) |
-| lgis.py | [Longest Increasing Subsequence](http://rosalind.info/problems/lgis/) |
-| ling.py | [Linguistic Complexity of a Genome](http://rosalind.info/problems/ling/) (WIP)|
-| loca.py | [Local Alignment with Scoring Matrix ](http://rosalind.info/problems/loca/) |
-| LONG.py | [Genome Assembly as Shortest Superstring](http://rosalind.info/problems/long/) |
-| maj.py | [Majority Element](http://rosalind.info/problems/maj/) ||
-| MED.py |[Median](http://rosalind.info/problems/med/)|
-| mend.py |[Inferring a Genotype from a Pedigree](http://rosalind.info/problems/mend/) |
-| MER.py |[Merge Two Sorted Arrays](http://rosalind.info/problems/mer/) |
-| MS.py |[Mergesort](http://rosalind.info/problems/ms/)|
-| nwck.py | [Distances in Trees](http://rosalind.info/problems/nwck/) |
-| oap.py | [Overlap Alignment](http://rosalind.info/problems/oap/) (wip)|
-| orf.py | [Open Reading Frames](http://rosalind.info/problems/orf/)|
-| orfr.py | [Finding Genes with Open Reading Frames](http://rosalind.info/problems/orfr/) |
-| PAR.py | 	 [2-Way Partition](http://rosalind.info/problems/par/) |
-| PAR3.py |  [3-Way Partition](http://rosalind.info/problems/par3/) |
-| PCOV.py |  [Genome Assembly with Perfect Coverage](http://rosalind.info/problems/pcov/) |
-| pmch.py| 	[Perfect Matchings and RNA Secondary Structures](http://rosalind.info/problems/pmch/) |
-| ps.py | 	[Partial sort](http://rosalind.info/problems/ps/)|
-| PTRA.py |  [Protein Translation](http://rosalind.info/problems/ptra/) |
-| QS.py | 	[Quicksort](http://rosalind.info/problems/qs/)|
-| rear.py | [Reversal distance](http://rosalind.info/problems/rear/) (WIP)|
-| ts.py | [Topological sort](http://rosalind.info/problems/ts/) test harness only--see BA5N |
+|2sum.py|[2SUM](http://rosalind.info/problems/2sum/) |
+|3sum.py|[3SUM](http://rosalind.info/problems/3sum/) |
+|ASMQ.py|[Assessing Assembly Quality with N50 and N75](http://rosalind.info/problems/asmq/) |
+|bfs.py|[Beadth First search](http://rosalind.info/problems/bfs/) |
+|bip.py|[Testing Bipartiteness](http://rosalind.info/problems/bip/) |
+|BINS.py|[Binary Search](http://rosalind.info/problems/bfs/) |
+|cat.pt|[Catalan Numbers and RNA Secondary Structures ](http://rosalind.info/problems/cat/) (WIP)|
+|cc.py|[Connected Components](http://rosalind.info/problems/cc/) |
+|CORR.py|[Error Correction in Reads](http://rosalind.info/problems/corr/) | 
+|cstr.py|[Creating a Character Table from Genetic Strings](http://rosalind.info/problems/cstr/)|
+|ctbl.py|[Creating a Character Table](http://rosalind.info/problems/ctbl/) |
+|dag.py|[Testing Acyclicity](http://rosalind.info/problems/dag/) |
+|DBRU.py|[Constructing a De Bruijn Graph](http://rosalind.info/problems/dbru/) |
+|DDEG.py|[Double-Degree Array](http://rosalind.info/problems/ddeg/) |
+|DEG.py|[Degree Array](http://rosalind.info/problems/deg/) |
+|dij.py|[Dijkstra's Algorithm](http://rosalind.info/problems/dij/) |
+|edit.py|[Edit Distance](http://rosalind.info/problems/edit/) |
+|edta.py|[Edit Distance Alignment](http://rosalind.info/problems/edta/)|
+|FRMT.py|[Data Formats](http://rosalind.info/problems/frmt/)|
+|gaff.py|[Global Alignment with Scoring Matrix and Affine Gap Penalty](http://rosalind.info/problems/gaff/) (WIP)|
+|GASM.py|[Genome Assembly Using Reads](http://rosalind.info/problems/gasm/) |
+|GBK.py|[GenBank Introduction](http://rosalind.info/problems/gbk/) |
+|gcon.py|[Global Alignment with Constant Gap Penalty](http://rosalind.info/problems/gcon/)|
+|GLOB.py|[Global Alignment with Scoring Matrix](http://rosalind.info/problems/glob/) -- test harness only|
+|GREP.py|[Genome Assembly with Perfect Coverage and Repeats](http://rosalind.info/problems/grep/)|
+|HEA.py|[Building a Heap](http://rosalind.info/problems/hea/) and [Heap Sort](http://rosalind.info/problems/hs/)
+|INS.py|[Insertion Sort](http://rosalind.info/problems/ins/) |
+|INV.py|[Counting Inversions](http://rosalind.info/problems/inv/) |
+|kmp.py|[Speeding Up Motif Finding](http://rosalind.info/problems/kmp/) |
+|lcsq.py|[Finding a Shared Spliced Motif](http://rosalind.info/problems/lcsq/) |
+|lgis.py|[Longest Increasing Subsequence](http://rosalind.info/problems/lgis/) |
+|ling.py|[Linguistic Complexity of a Genome](http://rosalind.info/problems/ling/) (WIP)|
+|loca.py|[Local Alignment with Scoring Matrix ](http://rosalind.info/problems/loca/) |
+|LONG.py|[Genome Assembly as Shortest Superstring](http://rosalind.info/problems/long/) |
+|maj.py|[Majority Element](http://rosalind.info/problems/maj/) ||
+|MED.py|[Median](http://rosalind.info/problems/med/)|
+|mend.py|[Inferring a Genotype from a Pedigree](http://rosalind.info/problems/mend/) |
+|MER.py|[Merge Two Sorted Arrays](http://rosalind.info/problems/mer/) |
+|MS.py|[Mergesort](http://rosalind.info/problems/ms/)|
+|nwck.py|[Distances in Trees](http://rosalind.info/problems/nwck/) |
+|oap.py|[Overlap Alignment](http://rosalind.info/problems/oap/) (wip)|
+|orf.py|[Open Reading Frames](http://rosalind.info/problems/orf/)|
+|orfr.py|[Finding Genes with Open Reading Frames](http://rosalind.info/problems/orfr/) |
+|PAR.py|[2-Way Partition](http://rosalind.info/problems/par/) |
+|PAR3.py|[3-Way Partition](http://rosalind.info/problems/par3/) |
+|PCOV.py|[Genome Assembly with Perfect Coverage](http://rosalind.info/problems/pcov/) |
+|pmch.py|[Perfect Matchings and RNA Secondary Structures](http://rosalind.info/problems/pmch/) |
+|ps.py|[Partial sort](http://rosalind.info/problems/ps/)|
+|PTRA.py|[Protein Translation](http://rosalind.info/problems/ptra/) |
+|QS.py|[Quicksort](http://rosalind.info/problems/qs/)|
+|rear.py|[Reversal distance](http://rosalind.info/problems/rear/) (WIP)|
+|ts.py|[Topological sort](http://rosalind.info/problems/ts/) test harness only--see BA5N |
 
 
   
@@ -205,13 +205,13 @@ NB: functions generally use zero based indexing; Rosalind uses 1-based.
 
 | Name |Description |
 | -------------------------- | ------------------------------------------------|
-| align.py | Common functions for alignment |
-| helpers.py | Utilities for formatting output, parsing input, etc |
-| LICENSE |	License Agreement|
-| newick.py | Parser for files in [Newick format](http://evolution.genetics.washington.edu/phylip/newicktree.html) |
-| README.md |This file|
-| rosalind.py | Shared code|
-| rosalind.wpr | WingWare Project File |
+|align.py|Common functions for alignment |
+|helpers.py|Utilities for formatting output, parsing input, etc |
+|LICENSE|License Agreement|
+|newick.py|Parser for files in [Newick format](http://evolution.genetics.washington.edu/phylip/newicktree.html) |
+|README.md|This file|
+|rosalind.py|Shared code|
+|rosalind.wpr|WingWare Project File |
 
 ## Other stuff
 
