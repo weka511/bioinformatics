@@ -50,25 +50,25 @@ def AdditivePhylogeny(D,n,N=-1):
         N=n
         
     if n==2:
-        T=Tree(N)
+        T = Tree(N)
         T.link(0,1,D[0][1])
         return T
     else:
-        limbLength=ComputeLimbLength(n,n-1,D)
+        limbLength = ComputeLimbLength(n,n-1,D)
         
-        D_bald=[d_row[:] for d_row in D]
+        D_bald     = [d_row[:] for d_row in D]
         for j in range(n-1):   
-            D_bald[n-1][j]-=limbLength
-            D_bald[j][n-1]=D_bald[n-1][j]  
+            D_bald[n-1][j] -= limbLength
+            D_bald[j][n-1] = D_bald[n-1][j]  
          
-        i,k,node,x=find_ikn(D_bald)  #x=D_bald[i][n-1]
+        i,k,node,x        = find_ikn(D_bald)  #x=D_bald[i][n-1]
        
-        D_Trimmed=[D_bald[l][:-1] for l in range(n-1)]
+        D_Trimmed         = [D_bald[l][:-1] for l in range(n-1)]
         
-        T=AdditivePhylogeny(D_Trimmed,n-1,N)
+        T                 = AdditivePhylogeny(D_Trimmed,n-1,N)
         # v= the (potentially new) node in T at distance x from i on the path between i and 
-        found_k,traversal=T.traverse(i,k)
-        path,weights=zip(*traversal)
+        found_k,traversal = T.traverse(i,k)
+        path,weights      = zip(*traversal)
 
         found,l0,l1,d,d0=get_Position_v(traversal)
          
@@ -90,7 +90,13 @@ def AdditivePhylogeny(D,n,N=-1):
 
 
 if __name__=='__main__':
+    n = 4
+    D=[[0,   13,  21,  22],
+       [13,  0,   12,  13],
+       [21,  12,  0,   13],
+       [22,  13,  13,  0]]
+    AdditivePhylogeny(D,n).print_adjacency()
     from helpers import read_matrix  
-    params,D=read_matrix()           
+    params,D=read_matrix(name='Additive_Phylogeny')           
     AdditivePhylogeny(D,params[0]).print_adjacency()
     

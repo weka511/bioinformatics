@@ -81,15 +81,27 @@ def distance(p1,p2):
 def hamm(s,t):
     return len([a for (a,b) in zip(s,t) if a!=b])
 
+# Tree
+#
+# This class represents an unndirected, weighted tree
 class Tree(object):
-    '''
-    Undirected, weighted tree
-    '''
+    
+    # Tree
+    #
+    #  Inputs
+    #      N              Number of nodes
+    #      bidirectional
     def __init__(self,N=-1,bidirectional=True):
         self.nodes=list(range(N))
         self.edges={}
         self.bidirectional=bidirectional
         self.N = N
+        
+    # link
+    #
+    # Inputs: start
+    #         end
+    #         weight
     def link(self,start,end,weight=1): 
         self.half_link(start,end,weight)
         if self.bidirectional:

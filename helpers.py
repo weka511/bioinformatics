@@ -605,10 +605,11 @@ def parse_graphs(f):
 def create_strings(problem=os.path.basename(sys.argv[0]).split('.')[0],
                    path=os.path.join(os.path.expanduser('~'),'Downloads'),
                    ext=None,
-                   fasta=False): 
+                   fasta=False,
+                   name=None): 
     product      = []
     label        = problem if ext==None else '{0}({1})'.format(problem,ext)
-    base         = 'rosalind_{0}.txt'.format(label)
+    base         = 'rosalind_{0}.txt'.format(label) if name==None else name+'.txt'
     file_name    = os.path.join(path,base)
     with open(file_name,'r') as f:
         if fasta:
@@ -634,9 +635,10 @@ def create_strings(problem=os.path.basename(sys.argv[0]).split('.')[0],
 def create_list(problem=os.path.basename(sys.argv[0]).split('.')[0],
                    path=os.path.join(os.path.expanduser('~'),'Downloads'),
                    ext=None,
-                   fasta=False):
+                   fasta=False,
+                   name=None):
     g = []
-    for row in create_strings(problem=problem,path=path,ext=ext,fasta=fasta):
+    for row in create_strings(problem=problem,path=path,ext=ext,fasta=fasta,name=name):
         g.append([int(s) for s in row.split(" ")])
     return g
 
@@ -654,12 +656,13 @@ def create_list(problem=os.path.basename(sys.argv[0]).split('.')[0],
 
 def create_weighted_adjacency_list(problem=os.path.basename(sys.argv[0]).split('.')[0],
                                    path=os.path.join(os.path.expanduser('~'),'Downloads'),
-                                   ext=None):
+                                   ext=None,
+                                   name=None):
     n=-1
     T={}
     p=re.compile('([0-9]+)->([0-9]+):([.0-9]+)')
 
-    for line in create_strings(problem=problem,path=path,ext=ext):
+    for line in create_strings(problem=problem,path=path,ext=ext,name=name):
         if n==-1:
             n=int(line)
         else:
@@ -687,11 +690,12 @@ def read_matrix(problem=os.path.basename(sys.argv[0]).split('.')[0],
                 path=os.path.join(os.path.expanduser('~'),'Downloads'),
                 ext=None,
                 conv=int,
-                len_params=1):
+                len_params=1,
+                name=None):
     params=[]
     D=[]
 
-    for line in create_strings(problem=problem,path=path,ext=ext):
+    for line in create_strings(problem=problem,path=path,ext=ext,name=name):
         if len(params)<len_params:
             params.append(int(line))
         else:
