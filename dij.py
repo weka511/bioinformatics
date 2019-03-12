@@ -13,6 +13,9 @@
 #    You should have received a copy of the GNU General Public License
 #    along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>
 
+# DIJ  Dijkstra's Algorithm
+
+
 def dij(g):
     n,_             = g[0]
     open_edges      = [edge for edge in g[1:]]
