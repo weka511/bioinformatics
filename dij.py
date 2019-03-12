@@ -13,7 +13,8 @@
 #    You should have received a copy of the GNU General Public License
 #    along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>
 
-# DIJ  Dijkstra's Algorithm
+# DIJ  Dijkstra's Algorithm: compute single-source shortest distances 
+#                            in a directed graph with positive edge weights.
 
 
 def dij(g):
