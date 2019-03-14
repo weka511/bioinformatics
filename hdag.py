@@ -19,14 +19,26 @@
 from helpers import create_adjacency
 from align import topological_order
 
-def hdag(graph):  
-    m,_,adj = create_adjacency(graph,back=False,self=False)
-    t = topological_order(adj)
-    m,_,adj = create_adjacency(graph,back=False,self=False)
-    for a,b in zip(t[:-1],t[1:]):
+# hdag
+#
+# Hamiltonian Path in DAG 
+#
+# Key idea: we can always form a topological sort of a DAG. Once a graphs has been
+#           sorted topologically, the only way it can fail to be Hamiltonian is if
+#           there exists a pair of nodes in the sorted data that is not an edge.
+
+def hdag(graph):
+    def clone(adj):
+        copy = {}
+        for k,v in adj.items():
+            copy[k]=v
+        return copy
+    _,_,adj = create_adjacency(graph,back=False,self=False)
+    ordered = topological_order(clone(adj)) # use clone because topological_order destroys its parameter
+    for a,b in zip(ordered[:-1],ordered[1:]):
         if not b in adj[a]:
             return (-1,[])
-    return (1,t)
+    return (1,ordered)
         
 
 if __name__=='__main__':
