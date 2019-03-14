@@ -113,7 +113,7 @@ NB: functions generally use zero based indexing; Rosalind uses 1-based.
 |afrq|rosalind.py|[Counting Disease Carriers](http://rosalind.info/problems/afrq/) |
 |asmq|ASMQ.py|[Assessing Assembly Quality with N50 and N75](http://rosalind.info/problems/asmq/) |
 |aspc|rosalind.py|[Introduction to Alternative Splicing](http://rosalind.info/problems/aspc/) |
-|bf|bf.py|[Bellman-Ford Algorithm](http://rosalind.info/problems/bf/) |
+|bf|bf.py|[Bellman-Ford Algorithm](http://rosalind.info/problems/bf/) (wip)|
 |bfs|bfs.py|[Beadth First search](http://rosalind.info/problems/bfs/) |
 |bins|BINS.py|[Binary Search](http://rosalind.info/problems/bfs/) |
 |bip|bip.py|[Testing Bipartiteness](http://rosalind.info/problems/bip/) |
@@ -123,12 +123,12 @@ NB: functions generally use zero based indexing; Rosalind uses 1-based.
 |corr|CORR.py|[Error Correction in Reads](http://rosalind.info/problems/corr/) |
 |cstr|cstr.py|[Creating a Character Table from Genetic Strings](http://rosalind.info/problems/cstr/)|
 |ctbl|ctbl.py|[Creating a Character Table](http://rosalind.info/problems/ctbl/) |
-|cte|cte.py|[Shortest Cycle Through a Given Edge](http://rosalind.info/problems/cte/)|
+|cte|cte.py graphs.py|[Shortest Cycle Through a Given Edge](http://rosalind.info/problems/cte/)|
 |dag|dag.py|[Testing Acyclicity](http://rosalind.info/problems/dag/) |
 |dbru|DBRU.py|[Constructing a De Bruijn Graph](http://rosalind.info/problems/dbru/) |
-|ddeg|DDEG.py|[Double-Degree Array](http://rosalind.info/problems/ddeg/) |
-|deg|DEG.py|[Degree Array](http://rosalind.info/problems/deg/) |
-|dij|dij.py|[Dijkstra's Algorithm](http://rosalind.info/problems/dij/) |
+|ddeg|DDEG.py graphs.py|[Double-Degree Array](http://rosalind.info/problems/ddeg/) |
+|deg|DEG.py graphs.py|[Degree Array](http://rosalind.info/problems/deg/) |
+|dij|dij.py graphs.py|[Dijkstra's Algorithm](http://rosalind.info/problems/dij/) |
 |dna|rosalind.py|[Counting DNA Nucleotides](http://rosalind.info/problems/dna/) |
 |ebin|rosalind.py|[Wright-Fisher's Expected Behavior](http://rosalind.info/problems/ebin/) |
 |edit|edit.py|[Edit Distance](http://rosalind.info/problems/edit/) |

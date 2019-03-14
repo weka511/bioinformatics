@@ -13,13 +13,7 @@
 # You should have received a copy of the GNU General Public License
 # along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>
 
-def deg(n,m,A):
-    degrees=[0 for a in range(n)]
-    for (a,b) in A:
-        print (a,b)
-        degrees[a-1]+=1
-        degrees[b-1]+=1
-    return degrees
+from graphs import deg
 
 if __name__=='__main__':
     import timeit

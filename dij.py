@@ -16,7 +16,7 @@
 # DIJ  Dijkstra's Algorithm: compute single-source shortest distances 
 #                            in a directed graph with positive edge weights.
 
-from rosalind import dij
+from graphs import dij
 
 if __name__=='__main__':
   

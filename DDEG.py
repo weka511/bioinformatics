@@ -13,15 +13,9 @@
 # You should have received a copy of the GNU General Public License
 # along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>
 
-import DEG
 
-def ddeg(n,M,A):
-    lookup=DEG.deg(n,m,A)
-    sums=[0 for a in range(n)]
-    for (a,b) in A:
-        sums[a-1]+=lookup[b-1]
-        sums[b-1]+=lookup[a-1]    
-    return sums
+
+from graphs import ddeg
 
 #n=5
 #m=4
@@ -43,6 +37,6 @@ if __name__=='__main__':
             print (pair)
             A.append((int(pair[0]),int(pair[1])))
         (n,m)=A[0]
-        #print(A[1:])
+
         print (ddeg(n,m,A[1:]))
         print ('Elapsed: {0} seconds'.format(timeit.default_timer() - start_time))
