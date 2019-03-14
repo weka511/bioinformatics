@@ -104,103 +104,98 @@ NB: functions generally use zero based indexing; Rosalind uses 1-based.
 |10|-|Why have biologists still not developed an HIV vaccine?|
 |11|-|Was T.rex just a big chicken?|
 
-## Problems whose code is stored in rosalind.py
-
-| Name | Description |
-| -------------------------- | ------------------------------------------------|
-|afrq|[Counting Disease Carriers](http://rosalind.info/problems/afrq/) |
-|aspc|[Introduction to Alternative Splicing](http://rosalind.info/problems/aspc/) |
-|cons|[Consensus and Profile](http://rosalind.info/problems/cons/) |
-|dna|[Counting DNA Nucleotides](http://rosalind.info/problems/dna/) |
-|ebin|[Wright-Fisher's Expected Behavior](http://rosalind.info/problems/ebin/) |
-|eval|[Expected Number of Restriction Sites](http://rosalind.info/problems/eval/) |
-|fib|[Rabbits and Recurrence Relations](http://rosalind.info/problems/fib/) |
-|fibd|[Mortal Fibonacci Rabbits](http://rosalind.info/problems/fibd/) |
-|foun|[The Founder Effect and Genetic Drift](http://rosalind.info/problems/foun/) |
-|gc|[Computing GC Content](http://rosalind.info/problems/gc/) |
-|grph|[Overlap Graphs](http://rosalind.info/problems/grph/) |
-|hamm|[Counting Point Mutations](http://rosalind.info/problems/hamm/) |
-|iev| [Calculating Expected Offspring](http://rosalind.info/problems/iev/)|
-|indq|[Independent Segregation of Chromosomes](http://rosalind.info/problems/indq/) |
-|iprb|[Mendel's First Law](http://rosalind.info/problems/iprb/) |
-|kmer|[Generalizing GC-Content](http://rosalind.info/problems/kmer/) |
-|lcsm|[Finding a Shared Motif](http://rosalind.info/problems/lcsm/) |
-|lia|[Independent Alleles](http://rosalind.info/problems/lia/) |
-|mrna|[Inferring mRNA from Protein](http://rosalind.info/problems/mrna/) |
-|pdst|[Creating a Distance Matrix ](http://rosalind.info/problems/pdst/) |
-|pper|[Partial Permutations](http://rosalind.info/problems/pper/) |
-|prot|[Translating RNA into Protein](http://rosalind.info/problems/prot/) |
-|revc| [Complementing a Strand of DNA](http://rosalind.info/problems/revc/)|
-|revp| [Locating Restriction Sites](http://rosalind.info/problems/revp/)|
-|rna|[Transcribing DNA into RNA](http://rosalind.info/problems/rna/) |
-|rstr|[Matching Random Motifs](http://rosalind.info/problems/rstr/) |
-|sexl|[Sex-Linked Inheritance ](http://rosalind.info/problems/sexl/) |
-|sseq|[Finding a Spliced Motif](http://rosalind.info/problems/sseq/) |
-|splc|[RNA Splicing](http://rosalind.info/problems/splc/) |
-|subs|[Finding a Motif in DNA](http://rosalind.info/problems/subs/) |
-|tran|[Transitions and Transversions](http://rosalind.info/problems/tran/) |
-|trie|[Introduction to Pattern Matching](http://rosalind.info/problems/trie/) |
-|wfmd|[The Wright-Fisher Model of Genetic Drift](http://rosalind.info/problems/wfmd/) |
-
-## Other Rosalind problems
+## Other Rosalind Problems
 
 | Name | Description |
 | -------------------------- | ------------------------------------------------|
 |2sum.py|[2SUM](http://rosalind.info/problems/2sum/) |
 |3sum.py|[3SUM](http://rosalind.info/problems/3sum/) |
 |ASMQ.py|[Assessing Assembly Quality with N50 and N75](http://rosalind.info/problems/asmq/) |
+|BINS.py|[Binary Search](http://rosalind.info/problems/bfs/) |
+|CORR.py|[Error Correction in Reads](http://rosalind.info/problems/corr/) | 
+|DBRU.py|[Constructing a De Bruijn Graph](http://rosalind.info/problems/dbru/) |
+|DDEG.py|[Double-Degree Array](http://rosalind.info/problems/ddeg/) |
+|DEG.py|[Degree Array](http://rosalind.info/problems/deg/) |
+|FRMT.py|[Data Formats](http://rosalind.info/problems/frmt/)|
+|GASM.py|[Genome Assembly Using Reads](http://rosalind.info/problems/gasm/) |
+|GBK.py|[GenBank Introduction](http://rosalind.info/problems/gbk/) |
+|GLOB.py|[Global Alignment with Scoring Matrix](http://rosalind.info/problems/glob/) -- test harness only|
+|GREP.py|[Genome Assembly with Perfect Coverage and Repeats](http://rosalind.info/problems/grep/)|
+|HEA.py|[Building a Heap](http://rosalind.info/problems/hea/) and [Heap Sort](http://rosalind.info/problems/hs/)
+|INS.py|[Insertion Sort](http://rosalind.info/problems/ins/) |
+|INV.py|[Counting Inversions](http://rosalind.info/problems/inv/) |
+|LONG.py|[Genome Assembly as Shortest Superstring](http://rosalind.info/problems/long/) |
+|MED.py|[Median](http://rosalind.info/problems/med/)|
+|MER.py|[Merge Two Sorted Arrays](http://rosalind.info/problems/mer/) |
+|MS.py|[Mergesort](http://rosalind.info/problems/ms/)|
+|PAR.py|[2-Way Partition](http://rosalind.info/problems/par/) |
+|PAR3.py|[3-Way Partition](http://rosalind.info/problems/par3/) |
+|PCOV.py|[Genome Assembly with Perfect Coverage](http://rosalind.info/problems/pcov/) |
+|PTRA.py|[Protein Translation](http://rosalind.info/problems/ptra/) |
+|QS.py|[Quicksort](http://rosalind.info/problems/qs/)|
+|afrq|[Counting Disease Carriers](http://rosalind.info/problems/afrq/) |
+|aspc|[Introduction to Alternative Splicing](http://rosalind.info/problems/aspc/) |
 |bfs.py|[Beadth First search](http://rosalind.info/problems/bfs/) |
 |bip.py|[Testing Bipartiteness](http://rosalind.info/problems/bip/) |
-|BINS.py|[Binary Search](http://rosalind.info/problems/bfs/) |
 |cat.pt|[Catalan Numbers and RNA Secondary Structures ](http://rosalind.info/problems/cat/) (WIP)|
 |cc.py|[Connected Components](http://rosalind.info/problems/cc/) |
-|CORR.py|[Error Correction in Reads](http://rosalind.info/problems/corr/) | 
+|cons|[Consensus and Profile](http://rosalind.info/problems/cons/) |
 |cstr.py|[Creating a Character Table from Genetic Strings](http://rosalind.info/problems/cstr/)|
 |ctbl.py|[Creating a Character Table](http://rosalind.info/problems/ctbl/) |
 |cte.py|[Shortest Cycle Through a Given Edge](http://rosalind.info/problems/cte/)|
 |dag.py|[Testing Acyclicity](http://rosalind.info/problems/dag/) |
-|DBRU.py|[Constructing a De Bruijn Graph](http://rosalind.info/problems/dbru/) |
-|DDEG.py|[Double-Degree Array](http://rosalind.info/problems/ddeg/) |
-|DEG.py|[Degree Array](http://rosalind.info/problems/deg/) |
 |dij.py|[Dijkstra's Algorithm](http://rosalind.info/problems/dij/) |
+|dna|[Counting DNA Nucleotides](http://rosalind.info/problems/dna/) |
+|ebin|[Wright-Fisher's Expected Behavior](http://rosalind.info/problems/ebin/) |
 |edit.py|[Edit Distance](http://rosalind.info/problems/edit/) |
 |edta.py|[Edit Distance Alignment](http://rosalind.info/problems/edta/)|
-|FRMT.py|[Data Formats](http://rosalind.info/problems/frmt/)|
+|eval|[Expected Number of Restriction Sites](http://rosalind.info/problems/eval/) |
+|fibd|[Mortal Fibonacci Rabbits](http://rosalind.info/problems/fibd/) |
+|fib|[Rabbits and Recurrence Relations](http://rosalind.info/problems/fib/) |
+|foun|[The Founder Effect and Genetic Drift](http://rosalind.info/problems/foun/) |
 |gaff.py|[Global Alignment with Scoring Matrix and Affine Gap Penalty](http://rosalind.info/problems/gaff/) (WIP)|
-|GASM.py|[Genome Assembly Using Reads](http://rosalind.info/problems/gasm/) |
-|GBK.py|[GenBank Introduction](http://rosalind.info/problems/gbk/) |
 |gcon.py|[Global Alignment with Constant Gap Penalty](http://rosalind.info/problems/gcon/)|
-|GLOB.py|[Global Alignment with Scoring Matrix](http://rosalind.info/problems/glob/) -- test harness only|
-|GREP.py|[Genome Assembly with Perfect Coverage and Repeats](http://rosalind.info/problems/grep/)|
+|gc|[Computing GC Content](http://rosalind.info/problems/gc/) |
+|grph|[Overlap Graphs](http://rosalind.info/problems/grph/) |
+|hamm|[Counting Point Mutations](http://rosalind.info/problems/hamm/) |
 |hdag.py|[Hamiltonian Path in DAG](http://rosalind.info/problems/hdag/) |
-|HEA.py|[Building a Heap](http://rosalind.info/problems/hea/) and [Heap Sort](http://rosalind.info/problems/hs/)
-|INS.py|[Insertion Sort](http://rosalind.info/problems/ins/) |
-|INV.py|[Counting Inversions](http://rosalind.info/problems/inv/) |
+|iev| [Calculating Expected Offspring](http://rosalind.info/problems/iev/)|
+|indq|[Independent Segregation of Chromosomes](http://rosalind.info/problems/indq/) |
+|iprb|[Mendel's First Law](http://rosalind.info/problems/iprb/) |
+|kmer|[Generalizing GC-Content](http://rosalind.info/problems/kmer/) |
 |kmp.py|[Speeding Up Motif Finding](http://rosalind.info/problems/kmp/) |
+|lcsm|[Finding a Shared Motif](http://rosalind.info/problems/lcsm/) |
 |lcsq.py|[Finding a Shared Spliced Motif](http://rosalind.info/problems/lcsq/) |
 |lgis.py|[Longest Increasing Subsequence](http://rosalind.info/problems/lgis/) |
+|lia|[Independent Alleles](http://rosalind.info/problems/lia/) |
 |ling.py|[Linguistic Complexity of a Genome](http://rosalind.info/problems/ling/) (WIP)|
 |loca.py|[Local Alignment with Scoring Matrix ](http://rosalind.info/problems/loca/) |
-|LONG.py|[Genome Assembly as Shortest Superstring](http://rosalind.info/problems/long/) |
 |maj.py|[Majority Element](http://rosalind.info/problems/maj/) ||
-|MED.py|[Median](http://rosalind.info/problems/med/)|
 |mend.py|[Inferring a Genotype from a Pedigree](http://rosalind.info/problems/mend/) |
-|MER.py|[Merge Two Sorted Arrays](http://rosalind.info/problems/mer/) |
-|MS.py|[Mergesort](http://rosalind.info/problems/ms/)|
+|mrna|[Inferring mRNA from Protein](http://rosalind.info/problems/mrna/) |
 |nwck.py|[Distances in Trees](http://rosalind.info/problems/nwck/) |
 |oap.py|[Overlap Alignment](http://rosalind.info/problems/oap/) (wip)|
 |orf.py|[Open Reading Frames](http://rosalind.info/problems/orf/)|
 |orfr.py|[Finding Genes with Open Reading Frames](http://rosalind.info/problems/orfr/) |
-|PAR.py|[2-Way Partition](http://rosalind.info/problems/par/) |
-|PAR3.py|[3-Way Partition](http://rosalind.info/problems/par3/) |
-|PCOV.py|[Genome Assembly with Perfect Coverage](http://rosalind.info/problems/pcov/) |
+|pdst|[Creating a Distance Matrix ](http://rosalind.info/problems/pdst/) |
 |pmch.py|[Perfect Matchings and RNA Secondary Structures](http://rosalind.info/problems/pmch/) |
+|pper|[Partial Permutations](http://rosalind.info/problems/pper/) |
+|prot|[Translating RNA into Protein](http://rosalind.info/problems/prot/) |
 |ps.py|[Partial sort](http://rosalind.info/problems/ps/)|
-|PTRA.py|[Protein Translation](http://rosalind.info/problems/ptra/) |
-|QS.py|[Quicksort](http://rosalind.info/problems/qs/)|
 |rear.py|[Reversal distance](http://rosalind.info/problems/rear/) (WIP)|
+|revc| [Complementing a Strand of DNA](http://rosalind.info/problems/revc/)|
+|revp| [Locating Restriction Sites](http://rosalind.info/problems/revp/)|
+|rna|[Transcribing DNA into RNA](http://rosalind.info/problems/rna/) |
+|rstr|[Matching Random Motifs](http://rosalind.info/problems/rstr/) |
+|sexl|[Sex-Linked Inheritance ](http://rosalind.info/problems/sexl/) |
+|splc|[RNA Splicing](http://rosalind.info/problems/splc/) |
 |sq.py|[Square in a Graph](http://rosalind.info/problems/sq/)|
+|sseq|[Finding a Spliced Motif](http://rosalind.info/problems/sseq/) |
+|subs|[Finding a Motif in DNA](http://rosalind.info/problems/subs/) |
+|tran|[Transitions and Transversions](http://rosalind.info/problems/tran/) |
+|trie|[Introduction to Pattern Matching](http://rosalind.info/problems/trie/) |
 |ts.py|[Topological sort](http://rosalind.info/problems/ts/) test harness only--see BA5N |
+|wfmd|[The Wright-Fisher Model of Genetic Drift](http://rosalind.info/problems/wfmd/) |
 
 
   
