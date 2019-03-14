@@ -113,6 +113,7 @@ NB: functions generally use zero based indexing; Rosalind uses 1-based.
 |afrq|rosalind.py|[Counting Disease Carriers](http://rosalind.info/problems/afrq/) |
 |asmq|ASMQ.py|[Assessing Assembly Quality with N50 and N75](http://rosalind.info/problems/asmq/) |
 |aspc|rosalind.py|[Introduction to Alternative Splicing](http://rosalind.info/problems/aspc/) |
+|bf|bf.py|[Bellman-Ford Algorithm](http://rosalind.info/problems/bf/) |
 |bfs|bfs.py|[Beadth First search](http://rosalind.info/problems/bfs/) |
 |bins|BINS.py|[Binary Search](http://rosalind.info/problems/bfs/) |
 |bip|bip.py|[Testing Bipartiteness](http://rosalind.info/problems/bip/) |
