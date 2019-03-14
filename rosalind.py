@@ -1262,6 +1262,23 @@ def afrq(ps):
         return 2*math.sqrt(p)-p
     return [p_recessive(p) for p in ps]
 
+
+# DIJ  Dijkstra's Algorithm: compute single-source shortest distances 
+#                            in a directed graph with positive edge weights.
+def dij(g):
+    n,_             = g[0]
+    open_edges      = [edge for edge in g[1:]]
+    D               = [-1 for i in range(n+1)]
+    D[1]            = 0
+    for i in range(n):
+        for a,b,w in open_edges:
+            if D[a]>-1:
+                proposed_distance = D[a]+w
+                if D[b]==-1 or D[b]>proposed_distance:
+                    D[b]=proposed_distance
+                
+    return D[1:]
+    
 # WFMD 	The Wright-Fisher Model of Genetic Drift 
 #
 # Return:  The probability that in a population of N diploid individuals

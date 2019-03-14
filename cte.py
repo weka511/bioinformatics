@@ -13,14 +13,17 @@
 #    You should have received a copy of the GNU General Public License
 #    along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>
 
+from rosalind import dij
+
 # CTE Shortest Cycle Through a Given Edge
 #
 # Returns: For each graph, output the length of a shortest cycle going
 #           through the first specified edge if there is a cycle and "-1" otherwise.
 
-from dij import dij
-
 def cte(edges):
+    # relabel
+    #
+    # Exploit Dijkstra's algorithm by relabelling nodes so that first edge starts at 1
     def relabel(edges):
         def subst(x):
             if   x==1: return b
@@ -33,47 +36,31 @@ def cte(edges):
 
         return [(n,k-1)] + [transform (x,y,w) for (x,y,w) in edges[2:]]
     
-    n,k   = edges[0]
-    a,b,w = edges[1]        
-    new_edges = relabel(edges)
-    #print (new_edges)
+    n,k         = edges[0]
+    a,b,w       = edges[1]        
+    new_edges   = relabel(edges)
     path_length = dij(new_edges)[a-1]
     return path_length + w if path_length>-1 else -1
 
 if __name__=='__main__':
     from helpers import create_strings
 
-    #k = 2
-    #gs = [
-          ##[(4, 5),
-           ##(2, 4, 2),
-           ##(3, 2, 1),
-           ##(1, 4, 3),
-           ##(2, 1, 10),
-           ##(1, 3, 4)],
-
-          #[(4, 5),
-           #(3, 2, 1),
-           #(2, 4, 2),
-           #(4, 1, 3),
-           #(2, 1, 10),
-           #(1, 3, 4)]]
-    #print (' '.join([str(cte(g)) for g in gs]))   
-    gs = []
-    g  = []
-    for line in create_strings(ext=1):
-        numbers = [int(s) for s in line.split(' ')]
-        if len(numbers)==1:
-            pass
-        elif len(numbers)==2:
-            if len(g)>0:
-                gs.append(g)
-            g = [(numbers[0],numbers[1])]
-        else:
-            g.append((numbers[0],numbers[1],numbers[2]))
-    if len(g)>0:
-        gs.append(g)           
- 
+    def create_graphs(ext=1):
+        gs = []
+        g  = []
+        for line in create_strings(ext=ext):
+            numbers = [int(s) for s in line.split(' ')]
+            if len(numbers)==1:
+                pass
+            elif len(numbers)==2:
+                if len(g)>0:
+                    gs.append(g)
+                g = [(numbers[0],numbers[1])]
+            else:
+                g.append((numbers[0],numbers[1],numbers[2]))
+        if len(g)>0:
+            gs.append(g)           
+        return gs
         
-    print (' '.join([str(cte(g)) for g in gs])) 
+    print (' '.join([str(cte(g)) for g in create_graphs()])) 
   

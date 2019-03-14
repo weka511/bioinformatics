@@ -16,36 +16,10 @@
 # DIJ  Dijkstra's Algorithm: compute single-source shortest distances 
 #                            in a directed graph with positive edge weights.
 
-
-def dij(g):
-    n,_             = g[0]
-    open_edges      = [edge for edge in g[1:]]
-    D               = [-1 for i in range(n+1)]
-    D[1]            = 0
-    for i in range(n):
-        for a,b,w in open_edges:
-            if D[a]>-1:
-                proposed_distance = D[a]+w
-                if D[b]==-1 or D[b]>proposed_distance:
-                    D[b]=proposed_distance
-                
-    return D[1:]
+from rosalind import dij
 
 if __name__=='__main__':
-    #print (dij([
-        #(6, 10),
-        #(3, 4, 4),
-        #(1, 2, 4),
-        #(1, 3, 2),
-        #(2, 3, 3),
-        #(6, 3, 2),
-        #(3, 5, 5),
-        #(5, 4, 1),
-        #(3, 2, 1),
-        #(2, 4, 2),
-        #(2, 5, 3)  
-    #]))
-    
+  
     from helpers import create_list    
 
     print(' '.join([str(i) for i in dij(create_list(ext=1))]))
