@@ -75,5 +75,5 @@ if __name__=='__main__':
         gs.append(g)           
  
         
-    print (' '.join([str(cte(g)) for g in gs])) # OK for 1,2
+    print (' '.join([str(cte(g)) for g in gs])) 
   

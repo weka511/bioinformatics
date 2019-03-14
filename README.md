@@ -198,7 +198,7 @@ NB: functions generally use zero based indexing; Rosalind uses 1-based.
 |PTRA.py|[Protein Translation](http://rosalind.info/problems/ptra/) |
 |QS.py|[Quicksort](http://rosalind.info/problems/qs/)|
 |rear.py|[Reversal distance](http://rosalind.info/problems/rear/) (WIP)|
-|sq.py|[Square in a Graph](http://rosalind.info/problems/sq/) (WIP)|
+|sq.py|[Square in a Graph](http://rosalind.info/problems/sq/)|
 |ts.py|[Topological sort](http://rosalind.info/problems/ts/) test harness only--see BA5N |
 
 

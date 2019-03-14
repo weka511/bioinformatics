@@ -27,7 +27,8 @@ def sq(g):
             if next_node in path: continue
             if explore(next_node,path+[next_node])==1: return 1
         return -1
-            
+    
+        
     adj = {}
     for a,b in g[1:]:
         if not a in adj: adj[a]=[]
@@ -60,4 +61,25 @@ if __name__=='__main__':
                 (4, 1)]]    
 
     print (' '.join([str(sq(g)) for g in graphs]))
+    
+    gs = []
+    g  = []
+    for line in create_strings(ext=1):
+        if len(line)==0:
+            if len(g)>0:
+                gs.append(g)
+            g=[]
+            continue
+        numbers = [int(s) for s in line.split(' ')]
+        if len(numbers)==1:
+            continue
+        elif len(numbers)==2:
+            
+            g.append((numbers[0],numbers[1]))
+
+    if len(g)>0:
+        gs.append(g)           
+ 
+        
+    print (' '.join([str(sq(g)) for g in gs]))    
   
