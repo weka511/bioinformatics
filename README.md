@@ -110,39 +110,23 @@ NB: functions generally use zero based indexing; Rosalind uses 1-based.
 | ---- | ----------- | ------------------------------------------------|
 |2sum|2sum.py|[2SUM](http://rosalind.info/problems/2sum/) |
 |3sum|3sum.py|[3SUM](http://rosalind.info/problems/3sum/) |
-|asmq|ASMQ.py|[Assessing Assembly Quality with N50 and N75](http://rosalind.info/problems/asmq/) |
-|bins|BINS.py|[Binary Search](http://rosalind.info/problems/bfs/) |
-|corr|CORR.py|[Error Correction in Reads](http://rosalind.info/problems/corr/) |
-|dbru|DBRU.py|[Constructing a De Bruijn Graph](http://rosalind.info/problems/dbru/) |
-|ddeg|DDEG.py|[Double-Degree Array](http://rosalind.info/problems/ddeg/) |
-|deg|DEG.py|[Degree Array](http://rosalind.info/problems/deg/) |
-|frmt|FRMT.py|[Data Formats](http://rosalind.info/problems/frmt/)|
-|gasm|GASM.py|[Genome Assembly Using Reads](http://rosalind.info/problems/gasm/) |
-|gbk|GBK.py|[GenBank Introduction](http://rosalind.info/problems/gbk/) |
-|glob|GLOB.py|[Global Alignment with Scoring Matrix](http://rosalind.info/problems/glob/) -- test harness only|
-|grep|GREP.py|[Genome Assembly with Perfect Coverage and Repeats](http://rosalind.info/problems/grep/)|
-|ins|INS.py|[Insertion Sort](http://rosalind.info/problems/ins/) |
-|inv|INV.py|[Counting Inversions](http://rosalind.info/problems/inv/) |
-|long|LONG.py|[Genome Assembly as Shortest Superstring](http://rosalind.info/problems/long/) |
-|med|MED.py|[Median](http://rosalind.info/problems/med/)|
-|mer|MER.py|[Merge Two Sorted Arrays](http://rosalind.info/problems/mer/) |
-|ms|MS.py|[Mergesort](http://rosalind.info/problems/ms/)|
-|par|PAR.py|[2-Way Partition](http://rosalind.info/problems/par/) |
-|par3|PAR3.py|[3-Way Partition](http://rosalind.info/problems/par3/) |
-|pcov|PCOV.py|[Genome Assembly with Perfect Coverage](http://rosalind.info/problems/pcov/) |
-|ptra|PTRA.py|[Protein Translation](http://rosalind.info/problems/ptra/) |
-|qs|QS.py|[Quicksort](http://rosalind.info/problems/qs/)|
 |afrq|rosalind.py|[Counting Disease Carriers](http://rosalind.info/problems/afrq/) |
+|asmq|ASMQ.py|[Assessing Assembly Quality with N50 and N75](http://rosalind.info/problems/asmq/) |
 |aspc|rosalind.py|[Introduction to Alternative Splicing](http://rosalind.info/problems/aspc/) |
 |bfs|bfs.py|[Beadth First search](http://rosalind.info/problems/bfs/) |
+|bins|BINS.py|[Binary Search](http://rosalind.info/problems/bfs/) |
 |bip|bip.py|[Testing Bipartiteness](http://rosalind.info/problems/bip/) |
 |cat|rosalind.py|[Catalan Numbers and RNA Secondary Structures ](http://rosalind.info/problems/cat/) (WIP)|
 |cc|cc.py|[Connected Components](http://rosalind.info/problems/cc/) |
 |cons|rosalind.py|[Consensus and Profile](http://rosalind.info/problems/cons/) |
+|corr|CORR.py|[Error Correction in Reads](http://rosalind.info/problems/corr/) |
 |cstr|cstr.py|[Creating a Character Table from Genetic Strings](http://rosalind.info/problems/cstr/)|
 |ctbl|ctbl.py|[Creating a Character Table](http://rosalind.info/problems/ctbl/) |
 |cte|cte.py|[Shortest Cycle Through a Given Edge](http://rosalind.info/problems/cte/)|
 |dag|dag.py|[Testing Acyclicity](http://rosalind.info/problems/dag/) |
+|dbru|DBRU.py|[Constructing a De Bruijn Graph](http://rosalind.info/problems/dbru/) |
+|ddeg|DDEG.py|[Double-Degree Array](http://rosalind.info/problems/ddeg/) |
+|deg|DEG.py|[Degree Array](http://rosalind.info/problems/deg/) |
 |dij|dij.py|[Dijkstra's Algorithm](http://rosalind.info/problems/dij/) |
 |dna|rosalind.py|[Counting DNA Nucleotides](http://rosalind.info/problems/dna/) |
 |ebin|rosalind.py|[Wright-Fisher's Expected Behavior](http://rosalind.info/problems/ebin/) |
@@ -152,14 +136,21 @@ NB: functions generally use zero based indexing; Rosalind uses 1-based.
 |fibd|rosalind.py|[Mortal Fibonacci Rabbits](http://rosalind.info/problems/fibd/) |
 |fib|rosalind.py|[Rabbits and Recurrence Relations](http://rosalind.info/problems/fib/) |
 |foun|rosalind.py|[The Founder Effect and Genetic Drift](http://rosalind.info/problems/foun/) |
+|frmt|FRMT.py|[Data Formats](http://rosalind.info/problems/frmt/)|
 |gaff|gaff.py|[Global Alignment with Scoring Matrix and Affine Gap Penalty](http://rosalind.info/problems/gaff/) (WIP)|
+|gasm|GASM.py|[Genome Assembly Using Reads](http://rosalind.info/problems/gasm/) |
+|gbk|GBK.py|[GenBank Introduction](http://rosalind.info/problems/gbk/) |
 |gcon|gcon.py|[Global Alignment with Constant Gap Penalty](http://rosalind.info/problems/gcon/)|
 |gc|rosalind.py|[Computing GC Content](http://rosalind.info/problems/gc/) |
+|glob|GLOB.py|[Global Alignment with Scoring Matrix](http://rosalind.info/problems/glob/) -- test harness only|
+|grep|GREP.py|[Genome Assembly with Perfect Coverage and Repeats](http://rosalind.info/problems/grep/)|
 |grph|rosalind.py|[Overlap Graphs](http://rosalind.info/problems/grph/) |
 |hamm|rosalind.py|[Counting Point Mutations](http://rosalind.info/problems/hamm/) |
 |hdag|hdag.py|[Hamiltonian Path in DAG](http://rosalind.info/problems/hdag/) |
 |iev|rosalind.py| [Calculating Expected Offspring](http://rosalind.info/problems/iev/)|
 |indq|rosalind.py|[Independent Segregation of Chromosomes](http://rosalind.info/problems/indq/) |
+|ins|INS.py|[Insertion Sort](http://rosalind.info/problems/ins/) |
+|inv|INV.py|[Counting Inversions](http://rosalind.info/problems/inv/) |
 |iprb|rosalind.py|[Mendel's First Law](http://rosalind.info/problems/iprb/) |
 |kmer|rosalind.py|[Generalizing GC-Content](http://rosalind.info/problems/kmer/) |
 |kmp|kmp.py|[Speeding Up Motif Finding](http://rosalind.info/problems/kmp/) |
@@ -169,17 +160,26 @@ NB: functions generally use zero based indexing; Rosalind uses 1-based.
 |lia|rosalind.py|[Independent Alleles](http://rosalind.info/problems/lia/) |
 |ling|ling.py|[Linguistic Complexity of a Genome](http://rosalind.info/problems/ling/) (WIP)|
 |loca|loca.py|[Local Alignment with Scoring Matrix ](http://rosalind.info/problems/loca/) |
+|long|LONG.py|[Genome Assembly as Shortest Superstring](http://rosalind.info/problems/long/) |
+|med|MED.py|[Median](http://rosalind.info/problems/med/)|
 |mend|mend.py|[Inferring a Genotype from a Pedigree](http://rosalind.info/problems/mend/) |
+|mer|MER.py|[Merge Two Sorted Arrays](http://rosalind.info/problems/mer/) |
 |mrna|rosalind.py|[Inferring mRNA from Protein](http://rosalind.info/problems/mrna/) |
+|ms|MS.py|[Mergesort](http://rosalind.info/problems/ms/)|
 |nwck|nwck.py|[Distances in Trees](http://rosalind.info/problems/nwck/) |
 |oap|oap.py|[Overlap Alignment](http://rosalind.info/problems/oap/) (wip)|
-|orf|orf.py|[Open Reading Frames](http://rosalind.info/problems/orf/)|
 |orfr|orfr.py|[Finding Genes with Open Reading Frames](http://rosalind.info/problems/orfr/) |
+|orf|orf.py|[Open Reading Frames](http://rosalind.info/problems/orf/)|
+|par3|PAR3.py|[3-Way Partition](http://rosalind.info/problems/par3/) |
+|par|PAR.py|[2-Way Partition](http://rosalind.info/problems/par/) |
+|pcov|PCOV.py|[Genome Assembly with Perfect Coverage](http://rosalind.info/problems/pcov/) |
 |pdst|rosalind.py|[Creating a Distance Matrix ](http://rosalind.info/problems/pdst/) |
 |pmch|pmch.py|[Perfect Matchings and RNA Secondary Structures](http://rosalind.info/problems/pmch/) |
 |pper|rosalind.py|[Partial Permutations](http://rosalind.info/problems/pper/) |
 |prot|rosalind.py|[Translating RNA into Protein](http://rosalind.info/problems/prot/) |
 |ps|ps.py|[Partial sort](http://rosalind.info/problems/ps/)|
+|ptra|PTRA.py|[Protein Translation](http://rosalind.info/problems/ptra/) |
+|qs|QS.py|[Quicksort](http://rosalind.info/problems/qs/)|
 |rear|rear.py|[Reversal distance](http://rosalind.info/problems/rear/) (WIP)|
 |revc|rosalind.py| [Complementing a Strand of DNA](http://rosalind.info/problems/revc/)|
 |revp|rosalind.py| [Locating Restriction Sites](http://rosalind.info/problems/revp/)|
@@ -194,9 +194,6 @@ NB: functions generally use zero based indexing; Rosalind uses 1-based.
 |trie|rosalind.py|[Introduction to Pattern Matching](http://rosalind.info/problems/trie/) |
 |ts|ts.py|[Topological sort](http://rosalind.info/problems/ts/) test harness only--see BA5N |
 |wfmd|rosalind.py|[The Wright-Fisher Model of Genetic Drift](http://rosalind.info/problems/wfmd/) |
-
-
-
   
 ## Support
 
