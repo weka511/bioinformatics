@@ -16,13 +16,13 @@
 #    BF Bellman-Ford Algorithm
 #
 
-
+from graphs import bf
         
 
 if __name__=='__main__':
   from helpers import create_list    
 
-  print(' '.join([str(i) for i in bf(create_list())]))
+  print(' '.join([str(i) for i in bf(create_list(ext=1))]))
   
   #edges = [(9, 13),
            #(1, 2, 10),
