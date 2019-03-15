@@ -15,55 +15,11 @@
 #
 #    cc 	Connected Components
 
-from helpers import create_adjacency
-
-def explore(a,adjacency,explored,component):
-    explored.add(a)
-    component.append(a)
-    for b in adjacency[a]:
-        if not b in explored:
-            explore(b,adjacency,explored,component)
-    return sorted(list(set(component)))
-        
-def cc(graph):          
-    m,_,adjacency = create_adjacency(graph)
-  
-    explored   = set()
-
-    components = {}  # The connected components, with one element as key
-    for a,_ in adjacency.items():
-        if not a in explored:
-            component = explore(a,adjacency,explored,[])
-            for c in component:
-                components[c]=component
-                    
-    count = 0
-    uniques = []
-    duplicates = []
-    for k,v in components.items():
-        if k in uniques:
-            duplicates.append(k)
-        else:
-            for vv in v:
-                uniques.append(vv)
-            count+=1
-    for d in duplicates:
-        del components[d]
-
-#   a few sanity checks
-
-    nodes = sorted(list(set([v for k,vs in components.items() for v in vs])))
-    assert len(nodes) ==m, '{0} not {1}'.format(len(nodes), m) 
-    v0=0
-    for v in nodes:
-        assert v == v0+1
-        v0=v
-        
-    return count,components
+from graphs import cc
 
 if __name__=='__main__':
     graph=[]
-    with open(r'C:\Users\Simon\Downloads\rosalind_cc(12).txt') as f:
+    with open(r'C:\Users\Simon\Downloads\rosalind_cc.txt') as f:
         for line in f:
             ll =line.strip().split()
             graph.append((int(ll[0]),int(ll[1])))

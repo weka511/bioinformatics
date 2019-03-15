@@ -116,15 +116,15 @@ NB: functions generally use zero based indexing; Rosalind uses 1-based.
 |bf|bf.py|[Bellman-Ford Algorithm](http://rosalind.info/problems/bf/) (wip)|
 |bfs|bfs.py|[Beadth First search](http://rosalind.info/problems/bfs/) |
 |bins|BINS.py|[Binary Search](http://rosalind.info/problems/bfs/) |
-|bip|bip.py|[Testing Bipartiteness](http://rosalind.info/problems/bip/) |
+|bip|bip.py graphs.py|[Testing Bipartiteness](http://rosalind.info/problems/bip/) |
 |cat|rosalind.py|[Catalan Numbers and RNA Secondary Structures ](http://rosalind.info/problems/cat/) (WIP)|
-|cc|cc.py|[Connected Components](http://rosalind.info/problems/cc/) |
+|cc|cc.py graphs.py|[Connected Components](http://rosalind.info/problems/cc/) |
 |cons|rosalind.py|[Consensus and Profile](http://rosalind.info/problems/cons/) |
 |corr|CORR.py|[Error Correction in Reads](http://rosalind.info/problems/corr/) |
 |cstr|cstr.py|[Creating a Character Table from Genetic Strings](http://rosalind.info/problems/cstr/)|
 |ctbl|ctbl.py|[Creating a Character Table](http://rosalind.info/problems/ctbl/) |
 |cte|cte.py graphs.py|[Shortest Cycle Through a Given Edge](http://rosalind.info/problems/cte/)|
-|dag|dag.py|[Testing Acyclicity](http://rosalind.info/problems/dag/) |
+|dag|dag.py graphs.py|[Testing Acyclicity](http://rosalind.info/problems/dag/) |
 |dbru|DBRU.py|[Constructing a De Bruijn Graph](http://rosalind.info/problems/dbru/) |
 |ddeg|DDEG.py graphs.py|[Double-Degree Array](http://rosalind.info/problems/ddeg/) |
 |deg|DEG.py graphs.py|[Degree Array](http://rosalind.info/problems/deg/) |
@@ -147,7 +147,7 @@ NB: functions generally use zero based indexing; Rosalind uses 1-based.
 |grep|GREP.py|[Genome Assembly with Perfect Coverage and Repeats](http://rosalind.info/problems/grep/)|
 |grph|rosalind.py|[Overlap Graphs](http://rosalind.info/problems/grph/) |
 |hamm|rosalind.py|[Counting Point Mutations](http://rosalind.info/problems/hamm/) |
-|hdag|hdag.py|[Hamiltonian Path in DAG](http://rosalind.info/problems/hdag/) |
+|hdag|hdag.py graphs.py|[Hamiltonian Path in DAG](http://rosalind.info/problems/hdag/) |
 |iev|rosalind.py| [Calculating Expected Offspring](http://rosalind.info/problems/iev/)|
 |indq|rosalind.py|[Independent Segregation of Chromosomes](http://rosalind.info/problems/indq/) |
 |ins|INS.py|[Insertion Sort](http://rosalind.info/problems/ins/) |
@@ -188,7 +188,7 @@ NB: functions generally use zero based indexing; Rosalind uses 1-based.
 |rstr|rosalind.py|[Matching Random Motifs](http://rosalind.info/problems/rstr/) |
 |sexl|rosalind.py|[Sex-Linked Inheritance ](http://rosalind.info/problems/sexl/) |
 |splc|rosalind.py|[RNA Splicing](http://rosalind.info/problems/splc/) |
-|sq|sq.py|[Square in a Graph](http://rosalind.info/problems/sq/)|
+|sq|sq.py graphics.py|[Square in a Graph](http://rosalind.info/problems/sq/)|
 |sseq|rosalind.py|[Finding a Spliced Motif](http://rosalind.info/problems/sseq/) |
 |subs|rosalind.py|[Finding a Motif in DNA](http://rosalind.info/problems/subs/) |
 |tran|rosalind.py|[Transitions and Transversions](http://rosalind.info/problems/tran/) |
@@ -200,7 +200,8 @@ NB: functions generally use zero based indexing; Rosalind uses 1-based.
 
 | Name |Description |
 | -------------------------- | ------------------------------------------------|
-|align.py|Common functions for alignment |
+|align.py|Common functions for [alignment](http://rosalind.info/problems/topics/alignment/) |
+|graphs.py|Common functions for [graphs](http://rosalind.info/problems/topics/graphs/) |
 |helpers.py|Utilities for formatting output, parsing input, etc |
 |LICENSE|License Agreement|
 |newick.py|Parser for files in [Newick format](http://evolution.genetics.washington.edu/phylip/newicktree.html) |

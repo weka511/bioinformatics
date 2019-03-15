@@ -15,32 +15,8 @@
 
 # SQ Square in a Graph
 #
+from graphs import sq
 
-def sq(g):
-    def explore(node,path=[]):
-        if len(path)>4: return -1
- 
-        for next_node in adj[node]:
-            if next_node==path[0] and len(path)==4:
-                #print (path+[next_node])
-                return 1
-            if next_node in path: continue
-            if explore(next_node,path+[next_node])==1: return 1
-        return -1
-    
-        
-    adj = {}
-    for a,b in g[1:]:
-        if not a in adj: adj[a]=[]
-        adj[a].append(b)
-        if not b in adj: adj[b]=[]
-        adj[b].append(a)
-    
-    for node in adj.keys():
-        if explore(node,path=[node])==1:
-            return 1
-        
-    return -1
 
 if __name__=='__main__':
     from helpers import create_strings

@@ -13,6 +13,110 @@
 #    You should have received a copy of the GNU General Public License
 #    along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>
 
+from helpers import create_adjacency
+from align import topological_order
+from collections import deque
+
+# bip
+#
+# Input: a graph in edgelist form
+#
+# Output:  1 if graph is bipartite, otherwise -1
+#
+# Strategy: try to partition graph into two colours
+
+def bip(graph):
+    red  = set()
+    blue = set()
+    
+    # colour
+    #
+    # Attempt to assign this node, and all reachable nodes, to one colour or t'other
+    #
+    # Inputs:  node    The node we are assigning
+    #          isBlue  Indicates whether we are trying Red or Blue
+    def colour(node,isBlue):
+        if isBlue:
+            if node in red: return False
+            if node in blue: return True
+            blue.add(node)
+        else:
+            if node in blue: return False
+            if node in red: return True
+            red.add(node)            
+        for link in adjacency[node]:
+            if not colour(link,not isBlue): return False
+        return True
+            
+    _,_,adjacency = create_adjacency(graph,back=True,self=False)
+    
+    # Purge isolated nodes
+    
+    for k in [k for k,v in adjacency.items() if len(v)==0]:
+        adjacency.pop(k)
+
+    # Try to colour nodes
+    
+    for node in adjacency.keys():
+        if node in red or node in blue: continue
+        red.add(node)
+        for link in adjacency[node]:
+            coloured = colour(link,True)
+            if not coloured:
+                return -1
+            
+    return 1  # assume bipartite unless we fail
+
+# cc
+#
+# Connected Components
+#
+# Input: A simple graph with fewere than 1,000 vertices in the edge list format.
+#
+# Return: The number of connected components in the graph.
+
+def cc(graph): 
+    def explore(a,adjacency,explored,component):
+        explored.add(a)
+        component.append(a)
+        for b in adjacency[a]:
+            if not b in explored:
+                explore(b,adjacency,explored,component)
+        return sorted(list(set(component)))    
+    m,_,adjacency = create_adjacency(graph)
+  
+    explored   = set()
+
+    components = {}  # The connected components, with one element as key
+    for a,_ in adjacency.items():
+        if not a in explored:
+            component = explore(a,adjacency,explored,[])
+            for c in component:
+                components[c]=component
+                    
+    count = 0
+    uniques = []
+    duplicates = []
+    for k,v in components.items():
+        if k in uniques:
+            duplicates.append(k)
+        else:
+            for vv in v:
+                uniques.append(vv)
+            count+=1
+    for d in duplicates:
+        del components[d]
+
+#   a few sanity checks
+
+    nodes = sorted(list(set([v for k,vs in components.items() for v in vs])))
+    assert len(nodes) ==m, '{0} not {1}'.format(len(nodes), m) 
+    v0=0
+    for v in nodes:
+        assert v == v0+1
+        v0=v
+        
+    return count,components
 
 # CTE Shortest Cycle Through a Given Edge
 #
@@ -41,6 +145,49 @@ def cte(edges):
     path_length = dij(new_edges)[a-1]
     return path_length + w if path_length>-1 else -1
 
+# dag  Testing Acyclicity
+#
+# Input: a graph
+#
+# Output: 1 if graph acyclic, otherwise -1
+
+def dag(graph):
+    
+    # explore: find cyclic path
+    #
+    # Input: node
+    #        path
+    #
+    # Output: True iff there is a cyclic path starting at node, and
+    #         whole 1st elements coincide with path
+    
+    def explore(node,path=[]):
+        explored.add(node)
+        linked = adjacency[node]
+        for succ in linked:
+            if succ == node: continue
+            if succ in path: return True
+            if explore(succ,path+[node]): return True
+            
+        return False
+
+    m,_,adjacency = create_adjacency(graph,False)
+    explored   = set()
+    
+    for a,_ in adjacency.items():
+        if not a in explored:
+            if explore(a): return -1
+            
+    return 1
+
+# ddeg
+#
+# Double Degree Array
+#
+# Input : A simple graph with fewer than 1,000 vertices in the edge list format.
+
+# Return: An array D[1..n] where D[i] is the sum of the degrees of i's neighbors.
+
 def ddeg(n,M,A):
     lookup=deg(n,m,A)
     sums=[0 for a in range(n)]
@@ -48,6 +195,14 @@ def ddeg(n,M,A):
         sums[a-1]+=lookup[b-1]
         sums[b-1]+=lookup[a-1]    
     return sums
+
+# deg
+#
+# Degree array
+#
+# Input: A simple graph with fewer than 1,000 vertices in the edge list format.
+#
+# Return: An array D[1..n] where D[i] is the degree of vertex i.
 
 def deg(n,m,A):
     degrees=[0 for a in range(n)]
@@ -73,3 +228,54 @@ def dij(g):
                     D[b]=proposed_distance
                 
     return D[1:]
+
+# hdag
+#
+# Hamiltonian Path in DAG 
+#
+# Key idea: we can always form a topological sort of a DAG. Once a graphs has been
+#           sorted topologically, the only way it can fail to be Hamiltonian is if
+#           there exists a pair of nodes in the sorted data that is not an edge.
+
+def hdag(graph):
+    def clone(adj):
+        copy = {}
+        for k,v in adj.items():
+            copy[k]=v
+        return copy
+    _,_,adj = create_adjacency(graph,back=False,self=False)
+    ordered = topological_order(clone(adj)) # use clone because topological_order destroys its parameter
+    for a,b in zip(ordered[:-1],ordered[1:]):
+        if not b in adj[a]:
+            return (-1,[])
+    return (1,ordered)
+
+# sq
+#
+# Square in a Graph
+
+def sq(g):
+    def explore(node,path=[]):
+        if len(path)>4: return -1
+ 
+        for next_node in adj[node]:
+            if next_node==path[0] and len(path)==4:
+                #print (path+[next_node])
+                return 1
+            if next_node in path: continue
+            if explore(next_node,path+[next_node])==1: return 1
+        return -1
+    
+        
+    adj = {}
+    for a,b in g[1:]:
+        if not a in adj: adj[a]=[]
+        adj[a].append(b)
+        if not b in adj: adj[b]=[]
+        adj[b].append(a)
+    
+    for node in adj.keys():
+        if explore(node,path=[node])==1:
+            return 1
+        
+    return -1

@@ -15,43 +15,10 @@
 
 #    dag Testing Acyclicity
 
-from helpers import format_list, create_adjacency, parse_graphs
+from helpers import format_list,  parse_graphs
+from graphs import dag
 
-# dag  Testing Acyclicity
-#
-# Input: a graph
-#
-# Output: 1 if graph acyclic, otherwise -1
-
-def dag(graph):
-    
-    # explore: find cyclic path
-    #
-    # Input: node
-    #        path
-    #
-    # Output: True iff there is a cyclic path starting at node, and
-    #         whole 1st elements coincide with path
-    
-    def explore(node,path=[]):
-        explored.add(node)
-        linked = adjacency[node]
-        for succ in linked:
-            if succ == node: continue
-            if succ in path: return True
-            if explore(succ,path+[node]): return True
-            
-        return False
-
-    m,_,adjacency = create_adjacency(graph,False)
-    explored   = set()
-    
-    for a,_ in adjacency.items():
-        if not a in explored:
-            if explore(a): return -1
-            
-    return 1
 
 if __name__=='__main__':  
-    with open(r'C:\Users\Simon\Downloads\rosalind_dag(1).txt') as f:
+    with open(r'C:\Users\Simon\Downloads\rosalind_dag.txt') as f:
         print (format_list([dag(g) for g in parse_graphs(f)]))    
