@@ -16,10 +16,18 @@
 #    BF Bellman-Ford Algorithm
 #
 
-
-
-def bf(graph):
-  return [1,1,'x']
+def bf(edges,s=1):
+  
+  n,_         = edges[0]
+  dist        = [float('inf') for i in range(1,n+1)]
+  previous    = [None for i in range(1,n+1)]
+  
+  dist[s-1]=0
+  for i in range(n-1):
+    for u,v,w in edges[1:]:
+      dist[v-1] = min(dist[v-1],dist[u-1]+w)
+    
+  return [d if d<float('inf') else 'x' for d in dist]
         
 
 if __name__=='__main__':
