@@ -113,7 +113,7 @@ NB: functions generally use zero based indexing; Rosalind uses 1-based.
 |afrq|rosalind.py|[Counting Disease Carriers](http://rosalind.info/problems/afrq/) |
 |asmq|ASMQ.py|[Assessing Assembly Quality with N50 and N75](http://rosalind.info/problems/asmq/) |
 |aspc|rosalind.py|[Introduction to Alternative Splicing](http://rosalind.info/problems/aspc/) |
-|bf|bf.py|[Bellman-Ford Algorithm](http://rosalind.info/problems/bf/) (wip)|
+|bf|bf.py graphs.py|[Bellman-Ford Algorithm](http://rosalind.info/problems/bf/)|
 |bfs|bfs.py|[Beadth First search](http://rosalind.info/problems/bfs/) |
 |bins|BINS.py|[Binary Search](http://rosalind.info/problems/bfs/) |
 |bip|bip.py graphs.py|[Testing Bipartiteness](http://rosalind.info/problems/bip/) |
@@ -193,7 +193,7 @@ NB: functions generally use zero based indexing; Rosalind uses 1-based.
 |subs|rosalind.py|[Finding a Motif in DNA](http://rosalind.info/problems/subs/) |
 |tran|rosalind.py|[Transitions and Transversions](http://rosalind.info/problems/tran/) |
 |trie|rosalind.py|[Introduction to Pattern Matching](http://rosalind.info/problems/trie/) |
-|ts|ts.py|[Topological sort](http://rosalind.info/problems/ts/) test harness only--see BA5N |
+|ts|ts.py align.py|[Topological sort](http://rosalind.info/problems/ts/)|
 |wfmd|rosalind.py|[The Wright-Fisher Model of Genetic Drift](http://rosalind.info/problems/wfmd/) |
   
 ## Support

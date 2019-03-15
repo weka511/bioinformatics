@@ -17,6 +17,28 @@ from helpers import create_adjacency
 from align import topological_order
 from collections import deque
 
+# bf
+#
+# Bellman-Ford Algorithm
+#
+# Given: A simple directed graph with integer edge weights and fewer than 1,000 vertices in the edge list format.
+#
+# Return: An array D[1..n] where D[i] is the length of a shortest path from the vertex 1 to the vertex i (D[1]=0).
+#         If i is not reachable from 1 set D[i] to x
+
+def bf(edges,s=1):
+
+    n,_         = edges[0]
+    dist        = [float('inf') for i in range(1,n+1)]
+    previous    = [None for i in range(1,n+1)]
+
+    dist[s-1]=0
+    for i in range(n-1):
+        for u,v,w in edges[1:]:
+            dist[v-1] = min(dist[v-1],dist[u-1]+w)
+
+    return [d if d<float('inf') else 'x' for d in dist]
+
 # bip
 #
 # Input: a graph in edgelist form
