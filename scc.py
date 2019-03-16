@@ -16,7 +16,15 @@
 #    NWC Negative Weight Cycle
 #
 
+    
 def scc(edges):
+  
+  def counter():
+    count = 0
+    while True:
+      yield count
+      count+=1
+    
   def create_adj_R(edges):
     adj_R = {}
     for (a,b) in edges[1:]:
@@ -25,25 +33,25 @@ def scc(edges):
       adj_R[b].append(a)
     return adj_R
  
-  def dfs(adj,n):
-    def explore(v,clock):
+  def dfs(adj,n,previsit=lambda v:None,postvisit=lambda v:None):
+    clock = counter()
+    def explore(v):
       visited[v] = True
-      pre[v]     = clock
-      clock += 1
+      previsit(v)
+      pre[v]     = next(clock)
       for u in adj[v+1]:
         if not visited[u]:
-          clock = explore(u-1,clock)
-      post[v]    = clock
-      clock += 1
-      return clock
+          explore(u-1)
+      postvisit(v)   
+      post[v]    = next(clock)
+      return
     
-    clock   = 0
     visited = [False for v in range(n)]
     pre     = [-1 for v in range(n)]
     post    = [-1 for v in range(n)]
     for v in range(n):
       if not visited[v]:
-        clock = explore(v,clock)
+        explore(v)
     return
   
   n,_ = edges[0]
