@@ -128,6 +128,7 @@ NB: functions generally use zero based indexing; Rosalind uses 1-based.
 |dbru|DBRU.py|[Constructing a De Bruijn Graph](http://rosalind.info/problems/dbru/) |
 |ddeg|DDEG.py graphs.py|[Double-Degree Array](http://rosalind.info/problems/ddeg/) |
 |deg|DEG.py graphs.py|[Degree Array](http://rosalind.info/problems/deg/) |
+|dfs| graphs.py|[Depth First Search](http://rosalind.info/problems/dfs/) |
 |dij|dij.py graphs.py|[Dijkstra's Algorithm](http://rosalind.info/problems/dij/) |
 |dna|rosalind.py|[Counting DNA Nucleotides](http://rosalind.info/problems/dna/) |
 |ebin|rosalind.py|[Wright-Fisher's Expected Behavior](http://rosalind.info/problems/ebin/) |
@@ -187,7 +188,7 @@ NB: functions generally use zero based indexing; Rosalind uses 1-based.
 |revp|rosalind.py| [Locating Restriction Sites](http://rosalind.info/problems/revp/)|
 |rna|rosalind.py|[Transcribing DNA into RNA](http://rosalind.info/problems/rna/) |
 |rstr|rosalind.py|[Matching Random Motifs](http://rosalind.info/problems/rstr/) |
-|scc|scc.py|[Strongly Connected Components](http://rosalind.info/problems/scc/) (WIP)|
+|scc|scc.py graphs.py|[Strongly Connected Components](http://rosalind.info/problems/scc/)|
 |sexl|rosalind.py|[Sex-Linked Inheritance ](http://rosalind.info/problems/sexl/) |
 |splc|rosalind.py|[RNA Splicing](http://rosalind.info/problems/splc/) |
 |sq|sq.py graphics.py|[Square in a Graph](http://rosalind.info/problems/sq/)|
