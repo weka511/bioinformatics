@@ -302,12 +302,22 @@ def sq(g):
         
     return -1
 
+# dfs
+#
+# Depth First Search
+#
+# Inputs:    adj
+#            n
+#            sequence 
+#            previsit 
+#            postvisit  
+#            preexplore
 def dfs(adj         = None,
         n           = None,
         sequence    = None,
         previsit    = lambda v:None,
         postvisit   = lambda v:None,
-        pre_explore = lambda v:None):
+        preexplore = lambda v:None):
 
     def explore(v):
         visited[v] = True
@@ -323,9 +333,28 @@ def dfs(adj         = None,
 
     for v in sequence:
         if not visited[v]:
-            pre_explore(v)
+            preexplore(v)
             explore(v)
 
+def create_adj(edges,reverse=False):
+    n,_=edges[0]
+    adj = {}
+    for i in range(1,n+1):
+        adj[i]=[]
+    for (a,b) in edges[1:]:
+        if reverse:
+            (a,b)=(b,a)
+        adj[a].append(b)
+    return adj
+
+
+#  scc
+#
+# Strongly Connected Component
+#
+# Input: A simple directed graph with fewer than 1000 vertices in the edge list format.
+#
+# Return: The number of strongly connected components in the graph.
 
 def scc(edges):
 
@@ -334,18 +363,7 @@ def scc(edges):
         while True:
             yield count
             count+=1
-
-    def create_adj(edges,reverse=False):
-        n,_=edges[0]
-        adj = {}
-        for i in range(1,n+1):
-            adj[i]=[]
-        for (a,b) in edges[1:]:
-            if reverse:
-                (a,b)=(b,a)
-            adj[a].append(b)
-        return adj
-
+            
     def decreasing(post):
         pairs = sorted(zip(post,range(1,len(post)+1)),reverse=True)
         for a,b in pairs:
@@ -357,8 +375,8 @@ def scc(edges):
     def incr_post(v):
         post[v]     = next(clock)
 
-    def incr(v):
-        ccnum[v-1]=next(cc)
+    def incr_ccnum(v):
+        ccnum[v-1]  = next(cc)
 
     n,_     = edges[0]
     clock   = counter()
@@ -377,6 +395,6 @@ def scc(edges):
     dfs(adj         = create_adj(edges),
       n           = n,
       sequence    = decreasing(post[1:]),
-      pre_explore = incr)
+      preexplore  = incr_ccnum)
 
     return len([cc for cc in ccnum if cc>-1]) 
