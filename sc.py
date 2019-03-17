@@ -13,40 +13,36 @@
 #    You should have received a copy of the GNU General Public License
 #    along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>
 #
-#    gs 	General Sink
+#    sc 	Semi-Connected Graph
 
-from graphs import scc,dfs
+from graphs import sc
 
-def sc(edges):
-   n,_ = edges[0]
-   ccnum,adj,adjr = scc(edges)
-   pairs = {}
-   for i in range(len(ccnum)):
-      for j in range(i+1,len(ccnum)):
-         pairs[(ccnum[i],ccnum[j])] = False
-   for component in ccnum:
-      visited = dfs(adj,n,sequence=(i for i in [component]),list_visited=True)
-      visitedr = dfs(adjr,n,sequence=(i for i in [component]),list_visited=True)
-      for node in visited:
-         a,b = min(node,component),max(node,component),
-         pairs[(a,b)]=True
-      for node in visitedr:
-         a,b = min(node,component),max(node,component),
-         pairs[(a,b)]=True      
-   for k,v in pairs.items():
-      if not v: return -1
-   return 1
 
 if __name__=='__main__':
-   graphs = [
-      2,
-       [(3, 2),
-        (3 ,2),
-        (2, 1)],
+   from helpers import create_strings
+   #graphs = [
+      #2,
+       #[(3, 2),
+        #(3 ,2),
+        #(2, 1)],
       
-       [(3, 2),
-        (3, 2),
-        (1, 2)]   
-   ]
+       #[(3, 2),
+        #(3, 2),
+        #(1, 2)]   
+   #]
+   
+   graphs = []
+   edges = []
+   for s in create_strings(ext=1):
+      if len(s)==0:
+         if len(edges)>0:
+            graphs.append(edges)
+            edges=[]
+      else:
+         values = [int(x) for x in s.split(" ")]
+         if len(values)>1:
+            edges.append(values)
+   if len(edges)>0:
+      graphs.append(edges)            
 
-print (' '.join([str(sc(g)) for g in graphs[1:]])) 
+   print (' '.join([str(sc(g)) for g in graphs])) 

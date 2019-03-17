@@ -147,6 +147,7 @@ NB: functions generally use zero based indexing; Rosalind uses 1-based.
 |glob|GLOB.py|[Global Alignment with Scoring Matrix](http://rosalind.info/problems/glob/) -- test harness only|
 |grep|GREP.py|[Genome Assembly with Perfect Coverage and Repeats](http://rosalind.info/problems/grep/)|
 |grph|rosalind.py|[Overlap Graphs](http://rosalind.info/problems/grph/) |
+|gs|gs.py|General Sink](http://rosalind.info/problems/gs/) |
 |hamm|rosalind.py|[Counting Point Mutations](http://rosalind.info/problems/hamm/) |
 |hdag|hdag.py graphs.py|[Hamiltonian Path in DAG](http://rosalind.info/problems/hdag/) |
 |iev|rosalind.py| [Calculating Expected Offspring](http://rosalind.info/problems/iev/)|
@@ -189,6 +190,7 @@ NB: functions generally use zero based indexing; Rosalind uses 1-based.
 |rna|rosalind.py|[Transcribing DNA into RNA](http://rosalind.info/problems/rna/) |
 |rstr|rosalind.py|[Matching Random Motifs](http://rosalind.info/problems/rstr/) |
 |scc|scc.py graphs.py|[Strongly Connected Components](http://rosalind.info/problems/scc/)|
+|sc|sc.py graphs.py|[Semi-Connected Graph](http://rosalind.info/problems/sc/)|
 |sexl|rosalind.py|[Sex-Linked Inheritance ](http://rosalind.info/problems/sexl/) |
 |splc|rosalind.py|[RNA Splicing](http://rosalind.info/problems/splc/) |
 |sq|sq.py graphics.py|[Square in a Graph](http://rosalind.info/problems/sq/)|

@@ -639,7 +639,8 @@ def create_list(problem=os.path.basename(sys.argv[0]).split('.')[0],
                    name=None):
     g = []
     for row in create_strings(problem=problem,path=path,ext=ext,fasta=fasta,name=name):
-        g.append([int(s) for s in row.split(" ")])
+        if len(row)>0:
+            g.append([int(s) for s in row.split(" ")])
     return g
 
 # create_strings

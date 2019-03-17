@@ -398,3 +398,32 @@ def scc(edges):
       preexplore  = incr_ccnum)
 
     return [cc+1 for cc in ccnum if cc>-1],adj_R,adj 
+
+#    sc
+#
+#    Semi-Connected Graph
+#    A directed graph is semi-connected if for all pairs of vertices i,j there is either a path from i to j or a path from j to i
+# Input: a simple directed graphs with at most 1 thousand
+#               vertices each in the edge list format.
+#
+# Return: 1 if the graph is semi-connected and -1  otherwise.
+
+def sc(edges):
+    n,_ = edges[0]
+    ccnum,adj,adjr = scc(edges)
+    pairs = {}
+    for i in range(len(ccnum)):
+        for j in range(i+1,len(ccnum)):
+            pairs[(ccnum[i],ccnum[j])] = False
+    for component in ccnum:
+        visited = dfs(adj,n,sequence=(i for i in [component]),list_visited=True)
+        visitedr = dfs(adjr,n,sequence=(i for i in [component]),list_visited=True)
+        for node in visited:
+            a,b = min(node,component),max(node,component),
+            pairs[(a,b)]=True
+        for node in visitedr:
+            a,b = min(node,component),max(node,component),
+            pairs[(a,b)]=True      
+    for k,v in pairs.items():
+        if not v: return -1
+    return 1
