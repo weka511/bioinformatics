@@ -32,6 +32,5 @@ if __name__=='__main__':
       #(3, 5)
   #]))
   
-  print (scc(create_list(ext=4)))
-               
-
+  sscs,_,_ = scc(create_list(ext=4))
+  print (len(sscs))

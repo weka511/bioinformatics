@@ -382,19 +382,17 @@ def scc(edges):
     clock   = counter()
     pre     = [-1 for v in range(n+1)]   # Zero element won't be used, but it does simplify indexing
     post    = [-1 for v in range(n+1)]   # Zero element won't be used, but it does simplify indexing 
-
-    dfs(adj      = create_adj(edges,reverse=True),
-      n        = n,
+    adj_R      = create_adj(edges,reverse=True)
+    dfs(adj_R,n,
       sequence = range(1,n+1),
       previsit = incr_pre,
       postvisit = incr_post)
 
     cc       = counter()
     ccnum    = [-1 for v in range(n+1)]   # Zero element won't be used, but it does simplify indexing
-
-    dfs(adj         = create_adj(edges),
-      n           = n,
+    adj         = create_adj(edges)
+    dfs(adj,n,
       sequence    = decreasing(post[1:]),
       preexplore  = incr_ccnum)
 
-    return len([cc for cc in ccnum if cc>-1]) 
+    return [cc for cc in ccnum if cc>-1],adj_R,adj 
