@@ -25,39 +25,73 @@ def scc(edges):
       yield count
       count+=1
     
-  def create_adj_R(edges):
-    adj_R = {}
+  def create_adj(edges,reverse=False):
+    adj = {}
     for (a,b) in edges[1:]:
-      if not b in adj_R:
-        adj_R[b]=[]
-      adj_R[b].append(a)
-    return adj_R
+      if reverse:
+        (a,b)=(b,a)
+      if not a in adj:
+        adj[a]=[]
+      adj[a].append(b)
+    return adj
+  
  
-  def dfs(adj,n,previsit=lambda v:None,postvisit=lambda v:None):
-    clock = counter()
+  def dfs(adj=None,
+          sequence=None,
+          previsit=lambda v:None,
+          postvisit=lambda v:None,
+          pre_explore=lambda v:None):
+
     def explore(v):
       visited[v] = True
       previsit(v)
-      pre[v]     = next(clock)
-      for u in adj[v+1]:
-        if not visited[u]:
-          explore(u-1)
+
+      if v in adj:
+        for u in adj[v]:
+          if not visited[u]:
+            explore(u)
+            
       postvisit(v)   
-      post[v]    = next(clock)
       return
     
-    visited = [False for v in range(n)]
-    pre     = [-1 for v in range(n)]
-    post    = [-1 for v in range(n)]
-    for v in range(n):
+    visited = [False for v in range(n+1)]  # Don't use zero
+
+    for v in sequence:
       if not visited[v]:
+        pre_explore(v)
         explore(v)
-    return
+    return visited,pre,post
   
+  def decreasing(post):
+    pairs = sorted(zip(post,range(len(post))))
+    for a,b in pairs:
+      yield b
+
+  def incr_pre(v):
+    pre[v]     = next(clock)
+  def incr_post(v):
+    post[v]     = next(clock)
+
+  def incr(v):
+    ccnum[v-1]=next(cc)
+    
   n,_ = edges[0]
-  adj_R = create_adj_R(edges)
-  dfs(adj_R,n)
-  return -1     
+  clock = counter()
+  pre     = [-1 for v in range(n+1)]
+  post    = [-1 for v in range(n+1)]  
+     
+  dfs(adj=create_adj(edges,reverse=True),
+      sequence=range(1,n+1),
+      previsit=incr_pre,
+      postvisit=incr_post)
+  
+  cc = counter()
+  ccnum    = [-1 for v in range(n+1)]
+
+  dfs(adj=create_adj(edges),
+      sequence=decreasing(post[1:]),
+      pre_explore=incr)
+  return len([cc for cc in ccnum if cc>-1])     
 
 if __name__=='__main__':
   edges = [(6, 7),
