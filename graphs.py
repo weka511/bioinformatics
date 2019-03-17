@@ -312,12 +312,13 @@ def sq(g):
 #            previsit 
 #            postvisit  
 #            preexplore
-def dfs(adj         = None,
-        n           = None,
-        sequence    = None,
-        previsit    = lambda v:None,
-        postvisit   = lambda v:None,
-        preexplore = lambda v:None):
+def dfs(adj          = None,
+        n            = None,
+        sequence     = None,
+        previsit     = lambda v:None,
+        postvisit    = lambda v:None,
+        preexplore   = lambda v:None,
+        list_visited = True):
 
     def explore(v):
         visited[v] = True
@@ -335,6 +336,7 @@ def dfs(adj         = None,
         if not visited[v]:
             preexplore(v)
             explore(v)
+    return [i for i in range(1,len(visited)) if visited[i]==list_visited]
 
 def create_adj(edges,reverse=False):
     n,_=edges[0]
@@ -395,4 +397,4 @@ def scc(edges):
       sequence    = decreasing(post[1:]),
       preexplore  = incr_ccnum)
 
-    return [cc for cc in ccnum if cc>-1],adj_R,adj 
+    return [cc+1 for cc in ccnum if cc>-1],adj_R,adj 
