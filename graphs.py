@@ -425,3 +425,16 @@ def sc(edges):
     for k,v in pairs.items():
         if not v: return -1
     return 1
+
+#    gs
+#
+# General Sink
+
+def gs(edges):
+    n,_         = edges[0]
+    ccnum,adj,_ = scc(edges)
+    for component in ccnum:
+        visited = dfs(adj,n,sequence=(i for i in [component]))
+        if len(visited)==n:
+            return component
+    return -1

@@ -15,25 +15,36 @@
 #
 #    gs 	General Sink
 
-from graphs import scc,dfs
+from graphs import gs
 
-def gs(edges):
-       n,_            = edges[0]
-       ccnum,adj,adjr = scc(edges)
-       for component in ccnum:
-              visited = dfs(adj,n,sequence=(i for i in [component]))
-              if len(visited)==n:
-                     return component
-       return -1
+
 
 if __name__=='__main__':
-       graphs = [
-           [(3, 2),
-            (3 ,2),
-            (2, 1)],
+       
+       from helpers import create_strings
+       
+       #graphs = [
+           #[(3, 2),
+            #(3 ,2),
+            #(2, 1)],
           
-           [(3, 2),
-            (3, 2),
-            (1, 2)]   
-       ]
+           #[(3, 2),
+            #(3, 2),
+            #(1, 2)]   
+       #]
+       
+       graphs = []
+       edges = []
+       for s in create_strings(ext=2):
+              if len(s)==0:
+                     if len(edges)>0:
+                            graphs.append(edges)
+                            edges=[]
+              else:
+                     values = [int(x) for x in s.split(" ")]
+                     if len(values)>1:
+                            edges.append(values)
+       if len(edges)>0:
+              graphs.append(edges)     
+              
        print (' '.join([str(gs(edges)) for edges in graphs]))
