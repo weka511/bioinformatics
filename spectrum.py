@@ -16,6 +16,7 @@
 #    Utilities for mass sprctroscopy
 
 from reference_tables import integer_masses
+from graphs import dfs
 
 # SpectrumGraph
 #
@@ -57,6 +58,19 @@ def SpectrumGraph(spectrum):
 # Return: An amino acid string with an ideal spectrum that matches Spectrum.
 
 def DecodeIdealSpectrum(Spectrum):
-    graph = SpectrumGraph(Spectrum)
-    
+    def bfs(adj,paths = [[0]]):
+        while True:
+            new_paths=[]
+            for path in paths:
+                a = path[-1]
+                if a in adj:
+                    for b,_ in adj[a]:
+                        new_paths.append(path + [b])
+            if len(new_paths)==0:
+                return paths
+            else:
+                paths = new_paths
+
+    adj = SpectrumGraph(Spectrum)
+    paths = bfs(adj)
     return ''
