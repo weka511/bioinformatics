@@ -147,7 +147,7 @@ NB: functions generally use zero based indexing; Rosalind uses 1-based.
 |glob|GLOB.py|[Global Alignment with Scoring Matrix](http://rosalind.info/problems/glob/) -- test harness only|
 |grep|GREP.py|[Genome Assembly with Perfect Coverage and Repeats](http://rosalind.info/problems/grep/)|
 |grph|rosalind.py|[Overlap Graphs](http://rosalind.info/problems/grph/) |
-|gs|gs.py|General Sink](http://rosalind.info/problems/gs/) |
+|gs|gs.py|[General Sink](http://rosalind.info/problems/gs/) (wip)|
 |hamm|rosalind.py|[Counting Point Mutations](http://rosalind.info/problems/hamm/) |
 |hdag|hdag.py graphs.py|[Hamiltonian Path in DAG](http://rosalind.info/problems/hdag/) |
 |iev|rosalind.py| [Calculating Expected Offspring](http://rosalind.info/problems/iev/)|
