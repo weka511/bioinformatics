@@ -397,7 +397,7 @@ def scc(edges):
       sequence    = decreasing(post[1:]),
       preexplore  = incr_ccnum)
 
-    return [cc+1 for cc in ccnum if cc>-1],adj_R,adj 
+    return [cc+1 for cc in ccnum if cc>-1],adj,adj_R 
 
 #    sc
 #
@@ -409,19 +409,17 @@ def scc(edges):
 # Return: 1 if the graph is semi-connected and -1  otherwise.
 
 def sc(edges):
-    n,_ = edges[0]
+    n,_            = edges[0]
     ccnum,adj,adjr = scc(edges)
-    pairs = {}
+    pairs          = {}
     for i in range(len(ccnum)):
         for j in range(i+1,len(ccnum)):
             pairs[(ccnum[i],ccnum[j])] = False
     for component in ccnum:
-        visited = dfs(adj,n,sequence=(i for i in [component]),list_visited=True)
-        visitedr = dfs(adjr,n,sequence=(i for i in [component]),list_visited=True)
-        for node in visited:
+        for node in dfs(adj,n,sequence=(i for i in [component]),list_visited=True):
             a,b = min(node,component),max(node,component),
             pairs[(a,b)]=True
-        for node in visitedr:
+        for node in dfs(adjr,n,sequence=(i for i in [component]),list_visited=True):
             a,b = min(node,component),max(node,component),
             pairs[(a,b)]=True      
     for k,v in pairs.items():

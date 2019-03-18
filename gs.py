@@ -15,19 +15,25 @@
 #
 #    gs 	General Sink
 
-from graphs import create_adj
+from graphs import scc,dfs
 
 def gs(edges):
-    adj = create_adj(edges)
+       n,_            = edges[0]
+       ccnum,adj,adjr = scc(edges)
+       for component in ccnum:
+              visited = dfs(adj,n,sequence=(i for i in [component]))
+              if len(visited)==n:
+                     return component
+       return -1
 
 if __name__=='__main__':
-    graphs = [
-        [(3, 2),
-         (3 ,2),
-         (2, 1)],
-       
-        [(3, 2),
-         (3, 2),
-         (1, 2)]   
-    ]
- 
+       graphs = [
+           [(3, 2),
+            (3 ,2),
+            (2, 1)],
+          
+           [(3, 2),
+            (3, 2),
+            (1, 2)]   
+       ]
+       print (' '.join([str(gs(edges)) for edges in graphs]))
