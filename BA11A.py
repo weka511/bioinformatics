@@ -26,12 +26,11 @@ def SpectrumGraph(spectrum):
                 if not value in product:
                     product[value]=[]
                 for protein in reversed[diff]:
-                    product[value].append((diff,protein))
+                    product[value].append((spectrum[j],protein))
     reversed={}
     for k,v in integer_masses.items():
         if not v in reversed:
-            reversed[v]=[]
-        reversed[v].append(k)
+            reversed[v]=[k]
     product = {}
     add()
     for i in range(len(spectrum)):
@@ -39,7 +38,7 @@ def SpectrumGraph(spectrum):
     return product
 
 if __name__=='__main__':
-    graph = SpectrumGraph([57, 71, 154, 185, 301, 332, 415, 429, 486])
+    graph = SpectrumGraph([87, 137, 200, 208, 287, 355, 400, 483, 529, 612, 685, 725, 832, 856, 959, 960, 1063, 1072, 1120, 1159, 1221, 1260, 1308, 1317, 1420, 1421, 1524, 1548, 1655, 1695, 1768, 1851, 1897, 1980, 2025, 2093, 2172, 2180, 2243, 2293, 2380])
     for k in sorted(graph.keys()):
         for w,p in graph[k]:
             print ('{0}->{1}:{2}'.format(k,w,p))
