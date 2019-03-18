@@ -103,7 +103,7 @@ NB: functions generally use zero based indexing; Rosalind uses 1-based.
 |BA9B|BA9B.py | [Implement TrieMatching](http://rosalind.info/problems/ba9b/) |
 |10|-|Why have biologists still not developed an HIV vaccine?|
 |11|-|Was T.rex just a big chicken?|
-|BA11A|BA11A.py | [Spectrum Graph Construction](http://rosalind.info/problems/ba11a/) |
+|BA11A|BA11A.py spectrum.py| [Spectrum Graph Construction](http://rosalind.info/problems/ba11a/) |
 
 ## Other Rosalind Problems
 
@@ -214,6 +214,7 @@ NB: functions generally use zero based indexing; Rosalind uses 1-based.
 |README.md|This file|
 |rosalind.py|Shared code|
 |rosalind.wpr|WingWare Project File |
+|spectrum.py|Utilites for mass spectroscopy|
 
 ## Other stuff
 
