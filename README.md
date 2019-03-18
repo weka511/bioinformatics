@@ -104,6 +104,7 @@ NB: functions generally use zero based indexing; Rosalind uses 1-based.
 |10|-|Why have biologists still not developed an HIV vaccine?|
 |11|-|Was T.rex just a big chicken?|
 |BA11A|BA11A.py spectrum.py| [Spectrum Graph Construction](http://rosalind.info/problems/ba11a/) |
+|BA11B|BA11B.py spectrum.py| [Implement DecodingIdealSpectrum](http://rosalind.info/problems/ba11b/) |
 
 ## Other Rosalind Problems
 

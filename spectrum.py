@@ -17,7 +17,18 @@
 
 from reference_tables import integer_masses
 
+# SpectrumGraph
+#
+# Construct the Graph of a Spectrum
+# Input: A space-delimited list of integers Spectrum.
+#
+# Return: Graph(Spectrum)
+
 def SpectrumGraph(spectrum):
+    # add
+    #
+    # Add one point to graph
+    
     def add(index=-1):
         value = spectrum[index] if index>-1 else 0
         for j in range(index+1,len(spectrum)):
@@ -36,3 +47,16 @@ def SpectrumGraph(spectrum):
     for i in range(len(spectrum)):
         add(i)
     return product
+
+# DecodeIdealSpectrum
+#
+# Reconstruct a peptide from its ideal spectrum.
+#
+# Input: A  list of integers, Spectrum.
+#
+# Return: An amino acid string with an ideal spectrum that matches Spectrum.
+
+def DecodeIdealSpectrum(Spectrum):
+    graph = SpectrumGraph(Spectrum)
+    
+    return ''
