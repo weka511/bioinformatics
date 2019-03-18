@@ -16,7 +16,7 @@
 #    GLOB Global Alignment with Scoring Matrix
 
 if __name__=='__main__':
-    from  rosalind_old import highest_scoring_global_alignment
+    from  align import highest_scoring_global_alignment
     from Bio import SeqIO
     inFile = open(r'C:\Users\Simon\Downloads\rosalind_glob.txt','r')
     strings = []
