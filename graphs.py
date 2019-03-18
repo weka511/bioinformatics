@@ -12,6 +12,8 @@
 #
 #    You should have received a copy of the GNU General Public License
 #    along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>
+#
+#    Function to solve graphs problems from http://rosalind.info/problems/topics/graphs/
 
 from helpers import create_adjacency
 from align import topological_order
@@ -381,6 +383,9 @@ def scc(edges):
         ccnum[v-1]  = next(cc)
 
     n,_     = edges[0]
+    
+    # Find sink nodes by looking for source nodes of the reversed graph
+    
     clock   = counter()
     pre     = [-1 for v in range(n+1)]   # Zero element won't be used, but it does simplify indexing
     post    = [-1 for v in range(n+1)]   # Zero element won't be used, but it does simplify indexing 
@@ -390,6 +395,8 @@ def scc(edges):
       previsit = incr_pre,
       postvisit = incr_post)
 
+    # construct components
+    
     cc       = counter()
     ccnum    = [-1 for v in range(n+1)]   # Zero element won't be used, but it does simplify indexing
     adj         = create_adj(edges)
@@ -402,39 +409,51 @@ def scc(edges):
 #    sc
 #
 #    Semi-Connected Graph
+#
 #    A directed graph is semi-connected if for all pairs of vertices i,j there is either a path from i to j or a path from j to i
+#
 # Input: a simple directed graphs with at most 1 thousand
-#               vertices each in the edge list format.
+#               vertices in the edge list format.
 #
 # Return: 1 if the graph is semi-connected and -1  otherwise.
 
 def sc(edges):
     n,_            = edges[0]
-    ccnum,adj,adjr = scc(edges)
-    pairs          = {}
+    ccnum,adj,adjr = scc(edges)  # Graph is semi connected iff the DAG of its strongly connected components is
+    
+    pairs          = {}   # Build a structure of pairs of strongly connected components
     for i in range(len(ccnum)):
         for j in range(i+1,len(ccnum)):
             pairs[(ccnum[i],ccnum[j])] = False
+            
     for component in ccnum:
-        for node in dfs(adj,n,sequence=(i for i in [component]),list_visited=True):
+        for node in dfs(adj,n,sequence=(i for i in [component])):  # find links in one direction
             a,b = min(node,component),max(node,component),
             pairs[(a,b)]=True
-        for node in dfs(adjr,n,sequence=(i for i in [component]),list_visited=True):
+        for node in dfs(adjr,n,sequence=(i for i in [component])): # now check t'other
             a,b = min(node,component),max(node,component),
-            pairs[(a,b)]=True      
-    for k,v in pairs.items():
+            pairs[(a,b)]=True 
+            
+    for k,v in pairs.items():  # Is any pair unlinked?
         if not v: return -1
+        
     return 1
 
-#    gs
+# gs
 #
 # General Sink
-
+#
+# Input: a simple directed graphs with at most 1,000 vertices and 2,000 edges in the edge list format.
+# 
+# Return: a vertex from which all other vertices are reachable (if such a vertex exists) and -1 otherwise.
+#
+#
 def gs(edges):
     n,_         = edges[0]
-    ccnum,adj,_ = scc(edges)
+    ccnum,adj,_ = scc(edges) # We need test only one vertex from each simply connected component
+    
     for component in ccnum:
-        visited = dfs(adj,n,sequence=(i for i in [component]))
-        if len(visited)==n:
+        if len(dfs(adj,n,sequence=(i for i in [component])))==n:
             return component
+        
     return -1
