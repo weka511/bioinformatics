@@ -17,6 +17,7 @@
 
 from reference_tables import integer_masses
 from graphs import dfs
+#from helpers import linearSpectrum
 
 # SpectrumGraph
 #
@@ -49,6 +50,16 @@ def SpectrumGraph(spectrum):
         add(i)
     return product
 
+def linearSpectrum(peptide):
+    def getSpectrum(peptide):
+        spectrum = set()
+        for i in range(len(peptide)):
+            spectrum.add(sum(peptide[:i]))
+            spectrum.add(sum(peptide[i:]))
+     
+        return sorted(list(spectrum))
+    return getSpectrum( [integer_masses[p] for p in peptide]) if peptide.isalpha() else getSpectrum(peptide)
+
 # DecodeIdealSpectrum
 #
 # Reconstruct a peptide from its ideal spectrum.
@@ -73,4 +84,12 @@ def DecodeIdealSpectrum(Spectrum):
 
     adj = SpectrumGraph(Spectrum)
     paths = bfs(adj)
-    return ''.join(s for (_,s) in paths[0])
+    for path in paths:
+        peptide            = ''.join(s for (_,s) in path)
+        peptide_n          = [integer_masses[p] for p in peptide] 
+        generated_spectrum = linearSpectrum(peptide_n)
+        if generated_spectrum[1:]==Spectrum:
+            return peptide
+        print (peptide)
+        print (generated_spectrum)
+    return None
