@@ -58,14 +58,14 @@ def SpectrumGraph(spectrum):
 # Return: An amino acid string with an ideal spectrum that matches Spectrum.
 
 def DecodeIdealSpectrum(Spectrum):
-    def bfs(adj,paths = [[0]]):
+    def bfs(adj,paths = [[(0,'')]]):
         while True:
             new_paths=[]
             for path in paths:
-                a = path[-1]
+                a,_ = path[-1]
                 if a in adj:
-                    for b,_ in adj[a]:
-                        new_paths.append(path + [b])
+                    for b,c in adj[a]:
+                        new_paths.append(path + [(b,c)])
             if len(new_paths)==0:
                 return paths
             else:
@@ -73,4 +73,4 @@ def DecodeIdealSpectrum(Spectrum):
 
     adj = SpectrumGraph(Spectrum)
     paths = bfs(adj)
-    return ''
+    return ''.join(s for (_,s) in paths[0])
