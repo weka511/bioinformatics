@@ -17,7 +17,6 @@
 
 from reference_tables import integer_masses
 from graphs import dfs
-#from helpers import linearSpectrum
 
 # SpectrumGraph
 #
@@ -70,6 +69,7 @@ def linearSpectrum(peptide):
 
 def DecodeIdealSpectrum(Spectrum):
     def bfs(adj,paths = [[(0,'')]]):
+        closed_paths = []
         while True:
             new_paths=[]
             for path in paths:
@@ -77,19 +77,17 @@ def DecodeIdealSpectrum(Spectrum):
                 if a in adj:
                     for b,c in adj[a]:
                         new_paths.append(path + [(b,c)])
+                else:
+                    closed_paths.append(path)
             if len(new_paths)==0:
-                return paths
+                return paths + closed_paths
             else:
                 paths = new_paths
 
-    adj = SpectrumGraph(Spectrum)
-    paths = bfs(adj)
-    for path in paths:
+    for path in bfs(SpectrumGraph(Spectrum)):
         peptide            = ''.join(s for (_,s) in path)
-        peptide_n          = [integer_masses[p] for p in peptide] 
-        generated_spectrum = linearSpectrum(peptide_n)
+        generated_spectrum = linearSpectrum(peptide)
         if generated_spectrum[1:]==Spectrum:
             return peptide
-        print (peptide)
-        print (generated_spectrum)
+ 
     return None
