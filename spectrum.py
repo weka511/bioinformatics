@@ -91,3 +91,34 @@ def DecodeIdealSpectrum(Spectrum):
             return peptide
  
     return None
+
+# CreatePeptideVector
+#
+# Convert a Peptide into a Peptide Vector 
+#
+# Convert a peptide into a binary peptide vector.
+#
+# Given an amino acid string Peptide = a1 . . . an of length n, we will represent its
+# prefix masses using a binary peptide vector Peptide' with mass(Peptide) coordinates.
+# This vector contains a 1 at each of the n prefix coordinates
+#
+# mass(a1), mass(a1 a2), . . . , mass(a1 a2 . . . an ) ,
+# and it contains a 0 in each of the remaining noise coordinates.
+#
+# Input: A peptide P.
+#
+# Return: The peptide vector of P.
+#
+# Note: In this chapter, all dataset problems implicitly use the standard integer-valued mass
+# table for the regular twenty amino acids. Examples sometimes use imaginary amino
+# acids X and Z having respective integer masses 4 and 5.
+
+def CreatePeptideVector(peptide):
+    extended_masses={'X':4,'Z':5}
+    extended_masses.update(integer_masses)
+    masses = [extended_masses[p] for p in peptide]
+    result = []
+    for m in masses:
+        result = result + ([0]*(m-1))
+        result.append(1)
+    return result
