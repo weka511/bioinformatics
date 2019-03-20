@@ -25,24 +25,28 @@ from graphs import dfs
 #
 # Return: Graph(Spectrum)
 
+def invert(masses):
+    inverted={}
+    for k,v in masses.items():
+        if not v in inverted:
+            inverted[v]=[k]
+    return inverted
+
 def SpectrumGraph(spectrum):
     # add
     #
     # Add one point to graph
-    
+    inverted = invert(integer_masses)
     def add(index=-1):
         value = spectrum[index] if index>-1 else 0
         for j in range(index+1,len(spectrum)):
             diff = spectrum[j]-value
-            if diff in reversed:
+            if diff in inverted:
                 if not value in product:
                     product[value]=[]
-                for protein in reversed[diff]:
+                for protein in inverted[diff]:
                     product[value].append((spectrum[j],protein))
-    reversed={}
-    for k,v in integer_masses.items():
-        if not v in reversed:
-            reversed[v]=[k]
+
     product = {}
     add()
     for i in range(len(spectrum)):
@@ -113,12 +117,28 @@ def DecodeIdealSpectrum(Spectrum):
 # table for the regular twenty amino acids. Examples sometimes use imaginary amino
 # acids X and Z having respective integer masses 4 and 5.
 
-def CreatePeptideVector(peptide):
-    extended_masses={'X':4,'Z':5}
+def create_extended():
+    extended_masses = {'X':4,'Z':5}
     extended_masses.update(integer_masses)
+    return extended_masses
+
+def CreatePeptideVector(peptide):
+    extended_masses = create_extended()
     masses = [extended_masses[p] for p in peptide]
     result = []
     for m in masses:
         result = result + ([0]*(m-1))
         result.append(1)
     return result
+
+# CreatePeptide
+#
+# Convert a Peptide Vector into a Peptide
+#
+def CreatePeptide(vector):
+    extended_masses = create_extended()
+    masses_offset   = [i+1 for i in range(len(vector)) if vector[i]>0]
+    masses          = [b-a for (a,b) in zip([0]+masses_offset[:-1],masses_offset)]
+    inverted_masses = invert(extended_masses)
+    return ''.join( [str(inverted_masses[m][0]) for m in masses])
+    

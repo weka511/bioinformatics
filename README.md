@@ -106,7 +106,7 @@ NB: functions generally use zero based indexing; Rosalind uses 1-based.
 |BA11A|BA11A.py spectrum.py| [Spectrum Graph Construction](http://rosalind.info/problems/ba11a/) |
 |BA11B|BA11B.py spectrum.py| [Implement DecodingIdealSpectrum](http://rosalind.info/problems/ba11b/) |
 |BA11C|BA11C.py spectrum.py| [Convert a Peptide into a Peptide Vector ](http://rosalind.info/problems/ba11c/) |
-
+|BA11D|BA11D.py spectrum.py| [Convert a Peptide Vector into a Peptide ](http://rosalind.info/problems/ba11d/) |
 
 ## Other Rosalind Problems
 
