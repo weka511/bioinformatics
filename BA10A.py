@@ -14,15 +14,13 @@
 # along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>
 
 def ProbabilityHiddenPath(path,Transition):
-    def prob(head):
+    def prob():
         result=1
-        for i in range(len(path)):
-            if i>0:
-                result *= Transition[(head,path[i])]
-            head = path[i]
-        #print (result)
+        for i in range(1,len(path)):
+            result *= Transition[(path[i-1],path[i])]
+ 
         return result
-    return 0.5*prob('A') #+ 0.5*prob('B')
+    return 0.5*prob()
 
 if __name__=='__main__':
     Transition = {
@@ -32,7 +30,7 @@ if __name__=='__main__':
     print (ProbabilityHiddenPath('AABBBAABABAAAABBBBAABBABABBBAABBAAAABABAABBABABBAB',Transition))
     
     Transition1 = {
-        ('A','A'): 0.863, ('A','B'):   0.137,
-        ('B','A'): 0.511, ('B','B'):   0.489,
+        ('A','A'): 0.497, ('A','B'):   0.503,
+        ('B','A'): 0.263, ('B','B'):   0.737,
     }
-    print (ProbabilityHiddenPath('BBABBBABBAABABABBBAABBBBAAABABABAAAABBBBBAABBABABB',Transition1))    
+    print (ProbabilityHiddenPath('BBABBAAABBAABBBBABABBBBAAABBBBBBAABAABAAABABAABBBA',Transition1))    
