@@ -15,7 +15,7 @@
 
 # BA10A Compute the Probability of a Hidden Path
 
-from hiddenmarkov import ProbabilityHiddenPath
+from hmm import ProbabilityHiddenPath
 
 if __name__=='__main__':
     Transition = {

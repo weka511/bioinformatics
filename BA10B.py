@@ -15,7 +15,7 @@
 
 # BA10B Compute the Probability of an Outcome Given a Hidden Path 
 
-from hiddenmarkov import ProbabilityOutcomeGivenHiddenPath 
+from hmm import ProbabilityOutcomeGivenHiddenPath 
 
 if __name__=='__main__':
     Emission = {
