@@ -13,11 +13,9 @@
 # You should have received a copy of the GNU General Public License
 # along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>
 
-def ProbabilityHiddenPath(path,Transition):
-    result = 0.5
-    for i in range(1,len(path)):
-        result *= Transition[(path[i-1],path[i])]
-    return result
+# BA10A Compute the Probability of a Hidden Path
+
+from hiddenmarkov import ProbabilityHiddenPath
 
 if __name__=='__main__':
     Transition = {

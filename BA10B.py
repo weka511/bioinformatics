@@ -13,11 +13,9 @@
 # You should have received a copy of the GNU General Public License
 # along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>
 
-def ProbabilityOutcomeGivenHiddenPath(string,path,Emission):
-    result = 1
-    for i in range(0,len(path)):
-        result *= Emission[(path[i],string[i])]
-    return result  
+# BA10B Compute the Probability of an Outcome Given a Hidden Path 
+
+from hiddenmarkov import ProbabilityOutcomeGivenHiddenPath 
 
 if __name__=='__main__':
     Emission = {

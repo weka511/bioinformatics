@@ -102,8 +102,8 @@ NB: functions generally use zero based indexing; Rosalind uses 1-based.
 |BA9A|BA9A.py | [Construct a Trie from a Collection of Patterns](http://rosalind.info/problems/ba9a/) |
 |BA9B|BA9B.py | [Implement TrieMatching](http://rosalind.info/problems/ba9b/) |
 |10|-|Why have biologists still not developed an HIV vaccine?|
-|BA10A|BA10A.py| [Compute the Probability of a Hidden Path](http://rosalind.info/problems/ba10a/) |
-|BA10B|BA10B.py| [Compute the Probability of an Outcome Given a Hidden Path](http://rosalind.info/problems/ba10b/) |
+|BA10A|BA10A.py hiddenmarkov.py| [Compute the Probability of a Hidden Path](http://rosalind.info/problems/ba10a/) |
+|BA10B|BA10B.py hiddenmarkov.py| [Compute the Probability of an Outcome Given a Hidden Path](http://rosalind.info/problems/ba10b/) |
 |11|-|Was T.rex just a big chicken?|
 |BA11A|BA11A.py spectrum.py| [Spectrum Graph Construction](http://rosalind.info/problems/ba11a/) |
 |BA11B|BA11B.py spectrum.py| [Implement DecodingIdealSpectrum](http://rosalind.info/problems/ba11b/) |
@@ -214,6 +214,7 @@ NB: functions generally use zero based indexing; Rosalind uses 1-based.
 |align.py|Common functions for [alignment](http://rosalind.info/problems/topics/alignment/) |
 |graphs.py|Common functions for [graphs](http://rosalind.info/problems/topics/graphs/) |
 |helpers.py|Utilities for formatting output, parsing input, etc |
+|hiddenmarkov.py|Hidden Markov Models|
 |LICENSE|License Agreement|
 |newick.py|Parser for files in [Newick format](http://evolution.genetics.washington.edu/phylip/newicktree.html) |
 |README.md|This file|
