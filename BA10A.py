@@ -14,13 +14,10 @@
 # along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>
 
 def ProbabilityHiddenPath(path,Transition):
-    def prob():
-        result=1
-        for i in range(1,len(path)):
-            result *= Transition[(path[i-1],path[i])]
- 
-        return result
-    return 0.5*prob()
+    result = 0.5
+    for i in range(1,len(path)):
+        result *= Transition[(path[i-1],path[i])]
+    return result
 
 if __name__=='__main__':
     Transition = {
