@@ -34,21 +34,28 @@ def ProbabilityOutcomeGivenHiddenPath(string,path,Emission):
 # Implement the Viterbi Algorithm 
 
 def Viterbi(xs,alphabet,States,Transition,Emission):
-    def best(k,prev,x):
-        return max([s[-1][l]*Transition[(States[l],k)]*Emission[(k,x)] for l in range(len(States))])
-    s_source = 1
-    s        = []
-    path     = []
-    s.append([s_source*(1/len(alphabet))*Emission[(k,xs[0])] for k in States])
-    for ix in range(1,len(xs)):
-        s.append([best(k,xs[ix-1],xs[ix]) for k in States])
-    result = []
-    for sample in s:
-        state = States[0]
-        best  = sample[0]
-        for i in range(1,len(States)):
-            if sample[i]>best:
-                state = States[i]
-                best  = sample[i]
-        result.append(state)
-    return ''.join(result)
+    
+    def calculateproduct_weights(s_source = 1):
+        def product_weight(k,x):
+            return max([s[-1][l] * Transition[(States[l],k)] * Emission[(k,x)] for l in range(len(States))])
+        
+        s = []  # first index is position, 2nd state
+    
+        s.append([s_source * (1/len(States)) * Emission[(k,xs[0])] for k in States])
+        for x in xs[1:]:
+            s.append([product_weight(k,x) for k in States])
+        return s
+    
+    def find_best_path(s):
+        path = []
+        for sample in s:
+            state = States[0]
+            best  = sample[0]
+            for i in range(1,len(States)):
+                if sample[i]>=best:
+                    state = States[i]
+                    best  = sample[i]
+            path.append(state)
+        return path
+    
+    return ''.join(find_best_path(calculateproduct_weights()))

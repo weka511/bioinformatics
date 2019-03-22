@@ -19,12 +19,25 @@ from hmm import Viterbi
 
 if __name__=='__main__':
     Transition = {
-        ('A','A'): 0.641, ('A','B'):   0.359,
-        ('B','A'): 0.729, ('B','B'):   0.271,
+        ('A','A') : 0.641, ('A','B') :   0.359,
+        ('B','A') : 0.729, ('B','B') :   0.271,
     }
     Emission = {
-        ('A','x'): 0.117, ('A','y'):   0.691, ('A','z') : 0.192,
-        ('B','x'): 0.097, ('B','y'):   0.42, ('B','z') : 0.483,
+        ('A','x') : 0.117, ('A','y') :   0.691, ('A','z') : 0.192,
+        ('B','x') : 0.097, ('B','y') :   0.42,  ('B','z') : 0.483,
     }    
     print (Viterbi('xyxzzxyxyy','xyz','AB',Transition,Emission))
+    
+    Transition1 = {
+        ('A','A') : 0.634, ('A','B') :   0.366,
+        ('B','A') : 0.387, ('B','B') :   0.613,
+    }
+    Emission1 = {
+        ('A','x') : 0.532, ('A','y') :   0.226, ('A','z') : 0.241,
+        ('B','x') : 0.457, ('B','y') :   0.192, ('B','z') : 0.351,
+    }    
+    print (Viterbi('zxxxxyzzxyxyxyzxzzxzzzyzzxxxzxxyyyzxyxzyxyxyzyyyyzzyyyyzzxzxzyzzzzyxzxxxyxxxxyyzyyzyyyxzzzzyzxyzzyyy',
+                   'xyz','AB',Transition1,Emission1))
+    # AAAAAAAAAAAAAABBBBBBBBBBBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABBBBBBBBBBBAAAAAAAAAAAAAAAAAAAAABBBBBBBBBBAAA
+   
     
