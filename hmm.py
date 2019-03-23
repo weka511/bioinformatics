@@ -17,6 +17,8 @@
 
 # BA10A Compute the Probability of a Hidden Path
 
+from numpy import argmax
+
 def ProbabilityHiddenPath(path,Transition):
     result = 0.5
     for i in range(1,len(path)):
@@ -31,7 +33,7 @@ def ProbabilityOutcomeGivenHiddenPath(string,path,Emission):
         result *= Emission[(path[i],string[i])]
     return result 
 
-# Implement the Viterbi Algorithm 
+# BA10C Implement the Viterbi Algorithm 
 
 def Viterbi(xs,alphabet,States,Transition,Emission):
     
@@ -46,16 +48,24 @@ def Viterbi(xs,alphabet,States,Transition,Emission):
             s.append([product_weight(k,x) for k in States])
         return s
     
-    def find_best_path(s):
-        path = []
-        for sample in s:
-            state = States[0]
-            best  = sample[0]
-            for i in range(1,len(States)):
-                if sample[i]>=best:
-                    state = States[i]
-                    best  = sample[i]
-            path.append(state)
-        return path
-    
-    return ''.join(find_best_path(calculateproduct_weights()))
+     
+    def backtrack(s):
+        n     = len(s) - 1
+        state = argmax(s[n])
+        path  = [States[state]]
+        while True:
+            ps = [s[n-1][l] * Transition[(States[l],States[state])]  for l in range(len(States))]
+            state = argmax(ps)
+            path.append(States[state])
+            n-=1
+            if n<=0: return path[::-1]
+        #for step in s[::-1]:
+            #state = States[0]
+            #best  = step[0]
+            #for i in range(1,len(States)):
+                #if step[i]>best:
+                    #state = States[i]
+                    #best  = step[i]
+            #path.append(state)
+        
+    return ''.join(backtrack(calculateproduct_weights()))

@@ -18,6 +18,29 @@
 from hmm import Viterbi
 
 if __name__=='__main__':
+    from helpers import create_strings
+    
+    strings    = create_strings(ext=3)
+    xs         = strings[0]
+    alphabet   = strings[2].split()
+    States     = strings[4].split()
+    Transition = {}
+    i          = 0
+    while i<len(States):
+        items = strings[7+i].split()
+        for j in range(1,len(items)):
+            Transition[(items[0],States[j-1])] = float(items[j])
+        i+=1
+    i+=9
+    
+    Emission   = {}
+    while i<len(strings):
+        items = strings[i].split()
+        for j in range(1,len(items)):        
+            Emission[(items[0],alphabet[j-1])] = float(items[j])
+        i+=1  
+    print ( Viterbi(xs,alphabet,States,Transition,Emission))
+    print ()
     Transition = {
         ('A','A') : 0.641, ('A','B') :   0.359,
         ('B','A') : 0.729, ('B','B') :   0.271,
@@ -39,16 +62,10 @@ if __name__=='__main__':
     print (Viterbi('zxxxxyzzxyxyxyzxzzxzzzyzzxxxzxxyyyzxyxzyxyxyzyyyyzzyyyyzzxzxzyzzzzyxzxxxyxxxxyyzyyzyyyxzzzzyzxyzzyyy',
                    'xyz','AB',Transition1,Emission1))
     # AAAAAAAAAAAAAABBBBBBBBBBBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABBBBBBBBBBBAAAAAAAAAAAAAAAAAAAAABBBBBBBBBBAAA
+    # AAAAAAAAAAAAAABBBBBBBBBBBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABBBBBBBBBBBAAAAAAAAAAAAAAAAAAAAABBBBBBBBBBAAA
+
     
-    Transition2 = {
-        ('A','A') : 0.634, ('A','B') :   0.366,
-        ('B','A') : 0.387, ('B','B') :   0.613,
-    }
-    Emission2 = {
-        ('A','x') : 0.532, ('A','y') :   0.226, ('A','z') : 0.241,
-        ('B','x') : 0.457, ('B','y') :   0.192, ('B','z') : 0.351,
-    }    
-    print (Viterbi('',
-                   'xyz','AB',Transition2,Emission2))    
+    
+
    
     
