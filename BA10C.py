@@ -20,7 +20,7 @@ from hmm import Viterbi
 if __name__=='__main__':
     from helpers import create_strings
     
-    strings    = create_strings(ext=3)
+    strings    = create_strings(ext=4)
     xs         = strings[0]
     alphabet   = strings[2].split()
     States     = strings[4].split()

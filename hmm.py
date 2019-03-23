@@ -35,7 +35,19 @@ def ProbabilityOutcomeGivenHiddenPath(string,path,Emission):
 
 # BA10C Implement the Viterbi Algorithm 
 
+# Viterbi
+#
+# Input: A string x, followed by the alphabet from which x was constructed, 
+#        followed by the states States, transition matrix Transition,
+#        and emission matrix Emission of an HMM.
+#
+# Return: A path that maximizes the (unconditional) probability Pr(x, p) over all possible paths p
+
 def Viterbi(xs,alphabet,States,Transition,Emission):
+    
+    # calculateproduct_weights
+    #
+    # Calculate array of weights by position in string and state
     
     def calculateproduct_weights(s_source = 1):
         def product_weight(k,x):
@@ -48,7 +60,10 @@ def Viterbi(xs,alphabet,States,Transition,Emission):
             s.append([product_weight(k,x) for k in States])
         return s
     
-     
+    # backtrack
+    # 
+    # Find most likely path through starte space by backtracking
+    
     def backtrack(s):
         n     = len(s) - 1
         state = argmax(s[n])
@@ -59,13 +74,5 @@ def Viterbi(xs,alphabet,States,Transition,Emission):
             path.append(States[state])
             n-=1
             if n<=0: return path[::-1]
-        #for step in s[::-1]:
-            #state = States[0]
-            #best  = step[0]
-            #for i in range(1,len(States)):
-                #if step[i]>best:
-                    #state = States[i]
-                    #best  = step[i]
-            #path.append(state)
-        
+    
     return ''.join(backtrack(calculateproduct_weights()))
