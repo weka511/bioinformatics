@@ -17,17 +17,14 @@
 
 from Bio.SubsMat.MatrixInfo import blosum62
 from numpy import argmax
+from align import score
 
 def FindMiddleEdge(s,t,replace_score=blosum62,indel_cost=5):
-    def score(pair):
-        def reverse(pair):
-            a,b=pair
-            return (b,a)
-        return replace_score[pair] if pair in replace_score else replace_score[reverse(pair)]     
+ 
     def update(j,col1,col2):
         col2[0] = j*indel_cost
         for i in range(1,len(s)+1):
-            scores = [col1[i-1] + score((s[i-1],t[j-1])),
+            scores = [col1[i-1] + score((s[i-1],t[j-1]),replace_score=replace_score),
                       col2[i-1] + indel_cost,
                       col1[i]   + indel_cost
             ]

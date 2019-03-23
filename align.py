@@ -337,6 +337,12 @@ def create_distance_matrix(nrows,ncolumns):
 def get_indel_cost(sigma,delta,i,j,di,dj,moves):
     return di,dj,sigma
 
+def score(pair,replace_score=blosum62):
+    def reverse(pair):
+        a,b=pair
+        return (b,a)
+    return replace_score[pair] if pair in replace_score else replace_score[reverse(pair)] 
+
 def build_matrix(s,t,matrix,replace_score=createSimpleDNASubst(),indel_cost=1,get_indel_cost=get_indel_cost):
     def init_indel_costs():
         if isinstance(indel_cost,tuple):
@@ -345,11 +351,7 @@ def build_matrix(s,t,matrix,replace_score=createSimpleDNASubst(),indel_cost=1,ge
     
     sigma,delta = init_indel_costs()
     moves = {}
-    def score(pair):
-        def reverse(pair):
-            a,b=pair
-            return (b,a)
-        return replace_score[pair] if pair in replace_score else replace_score[reverse(pair)] 
+
     for i in range(len(s)+1):
         for j in range(len(t)+1):
             if i==0 and j==0: next
@@ -366,7 +368,8 @@ def build_matrix(s,t,matrix,replace_score=createSimpleDNASubst(),indel_cost=1,ge
                 di_left,dj_left,cost_left   = get_indel_cost(sigma,delta,i,j,0,-1,moves)
                 scores                      = [matrix[i+di_down][j+dj_down]   - cost_down,
                                                matrix[i+di_left][j+dj_left]   - cost_left,
-                                               matrix[i-1][j-1] + score((s[i-1],t[j-1]))]
+                                               matrix[i-1][j-1]               + score((s[i-1],t[j-1]),
+                                                                                      replace_score=replace_score)]
                 froms                       = [(i+di_down,j+dj_down,di_down,dj_down),
                                                (i+di_left,j+dj_left,di_left,dj_left),
                                                (i-1,j-1,-1,-1)]
