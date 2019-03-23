@@ -76,3 +76,4 @@ def Viterbi(xs,alphabet,States,Transition,Emission):
             if n<=0: return path[::-1]
     
     return ''.join(backtrack(calculateproduct_weights()))
+

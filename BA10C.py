@@ -16,29 +16,12 @@
 # BA10C Implement the Viterbi Algorithm 
 
 from hmm import Viterbi
-
+from helpers import create_hmm
+ 
 if __name__=='__main__':
-    from helpers import create_strings
-    
-    strings    = create_strings(ext=4)
-    xs         = strings[0]
-    alphabet   = strings[2].split()
-    States     = strings[4].split()
-    Transition = {}
-    i          = 0
-    while i<len(States):
-        items = strings[7+i].split()
-        for j in range(1,len(items)):
-            Transition[(items[0],States[j-1])] = float(items[j])
-        i+=1
-    i+=9
-    
-    Emission   = {}
-    while i<len(strings):
-        items = strings[i].split()
-        for j in range(1,len(items)):        
-            Emission[(items[0],alphabet[j-1])] = float(items[j])
-        i+=1  
+   
+    xs,alphabet,States,Transition,Emission=create_hmm(ext=4)
+
     print ( Viterbi(xs,alphabet,States,Transition,Emission))
     print ()
     Transition = {

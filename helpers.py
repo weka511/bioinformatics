@@ -703,3 +703,28 @@ def read_matrix(problem=os.path.basename(sys.argv[0]).split('.')[0],
             D.append([conv(s) for s in line.split()])
             
     return (params,D)
+
+def create_hmm(problem=os.path.basename(sys.argv[0]).split('.')[0],
+               path=os.path.join(os.path.expanduser('~'),'Downloads'),
+               ext=None,
+               name=None):
+    strings    = create_strings(problem=problem,path=path,ext=ext,name=name)
+    xs         = strings[0]
+    alphabet   = strings[2].split()
+    States     = strings[4].split()
+    Transition = {}
+    i          = 0
+    while i<len(States):
+        items = strings[7+i].split()
+        for j in range(1,len(items)):
+            Transition[(items[0],States[j-1])] = float(items[j])
+        i+=1
+    i+=9
+    
+    Emission   = {}
+    while i<len(strings):
+        items = strings[i].split()
+        for j in range(1,len(items)):        
+            Emission[(items[0],alphabet[j-1])] = float(items[j])
+        i+=1
+    return (xs,alphabet,States,Transition,Emission)
