@@ -62,7 +62,7 @@ def Viterbi(xs,alphabet,States,Transition,Emission):
     
     # backtrack
     # 
-    # Find most likely path through starte space by backtracking
+    # Find most likely path through state space by backtracking
     
     def backtrack(s):
         n     = len(s) - 1
