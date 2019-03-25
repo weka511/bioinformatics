@@ -65,11 +65,11 @@ NB: functions generally use zero based indexing; Rosalind uses 1-based.
 |BA5E|align.py|[Find a Highest-Scoring Alignment of Two Strings](http://rosalind.info/problems/ba5e/)|
 |BA5F|align.py|[Find a Highest-Scoring Local Alignment of Two Strings](http://rosalind.info/problems/ba5f/)|
 |BA5G|align.py| [Compute the Edit Distance Between Two Strings](http://rosalind.info/problems/ba5g/) |
-|BA5H|BA5H.py| [Find a Highest-Scoring Fitting Alignment of Two Strings](http://rosalind.info/problems/ba5h/) |   
-|BA5I|BA5I.py|[Find a Highest-Scoring Overlap Alignment of Two Strings](http://rosalind.info/problems/ba5i/)|    
-|BA5J|BA5J.py|[Align Two Strings Using Affine Gap Penalties](http://rosalind.info/problems/ba5j/)|    
+|BA5H|BA5H.py align.py| [Find a Highest-Scoring Fitting Alignment of Two Strings](http://rosalind.info/problems/ba5h/) |   
+|BA5I|BA5I.py align.py|[Find a Highest-Scoring Overlap Alignment of Two Strings](http://rosalind.info/problems/ba5i/)|    
+|BA5J|BA5J.py align.py|[Align Two Strings Using Affine Gap Penalties](http://rosalind.info/problems/ba5j/)|    
 |BA5K|BA5K.py align.py|[Find a Middle Edge in an Alignment Graph in Linear Space](http://rosalind.info/problems/ba5k/) |
-|BA5L|TBP|[Align Two Strings Using Linear Space](http://rosalind.info/problems/ba5l/) |    
+|BA5L|BA5L.py align.py|[Align Two Strings Using Linear Space](http://rosalind.info/problems/ba5l/) |    
 |BA5M|TBP|[Find a Highest-Scoring Multiple Sequence Alignment](http://rosalind.info/problems/ba5m/) | 
 |BA5N |align.py|[Find a Topological Ordering of a DAG](http://rosalind.info/problems/ba5n/) | 
 |6|fragile.py|Are there fragile regions in the human genome?|
