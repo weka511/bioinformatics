@@ -223,8 +223,8 @@ NB: functions generally use zero based indexing; Rosalind uses 1-based.
 |rosalind.wpr|WingWare Project File |
 |spectrum.py|Utilites for mass spectroscopy|
 
-## Other stuff
+## Challenge Problems from the Text
 
-| Name | Description |
-| ------------------------- | ------------------------------------------------|
-| count-kmer-occurrences.py | Determine number of times each kmer appears in DNA, allowing for reverse complements and d-neighbourhoods |
+| # | Name | Description |
+|---:| ------------------------- | --------------------------------------------------------------------|
+| 1| count-kmer-occurrences.py | Determine number of times each kmer appears in DNA, allowing for reverse complements and d-neighbourhoods |
