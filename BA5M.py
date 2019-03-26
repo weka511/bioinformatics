@@ -28,13 +28,13 @@ if __name__=='__main__':
     print (v)
     print (w)
     
-    #s1,u1,v1,w1 = FindHighestScoringMultipleSequenceAlignment('TGTTTAAAAATGTCCGCAACCATTTC',
-                                                              #'GATATAAAACAGGGATAACTGCAATGG',
-                                                              #'CCTGCTACTTTATGCCGTCTCCATATGCG')
-    #print (s1)
-    #print (u1)
-    #print (v1)
-    #print (w1) 
+    s1,u1,v1,w1 = FindHighestScoringMultipleSequenceAlignment('TGTTTAAAAATGTCCGCAACCATTTC',
+                                                              'GATATAAAACAGGGATAACTGCAATGG',
+                                                              'CCTGCTACTTTATGCCGTCTCCATATGCG')
+    print (s1)
+    print (u1)
+    print (v1)
+    print (w1) 
     
     ss=create_strings(ext=3)
     s2,u2,v2,w2 = FindHighestScoringMultipleSequenceAlignment(ss[0],ss[1],ss[2])
