@@ -30,9 +30,9 @@ def FindHighestScoringMultipleSequenceAlignment (u,v,w,score=lambda x,y,z: 1 if 
                     s[i][j-1][k]     + score('-',    v[j-1], '-'),
                     s[i][j][k-1]     + score('-',    '-',    w[k-1]),
                     s[i][j-1][k-1]   + score('-',    v[j-1], w[k-1]),
-                    s[i-1][j][k-1]   + score(u[i-1], '-',   w[k-1]),
-                    s[i-1][j-1][k]   + score(u[i-1],v[j-1], '-'),
-                    s[i-1][j-1][k-1] + score(u[i-1],v[j-1],w[k-1])
+                    s[i-1][j][k-1]   + score(u[i-1], '-',    w[k-1]),
+                    s[i-1][j-1][k]   + score(u[i-1], v[j-1], '-'),
+                    s[i-1][j-1][k-1] + score(u[i-1], v[j-1], w[k-1])
                 ]
                 possible_moves = [
                     (-1,  0,   0),
@@ -44,7 +44,7 @@ def FindHighestScoringMultipleSequenceAlignment (u,v,w,score=lambda x,y,z: 1 if 
                     (-1, -1, -1),
                 ]
                 index          = argmax(scores)
-                s[i][j][k]     =    scores[index]
+                s[i][j][k]     = scores[index]
                 moves[(i,j,k)] = possible_moves[index]
     i  = len(u)
     j  = len(v)
@@ -54,9 +54,9 @@ def FindHighestScoringMultipleSequenceAlignment (u,v,w,score=lambda x,y,z: 1 if 
     w1 = []
     while i>0 and j>0 and k>0:
         di,dj,dk = moves[(i,j,k)]
-        i+=di
-        j+=dj
-        k+=dk
+        i        += di
+        j        += dj
+        k        += dk
         if dj==0 and dk==0:
             u1.append(u[i])
             v1.append('-')
@@ -85,11 +85,30 @@ def FindHighestScoringMultipleSequenceAlignment (u,v,w,score=lambda x,y,z: 1 if 
             u1.append(u[i])
             v1.append(v[j])
             w1.append(w[k])        
-            
+    while i>0:
+        i-=1
+        u1.append(u[i])
+    while j>0:
+        j-=1
+        v1.append(v[j])
+    while k>0:
+        k-=1
+        w1.append(w[k])    
     return s[len(u)][len(v)][len(w)],''.join(u1[::-1]),''.join(v1[::-1]),''.join(w1[::-1])             
             
 
 if __name__=='__main__':
     from helpers import create_strings    
-    print (FindHighestScoringMultipleSequenceAlignment('ATATCCG','TCCGA','ATGTACTG'))
+    s,u,v,w = FindHighestScoringMultipleSequenceAlignment('ATATCCG','TCCGA','ATGTACTG')
+    print (s)
+    print (u)
+    print (v)
+    print (w)
+    s1,u1,v1,w1 = FindHighestScoringMultipleSequenceAlignment('TGTTTAAAAATGTCCGCAACCATTTC',
+                                                              'GATATAAAACAGGGATAACTGCAATGG',
+                                                              'CCTGCTACTTTATGCCGTCTCCATATGCG')
+    print (s1)
+    print (u1)
+    print (v1)
+    print (w1)    
  
