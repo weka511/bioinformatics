@@ -110,5 +110,12 @@ if __name__=='__main__':
     print (s1)
     print (u1)
     print (v1)
-    print (w1)    
+    print (w1) 
+    
+    ss=create_strings()
+    s2,u2,v2,w2 = FindHighestScoringMultipleSequenceAlignment(ss[0],ss[1],ss[2])
+    print (s2)
+    print (u2)
+    print (v2)
+    print (w2)    
  
