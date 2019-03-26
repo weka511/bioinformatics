@@ -70,7 +70,7 @@ NB: functions generally use zero based indexing; Rosalind uses 1-based.
 |BA5J|BA5J.py align.py|[Align Two Strings Using Affine Gap Penalties](http://rosalind.info/problems/ba5j/)|    
 |BA5K|BA5K.py align.py|[Find a Middle Edge in an Alignment Graph in Linear Space](http://rosalind.info/problems/ba5k/) |
 |BA5L|BA5L.py align.py|[Align Two Strings Using Linear Space](http://rosalind.info/problems/ba5l/) (WIP)|    
-|BA5M|BA5M.py align.py|[Find a Highest-Scoring Multiple Sequence Alignment](http://rosalind.info/problems/ba5m/) (WIP) | 
+|BA5M|BA5M.py align.py|[Find a Highest-Scoring Multiple Sequence Alignment](http://rosalind.info/problems/ba5m/) | 
 |BA5N |align.py|[Find a Topological Ordering of a DAG](http://rosalind.info/problems/ba5n/) | 
 |6|fragile.py|Are there fragile regions in the human genome?|
 |BA6A|BA6A.py|[Implement GreedySorting to Sort a Permutation by Reversals ](http://rosalind.info/problems/ba6a/)|
