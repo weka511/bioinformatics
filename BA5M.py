@@ -13,25 +13,16 @@
 #    You should have received a copy of the GNU General Public License
 #    along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>
 
-# gaff.py Global Alignment with Scoring Matrix and Affine Gap Penalty
+# BA5M.py Find a Highest-Scoring Multiple Sequence Alignment 
 
-from align import san_kai
 
-def gaff(s,t):
-    score,s1,t1 = san_kai([s0 for s0 in s],[t0 for t0 in t])
-    return score,''.join(s1),''.join(t1)
+from Bio.SubsMat.MatrixInfo import blosum62
+
+
+def FindHighestScoringMultipleSequenceAlignment (v,w,x,replace_score=blosum62,indel_cost=5):
+    pass
 
 if __name__=='__main__':
-    from helpers import create_strings
-    #score,s,t = gaff('PRTEINS','PRTWPSEIN')
-    strings   = create_strings(fasta=True)
-    #print (strings[0])
-    #print (strings[1])
-    score,s,t = gaff(strings[0],strings[1])
-    print (score)
-    print (s)
-    print (t)        
-    with open('gaff.txt','w') as o:
-        o.write('{0}\n'.format(score))
-        o.write('{0}\n'.format(s))
-        o.write('{0}\n'.format(t))
+    from helpers import create_strings    
+    print (FindHighestScoringMultipleSequenceAlignment('ATATCCG','TCCGA','ATGTACTG'))
+ 

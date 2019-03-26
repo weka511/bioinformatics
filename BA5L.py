@@ -53,9 +53,9 @@ def alignUsingLinearSpace(v,w,replace_score=blosum62,indel_cost=5):
     
     def  LinearSpaceAlignment(top, bottom, left, right):
         if left==right:
-            return None # alignment formed by bottom-top vertical edges
+            return indel_cost*(bottom - top)
         if top==bottom:
-            return None # alignment formed by right-left horizontal edges
+            return indel_cost*(right-left)
         middle           = (left + right)//2
         midNode,midEdge  = MiddleNodeAndEdge(top, bottom, left, right)
   
