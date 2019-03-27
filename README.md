@@ -198,6 +198,7 @@ NB: functions generally use zero based indexing; Rosalind uses 1-based.
 |rstr|rosalind.py|[Matching Random Motifs](http://rosalind.info/problems/rstr/) |
 |scc|scc.py graphs.py|[Strongly Connected Components](http://rosalind.info/problems/scc/)|
 |sc|sc.py graphs.py|[Semi-Connected Graph](http://rosalind.info/problems/sc/)|
+|scsp|scsp.py|[Interleaving Two Motifs](http://rosalind.info/problems/scsp/)|
 |sexl|rosalind.py|[Sex-Linked Inheritance ](http://rosalind.info/problems/sexl/) |
 |splc|rosalind.py|[RNA Splicing](http://rosalind.info/problems/splc/) |
 |sq|sq.py graphics.py|[Square in a Graph](http://rosalind.info/problems/sq/)|
