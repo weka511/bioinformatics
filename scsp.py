@@ -18,17 +18,41 @@
 from align import align
 from reference_tables import createSimpleDNASubst
 
+# scsp
+#
+# Find a shortest common supersequence to two sequences
+#
+# Paramaters: a One sequence as a string
+#             b The other sequence
+#
+# Returns: String - shortest common supersequence to a and b
+#
+# Strategy: find an alignment, using a scoring matrix that penalizes mismatches severely,
+#           but does not penalize indels. Then extend because there may be a few missed characters
+#           at the start of either string
+
 def scsp(s,t):
-      def extend(u1,u2,v1):
-            w = []
+      #  extend
+      #
+      #  Add missing characters to start
+      #
+      #  Parameters: extend_me  List from alignment
+      #              original   Original before alignmnet
+      #              pad_me     Companion - will be padded with leading spaces
+      #
+      # Returns: two strings, the first extended, the second padded
+      
+      def extend(extend_me,original,pad_me):
+            extension = []
             i = 0
-            while u1[0]!=u2[i] and u1[0]!='-':
-                  w.append(u2[i])
+            while extend_me[0]!=original[i] and extend_me[0]!='-':
+                  w.append(original[i])
                   i+=1
-            return w + u1,i*['-']+v1
-      a,b,c = align(s,t,replace_score=createSimpleDNASubst(subst=len(s)+len(t)),indel_cost=0)
-      b1,c1 = extend(b,s,c)
-      c2,b2 = extend(c1,t,b1)
+            return extension + extend_me,i*['-']+pad_me
+      
+      _,b,c          = align(s,t,replace_score=createSimpleDNASubst(subst=len(s)+len(t)),indel_cost=0)
+      b1,c1          = extend(b,s,c)
+      c2,b2          = extend(c1,t,b1)
       super_sequence = [aa if bb=='-' else bb for aa,bb in zip(b2,c2)]
       return ''.join(super_sequence)      
 
