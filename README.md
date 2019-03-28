@@ -101,6 +101,7 @@ NB: functions generally use zero based indexing; Rosalind uses 1-based.
 |9|-|How do we locate disease causing mutations?|
 |BA9A|BA9A.py | [Construct a Trie from a Collection of Patterns](http://rosalind.info/problems/ba9a/) |
 |BA9B|BA9B.py | [Implement TrieMatching](http://rosalind.info/problems/ba9b/) |
+|BA9C|BA9C.py | [Construct the Suffix Tree of a String](http://rosalind.info/problems/ba9c/) |
 |10|-|Why have biologists still not developed an HIV vaccine?|
 |BA10A|BA10A.py hmm.py| [Compute the Probability of a Hidden Path](http://rosalind.info/problems/ba10a/) |
 |BA10B|BA10B.py hmm.py| [Compute the Probability of an Outcome Given a Hidden Path](http://rosalind.info/problems/ba10b/) |
