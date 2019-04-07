@@ -15,56 +15,19 @@
 
 # BA9B Implement TrieMatching
 
+from snp import MatchTries
 from rosalind import trie
 
-def PrefixTreeMatching(Text,Tree):
-    
-    def isLeaf(v):
-        found = False
-        for a,b,c in Tree:
-            if a==v:
-                return False
-            if b==v:
-                found = True
-        return found
-    
-    def edge(v,symbol):
-        for a,b,c in Tree:
-            if a==v and c ==symbol:
-                return b
-        return -1
-    def pattern(v):
-        result=[]
-        return result
-            
-    i = 0
-    v = 0
-    while True:
-        if isLeaf(v):
-            #print (i,v)
-            return True
-            #pattern(v)
-        else:
-            w=edge(v,Text[i])
-            if w>-1:
-                i+=1
-                v=w
-            else:
-                return False
-            
-def MatchTries(s,t):
-    return [i for i in range(len(s)-1) if PrefixTreeMatching(s[i:],t) ]
-                
 if __name__=='__main__':
-    #s = 'AATCGGGTTCAATCGGGGT'
-    #t = trie(['ATCG','GGGT'],one_based=False)
-    #print (MatchTries(s,t))
-    with open('/Users/Simon/Downloads/rosalind_ba9b.txt') as f:
-        strings=[]
-        #f.readline()
-        text = f.readline().strip()
-        for line in f:
-            #if line.startswith('Output'): break
-            strings.append(line.strip())
-        matches = MatchTries(text,trie(strings,one_based=False))
-        print (' '.join([str(m) for m in matches]))
+    s = 'AATCGGGTTCAATCGGGGT'
+    t = trie(['ATCG','GGGT'],one_based=False)
+    print (MatchTries(s,t))
+    #with open('/Users/Simon/Downloads/rosalind_ba9b.txt') as f:
+        #strings=[]
+
+        #text = f.readline().strip()
+        #for line in f:
+            ##if line.startswith('Output'): break
+            #strings.append(line.strip())
+        #matches = MatchTries(text,trie(strings,one_based=False))
+        #print (' '.join([str(m) for m in matches]))

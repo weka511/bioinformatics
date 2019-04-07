@@ -4,8 +4,6 @@ Code inspired by [Finding Hidden Messages in DNA (Bioinformatics I)](https://cla
 from [Rosalind](http://rosalind.info). 
 NB: functions generally use zero based indexing; Rosalind uses 1-based.
 
-## Textbook track
-
 | # | Location | Description |
 | ---- | ----------- | ------------------------------------------------|
 |1|-| Where in the Genome does DNA replication begin?|
@@ -99,10 +97,10 @@ NB: functions generally use zero based indexing; Rosalind uses 1-based.
 |BA8D|BA8D.py | [Implement the Soft k-Means Clustering Algorithm](http://rosalind.info/problems/ba8d/) |
 |BA8E|BA8E.py | [Implement Hierarchical Clustering](http://rosalind.info/problems/ba8e/) |
 |9|-|How do we locate disease causing mutations?|
-|BA9A|BA9A.py | [Construct a Trie from a Collection of Patterns](http://rosalind.info/problems/ba9a/) |
-|BA9B|BA9B.py | [Implement TrieMatching](http://rosalind.info/problems/ba9b/) |
+|BA9A|BA9A.py rosalind.py| [Construct a Trie from a Collection of Patterns](http://rosalind.info/problems/ba9a/) |
+|BA9B|BA9B.py snp.py| [Implement TrieMatching](http://rosalind.info/problems/ba9b/) |
 |BA9C|BA9C.py | [Construct the Suffix Tree of a String](http://rosalind.info/problems/ba9c/) (wip)|
-|BA9I|BA9I.py | [Construct the Burrows-Wheeler Transform of a String](http://rosalind.info/problems/ba9i/) |
+|BA9I|BA9I.py snp.py| [Construct the Burrows-Wheeler Transform of a String](http://rosalind.info/problems/ba9i/) |
 |10|-|Why have biologists still not developed an HIV vaccine?|
 |BA10A|BA10A.py hmm.py| [Compute the Probability of a Hidden Path](http://rosalind.info/problems/ba10a/) |
 |BA10B|BA10B.py hmm.py| [Compute the Probability of an Outcome Given a Hidden Path](http://rosalind.info/problems/ba10b/) |
@@ -112,11 +110,7 @@ NB: functions generally use zero based indexing; Rosalind uses 1-based.
 |BA11B|BA11B.py spectrum.py| [Implement DecodingIdealSpectrum](http://rosalind.info/problems/ba11b/) |
 |BA11C|BA11C.py spectrum.py| [Convert a Peptide into a Peptide Vector ](http://rosalind.info/problems/ba11c/) |
 |BA11D|BA11D.py spectrum.py| [Convert a Peptide Vector into a Peptide ](http://rosalind.info/problems/ba11d/) |
-
-## Other Rosalind Problems
-
-| Name | File|Description |
-| ---- | ----------- | ------------------------------------------------|
+|-|-|Sorting|
 |2sum|2sum.py|[2SUM](http://rosalind.info/problems/2sum/) |
 |3sum|3sum.py|[3SUM](http://rosalind.info/problems/3sum/) |
 |afrq|rosalind.py|[Counting Disease Carriers](http://rosalind.info/problems/afrq/) |
@@ -224,6 +218,7 @@ NB: functions generally use zero based indexing; Rosalind uses 1-based.
 |README.md|This file|
 |rosalind.py|Shared code|
 |rosalind.wpr|WingWare Project File |
+|snp.py|Code for Chapter 9: How do we locate disease causing mutations?|
 |spectrum.py|Utilities for mass spectroscopy|
 
 ## Challenge Problems from the Text

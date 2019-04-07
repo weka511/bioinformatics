@@ -120,10 +120,13 @@ def PrintTrie(Trie):
 if __name__=='__main__':
     #for k,v in ConstructSuffixTree('ATAAATG$').items():
         #print (k,v)    
-    Trie,labels=ConstructModifiedSuffixTrie('panamabananas$')
-    PrintTrie(Trie)
-    Trie1 = ConstructSuffixTree('panamabananas$')
-    PrintTrie(Trie1)
+    #Trie,labels=ConstructModifiedSuffixTrie('panamabananas$')
+    #PrintTrie(Trie)
+    #Trie1 = ConstructSuffixTree('panamabananas$')
+    #PrintTrie(Trie1)
     #trie,labels = ConstructModifiedSuffixTrie('panamabananas$')
     #print (trie)
     #print (labels)
+    
+    Trie2 = ConstructSuffixTree('ATAAATG$')
+    PrintTrie(Trie2)    
