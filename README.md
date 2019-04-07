@@ -113,33 +113,41 @@ NB: functions generally use zero based indexing; Rosalind uses 1-based.
 |-|-|Sorting|
 |2sum|2sum.py|[2SUM](http://rosalind.info/problems/2sum/) |
 |3sum|3sum.py|[3SUM](http://rosalind.info/problems/3sum/) |
+|-|-|Population Dynamics|
 |afrq|rosalind.py|[Counting Disease Carriers](http://rosalind.info/problems/afrq/) |
+|-|-|Genome Assembly|
+|corr|CORR.py|[Error Correction in Reads](http://rosalind.info/problems/corr/) |
 |asmq|ASMQ.py|[Assessing Assembly Quality with N50 and N75](http://rosalind.info/problems/asmq/) |
+|-|-|Combinatorics|
 |aspc|rosalind.py|[Introduction to Alternative Splicing](http://rosalind.info/problems/aspc/) |
+|cat|rosalind.py|[Catalan Numbers and RNA Secondary Structures ](http://rosalind.info/problems/cat/) (WIP)|
+|fibd|rosalind.py|[Mortal Fibonacci Rabbits](http://rosalind.info/problems/fibd/) |
+|fib|rosalind.py|[Rabbits and Recurrence Relations](http://rosalind.info/problems/fib/) |
+|-|-|Graphs|
 |bf|bf.py graphs.py|[Bellman-Ford Algorithm](http://rosalind.info/problems/bf/)|
 |bfs|bfs.py|[Beadth First search](http://rosalind.info/problems/bfs/) |
 |bins|BINS.py|[Binary Search](http://rosalind.info/problems/bfs/) |
 |bip|bip.py graphs.py|[Testing Bipartiteness](http://rosalind.info/problems/bip/) |
-|cat|rosalind.py|[Catalan Numbers and RNA Secondary Structures ](http://rosalind.info/problems/cat/) (WIP)|
 |cc|cc.py graphs.py|[Connected Components](http://rosalind.info/problems/cc/) |
-|cons|rosalind.py|[Consensus and Profile](http://rosalind.info/problems/cons/) |
-|corr|CORR.py|[Error Correction in Reads](http://rosalind.info/problems/corr/) |
-|cstr|cstr.py|[Creating a Character Table from Genetic Strings](http://rosalind.info/problems/cstr/)|
-|ctbl|ctbl.py|[Creating a Character Table](http://rosalind.info/problems/ctbl/) |
 |cte|cte.py graphs.py|[Shortest Cycle Through a Given Edge](http://rosalind.info/problems/cte/)|
 |dag|dag.py graphs.py|[Testing Acyclicity](http://rosalind.info/problems/dag/) |
-|dbru|DBRU.py|[Constructing a De Bruijn Graph](http://rosalind.info/problems/dbru/) |
 |ddeg|DDEG.py graphs.py|[Double-Degree Array](http://rosalind.info/problems/ddeg/) |
 |deg|DEG.py graphs.py|[Degree Array](http://rosalind.info/problems/deg/) |
-|dfs| graphs.py|[Depth First Search](http://rosalind.info/problems/dfs/) |
+|dfs| graphs.py|[Depth First Search](http://rosalind.info/problems/dfs/) ???|
 |dij|dij.py graphs.py|[Dijkstra's Algorithm](http://rosalind.info/problems/dij/) |
+|-|-|Strings & String Algorithms|
+|cons|rosalind.py|[Consensus and Profile](http://rosalind.info/problems/cons/) |
 |dna|rosalind.py|[Counting DNA Nucleotides](http://rosalind.info/problems/dna/) |
+|-|-|Phylogeny|
+|cstr|cstr.py|[Creating a Character Table from Genetic Strings](http://rosalind.info/problems/cstr/)|
+|ctbl|ctbl.py|[Creating a Character Table](http://rosalind.info/problems/ctbl/) |
+|-|-|Probability|
 |ebin|rosalind.py|[Wright-Fisher's Expected Behavior](http://rosalind.info/problems/ebin/) |
+|eval|rosalind.py|[Expected Number of Restriction Sites](http://rosalind.info/problems/eval/) |
+|-|-|Alignment|
 |edit|edit.py|[Edit Distance](http://rosalind.info/problems/edit/) |
 |edta|edta.py|[Edit Distance Alignment](http://rosalind.info/problems/edta/)|
-|eval|rosalind.py|[Expected Number of Restriction Sites](http://rosalind.info/problems/eval/) |
-|fibd|rosalind.py|[Mortal Fibonacci Rabbits](http://rosalind.info/problems/fibd/) |
-|fib|rosalind.py|[Rabbits and Recurrence Relations](http://rosalind.info/problems/fib/) |
+|-|-|Awaiting classification|
 |foun|rosalind.py|[The Founder Effect and Genetic Drift](http://rosalind.info/problems/foun/) |
 |frmt|FRMT.py|[Data Formats](http://rosalind.info/problems/frmt/)|
 |gaff|gaff.py|[Global Alignment with Scoring Matrix and Affine Gap Penalty](http://rosalind.info/problems/gaff/) (WIP)|
