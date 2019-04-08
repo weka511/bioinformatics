@@ -114,10 +114,12 @@ NB: functions generally use zero based indexing; Rosalind uses 1-based.
 |2sum|2sum.py|[2SUM](http://rosalind.info/problems/2sum/) |
 |3sum|3sum.py|[3SUM](http://rosalind.info/problems/3sum/) |
 |ins|INS.py|[Insertion Sort](http://rosalind.info/problems/ins/) |
+|inv|INV.py|[Counting Inversions](http://rosalind.info/problems/inv/) |
 |mer|MER.py|[Merge Two Sorted Arrays](http://rosalind.info/problems/mer/) |
 |ms|MS.py|[Mergesort](http://rosalind.info/problems/ms/)|
 |par|PAR.py|[2-Way Partition](http://rosalind.info/problems/par/) |
 |par3|PAR3.py|[3-Way Partition](http://rosalind.info/problems/par3/) |
+|med|MED.py|[Median](http://rosalind.info/problems/med/)|
 |-|-|Population Dynamics|
 |afrq|rosalind.py|[Counting Disease Carriers](http://rosalind.info/problems/afrq/) |
 |foun|rosalind.py|[The Founder Effect and Genetic Drift](http://rosalind.info/problems/foun/) |
@@ -127,6 +129,7 @@ NB: functions generally use zero based indexing; Rosalind uses 1-based.
 |asmq|ASMQ.py|[Assessing Assembly Quality with N50 and N75](http://rosalind.info/problems/asmq/) |
 |gasm|GASM.py|[Genome Assembly Using Reads](http://rosalind.info/problems/gasm/) |
 |grep|GREP.py|[Genome Assembly with Perfect Coverage and Repeats](http://rosalind.info/problems/grep/)|
+|long|LONG.py|[Genome Assembly as Shortest Superstring](http://rosalind.info/problems/long/) |
 |-|-|Combinatorics|
 |aspc|rosalind.py|[Introduction to Alternative Splicing](http://rosalind.info/problems/aspc/) |
 |cat|rosalind.py|[Catalan Numbers and RNA Secondary Structures ](http://rosalind.info/problems/cat/) (WIP)|
@@ -151,6 +154,7 @@ NB: functions generally use zero based indexing; Rosalind uses 1-based.
 |grph|rosalind.py|[Overlap Graphs](http://rosalind.info/problems/grph/) |
 |gs|gs.py graphs.py|[General Sink](http://rosalind.info/problems/gs/)|
 |hdag|hdag.py graphs.py|[Hamiltonian Path in DAG](http://rosalind.info/problems/hdag/) |
+|nwc|nwc.py|[Negative Weight Cycle](http://rosalind.info/problems/nwc/) (wip)|
 |scc|scc.py graphs.py|[Strongly Connected Components](http://rosalind.info/problems/scc/)|
 |sc|sc.py graphs.py|[Semi-Connected Graph](http://rosalind.info/problems/sc/)|
 |sq|sq.py graphics.py|[Square in a Graph](http://rosalind.info/problems/sq/)|
@@ -160,18 +164,26 @@ NB: functions generally use zero based indexing; Rosalind uses 1-based.
 |cons|rosalind.py|[Consensus and Profile](http://rosalind.info/problems/cons/) |
 |dna|rosalind.py|[Counting DNA Nucleotides](http://rosalind.info/problems/dna/) |
 |gc|rosalind.py|[Computing GC Content](http://rosalind.info/problems/gc/) |
+|kmer|rosalind.py|[Generalizing GC-Content](http://rosalind.info/problems/kmer/) |
+|kmp|kmp.py|[Speeding Up Motif Finding](http://rosalind.info/problems/kmp/) |
+|lcsm|rosalind.py|[Finding a Shared Motif](http://rosalind.info/problems/lcsm/) |
+|lcsq|lcsq.py|[Finding a Shared Spliced Motif](http://rosalind.info/problems/lcsq/) |
+|ling|ling.py|[Linguistic Complexity of a Genome](http://rosalind.info/problems/ling/) (WIP)|
 |revc|rosalind.py| [Complementing a Strand of DNA](http://rosalind.info/problems/revc/)|
 |revp|rosalind.py| [Locating Restriction Sites](http://rosalind.info/problems/revp/)|
 |rna|rosalind.py|[Transcribing DNA into RNA](http://rosalind.info/problems/rna/) |
 |sseq|rosalind.py|[Finding a Spliced Motif](http://rosalind.info/problems/sseq/) |
 |subs|rosalind.py|[Finding a Motif in DNA](http://rosalind.info/problems/subs/) |
-|-|-|Hereditry|
+|-|-|Heredity|
 |iev|rosalind.py| [Calculating Expected Offspring](http://rosalind.info/problems/iev/)|
 |indq|rosalind.py|[Independent Segregation of Chromosomes](http://rosalind.info/problems/indq/) |
 |iprb|rosalind.py|[Mendel's First Law](http://rosalind.info/problems/iprb/) |
+|lia|rosalind.py|[Independent Alleles](http://rosalind.info/problems/lia/) |
 |-|-|Phylogeny|
 |cstr|cstr.py|[Creating a Character Table from Genetic Strings](http://rosalind.info/problems/cstr/)|
 |ctbl|ctbl.py|[Creating a Character Table](http://rosalind.info/problems/ctbl/) |
+|mend|mend.py|[Inferring a Genotype from a Pedigree](http://rosalind.info/problems/mend/) |
+|nwck|nwck.py|[Distances in Trees](http://rosalind.info/problems/nwck/) |
 |-|-|Probability|
 |ebin|rosalind.py|[Wright-Fisher's Expected Behavior](http://rosalind.info/problems/ebin/) |
 |eval|rosalind.py|[Expected Number of Restriction Sites](http://rosalind.info/problems/eval/) |
@@ -186,22 +198,11 @@ NB: functions generally use zero based indexing; Rosalind uses 1-based.
 |oap|oap.py|[Overlap Alignment](http://rosalind.info/problems/oap/) (wip)|
 |pdst|rosalind.py|[Creating a Distance Matrix ](http://rosalind.info/problems/pdst/) |
 |tran|rosalind.py|[Transitions and Transversions](http://rosalind.info/problems/tran/) |
+|-|-|Genome Rearrangements|
+|lgis|lgis.py|[Longest Increasing Subsequence](http://rosalind.info/problems/lgis/) |
 |-|-|Awaiting classification|
 |frmt|FRMT.py|[Data Formats](http://rosalind.info/problems/frmt/)|
 |gbk|GBK.py|[GenBank Introduction](http://rosalind.info/problems/gbk/) |
-|inv|INV.py|[Counting Inversions](http://rosalind.info/problems/inv/) |
-|kmer|rosalind.py|[Generalizing GC-Content](http://rosalind.info/problems/kmer/) |
-|kmp|kmp.py|[Speeding Up Motif Finding](http://rosalind.info/problems/kmp/) |
-|lcsm|rosalind.py|[Finding a Shared Motif](http://rosalind.info/problems/lcsm/) |
-|lcsq|lcsq.py|[Finding a Shared Spliced Motif](http://rosalind.info/problems/lcsq/) |
-|lgis|lgis.py|[Longest Increasing Subsequence](http://rosalind.info/problems/lgis/) |
-|lia|rosalind.py|[Independent Alleles](http://rosalind.info/problems/lia/) |
-|ling|ling.py|[Linguistic Complexity of a Genome](http://rosalind.info/problems/ling/) (WIP)|
-|long|LONG.py|[Genome Assembly as Shortest Superstring](http://rosalind.info/problems/long/) |
-|med|MED.py|[Median](http://rosalind.info/problems/med/)|
-|mend|mend.py|[Inferring a Genotype from a Pedigree](http://rosalind.info/problems/mend/) |
-|nwck|nwck.py|[Distances in Trees](http://rosalind.info/problems/nwck/) |
-|nwc|nwc.py|[Negative Weight Cycle](http://rosalind.info/problems/nwc/) (wip)|
 |orfr|orfr.py|[Finding Genes with Open Reading Frames](http://rosalind.info/problems/orfr/) |
 |pcov|PCOV.py|[Genome Assembly with Perfect Coverage](http://rosalind.info/problems/pcov/) |
 |prot|rosalind.py|[Translating RNA into Protein](http://rosalind.info/problems/prot/) |
