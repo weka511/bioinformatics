@@ -120,10 +120,12 @@ NB: functions generally use zero based indexing; Rosalind uses 1-based.
 |par3|PAR3.py|[3-Way Partition](http://rosalind.info/problems/par3/) |
 |-|-|Population Dynamics|
 |afrq|rosalind.py|[Counting Disease Carriers](http://rosalind.info/problems/afrq/) |
+|foun|rosalind.py|[The Founder Effect and Genetic Drift](http://rosalind.info/problems/foun/) |
 |wfmd|rosalind.py|[The Wright-Fisher Model of Genetic Drift](http://rosalind.info/problems/wfmd/) |
 |-|-|Genome Assembly|
 |corr|CORR.py|[Error Correction in Reads](http://rosalind.info/problems/corr/) |
 |asmq|ASMQ.py|[Assessing Assembly Quality with N50 and N75](http://rosalind.info/problems/asmq/) |
+|gasm|GASM.py|[Genome Assembly Using Reads](http://rosalind.info/problems/gasm/) |
 |grep|GREP.py|[Genome Assembly with Perfect Coverage and Repeats](http://rosalind.info/problems/grep/)|
 |-|-|Combinatorics|
 |aspc|rosalind.py|[Introduction to Alternative Splicing](http://rosalind.info/problems/aspc/) |
@@ -148,6 +150,7 @@ NB: functions generally use zero based indexing; Rosalind uses 1-based.
 |dij|dij.py graphs.py|[Dijkstra's Algorithm](http://rosalind.info/problems/dij/) |
 |grph|rosalind.py|[Overlap Graphs](http://rosalind.info/problems/grph/) |
 |gs|gs.py graphs.py|[General Sink](http://rosalind.info/problems/gs/)|
+|hdag|hdag.py graphs.py|[Hamiltonian Path in DAG](http://rosalind.info/problems/hdag/) |
 |scc|scc.py graphs.py|[Strongly Connected Components](http://rosalind.info/problems/scc/)|
 |sc|sc.py graphs.py|[Semi-Connected Graph](http://rosalind.info/problems/sc/)|
 |sq|sq.py graphics.py|[Square in a Graph](http://rosalind.info/problems/sq/)|
@@ -156,11 +159,16 @@ NB: functions generally use zero based indexing; Rosalind uses 1-based.
 |-|-|Strings & String Algorithms|
 |cons|rosalind.py|[Consensus and Profile](http://rosalind.info/problems/cons/) |
 |dna|rosalind.py|[Counting DNA Nucleotides](http://rosalind.info/problems/dna/) |
+|gc|rosalind.py|[Computing GC Content](http://rosalind.info/problems/gc/) |
 |revc|rosalind.py| [Complementing a Strand of DNA](http://rosalind.info/problems/revc/)|
 |revp|rosalind.py| [Locating Restriction Sites](http://rosalind.info/problems/revp/)|
 |rna|rosalind.py|[Transcribing DNA into RNA](http://rosalind.info/problems/rna/) |
 |sseq|rosalind.py|[Finding a Spliced Motif](http://rosalind.info/problems/sseq/) |
 |subs|rosalind.py|[Finding a Motif in DNA](http://rosalind.info/problems/subs/) |
+|-|-|Hereditry|
+|iev|rosalind.py| [Calculating Expected Offspring](http://rosalind.info/problems/iev/)|
+|indq|rosalind.py|[Independent Segregation of Chromosomes](http://rosalind.info/problems/indq/) |
+|iprb|rosalind.py|[Mendel's First Law](http://rosalind.info/problems/iprb/) |
 |-|-|Phylogeny|
 |cstr|cstr.py|[Creating a Character Table from Genetic Strings](http://rosalind.info/problems/cstr/)|
 |ctbl|ctbl.py|[Creating a Character Table](http://rosalind.info/problems/ctbl/) |
@@ -170,6 +178,8 @@ NB: functions generally use zero based indexing; Rosalind uses 1-based.
 |-|-|Alignment|
 |edit|edit.py|[Edit Distance](http://rosalind.info/problems/edit/) |
 |edta|edta.py|[Edit Distance Alignment](http://rosalind.info/problems/edta/)|
+|gaff|gaff.py|[Global Alignment with Scoring Matrix and Affine Gap Penalty](http://rosalind.info/problems/gaff/) (WIP)|
+|gcon|gcon.py|[Global Alignment with Constant Gap Penalty](http://rosalind.info/problems/gcon/)|
 |glob|GLOB.py|[Global Alignment with Scoring Matrix](http://rosalind.info/problems/glob/) -- test harness only|
 |loca|loca.py|[Local Alignment with Scoring Matrix ](http://rosalind.info/problems/loca/) |
 |hamm|rosalind.py|[Counting Point Mutations](http://rosalind.info/problems/hamm/) |
@@ -177,18 +187,9 @@ NB: functions generally use zero based indexing; Rosalind uses 1-based.
 |pdst|rosalind.py|[Creating a Distance Matrix ](http://rosalind.info/problems/pdst/) |
 |tran|rosalind.py|[Transitions and Transversions](http://rosalind.info/problems/tran/) |
 |-|-|Awaiting classification|
-|foun|rosalind.py|[The Founder Effect and Genetic Drift](http://rosalind.info/problems/foun/) |
 |frmt|FRMT.py|[Data Formats](http://rosalind.info/problems/frmt/)|
-|gaff|gaff.py|[Global Alignment with Scoring Matrix and Affine Gap Penalty](http://rosalind.info/problems/gaff/) (WIP)|
-|gasm|GASM.py|[Genome Assembly Using Reads](http://rosalind.info/problems/gasm/) |
 |gbk|GBK.py|[GenBank Introduction](http://rosalind.info/problems/gbk/) |
-|gcon|gcon.py|[Global Alignment with Constant Gap Penalty](http://rosalind.info/problems/gcon/)|
-|gc|rosalind.py|[Computing GC Content](http://rosalind.info/problems/gc/) |
-|hdag|hdag.py graphs.py|[Hamiltonian Path in DAG](http://rosalind.info/problems/hdag/) |
-|iev|rosalind.py| [Calculating Expected Offspring](http://rosalind.info/problems/iev/)|
-|indq|rosalind.py|[Independent Segregation of Chromosomes](http://rosalind.info/problems/indq/) |
 |inv|INV.py|[Counting Inversions](http://rosalind.info/problems/inv/) |
-|iprb|rosalind.py|[Mendel's First Law](http://rosalind.info/problems/iprb/) |
 |kmer|rosalind.py|[Generalizing GC-Content](http://rosalind.info/problems/kmer/) |
 |kmp|kmp.py|[Speeding Up Motif Finding](http://rosalind.info/problems/kmp/) |
 |lcsm|rosalind.py|[Finding a Shared Motif](http://rosalind.info/problems/lcsm/) |
