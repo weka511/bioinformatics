@@ -118,12 +118,13 @@ NB: functions generally use zero based indexing; Rosalind uses 1-based.
 |-|-|Genome Assembly|
 |corr|CORR.py|[Error Correction in Reads](http://rosalind.info/problems/corr/) |
 |asmq|ASMQ.py|[Assessing Assembly Quality with N50 and N75](http://rosalind.info/problems/asmq/) |
+|grep|GREP.py|[Genome Assembly with Perfect Coverage and Repeats](http://rosalind.info/problems/grep/)|
 |-|-|Combinatorics|
 |aspc|rosalind.py|[Introduction to Alternative Splicing](http://rosalind.info/problems/aspc/) |
 |cat|rosalind.py|[Catalan Numbers and RNA Secondary Structures ](http://rosalind.info/problems/cat/) (WIP)|
 |fibd|rosalind.py|[Mortal Fibonacci Rabbits](http://rosalind.info/problems/fibd/) |
 |fib|rosalind.py|[Rabbits and Recurrence Relations](http://rosalind.info/problems/fib/) |
-|-|-|Graphs|
+|-|-|Graphs & Graph Algorithms|
 |bf|bf.py graphs.py|[Bellman-Ford Algorithm](http://rosalind.info/problems/bf/)|
 |bfs|bfs.py|[Beadth First search](http://rosalind.info/problems/bfs/) |
 |bins|BINS.py|[Binary Search](http://rosalind.info/problems/bfs/) |
@@ -135,6 +136,8 @@ NB: functions generally use zero based indexing; Rosalind uses 1-based.
 |deg|DEG.py graphs.py|[Degree Array](http://rosalind.info/problems/deg/) |
 |dfs| graphs.py|[Depth First Search](http://rosalind.info/problems/dfs/) ???|
 |dij|dij.py graphs.py|[Dijkstra's Algorithm](http://rosalind.info/problems/dij/) |
+|grph|rosalind.py|[Overlap Graphs](http://rosalind.info/problems/grph/) |
+|gs|gs.py graphs.py|[General Sink](http://rosalind.info/problems/gs/)|
 |-|-|Strings & String Algorithms|
 |cons|rosalind.py|[Consensus and Profile](http://rosalind.info/problems/cons/) |
 |dna|rosalind.py|[Counting DNA Nucleotides](http://rosalind.info/problems/dna/) |
@@ -147,6 +150,12 @@ NB: functions generally use zero based indexing; Rosalind uses 1-based.
 |-|-|Alignment|
 |edit|edit.py|[Edit Distance](http://rosalind.info/problems/edit/) |
 |edta|edta.py|[Edit Distance Alignment](http://rosalind.info/problems/edta/)|
+|glob|GLOB.py|[Global Alignment with Scoring Matrix](http://rosalind.info/problems/glob/) -- test harness only|
+|loca|loca.py|[Local Alignment with Scoring Matrix ](http://rosalind.info/problems/loca/) |
+|hamm|rosalind.py|[Counting Point Mutations](http://rosalind.info/problems/hamm/) |
+|oap|oap.py|[Overlap Alignment](http://rosalind.info/problems/oap/) (wip)|
+|pdst|rosalind.py|[Creating a Distance Matrix ](http://rosalind.info/problems/pdst/) |
+|tran|rosalind.py|[Transitions and Transversions](http://rosalind.info/problems/tran/) |
 |-|-|Awaiting classification|
 |foun|rosalind.py|[The Founder Effect and Genetic Drift](http://rosalind.info/problems/foun/) |
 |frmt|FRMT.py|[Data Formats](http://rosalind.info/problems/frmt/)|
@@ -155,11 +164,6 @@ NB: functions generally use zero based indexing; Rosalind uses 1-based.
 |gbk|GBK.py|[GenBank Introduction](http://rosalind.info/problems/gbk/) |
 |gcon|gcon.py|[Global Alignment with Constant Gap Penalty](http://rosalind.info/problems/gcon/)|
 |gc|rosalind.py|[Computing GC Content](http://rosalind.info/problems/gc/) |
-|glob|GLOB.py|[Global Alignment with Scoring Matrix](http://rosalind.info/problems/glob/) -- test harness only|
-|grep|GREP.py|[Genome Assembly with Perfect Coverage and Repeats](http://rosalind.info/problems/grep/)|
-|grph|rosalind.py|[Overlap Graphs](http://rosalind.info/problems/grph/) |
-|gs|gs.py graphs.py|[General Sink](http://rosalind.info/problems/gs/)|
-|hamm|rosalind.py|[Counting Point Mutations](http://rosalind.info/problems/hamm/) |
 |hdag|hdag.py graphs.py|[Hamiltonian Path in DAG](http://rosalind.info/problems/hdag/) |
 |iev|rosalind.py| [Calculating Expected Offspring](http://rosalind.info/problems/iev/)|
 |indq|rosalind.py|[Independent Segregation of Chromosomes](http://rosalind.info/problems/indq/) |
@@ -173,7 +177,7 @@ NB: functions generally use zero based indexing; Rosalind uses 1-based.
 |lgis|lgis.py|[Longest Increasing Subsequence](http://rosalind.info/problems/lgis/) |
 |lia|rosalind.py|[Independent Alleles](http://rosalind.info/problems/lia/) |
 |ling|ling.py|[Linguistic Complexity of a Genome](http://rosalind.info/problems/ling/) (WIP)|
-|loca|loca.py|[Local Alignment with Scoring Matrix ](http://rosalind.info/problems/loca/) |
+
 |long|LONG.py|[Genome Assembly as Shortest Superstring](http://rosalind.info/problems/long/) |
 |med|MED.py|[Median](http://rosalind.info/problems/med/)|
 |mend|mend.py|[Inferring a Genotype from a Pedigree](http://rosalind.info/problems/mend/) |
@@ -182,13 +186,11 @@ NB: functions generally use zero based indexing; Rosalind uses 1-based.
 |ms|MS.py|[Mergesort](http://rosalind.info/problems/ms/)|
 |nwck|nwck.py|[Distances in Trees](http://rosalind.info/problems/nwck/) |
 |nwc|nwc.py|[Negative Weight Cycle](http://rosalind.info/problems/nwc/) (wip)|
-|oap|oap.py|[Overlap Alignment](http://rosalind.info/problems/oap/) (wip)|
 |orfr|orfr.py|[Finding Genes with Open Reading Frames](http://rosalind.info/problems/orfr/) |
 |orf|orf.py|[Open Reading Frames](http://rosalind.info/problems/orf/)|
 |par3|PAR3.py|[3-Way Partition](http://rosalind.info/problems/par3/) |
 |par|PAR.py|[2-Way Partition](http://rosalind.info/problems/par/) |
 |pcov|PCOV.py|[Genome Assembly with Perfect Coverage](http://rosalind.info/problems/pcov/) |
-|pdst|rosalind.py|[Creating a Distance Matrix ](http://rosalind.info/problems/pdst/) |
 |pmch|pmch.py|[Perfect Matchings and RNA Secondary Structures](http://rosalind.info/problems/pmch/) |
 |pper|rosalind.py|[Partial Permutations](http://rosalind.info/problems/pper/) |
 |prot|rosalind.py|[Translating RNA into Protein](http://rosalind.info/problems/prot/) |
@@ -208,7 +210,6 @@ NB: functions generally use zero based indexing; Rosalind uses 1-based.
 |sq|sq.py graphics.py|[Square in a Graph](http://rosalind.info/problems/sq/)|
 |sseq|rosalind.py|[Finding a Spliced Motif](http://rosalind.info/problems/sseq/) |
 |subs|rosalind.py|[Finding a Motif in DNA](http://rosalind.info/problems/subs/) |
-|tran|rosalind.py|[Transitions and Transversions](http://rosalind.info/problems/tran/) |
 |trie|rosalind.py|[Introduction to Pattern Matching](http://rosalind.info/problems/trie/) |
 |ts|ts.py align.py|[Topological sort](http://rosalind.info/problems/ts/)|
 |wfmd|rosalind.py|[The Wright-Fisher Model of Genetic Drift](http://rosalind.info/problems/wfmd/) |
