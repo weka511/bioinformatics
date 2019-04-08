@@ -212,9 +212,6 @@ NB: functions generally use zero based indexing; Rosalind uses 1-based.
 |scsp|scsp.py|[Interleaving Two Motifs](http://rosalind.info/problems/scsp/)|
 |sexl|rosalind.py|[Sex-Linked Inheritance ](http://rosalind.info/problems/sexl/) |
 |splc|rosalind.py|[RNA Splicing](http://rosalind.info/problems/splc/) |
-
-
-
 |-|-|Support| 
 |-|align.py|Common functions for [alignment](http://rosalind.info/problems/topics/alignment/) |
 |-|graphs.py|Common functions for [graphs](http://rosalind.info/problems/topics/graphs/) |
