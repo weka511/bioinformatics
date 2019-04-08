@@ -120,6 +120,7 @@ NB: functions generally use zero based indexing; Rosalind uses 1-based.
 |par3|PAR3.py|[3-Way Partition](http://rosalind.info/problems/par3/) |
 |-|-|Population Dynamics|
 |afrq|rosalind.py|[Counting Disease Carriers](http://rosalind.info/problems/afrq/) |
+|wfmd|rosalind.py|[The Wright-Fisher Model of Genetic Drift](http://rosalind.info/problems/wfmd/) |
 |-|-|Genome Assembly|
 |corr|CORR.py|[Error Correction in Reads](http://rosalind.info/problems/corr/) |
 |asmq|ASMQ.py|[Assessing Assembly Quality with N50 and N75](http://rosalind.info/problems/asmq/) |
@@ -149,9 +150,17 @@ NB: functions generally use zero based indexing; Rosalind uses 1-based.
 |gs|gs.py graphs.py|[General Sink](http://rosalind.info/problems/gs/)|
 |scc|scc.py graphs.py|[Strongly Connected Components](http://rosalind.info/problems/scc/)|
 |sc|sc.py graphs.py|[Semi-Connected Graph](http://rosalind.info/problems/sc/)|
+|sq|sq.py graphics.py|[Square in a Graph](http://rosalind.info/problems/sq/)|
+|trie|rosalind.py|[Introduction to Pattern Matching](http://rosalind.info/problems/trie/) |
+|ts|ts.py align.py|[Topological sort](http://rosalind.info/problems/ts/)|
 |-|-|Strings & String Algorithms|
 |cons|rosalind.py|[Consensus and Profile](http://rosalind.info/problems/cons/) |
 |dna|rosalind.py|[Counting DNA Nucleotides](http://rosalind.info/problems/dna/) |
+|revc|rosalind.py| [Complementing a Strand of DNA](http://rosalind.info/problems/revc/)|
+|revp|rosalind.py| [Locating Restriction Sites](http://rosalind.info/problems/revp/)|
+|rna|rosalind.py|[Transcribing DNA into RNA](http://rosalind.info/problems/rna/) |
+|sseq|rosalind.py|[Finding a Spliced Motif](http://rosalind.info/problems/sseq/) |
+|subs|rosalind.py|[Finding a Motif in DNA](http://rosalind.info/problems/subs/) |
 |-|-|Phylogeny|
 |cstr|cstr.py|[Creating a Character Table from Genetic Strings](http://rosalind.info/problems/cstr/)|
 |ctbl|ctbl.py|[Creating a Character Table](http://rosalind.info/problems/ctbl/) |
@@ -199,19 +208,13 @@ NB: functions generally use zero based indexing; Rosalind uses 1-based.
 |ptra|PTRA.py|[Protein Translation](http://rosalind.info/problems/ptra/) |
 |qs|QS.py|[Quicksort](http://rosalind.info/problems/qs/)|
 |rear|rear.py|[Reversal distance](http://rosalind.info/problems/rear/) (WIP)|
-|revc|rosalind.py| [Complementing a Strand of DNA](http://rosalind.info/problems/revc/)|
-|revp|rosalind.py| [Locating Restriction Sites](http://rosalind.info/problems/revp/)|
-|rna|rosalind.py|[Transcribing DNA into RNA](http://rosalind.info/problems/rna/) |
 |rstr|rosalind.py|[Matching Random Motifs](http://rosalind.info/problems/rstr/) |
 |scsp|scsp.py|[Interleaving Two Motifs](http://rosalind.info/problems/scsp/)|
 |sexl|rosalind.py|[Sex-Linked Inheritance ](http://rosalind.info/problems/sexl/) |
 |splc|rosalind.py|[RNA Splicing](http://rosalind.info/problems/splc/) |
-|sq|sq.py graphics.py|[Square in a Graph](http://rosalind.info/problems/sq/)|
-|sseq|rosalind.py|[Finding a Spliced Motif](http://rosalind.info/problems/sseq/) |
-|subs|rosalind.py|[Finding a Motif in DNA](http://rosalind.info/problems/subs/) |
-|trie|rosalind.py|[Introduction to Pattern Matching](http://rosalind.info/problems/trie/) |
-|ts|ts.py align.py|[Topological sort](http://rosalind.info/problems/ts/)|
-|wfmd|rosalind.py|[The Wright-Fisher Model of Genetic Drift](http://rosalind.info/problems/wfmd/) |
+
+
+
 |-|-|Support| 
 |-|align.py|Common functions for [alignment](http://rosalind.info/problems/topics/alignment/) |
 |-|graphs.py|Common functions for [graphs](http://rosalind.info/problems/topics/graphs/) |
