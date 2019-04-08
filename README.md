@@ -113,6 +113,11 @@ NB: functions generally use zero based indexing; Rosalind uses 1-based.
 |-|-|Sorting|
 |2sum|2sum.py|[2SUM](http://rosalind.info/problems/2sum/) |
 |3sum|3sum.py|[3SUM](http://rosalind.info/problems/3sum/) |
+|ins|INS.py|[Insertion Sort](http://rosalind.info/problems/ins/) |
+|mer|MER.py|[Merge Two Sorted Arrays](http://rosalind.info/problems/mer/) |
+|ms|MS.py|[Mergesort](http://rosalind.info/problems/ms/)|
+|par|PAR.py|[2-Way Partition](http://rosalind.info/problems/par/) |
+|par3|PAR3.py|[3-Way Partition](http://rosalind.info/problems/par3/) |
 |-|-|Population Dynamics|
 |afrq|rosalind.py|[Counting Disease Carriers](http://rosalind.info/problems/afrq/) |
 |-|-|Genome Assembly|
@@ -124,6 +129,10 @@ NB: functions generally use zero based indexing; Rosalind uses 1-based.
 |cat|rosalind.py|[Catalan Numbers and RNA Secondary Structures ](http://rosalind.info/problems/cat/) (WIP)|
 |fibd|rosalind.py|[Mortal Fibonacci Rabbits](http://rosalind.info/problems/fibd/) |
 |fib|rosalind.py|[Rabbits and Recurrence Relations](http://rosalind.info/problems/fib/) |
+|mrna|rosalind.py|[Inferring mRNA from Protein](http://rosalind.info/problems/mrna/) |
+|orf|orf.py|[Open Reading Frames](http://rosalind.info/problems/orf/)|
+|pmch|pmch.py|[Perfect Matchings and RNA Secondary Structures](http://rosalind.info/problems/pmch/) |
+|pper|rosalind.py|[Partial Permutations](http://rosalind.info/problems/pper/) |
 |-|-|Graphs & Graph Algorithms|
 |bf|bf.py graphs.py|[Bellman-Ford Algorithm](http://rosalind.info/problems/bf/)|
 |bfs|bfs.py|[Beadth First search](http://rosalind.info/problems/bfs/) |
@@ -138,6 +147,8 @@ NB: functions generally use zero based indexing; Rosalind uses 1-based.
 |dij|dij.py graphs.py|[Dijkstra's Algorithm](http://rosalind.info/problems/dij/) |
 |grph|rosalind.py|[Overlap Graphs](http://rosalind.info/problems/grph/) |
 |gs|gs.py graphs.py|[General Sink](http://rosalind.info/problems/gs/)|
+|scc|scc.py graphs.py|[Strongly Connected Components](http://rosalind.info/problems/scc/)|
+|sc|sc.py graphs.py|[Semi-Connected Graph](http://rosalind.info/problems/sc/)|
 |-|-|Strings & String Algorithms|
 |cons|rosalind.py|[Consensus and Profile](http://rosalind.info/problems/cons/) |
 |dna|rosalind.py|[Counting DNA Nucleotides](http://rosalind.info/problems/dna/) |
@@ -167,7 +178,6 @@ NB: functions generally use zero based indexing; Rosalind uses 1-based.
 |hdag|hdag.py graphs.py|[Hamiltonian Path in DAG](http://rosalind.info/problems/hdag/) |
 |iev|rosalind.py| [Calculating Expected Offspring](http://rosalind.info/problems/iev/)|
 |indq|rosalind.py|[Independent Segregation of Chromosomes](http://rosalind.info/problems/indq/) |
-|ins|INS.py|[Insertion Sort](http://rosalind.info/problems/ins/) |
 |inv|INV.py|[Counting Inversions](http://rosalind.info/problems/inv/) |
 |iprb|rosalind.py|[Mendel's First Law](http://rosalind.info/problems/iprb/) |
 |kmer|rosalind.py|[Generalizing GC-Content](http://rosalind.info/problems/kmer/) |
@@ -177,22 +187,13 @@ NB: functions generally use zero based indexing; Rosalind uses 1-based.
 |lgis|lgis.py|[Longest Increasing Subsequence](http://rosalind.info/problems/lgis/) |
 |lia|rosalind.py|[Independent Alleles](http://rosalind.info/problems/lia/) |
 |ling|ling.py|[Linguistic Complexity of a Genome](http://rosalind.info/problems/ling/) (WIP)|
-
 |long|LONG.py|[Genome Assembly as Shortest Superstring](http://rosalind.info/problems/long/) |
 |med|MED.py|[Median](http://rosalind.info/problems/med/)|
 |mend|mend.py|[Inferring a Genotype from a Pedigree](http://rosalind.info/problems/mend/) |
-|mer|MER.py|[Merge Two Sorted Arrays](http://rosalind.info/problems/mer/) |
-|mrna|rosalind.py|[Inferring mRNA from Protein](http://rosalind.info/problems/mrna/) |
-|ms|MS.py|[Mergesort](http://rosalind.info/problems/ms/)|
 |nwck|nwck.py|[Distances in Trees](http://rosalind.info/problems/nwck/) |
 |nwc|nwc.py|[Negative Weight Cycle](http://rosalind.info/problems/nwc/) (wip)|
 |orfr|orfr.py|[Finding Genes with Open Reading Frames](http://rosalind.info/problems/orfr/) |
-|orf|orf.py|[Open Reading Frames](http://rosalind.info/problems/orf/)|
-|par3|PAR3.py|[3-Way Partition](http://rosalind.info/problems/par3/) |
-|par|PAR.py|[2-Way Partition](http://rosalind.info/problems/par/) |
 |pcov|PCOV.py|[Genome Assembly with Perfect Coverage](http://rosalind.info/problems/pcov/) |
-|pmch|pmch.py|[Perfect Matchings and RNA Secondary Structures](http://rosalind.info/problems/pmch/) |
-|pper|rosalind.py|[Partial Permutations](http://rosalind.info/problems/pper/) |
 |prot|rosalind.py|[Translating RNA into Protein](http://rosalind.info/problems/prot/) |
 |ps|ps.py|[Partial sort](http://rosalind.info/problems/ps/)|
 |ptra|PTRA.py|[Protein Translation](http://rosalind.info/problems/ptra/) |
@@ -202,8 +203,6 @@ NB: functions generally use zero based indexing; Rosalind uses 1-based.
 |revp|rosalind.py| [Locating Restriction Sites](http://rosalind.info/problems/revp/)|
 |rna|rosalind.py|[Transcribing DNA into RNA](http://rosalind.info/problems/rna/) |
 |rstr|rosalind.py|[Matching Random Motifs](http://rosalind.info/problems/rstr/) |
-|scc|scc.py graphs.py|[Strongly Connected Components](http://rosalind.info/problems/scc/)|
-|sc|sc.py graphs.py|[Semi-Connected Graph](http://rosalind.info/problems/sc/)|
 |scsp|scsp.py|[Interleaving Two Motifs](http://rosalind.info/problems/scsp/)|
 |sexl|rosalind.py|[Sex-Linked Inheritance ](http://rosalind.info/problems/sexl/) |
 |splc|rosalind.py|[RNA Splicing](http://rosalind.info/problems/splc/) |
@@ -213,22 +212,18 @@ NB: functions generally use zero based indexing; Rosalind uses 1-based.
 |trie|rosalind.py|[Introduction to Pattern Matching](http://rosalind.info/problems/trie/) |
 |ts|ts.py align.py|[Topological sort](http://rosalind.info/problems/ts/)|
 |wfmd|rosalind.py|[The Wright-Fisher Model of Genetic Drift](http://rosalind.info/problems/wfmd/) |
-  
-## Support
-
-| Name |Description |
-| -------------------------- | ------------------------------------------------|
-|align.py|Common functions for [alignment](http://rosalind.info/problems/topics/alignment/) |
-|graphs.py|Common functions for [graphs](http://rosalind.info/problems/topics/graphs/) |
-|helpers.py|Utilities for formatting output, parsing input, etc |
-|hmm.py|Hidden Markov Models|
-|LICENSE|License Agreement|
-|newick.py|Parser for files in [Newick format](http://evolution.genetics.washington.edu/phylip/newicktree.html) |
-|README.md|This file|
-|rosalind.py|Shared code|
-|rosalind.wpr|WingWare Project File |
-|snp.py|Code for Chapter 9: How do we locate disease causing mutations?|
-|spectrum.py|Utilities for mass spectroscopy|
+|-|-|Support| 
+|-|align.py|Common functions for [alignment](http://rosalind.info/problems/topics/alignment/) |
+|-|graphs.py|Common functions for [graphs](http://rosalind.info/problems/topics/graphs/) |
+|-|helpers.py|Utilities for formatting output, parsing input, etc |
+|-|hmm.py|Hidden Markov Models|
+|-|LICENSE|License Agreement|
+|-|newick.py|Parser for files in [Newick format](http://evolution.genetics.washington.edu/phylip/newicktree.html) |
+|-|README.md|This file|
+|-|rosalind.py|Shared code|
+|-|rosalind.wpr|WingWare Project File |
+|-|snp.py|Code for Chapter 9: How do we locate disease causing mutations?|
+|-|spectrum.py|Utilities for mass spectroscopy|
 
 ## Challenge Problems from the Text
 
