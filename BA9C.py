@@ -17,10 +17,13 @@
 
 # ConstructModifiedSuffixTrie
 #
-# Construct Modified Suffix Trie, as described in Charging Station
-# Bioinfornmatics Algorithms Voll II page 165
+# Construct Modified Suffix Trie, as described in 
+# Charging Station Bioinformatics Algorithms Vol II page 165
+#
+# See also https://sandipanweb.wordpress.com/2017/05/10/suffix-tree-construction-and-the-longest-repeated-substring-problem-in-python/
 
 def ConstructModifiedSuffixTrie(Text):
+    
     # edgeLabelled
     #
     # Find edge labelled with symbol
@@ -37,6 +40,9 @@ def ConstructModifiedSuffixTrie(Text):
                     return node
         return None
     
+    def isLeaf(node):
+        return len(Trie[node])==0
+    
     ROOT            = 0    
     Trie            = {ROOT:[]}
     labels          = {}
@@ -49,11 +55,12 @@ def ConstructModifiedSuffixTrie(Text):
             if end_node_labelled_edge != None:
                 currentNode = end_node_labelled_edge
             else:
+                assert(not next_avail_node in Trie)
                 Trie[next_avail_node] = []
                 Trie[currentNode].append((currentSymbol,j,next_avail_node))
                 currentNode = next_avail_node
                 next_avail_node+=1
-        if len(Trie[currentNode])==0:
+        if isLeaf(currentNode):
             labels[currentNode] = i
     return Trie,labels
 
@@ -88,6 +95,7 @@ def ConstructSuffixTree(Text):
                 return ''.join(symbols)
         else:
             path=[]
+            
         for symbol,pos,next_node in Trie[currentNode]:
             symbols=dfs(next_node,path)
             if symbols!=None:
@@ -121,12 +129,13 @@ if __name__=='__main__':
     #for k,v in ConstructSuffixTree('ATAAATG$').items():
         #print (k,v)    
     #Trie,labels=ConstructModifiedSuffixTrie('panamabananas$')
-    #PrintTrie(Trie)
+    Trie,labels=ConstructModifiedSuffixTrie('ATAAATG$')
+    PrintTrie(Trie)
     #Trie1 = ConstructSuffixTree('panamabananas$')
     #PrintTrie(Trie1)
     #trie,labels = ConstructModifiedSuffixTrie('panamabananas$')
     #print (trie)
     #print (labels)
     
-    Trie2 = ConstructSuffixTree('ATAAATG$')
-    PrintTrie(Trie2)    
+    #Trie2 = ConstructSuffixTree('ATAAATG$')
+    #PrintTrie(Trie2)    
