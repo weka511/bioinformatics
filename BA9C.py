@@ -81,36 +81,48 @@ def ConstructModifiedSuffixTrie(Text):
 def ConstructSuffixTree(Text):
                 
     def get_non_branching_paths(Trie):
-        def explore(node,path=[]):
-            if node in explored:
-                return path
-            explored.add(node)
+        def explore(node=0,symbol='',path=[],symbols=[]):
             if len(Trie[node])==0:
-                return path + [node]
+                #if len(path)>0:
+                Paths.append(path + [node])
+                Strings.append(''.join(symbols +[symbol]))
             elif len(Trie[node])==1:
-                _,_,next_node = Trie[node][0] 
-                return explore(next_node,path + [node])
+                next_symbol,_,next_node=Trie[node][0]
+                return explore(node=next_node,symbol=next_symbol,path=path+[node],symbols=symbols+[symbol])
             else:
-                return path
+                for next_symbol,_,next_node in Trie[node]:
+                    explore(node=next_node,symbol=next_symbol)
+ 
         
-        Paths    = []
-        Strings  = []
-        explored = set()
-        for node in sorted(Trie.keys()):
-            path = explore(node)
-            if len(path)>0:
-                Paths.append(path)
+        Paths     = []
+        Strings   = []
+        #explored  = set()
+        
+        explore()
+        
+        #for node in sorted(Trie.keys()):
+            #path = explore(node)
+            #if len(path)>0:
+                #Paths.append(path)
         print (len(Paths))
-        return Paths
+        return Paths,Strings
         
     ROOT        = 0         
     Trie,labels = ConstructModifiedSuffixTrie(Text)
     for path in get_non_branching_paths(Trie):
-        print (path)
+        symbols = []
+        first   = True
+        j0      = None
         for node in path:
             if len(Trie[node])>0:
-                s,_,n = Trie[node][0]
-                print (s,n)
+                s,j,_ = Trie[node][0]
+                if first:
+                    j0     = j
+                    first = False
+                symbols.append(s)
+            del Trie[node]
+        Trie[path[0]]= [(''.join(symbols),j0,-1)]
+        
     return Trie
 
 # PrintTrie
@@ -125,6 +137,7 @@ def PrintTrie(Trie):
     
     def dfs(Trie,currentNode=0,depth=1):
         for symbol,pos,next_node in Trie[currentNode]:
+            if next_node<0: break
             padding = ''.join(['-']*depth)
             print ('{0} {1}, {2}, {3}'.format(padding,symbol,pos,next_node))
             dfs(Trie,next_node,depth+1)
@@ -144,4 +157,4 @@ if __name__=='__main__':
     #print (labels)
     
     Trie2 = ConstructSuffixTree('ATAAATG$')
-    #PrintTrie(Trie2)    
+    PrintTrie(Trie2)    
