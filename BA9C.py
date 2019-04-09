@@ -40,6 +40,10 @@ def ConstructModifiedSuffixTrie(Text):
                     return node
         return None
     
+    # isLeaf
+    #
+    # Verify that node is a leaf of Trie
+    
     def isLeaf(node):
         return len(Trie[node])==0
     
@@ -47,6 +51,7 @@ def ConstructModifiedSuffixTrie(Text):
     Trie            = {ROOT:[]}
     labels          = {}
     next_avail_node = 1
+    
     for i in range(len(Text)):
         currentNode = ROOT
         for j in range(i,len(Text)):
@@ -74,37 +79,38 @@ def ConstructModifiedSuffixTrie(Text):
 # Return: The strings labeling the edges of SuffixTree(Text).
 
 def ConstructSuffixTree(Text):
-    # dfs
-    #
-    # Search Trie for non-branching paths
-    #
-    # Inputs: currentNode
-    #         path
-    def dfs(currentNode,path=[]):
-        if len(Trie[currentNode])<2: # Non-branching or end
-            path = path + [currentNode]
-            if len(Trie[currentNode])==0: #end of branch
-                symbols=[]
-                for step in path:
-                    if (len(Trie[step]))>0:
-                        symbol,_,_=Trie[step][0]
-                        symbols.append(symbol)
-                    #else:
-                        #symbols.append(str(labels[step]))
-                    
-                return ''.join(symbols)
-        else:
-            path=[]
-            
-        for symbol,pos,next_node in Trie[currentNode]:
-            symbols=dfs(next_node,path)
-            if symbols!=None:
-                print (symbols)
-                Trie[currentNode]=[(symbols,pos,next_node)]   
-            
+                
+    def get_non_branching_paths(Trie):
+        def explore(node,path=[]):
+            if node in explored:
+                return path
+            explored.add(node)
+            if len(Trie[node])==0:
+                return path + [node]
+            elif len(Trie[node])==1:
+                _,_,next_node = Trie[node][0] 
+                return explore(next_node,path + [node])
+            else:
+                return path
+        
+        Paths    = []
+        Strings  = []
+        explored = set()
+        for node in sorted(Trie.keys()):
+            path = explore(node)
+            if len(path)>0:
+                Paths.append(path)
+        print (len(Paths))
+        return Paths
+        
+    ROOT        = 0         
     Trie,labels = ConstructModifiedSuffixTrie(Text)
-    Paths=[]
-    dfs(0)
+    for path in get_non_branching_paths(Trie):
+        print (path)
+        for node in path:
+            if len(Trie[node])>0:
+                s,_,n = Trie[node][0]
+                print (s,n)
     return Trie
 
 # PrintTrie
@@ -129,13 +135,13 @@ if __name__=='__main__':
     #for k,v in ConstructSuffixTree('ATAAATG$').items():
         #print (k,v)    
     #Trie,labels=ConstructModifiedSuffixTrie('panamabananas$')
-    Trie,labels=ConstructModifiedSuffixTrie('ATAAATG$')
-    PrintTrie(Trie)
+    #Trie,labels=ConstructModifiedSuffixTrie('ATAAATG$')
+    #PrintTrie(Trie)
     #Trie1 = ConstructSuffixTree('panamabananas$')
     #PrintTrie(Trie1)
     #trie,labels = ConstructModifiedSuffixTrie('panamabananas$')
     #print (trie)
     #print (labels)
     
-    #Trie2 = ConstructSuffixTree('ATAAATG$')
+    Trie2 = ConstructSuffixTree('ATAAATG$')
     #PrintTrie(Trie2)    
