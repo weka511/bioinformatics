@@ -83,7 +83,6 @@ def ConstructSuffixTree(Text):
     def get_non_branching_paths(Trie):
         def explore(node=0,symbol='',path=[],symbols=[]):
             if len(Trie[node])==0:
-                #if len(path)>0:
                 Paths.append(path + [node])
                 Strings.append(''.join(symbols +[symbol]))
             elif len(Trie[node])==1:
@@ -96,32 +95,20 @@ def ConstructSuffixTree(Text):
         
         Paths     = []
         Strings   = []
-        #explored  = set()
         
         explore()
         
-        #for node in sorted(Trie.keys()):
-            #path = explore(node)
-            #if len(path)>0:
-                #Paths.append(path)
-        print (len(Paths))
         return Paths,Strings
         
     ROOT        = 0         
     Trie,labels = ConstructModifiedSuffixTrie(Text)
-    for path in get_non_branching_paths(Trie):
-        symbols = []
-        first   = True
-        j0      = None
-        for node in path:
-            if len(Trie[node])>0:
-                s,j,_ = Trie[node][0]
-                if first:
-                    j0     = j
-                    first = False
-                symbols.append(s)
-            del Trie[node]
-        Trie[path[0]]= [(''.join(symbols),j0,-1)]
+    Paths,Strings = get_non_branching_paths(Trie)
+    for path,string in zip(Paths,Strings):
+        if not path[0] in Trie or len(Trie[path[0]])==0: break
+        s,j,n         = Trie[path[0]][0]
+        Trie[path[0]] = [(string,j,-1)]
+        for del_node in path[1:]:
+            del Trie[del_node]
         
     return Trie
 
@@ -137,12 +124,30 @@ def PrintTrie(Trie):
     
     def dfs(Trie,currentNode=0,depth=1):
         for symbol,pos,next_node in Trie[currentNode]:
-            if next_node<0: break
             padding = ''.join(['-']*depth)
             print ('{0} {1}, {2}, {3}'.format(padding,symbol,pos,next_node))
-            dfs(Trie,next_node,depth+1)
+            if next_node>0: 
+                dfs(Trie,next_node,depth+1)
     print ('root')
     dfs(Trie)
+    
+def PrintEdges(Trie):
+    
+    # dfs
+    #
+    # Depth First Search, printing nodes as we go
+    
+    def dfs(Trie,currentNode=0):
+        for symbol,pos,next_node in Trie[currentNode]:
+            if not (symbol,pos) in explored:
+                print ('{0}, {1}, {2}'.format(symbol,pos,next_node))
+            if len(symbol)==1:
+                explored.add((symbol,pos))
+            if next_node>0: 
+                dfs(Trie,next_node)
+    print ('root')
+    explored = set()
+    dfs(Trie)    
 
 if __name__=='__main__':
     #for k,v in ConstructSuffixTree('ATAAATG$').items():
@@ -157,4 +162,5 @@ if __name__=='__main__':
     #print (labels)
     
     Trie2 = ConstructSuffixTree('ATAAATG$')
-    PrintTrie(Trie2)    
+    #PrintTrie(Trie2)
+    PrintEdges(Trie2)    
