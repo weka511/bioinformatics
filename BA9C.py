@@ -81,33 +81,35 @@ def ConstructModifiedSuffixTrie(Text):
 def ConstructSuffixTree(Text):
                 
     def get_non_branching_paths(Trie):
-        def explore(node=0,symbol='',path=[],symbols=[]):
+        def explore(node=0,symbol='',path=[],symbols=[],origin=0,index=-1):
             if len(Trie[node])==0:
                 Paths.append(path + [node])
                 Strings.append(''.join(symbols +[symbol]))
+                Origins.append((origin,index))
             elif len(Trie[node])==1:
                 next_symbol,_,next_node=Trie[node][0]
-                return explore(node=next_node,symbol=next_symbol,path=path+[node],symbols=symbols+[symbol])
+                explore(node=next_node,symbol=next_symbol,path=path+[node],symbols=symbols+[symbol],origin=origin,index=index)
             else:
-                for next_symbol,_,next_node in Trie[node]:
-                    explore(node=next_node,symbol=next_symbol)
+                trie = Trie[node]
+                for i in range(len(trie)):
+                    next_symbol,_,next_node = trie[i]
+                    explore(node=next_node,symbol=next_symbol,origin=node,index=i)
  
-        
+        Origins   = []
         Paths     = []
-        Strings   = []
-        
+        Strings   = [] 
         explore()
+        return Paths,Strings,Origins
         
-        return Paths,Strings
-        
-    ROOT        = 0         
-    Trie,labels = ConstructModifiedSuffixTrie(Text)
-    Paths,Strings = get_non_branching_paths(Trie)
-    for path,string in zip(Paths,Strings):
-        if not path[0] in Trie or len(Trie[path[0]])==0: break
-        s,j,n         = Trie[path[0]][0]
-        Trie[path[0]] = [(string,j,-1)]
-        for del_node in path[1:]:
+    ROOT                  = 0         
+    Trie,labels           = ConstructModifiedSuffixTrie(Text)
+    Paths,Strings,Origins = get_non_branching_paths(Trie)
+    for path,string,origin in zip(Paths,Strings,Origins):
+        if len(path)<2: break
+        node,index        = origin
+        s,j,n             = Trie[node][index]
+        Trie[node][index] = (string,j,-1)
+        for del_node in path[0:]:
             del Trie[del_node]
         
     return Trie
@@ -139,14 +141,9 @@ def PrintEdges(Trie):
     
     def dfs(Trie,currentNode=0):
         for symbol,pos,next_node in Trie[currentNode]:
-            if not (symbol,pos) in explored:
-                print ('{0}, {1}, {2}'.format(symbol,pos,next_node))
-            if len(symbol)==1:
-                explored.add((symbol,pos))
+            print ('{0}'.format(symbol))
             if next_node>0: 
                 dfs(Trie,next_node)
-    print ('root')
-    explored = set()
     dfs(Trie)    
 
 if __name__=='__main__':
