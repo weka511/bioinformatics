@@ -15,7 +15,8 @@
 
 # BA6D Find a Shortest Transformation of One Genome into Another by 2-Breaks 
 
-
+def FindShortestTransformation(s,t):
+     pass
 
 if __name__=='__main__':
-    pass
+     FindShortestTransformation((+1 -2 -3 +4),(+1 +2 -4 -3))
