@@ -72,16 +72,16 @@ NB: functions generally use zero based indexing; Rosalind uses 1-based.
 |BA5N |align.py|[Find a Topological Ordering of a DAG](http://rosalind.info/problems/ba5n/) | 
 |6|fragile.py|Are there fragile regions in the human genome?|
 |BA6A|BA6A.py fragile.py|[Implement GreedySorting to Sort a Permutation by Reversals ](http://rosalind.info/problems/ba6a/)|
-|BA6B|BA6B.py|[Compute the Number of Breakpoints in a Permutation](http://rosalind.info/problems/ba6b/)|
-|BA6C|BA6C.py|[Compute the 2-Break Distance Between a Pair of Genomes](http://rosalind.info/problems/ba6c/)|
+|BA6B|BA6B.py fragile.py|[Compute the Number of Breakpoints in a Permutation](http://rosalind.info/problems/ba6b/)|
+|BA6C|BA6C.py fragile.py|[Compute the 2-Break Distance Between a Pair of Genomes](http://rosalind.info/problems/ba6c/)|
 |BA6D|BA6D.py|[Find a Shortest Transformation of One Genome into Another by 2-Breaks](http://rosalind.info/problems/ba6d/) (wip)|
 |BA6E|fragile.py| [Find All Shared k-mers of a Pair of Strings ](http://rosalind.info/problems/ba6e/)|
-|BA6F|BA6F.py|[Implement Chromosome to Cycle](http://rosalind.info/problems/ba6f/)|
-|BA6G|BA6G.py|[Implement Cycle to Chromosome](http://rosalind.info/problems/ba6g/)|
-|BA6H|BA6H.py|[Implement Coloured Edges](http://rosalind.info/problems/ba6h/)|
-|BA6I|BA6I.py|[Implement GraphToGenome ](http://rosalind.info/problems/ba6i/)|
-|BA6J|BA6J.py|[Implement 2-BreakOnGenomeGraph ](http://rosalind.info/problems/ba6j/)|
-|BA6K|BA6K| [Implement 2-BreakOnGenome ](http://rosalind.info/problems/ba6k/) (WIP)|
+|BA6F|BA6F.py fragile.py|[Implement Chromosome to Cycle](http://rosalind.info/problems/ba6f/)|
+|BA6G|BA6G.py fragile.py|[Implement Cycle to Chromosome](http://rosalind.info/problems/ba6g/)|
+|BA6H|BA6H.py fragile.py|[Implement Coloured Edges](http://rosalind.info/problems/ba6h/)|
+|BA6I|BA6I.py fragile.py|[Implement GraphToGenome ](http://rosalind.info/problems/ba6i/)|
+|BA6J|BA6J.py fragile.py|[Implement 2-BreakOnGenomeGraph ](http://rosalind.info/problems/ba6j/)|
+|BA6K|BA6K.py fragile.py| [Implement 2-BreakOnGenome ](http://rosalind.info/problems/ba6k/) (WIP)|
 |7|-|Which animal gave us SARS?|
 |BA7A|BA7A.py|[Compute Distances Between Leaves](http://rosalind.info/problems/ba7a/)|
 |BA7B|BA7B.py|[Limb Length Problem](http://rosalind.info/problems/ba7b/)|
