@@ -20,13 +20,13 @@ from rosalind import revc,subs
 
 #    BA6A Implement GreedySorting to Sort a Permutation by Reversals
 
-def GreedySorting(P):
+def GreedySorting(P,signed=False):
     def kReverse(k):
         pos = P.index(k if k in P else -k)
-        return P[0:k-1] + [-P[j] for j in range(pos,k-2,-1)] + P[pos+1:]
+        return P[0:k-1] + [-P[j] if signed else P[j] for j in range(pos,k-2,-1)] + P[pos+1:]
     def format():
         def f(p):
-            return str(p) if p<0 else '+' + str(p)
+            return str(p) if not signed or p<0 else '+' + str(p)
         return '(' + ' '.join(f(p) for p in P) + ')'
     reversalDistance = 0
     for k in range(1,len(P)+1):
@@ -39,6 +39,9 @@ def GreedySorting(P):
                 reversalDistance+=1
                 print (format())
     return reversalDistance
+
+
+
 
 # BA6B Compute the Number of Breakpoints in a Permutation 
 #
