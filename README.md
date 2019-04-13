@@ -71,7 +71,7 @@ NB: functions generally use zero based indexing; Rosalind uses 1-based.
 |BA5M|BA5M.py align.py|[Find a Highest-Scoring Multiple Sequence Alignment](http://rosalind.info/problems/ba5m/) | 
 |BA5N |align.py|[Find a Topological Ordering of a DAG](http://rosalind.info/problems/ba5n/) | 
 |6|fragile.py|Are there fragile regions in the human genome?|
-|BA6A|BA6A.py|[Implement GreedySorting to Sort a Permutation by Reversals ](http://rosalind.info/problems/ba6a/)|
+|BA6A|BA6A.py fragile.py|[Implement GreedySorting to Sort a Permutation by Reversals ](http://rosalind.info/problems/ba6a/)|
 |BA6B|BA6B.py|[Compute the Number of Breakpoints in a Permutation](http://rosalind.info/problems/ba6b/)|
 |BA6C|BA6C.py|[Compute the 2-Break Distance Between a Pair of Genomes](http://rosalind.info/problems/ba6c/)|
 |BA6D|BA6D.py|[Find a Shortest Transformation of One Genome into Another by 2-Breaks](http://rosalind.info/problems/ba6d/) (wip)|

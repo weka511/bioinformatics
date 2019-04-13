@@ -18,6 +18,28 @@
 from helpers import create_frequency_table
 from rosalind import revc,subs
 
+#    BA6A Implement GreedySorting to Sort a Permutation by Reversals
+
+def GreedySorting(P):
+    def kReverse(k):
+        pos = P.index(k if k in P else -k)
+        return P[0:k-1] + [-P[j] for j in range(pos,k-2,-1)] + P[pos+1:]
+    def format():
+        def f(p):
+            return str(p) if p<0 else '+' + str(p)
+        return '(' + ' '.join(f(p) for p in P) + ')'
+    reversalDistance = 0
+    for k in range(1,len(P)+1):
+        if k!=P[k-1]:
+            P=kReverse(k)
+            reversalDistance+=1
+            print (format())
+            if P[k-1]==-k:
+                P[k-1]=k
+                reversalDistance+=1
+                print (format())
+    return reversalDistance
+
 # BA6B Compute the Number of Breakpoints in a Permutation 
 #
 # getBreakPoints
