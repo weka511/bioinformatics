@@ -19,14 +19,44 @@ REAR 	Reversal Distance
 import time
 from fragile import GreedySorting
 
-def rear(s1,s2):
-    def sorted(S):
-        for i in range(1,len(S)):
-            if S[i-1]>S[i]: return False
-        return True
-    if sorted(s2): return GreedySorting(s1)
-    if sorted(s1): return GreedySorting(s2)
-    return GreedySorting([s2.index(p)+1 for p in s1],signed=False)    
+def sorted(S):
+    for i in range(1,len(S)):
+        if S[i-1]>S[i]: return False
+    return True
+
+# snarfed from https://stackoverflow.com/questions/3755136/pythonic-way-to-check-if-a-list-is-sorted-or-not
+
+def isSorted(x, key = lambda x: x): 
+    return all([key(x[i]) <= key(x[i + 1]) for i in range(len(x) - 1)])
+
+# http://www.cs.utoronto.ca/~brudno/csc2417_09/ElementaryHP.pdf
+def bergeron(s):
+    def get_oriented(S):
+        return [(i,j,S[i],S[j]) for j in range(len(S)) for i in range(0,j) if abs(S[i]+S[j])==1 and S[i]*S[j]<0]
+    def reverse_segment(S):
+        return [-s for s in S[::-1]]    
+    def reverse(S,pair):
+        i,j,pi_i,pi_j = pair
+        if pi_i+pi_j>0:
+            return S[:i+1] + reverse_segment(S[i+1:j+1]) + S[j+1:]
+        else:
+            return S[:i+2] + reverse_segment(S[i+2:j] + S[j:])    
+    def get_score(S):
+        return len(get_oriented(S))
+    framed = [0] + s + [len(s)+1]
+    d = 0
+    for i in range(20):
+        if isSorted(framed):
+            return d,framed[1:-2]
+        oriented_pairs = get_oriented(framed)
+        
+        d+=1
+
+def rear(s1,s2,sort=GreedySorting):
+
+    if isSorted(s2): return sort(s1)
+    if isSorted(s1): return sort(s2)
+    return sort([s2.index(p)+1 for p in s1])    
 
 if __name__=='__main__':
     def parse(line):
@@ -60,15 +90,15 @@ if __name__=='__main__':
         print ('----')
         result.append(rear(a,next(it)))
     print (result)
-    with open (r'C:\Users\Simon\Downloads\rosalind_rear.txt') as f:
-        result = []
-        for line in f:
-            if i%3==0:
-                original=parse(line)
-            if i%3==1:
-                result.append(rear(original,parse(line)))
-                print("--- {0} seconds ---".format(time.time() - start_time))
-            i+=1
+    #with open (r'C:\Users\Simon\Downloads\rosalind_rear.txt') as f:
+        #result = []
+        #for line in f:
+            #if i%3==0:
+                #original=parse(line)
+            #if i%3==1:
+                #result.append(rear(original,parse(line)))
+                #print("--- {0} seconds ---".format(time.time() - start_time))
+            #i+=1
     
-        print(result)
+        #print(result)
         
