@@ -350,15 +350,18 @@ def leaderBoardSort(S,N=25):
                 return reversalDistance+1
     return reversalDistance 
 
-def rear(s1,s2,sort=leaderBoardSort):
+def rear(s1,s2):
     if isSorted(s2):
         if isSorted(s1):
             return 0
         else:
             return sort(s1)
     if isSorted(s1): return sort(s2)
-    return sort([s2.index(p)+1 for p in s1])   
-    
+    return leaderBoardSort([s2.index(p)+1 for p in s1])   
+
+def sort(s1,s2):
+    pass
+
 # WIP code snarfed from Anne Bergeron, A Very Elemantart Presentation of
 # the Hannenhalli-Pevzner Theory
 
