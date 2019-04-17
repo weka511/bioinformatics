@@ -20,24 +20,26 @@ from rosalind import revc,subs
 
 #    BA6A Implement GreedySorting to Sort a Permutation by Reversals
 
+def kReverse(P,k,signed=False):
+    pos = P.index(k if k in P else -k)
+    return P[0:k-1] + [-P[j] if signed else P[j] for j in range(pos,k-2,-1)] + P[pos+1:]
+
 def GreedySorting(P,signed=False):
-    def kReverse(k):
-        pos = P.index(k if k in P else -k)
-        return P[0:k-1] + [-P[j] if signed else P[j] for j in range(pos,k-2,-1)] + P[pos+1:]
-    def format():
+
+    def format(P):
         def f(p):
             return str(p) if not signed or p<0 else '+' + str(p)
         return '(' + ' '.join(f(p) for p in P) + ')'
     reversalDistance = 0
     for k in range(1,len(P)+1):
         if k!=P[k-1]:
-            P=kReverse(k)
+            P=kReverse(P,k,signed=signed)
             reversalDistance+=1
-            print (format())
+            print (format(P))
             if P[k-1]==-k:
                 P[k-1]=k
                 reversalDistance+=1
-                print (format())
+                print (format(P))
     return reversalDistance
 
 
@@ -301,6 +303,37 @@ def GraphToGenome(GenomeGraph):
         R.append(r)
     return R
 
+# snarfed from https://stackoverflow.com/questions/3755136/pythonic-way-to-check-if-a-list-is-sorted-or-not
+
+def isSorted(x, key = lambda x: x): 
+    return all([key(x[i]) <= key(x[i + 1]) for i in range(len(x) - 1)])
+
+# http://www.cs.utoronto.ca/~brudno/csc2417_09/ElementaryHP.pdf
+def bergeron(s):
+    def get_oriented(S):
+        return [(i,j,S[i],S[j]) for j in range(len(S)) for i in range(0,j) if abs(S[i]+S[j])==1 and S[i]*S[j]<0]
+    def reverse_segment(S):
+        return [-s for s in S[::-1]]    
+    def reverse(S,pair):
+        i,j,pi_i,pi_j = pair
+        if pi_i+pi_j>0:
+            return S[:i+1] + reverse_segment(S[i+1:j+1]) + S[j+1:]
+        else:
+            return S[:i+2] + reverse_segment(S[i+2:j] + S[j:])    
+    def get_score(S):
+        return len(get_oriented(S))
+    framed = [0] + s + [len(s)+1]
+    d = 0
+    for i in range(20):
+        if isSorted(framed):
+            return d,framed[1:-2]
+        oriented_pairs = get_oriented(framed)
+        reverses       = [reverse(framed,pair) for pair in oriented_pairs]
+        scores         = get_score(S for S in reverses)
+        best           = argmax(scores)
+        framed         = reverses[best]
+        d+=1
+            
 if __name__=='__main__':
  
     import unittest

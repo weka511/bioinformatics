@@ -17,44 +17,62 @@ along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>
 REAR 	Reversal Distance
 '''
 import time
-from fragile import GreedySorting
+from fragile import GreedySorting, kReverse,isSorted
+from numpy import argmax
 
-def sorted(S):
-    for i in range(1,len(S)):
-        if S[i-1]>S[i]: return False
-    return True
 
-# snarfed from https://stackoverflow.com/questions/3755136/pythonic-way-to-check-if-a-list-is-sorted-or-not
-
-def isSorted(x, key = lambda x: x): 
-    return all([key(x[i]) <= key(x[i + 1]) for i in range(len(x) - 1)])
-
-# http://www.cs.utoronto.ca/~brudno/csc2417_09/ElementaryHP.pdf
-def bergeron(s):
-    def get_oriented(S):
-        return [(i,j,S[i],S[j]) for j in range(len(S)) for i in range(0,j) if abs(S[i]+S[j])==1 and S[i]*S[j]<0]
-    def reverse_segment(S):
-        return [-s for s in S[::-1]]    
-    def reverse(S,pair):
-        i,j,pi_i,pi_j = pair
-        if pi_i+pi_j>0:
-            return S[:i+1] + reverse_segment(S[i+1:j+1]) + S[j+1:]
-        else:
-            return S[:i+2] + reverse_segment(S[i+2:j] + S[j:])    
-    def get_score(S):
-        return len(get_oriented(S))
-    framed = [0] + s + [len(s)+1]
-    d = 0
-    for i in range(20):
-        if isSorted(framed):
-            return d,framed[1:-2]
-        oriented_pairs = get_oriented(framed)
+def leaderBoardSort(S,N=5):
+    def get_all_reversals(S):
+        def reverse(i,j):
+            def reverse_segment(S):
+                return S[::-1]       
+            return S[:i] + reverse_segment(S[i:j+1]) + S[j+1:]    
+        return [reverse(i,j) for j in range(len(S)) for i in range(j)]    
+    #def get_score(s):
+        #return sum([abs(s[i+1]-s[i]) for i in range(len(s)-1)])
+    def get_breakpoints(S):
+        return [1 if S[i+1]-S[i]>0 else -1 for i in range(len(S)-1) if abs(S[i+1]-S[i])>1] 
+    #def reversals(s):
+        #result = []
+        #for i in range(1,len(s)):
+            #for j in range(i+1,len(s)-1):
+                #result.append(s[:i]+s[i:j+1][::-1]+s[j+1:])
+        #return result
+                
+    def create_leaders(leaders):
+        permutation = [get_all_reversals(s) for s,_ in leaders]
+        new_list    = [(p,len(get_breakpoints(p))) for ps in permutation for p in ps]
+        #print (len(new_list),new_list)
+        min_breakpoint_count = min([c for (p,c) in new_list])
+        #print (min_breakpoint_count)
+        result               = []
+        while len(result)<N:
+            result = result + [(p,c) for (p,c) in new_list if c==min_breakpoint_count]
+            min_breakpoint_count+=1
+        return result     
+        #sorted_list = sorted(new_list, key=lambda tup: tup[1])
+        #return sorted_list if len(sorted_list)<=N else sorted_list[:N]
         
-        d+=1
+    reversalDistance = 0
+    leaders    = [(S,len(get_breakpoints(S)))]
+    
+    for k in range(1,len(S)+1):
+        leaders = create_leaders(leaders)
+        reversalDistance+=1
+        s,b = leaders[0]
+        if b==0:
+            if s[0]<s[1]:
+                return reversalDistance
+            else:
+                return reversalDistance+1
+    return reversalDistance    
 
-def rear(s1,s2,sort=GreedySorting):
-
-    if isSorted(s2): return sort(s1)
+def rear(s1,s2,sort=leaderBoardSort):
+    if isSorted(s2):
+        if isSorted(s1):
+            return 0
+        else:
+            return sort(s1)
     if isSorted(s1): return sort(s2)
     return sort([s2.index(p)+1 for p in s1])    
 
@@ -84,21 +102,21 @@ if __name__=='__main__':
         [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]    
     ]
     
-    it = iter(data)
-    result = []
-    for a in it:
-        print ('----')
-        result.append(rear(a,next(it)))
-    print (result)
-    #with open (r'C:\Users\Simon\Downloads\rosalind_rear.txt') as f:
-        #result = []
-        #for line in f:
-            #if i%3==0:
-                #original=parse(line)
-            #if i%3==1:
-                #result.append(rear(original,parse(line)))
-                #print("--- {0} seconds ---".format(time.time() - start_time))
-            #i+=1
+    #it = iter(data)
+    #result = []
+    #for a in it:
+        #print ('----')
+        #result.append(rear(a,next(it)))
+    #print (result)
+    with open (r'C:\Users\Simon\Downloads\rosalind_rear(2).txt') as f:
+        result = []
+        for line in f:
+            if i%3==0:
+                original=parse(line)
+            if i%3==1:
+                result.append(rear(original,parse(line)))
+                print("--- {0} seconds ---".format(time.time() - start_time))
+            i+=1
     
-        #print(result)
+        print(result)
         
