@@ -311,13 +311,14 @@ def isSorted(x, key = lambda x: x):
 # leaderBoardSort
 #
 # REAR 	Reversal Distance
+# SORT 	Sorting by Reversals
 
-def leaderBoardSort(S,N=25):
-    def get_all_reversals(S):
+def leaderBoardSort(S,N=5):
+    def get_all_reversals(S,path):
         def reverse(i,j):
             def reverse_segment(S):
                 return S[::-1]       
-            return S[:i] + reverse_segment(S[i:j+1]) + S[j+1:]    
+            return (S[:i] + reverse_segment(S[i:j+1]) + S[j+1:],path+[(i,j)])    
         return [reverse(i,j) for j in range(len(S)) for i in range(j)]    
 
     def get_breakpoints(S):
@@ -325,39 +326,41 @@ def leaderBoardSort(S,N=25):
 
                 
     def create_leaders(leaders):
-        permutation = [get_all_reversals(s) for s,_ in leaders]
-        new_list    = [(p,len(get_breakpoints(p))) for ps in permutation for p in ps]
+        #print (leaders)
+        permutation = [get_all_reversals(s,path) for s,_,path in leaders] # [[(i,j,permuted),...],...]
+        new_list    = [(p,len(get_breakpoints(p)),path) for ps in permutation for p,path in ps]
 
-        min_breakpoint_count = min([c for (p,c) in new_list])
-
+        min_breakpoint_count = min([c for (_,c,_) in new_list])
+#        reversals = [(i,j) for ps in permutation for i,j,_ in ps]
         result               = []
         while len(result)<N:
-            result = result + [(p,c) for (p,c) in new_list if c==min_breakpoint_count]
+            result = result + [(p,c,path) for (p,c,path) in new_list if c==min_breakpoint_count]
             min_breakpoint_count+=1
         return result     
  
     reversalDistance = 0
-    leaders    = [(S,len(get_breakpoints(S)))]
+    leaders    = [(S,len(get_breakpoints(S)),[])]  # permuted, score, list of reversals
     
     for k in range(1,len(S)+1):
         leaders = create_leaders(leaders)
         reversalDistance+=1
-        s,b = leaders[0]
+        s,b,path = leaders[0]
         if b==0:
             if s[0]<s[1]:
-                return reversalDistance
+                return reversalDistance,path 
             else:
-                return reversalDistance+1
-    return reversalDistance 
+                return reversalDistance+1,path # fixme
+    return reversalDistance,path 
 
 def rear(s1,s2):
     if isSorted(s2):
         if isSorted(s1):
             return 0
         else:
-            return sort(s1)
-    if isSorted(s1): return sort(s2)
-    return leaderBoardSort([s2.index(p)+1 for p in s1])   
+            return leaderBoardSort(s1)
+    if isSorted(s1): return leaderBoardSort(s2)
+    d,_ = leaderBoardSort([s2.index(p)+1 for p in s1])
+    return d
 
 def sort(s1,s2):
     pass
