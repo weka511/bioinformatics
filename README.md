@@ -139,7 +139,7 @@ NB: functions generally use zero based indexing; Rosalind uses 1-based.
 |pcov|PCOV.py|[Genome Assembly with Perfect Coverage](http://rosalind.info/problems/pcov/) |
 |-|-|[Genome Rearrangements](http://rosalind.info/problems/topics/genome-rearrangements/)|
 |lgis|lgis.py|[Longest Increasing Subsequence](http://rosalind.info/problems/lgis/) |
-|rear|rear.py|[Reversal distance](http://rosalind.info/problems/rear/) (WIP)|
+|rear|rear.py fragile.py|[Reversal distance](http://rosalind.info/problems/rear/) |
 |-|graphs.py|[Graphs](http://rosalind.info/problems/topics/graphs/) & [Graph Algorithms](http://rosalind.info/problems/topics/graph-algorithms/)|
 |bf|bf.py graphs.py|[Bellman-Ford Algorithm](http://rosalind.info/problems/bf/)|
 |bfs|bfs.py|[Beadth First search](http://rosalind.info/problems/bfs/) |

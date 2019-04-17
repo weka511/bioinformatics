@@ -17,58 +17,7 @@ along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>
 REAR 	Reversal Distance
 '''
 import time
-from fragile import GreedySorting, kReverse,isSorted
-from numpy import argmax
-
-
-def leaderBoardSort(S,N=25):
-    def get_all_reversals(S):
-        def reverse(i,j):
-            def reverse_segment(S):
-                return S[::-1]       
-            return S[:i] + reverse_segment(S[i:j+1]) + S[j+1:]    
-        return [reverse(i,j) for j in range(len(S)) for i in range(j)]    
-
-    def get_breakpoints(S):
-        return [1 if S[i+1]-S[i]>0 else -1 for i in range(len(S)-1) if abs(S[i+1]-S[i])>1] 
-
-                
-    def create_leaders(leaders):
-        permutation = [get_all_reversals(s) for s,_ in leaders]
-        new_list    = [(p,len(get_breakpoints(p))) for ps in permutation for p in ps]
-        #print (len(new_list),new_list)
-        min_breakpoint_count = min([c for (p,c) in new_list])
-        #print (min_breakpoint_count)
-        result               = []
-        while len(result)<N:
-            result = result + [(p,c) for (p,c) in new_list if c==min_breakpoint_count]
-            min_breakpoint_count+=1
-        return result     
-        #sorted_list = sorted(new_list, key=lambda tup: tup[1])
-        #return sorted_list if len(sorted_list)<=N else sorted_list[:N]
-        
-    reversalDistance = 0
-    leaders    = [(S,len(get_breakpoints(S)))]
-    
-    for k in range(1,len(S)+1):
-        leaders = create_leaders(leaders)
-        reversalDistance+=1
-        s,b = leaders[0]
-        if b==0:
-            if s[0]<s[1]:
-                return reversalDistance
-            else:
-                return reversalDistance+1
-    return reversalDistance    
-
-def rear(s1,s2,sort=leaderBoardSort):
-    if isSorted(s2):
-        if isSorted(s1):
-            return 0
-        else:
-            return sort(s1)
-    if isSorted(s1): return sort(s2)
-    return sort([s2.index(p)+1 for p in s1])    
+from fragile import rear
 
 if __name__=='__main__':
     def parse(line):
