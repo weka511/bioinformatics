@@ -308,6 +308,9 @@ def GraphToGenome(GenomeGraph):
 def isSorted(x, key = lambda x: x): 
     return all([key(x[i]) <= key(x[i + 1]) for i in range(len(x) - 1)])
 
+# WIP code snarfed from Anne Bergeron, A Very Elemantart Presentation of
+# the Hannenhalli-Pevzner Theory
+
 # http://www.cs.utoronto.ca/~brudno/csc2417_09/ElementaryHP.pdf
 def bergeron(s):
     def get_oriented(S):

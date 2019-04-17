@@ -21,23 +21,17 @@ from fragile import GreedySorting, kReverse,isSorted
 from numpy import argmax
 
 
-def leaderBoardSort(S,N=5):
+def leaderBoardSort(S,N=25):
     def get_all_reversals(S):
         def reverse(i,j):
             def reverse_segment(S):
                 return S[::-1]       
             return S[:i] + reverse_segment(S[i:j+1]) + S[j+1:]    
         return [reverse(i,j) for j in range(len(S)) for i in range(j)]    
-    #def get_score(s):
-        #return sum([abs(s[i+1]-s[i]) for i in range(len(s)-1)])
+
     def get_breakpoints(S):
         return [1 if S[i+1]-S[i]>0 else -1 for i in range(len(S)-1) if abs(S[i+1]-S[i])>1] 
-    #def reversals(s):
-        #result = []
-        #for i in range(1,len(s)):
-            #for j in range(i+1,len(s)-1):
-                #result.append(s[:i]+s[i:j+1][::-1]+s[j+1:])
-        #return result
+
                 
     def create_leaders(leaders):
         permutation = [get_all_reversals(s) for s,_ in leaders]
@@ -108,7 +102,7 @@ if __name__=='__main__':
         #print ('----')
         #result.append(rear(a,next(it)))
     #print (result)
-    with open (r'C:\Users\Simon\Downloads\rosalind_rear(2).txt') as f:
+    with open (r'C:\Users\Simon\Downloads\rosalind_rear(3).txt') as f:
         result = []
         for line in f:
             if i%3==0:
