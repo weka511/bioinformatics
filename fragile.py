@@ -360,21 +360,21 @@ def leaderBoardSort(S,N=25):
 # Return: d,[reversals]
 
 def sort(s1,s2):
+    # incr
+    #
     # Convert from 0-based to a-based (Rosalind) 
     def incr(path):
         return [(a+1,b+1) for (a,b) in path]
+    
+    # adapt
+    #
     # Adapt s1 s2 to leaderBoardSort, which assumes one list is in the form [1,2,3,...]
-    if isSorted(s2):
-        if isSorted(s1):
-            return 0,[]
-        else:
-            d,path=leaderBoardSort(s1)
-            return d,incr(path)
-    if isSorted(s1):
-        d,path= leaderBoardSort(s2)
-        return d,incr(path)
-    d,path = leaderBoardSort([s2.index(p)+1 for p in s1])
-    return d,incr(path)
+    def adapt():
+        if isSorted(s2): return s1
+        if isSorted(s1): return s2
+        return [s2.index(p)+1 for p in s1]
+    
+    return leaderBoardSort(adapt())
 
 # WIP code snarfed from Anne Bergeron, A Very Elemantart Presentation of
 # the Hannenhalli-Pevzner Theory
