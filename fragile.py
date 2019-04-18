@@ -313,7 +313,7 @@ def isSorted(x, key = lambda x: x):
 # REAR 	Reversal Distance
 # SORT 	Sorting by Reversals
 
-def leaderBoardSort(S,N=5):
+def leaderBoardSort(S,N=25):
     def get_all_reversals(S,path):
         def reverse(i,j):
             def reverse_segment(S):
@@ -326,17 +326,10 @@ def leaderBoardSort(S,N=5):
 
                 
     def create_leaders(leaders):
-        #print (leaders)
         permutation = [get_all_reversals(s,path) for s,_,path in leaders] # [[(i,j,permuted),...],...]
         new_list    = [(p,len(get_breakpoints(p)),path) for ps in permutation for p,path in ps]
-
-        min_breakpoint_count = min([c for (_,c,_) in new_list])
-#        reversals = [(i,j) for ps in permutation for i,j,_ in ps]
-        result               = []
-        while len(result)<N:
-            result = result + [(p,c,path) for (p,c,path) in new_list if c==min_breakpoint_count]
-            min_breakpoint_count+=1
-        return result     
+        sorted_list = sorted(new_list,key=lambda x:x[1])
+        return sorted_list[:min(N,len(sorted_list))]
  
     reversalDistance = 0
     leaders    = [(S,len(get_breakpoints(S)),[])]  # permuted, score, list of reversals
@@ -349,7 +342,7 @@ def leaderBoardSort(S,N=5):
             if s[0]<s[1]:
                 return reversalDistance,path 
             else:
-                return reversalDistance+1,path # fixme
+                return reversalDistance+1,path+[(0,len(S)-1)]
     return reversalDistance,path 
 
 def rear(s1,s2):
@@ -357,13 +350,28 @@ def rear(s1,s2):
         if isSorted(s1):
             return 0
         else:
-            return leaderBoardSort(s1)
-    if isSorted(s1): return leaderBoardSort(s2)
+            d,_=leaderBoardSort(s1)
+            return d
+    if isSorted(s1):
+        d,_= leaderBoardSort(s2)
+        return d
     d,_ = leaderBoardSort([s2.index(p)+1 for p in s1])
     return d
 
 def sort(s1,s2):
-    pass
+    def incr(path):
+        return [(a+1,b+1) for (a,b) in path]
+    if isSorted(s2):
+        if isSorted(s1):
+            return 0,[]
+        else:
+            d,path=leaderBoardSort(s1)
+            return d,incr(path)
+    if isSorted(s1):
+        d,path= leaderBoardSort(s2)
+        return d,incr(path)
+    d,path = leaderBoardSort([s2.index(p)+1 for p in s1])
+    return d,incr(path)
 
 # WIP code snarfed from Anne Bergeron, A Very Elemantart Presentation of
 # the Hannenhalli-Pevzner Theory

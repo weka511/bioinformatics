@@ -13,17 +13,18 @@
 #    You should have received a copy of the GNU General Public License
 #    along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>
 #
-# SORT 	Sorting by Reversals
+#    SORT 	Sorting by Reversals
 
 import time
 from fragile import sort
+from helpers import create_strings
 
 if __name__=='__main__':
     def parse(line):
         return [int(c) for c in line.strip().split()]
     
-    print (sort([1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-               [1, 8, 9, 3, 2, 7, 6, 5, 4, 10]))
-    
- 
-        
+    S = create_strings(ext=3)
+    d,path = sort(S[0].split(' '),S[1].split(' '))
+    print (d)
+    for (i,j) in path:
+        print ('{0} {1}'.format(i,j))
