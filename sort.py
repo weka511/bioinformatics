@@ -17,14 +17,14 @@
 
 import time
 from fragile import sort
-from helpers import create_strings
+from helpers import create_list
 
 if __name__=='__main__':
     def parse(line):
         return [int(c) for c in line.strip().split()]
     
-    S = create_strings(ext=3)
-    d,path = sort(S[0].split(' '),S[1].split(' '))
+    S = create_list(ext=3)
+    d,path = sort(S[0],S[1])
     print (d)
     for (i,j) in path:
         print ('{0} {1}'.format(i,j))

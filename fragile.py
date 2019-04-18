@@ -308,10 +308,15 @@ def GraphToGenome(GenomeGraph):
 def isSorted(x, key = lambda x: x): 
     return all([key(x[i]) <= key(x[i + 1]) for i in range(len(x) - 1)])
 
-# leaderBoardSort
+# leaderBoardSort   Sort a list of synteny blocks into [1,2,3,.....]
 #
 # REAR 	Reversal Distance
 # SORT 	Sorting by Reversals
+#
+# Inputs: S   List of synteny blocks
+#         N   Number of entries in leader board
+#
+# Return: d,[reversals]
 
 def leaderBoardSort(S,N=25):
     def get_all_reversals(S,path):
@@ -345,22 +350,20 @@ def leaderBoardSort(S,N=25):
                 return reversalDistance+1,path+[(0,len(S)-1)]
     return reversalDistance,path 
 
-def rear(s1,s2):
-    if isSorted(s2):
-        if isSorted(s1):
-            return 0
-        else:
-            d,_=leaderBoardSort(s1)
-            return d
-    if isSorted(s1):
-        d,_= leaderBoardSort(s2)
-        return d
-    d,_ = leaderBoardSort([s2.index(p)+1 for p in s1])
-    return d
+# sort
+#
+# REAR 	Reversal Distance
+# SORT 	Sorting by Reversals
+# Inputs: s1    List of synteny blocks
+#         s2    List of synteny blocks
+#
+# Return: d,[reversals]
 
 def sort(s1,s2):
+    # Convert from 0-based to a-based (Rosalind) 
     def incr(path):
         return [(a+1,b+1) for (a,b) in path]
+    # Adapt s1 s2 to leaderBoardSort, which assumes one list is in the form [1,2,3,...]
     if isSorted(s2):
         if isSorted(s1):
             return 0,[]

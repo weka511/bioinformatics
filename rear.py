@@ -16,7 +16,7 @@
 #    REAR 	Reversal Distance
 
 import time
-from fragile import rear
+from fragile import sort
 
 if __name__=='__main__':
     def parse(line):
@@ -44,19 +44,15 @@ if __name__=='__main__':
         [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]    
     ]
     
-    #it = iter(data)
-    #result = []
-    #for a in it:
-        #print ('----')
-        #result.append(rear(a,next(it)))
-    #print (result)
+
     with open (r'C:\Users\Simon\Downloads\rosalind_rear(3).txt') as f:
         result = []
         for line in f:
             if i%3==0:
                 original=parse(line)
             if i%3==1:
-                result.append(rear(original,parse(line)))
+                d,_ = sort(original,parse(line))
+                result.append(d)
                 print("--- {0} seconds ---".format(time.time() - start_time))
             i+=1
     
