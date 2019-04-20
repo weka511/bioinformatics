@@ -15,13 +15,7 @@
 #
 #    BA6J Implement 2-BreakOnGenomeGraph
 
-def get2BreakOnGenomeGraph(graph,i0,i1,j0,j1):
-    def eq(x,y):
-        u,v=x
-        w,z=y
-        return (u ==w and v==z) or (w==v and u==z)
-    removed = [x for x in graph if not eq(x,(i0,i1)) and not eq(x,(j0,j1))]
-    return removed +[(i0,j0)] + [(i1,j1)]
+from fragile import get2BreakOnGenomeGraph
 
 if __name__=='__main__':
     #print (get2BreakOnGenomeGraph([(2, 4), (3, 8), (7, 5), (6, 1)],1, 6, 3, 8))

@@ -15,8 +15,13 @@
 
 # BA6D Find a Shortest Transformation of One Genome into Another by 2-Breaks 
 
+from fragile import d2break
+
 def FindShortestTransformation(s,t):
-     pass
+     return d2break(s,t)
 
 if __name__=='__main__':
-     FindShortestTransformation((+1 -2 -3 +4),(+1 +2 -4 -3))
+     #print (d2break([[+1, +2, +3, +4, +5, +6]],
+                    #[[+1, -3, -6, -5],[+2, -4]]))
+     print (d2break([[+1, -2, -3, +4]],[[+1, +2, -4, -3]]))     
+     #FindShortestTransformation([+1, -2, -3, +4],[+1, +2, -4, -3])

@@ -15,58 +15,24 @@
 #
 #    BA6K Implement 2-BreakOnGenome
 
-from BA6J import get2BreakOnGenomeGraph
-from fragile import GraphToGenome,ChromosomeToCycle,CycleToChromosome
 
-def GraphToGenomeAll(GenomeGraph):
-     def build_index():
-          def insert(a,b):
-               if not a in Index:
-                    Index[a]=[]
-               Index[a].append(b)
-          Index = {}
-          for (a,b) in GenomeGraph:
-               insert(a,b)
-               insert(b,a)
-          return Index
-     
-     def extract_cycle(Index,a,b):
-          Cycle = [a,b]
-          while True:    # build one cycle
-               nexts = Index[b]
-               next_link = list(set(nexts) - set(Cycle))
-               if len(next_link)>0:
-                    b = next_link[0]
-                    Cycle.append(b)
-               else:
-                    x,y = nexts
-                    assert x== Cycle[0] or y == Cycle[0]
-                    for c in Cycle:
-                         del Index[c]
-                    return Cycle
-                
-     Index  = build_index()
-     Graph  = GenomeGraph[:]
-     Genome = []
-     while len(Graph)>0:
-          a,b   = Graph[0]
-          Cycle = extract_cycle(Index,a,b)
-          Genome.append(Cycle)
-          Graph = [(a,b) for (a,b) in Graph if not a in Cycle]
-     return [CycleToChromosome(g) for g in Genome]
-     
-def perform_2_BreakOnGenome(P,i0,i1,j0,j1):
-     def Edges(it):
-          return [(i,next(it)) for i in it]
-     def BlackEdges():
-          return Edges(iter(Nodes))     
-     def ColouredEdges():
-          return Edges(iter(Nodes[1:]+[Nodes[0]]))
-     Nodes = ChromosomeToCycle(P)
-     GenomeGraph =  BlackEdges() + ColouredEdges()
-     GenomeGraph = get2BreakOnGenomeGraph(GenomeGraph,i0,i1,j0,j1)
-     return GraphToGenomeAll(GenomeGraph)
+from fragile import perform_2_BreakOnGenome
+
+
 
 if __name__=='__main__':
-     print (perform_2_BreakOnGenome([+1, -2, -4, +3], 1, 6, 3, 8))
-    
+     #print (perform_2_BreakOnGenome([+1, -2, -4, +3], 1, 6, 3, 8))
+     def format(genome):
+          def ff(g):
+               return '+'+str(g) if g>0 else str(g)
+          def f(g):
+               return '('+ ' '.join([ff(g0) for g0 in g]) + ')'
+          return ' '.join([f(g) for g in genome])
+          
+     print (
+          format(
+               perform_2_BreakOnGenome(
+                    [-1, +2, +3, -4, -5, +6, +7, -8, -9, +10, +11, -12, -13, +14, +15, +16, +17, -18, +19, +20, -21, -22, -23, -24, +25, -26, -27, +28, +29, -30, -31, -32, +33, -34, -35, +36, +37, -38, +39, +40, -41, +42, -43, -44, -45, +46, +47, +48, -49, -50, -51, -52, +53, -54, -55, -56, -57, -58, -59, -60, -61, -62, +63, +64, +65, -66, +67],
+                    17, 19, 67, 70
+               )))
+     

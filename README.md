@@ -81,7 +81,7 @@ NB: functions generally use zero based indexing; Rosalind uses 1-based.
 |BA6H|BA6H.py fragile.py|[Implement Coloured Edges](http://rosalind.info/problems/ba6h/)|
 |BA6I|BA6I.py fragile.py|[Implement GraphToGenome ](http://rosalind.info/problems/ba6i/)|
 |BA6J|BA6J.py fragile.py|[Implement 2-BreakOnGenomeGraph ](http://rosalind.info/problems/ba6j/)|
-|BA6K|BA6K.py fragile.py| [Implement 2-BreakOnGenome ](http://rosalind.info/problems/ba6k/) (WIP)|
+|BA6K|BA6K.py fragile.py|[Implement 2-BreakOnGenome ](http://rosalind.info/problems/ba6k/)|
 |7|-|Which animal gave us SARS?|
 |BA7A|BA7A.py|[Compute Distances Between Leaves](http://rosalind.info/problems/ba7a/)|
 |BA7B|BA7B.py|[Limb Length Problem](http://rosalind.info/problems/ba7b/)|
