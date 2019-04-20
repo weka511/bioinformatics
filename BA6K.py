@@ -18,23 +18,17 @@
 from BA6J import get2BreakOnGenomeGraph
 from fragile import GraphToGenome,ChromosomeToCycle
 
-def ColouredEdges(P):
-     Edges = []
-     Nodes = ChromosomeToCycle(P)
-     it = iter(Nodes[1:]+[Nodes[0]])
-     for i in it:
-          Edges.append((i,next(it)))
-     return Edges
+
 
 def perform_2_BreakOnGenome(P,i0,i1,j0,j1):
-     def BlackEdges(P):
-          Nodes = ChromosomeToCycle(P)
-          Edges = []
-          it = iter(Nodes[1:]+[Nodes[0]])
-          for i in it:
-               Edges.append((i,next(it)))          
-          return Edges
-     GenomeGraph = ColouredEdges(P) # BlackEdges(P) +
+     def Edges(it):
+          return [(i,next(it)) for i in it]
+     def BlackEdges():
+          return Edges(iter(Nodes))     
+     def ColouredEdges():
+          return Edges(iter(Nodes[1:]+[Nodes[0]]))
+     Nodes = ChromosomeToCycle(P)
+     GenomeGraph =  BlackEdges() + ColouredEdges()
      GenomeGraph = get2BreakOnGenomeGraph(GenomeGraph,i0,i1,j0,j1)
      return GraphToGenome(GenomeGraph)
 
