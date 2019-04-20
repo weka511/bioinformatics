@@ -260,12 +260,13 @@ def ColouredEdges(P):
             Edges.append((i,next(it)))
     return Edges
 
-# BA6I Implement Graph to Genome
+#    BA6I Implement Graph to Genome
 #
-# GraphToGenome
+#    GraphToGenome
 #
 #    Input: The colored edges ColoredEdges of a genome graph. [(2, 4), (3, 6), (5, 1), (8, 9), (10, 12), (11, 7)]
 #    Returns: The genome P corresponding to this genome graph. [[+1, -2, -3][+4 +5 -6]]
+
 def GraphToGenome(GenomeGraph):
     def diff(a,b):
         _,x=a
@@ -302,6 +303,92 @@ def GraphToGenome(GenomeGraph):
             next_node+=1
         R.append(r)
     return R
+
+#    BA6J Implement 2-BreakOnGenomeGraph
+#
+#    get2BreakOnGenomeGraph
+#
+#    Solve the 2-Break On Genome Graph Problem.
+#
+#    Inputs: The colored edges of a genome graph GenomeGraph, followed by indices i, i', j, and j'.
+#
+#    Return: The colored edges of the genome graph resulting from applying the 2-break operation.
+
+def get2BreakOnGenomeGraph(graph,i0,i1,j0,j1):
+    def eq(x,y):
+        u,v=x
+        w,z=y
+        return (u ==w and v==z) or (w==v and u==z)
+    removed = [x for x in graph if not eq(x,(i0,i1)) and not eq(x,(j0,j1))]
+    return removed +[(i0,j0)] + [(i1,j1)]
+    
+#    BA6K Implement 2-BreakOnGenome
+
+# GraphToGenomeAll
+#
+
+def GraphToGenomeAll(GenomeGraph):
+    def build_index():
+        def insert(a,b):
+            if not a in Index:
+                Index[a]=[]
+            Index[a].append(b)
+        Index = {}
+        for (a,b) in GenomeGraph:
+            insert(a,b)
+            insert(b,a)
+        return Index
+
+    def extract_cycle(Index,a,b):
+        Cycle = [a,b]
+        while True:    # build one cycle
+            nexts = Index[b]
+            next_link = list(set(nexts) - set(Cycle))
+            if len(next_link)>0:
+                b = next_link[0]
+                Cycle.append(b)
+            else:
+                x,y = nexts
+                assert x== Cycle[0] or y == Cycle[0]
+                for c in Cycle:
+                    del Index[c]
+                return Cycle
+
+    Index  = build_index()
+    Graph  = GenomeGraph[:]
+    Genome = []
+    while len(Graph)>0:
+        a,b   = Graph[0]
+        Cycle = extract_cycle(Index,a,b)
+        Genome.append(Cycle)
+        Graph = [(a,b) for (a,b) in Graph if not a in Cycle]
+    return [CycleToChromosome(g) for g in Genome]
+
+#    BA6K Implement 2-BreakOnGenome
+#
+#    perform_2_BreakOnGenome
+#
+#    Solve the 2-Break On Genome Graph Problem.
+#
+#    Inputs: A genome P, followed by indices i, i', j, and j'.
+#
+#    Return: The genome P' resulting from applying the 2-break operation.
+
+def perform_2_BreakOnGenome(P,i0,i1,j0,j1):
+    def Edges(it):
+        return [(i,next(it)) for i in it]
+    def BlackEdges():
+        return Edges(iter(Nodes))     
+    def ColouredEdges():
+        return Edges(iter(Nodes[1:]+[Nodes[0]]))
+    
+    Nodes = ChromosomeToCycle(P)
+    
+    return GraphToGenomeAll(
+        get2BreakOnGenomeGraph(
+            BlackEdges() + ColouredEdges(),i0,i1,j0,j1))
+
+
 
 # snarfed from https://stackoverflow.com/questions/3755136/pythonic-way-to-check-if-a-list-is-sorted-or-not
 
@@ -405,64 +492,6 @@ def bergeron(s):
         framed         = reverses[best]
         d+=1
 
-def get2BreakOnGenomeGraph(graph,i0,i1,j0,j1):
-    def eq(x,y):
-        u,v=x
-        w,z=y
-        return (u ==w and v==z) or (w==v and u==z)
-    removed = [x for x in graph if not eq(x,(i0,i1)) and not eq(x,(j0,j1))]
-    return removed +[(i0,j0)] + [(i1,j1)]
-    
-#    BA6K Implement 2-BreakOnGenome
-
-def GraphToGenomeAll(GenomeGraph):
-    def build_index():
-        def insert(a,b):
-            if not a in Index:
-                Index[a]=[]
-            Index[a].append(b)
-        Index = {}
-        for (a,b) in GenomeGraph:
-            insert(a,b)
-            insert(b,a)
-        return Index
-
-    def extract_cycle(Index,a,b):
-        Cycle = [a,b]
-        while True:    # build one cycle
-            nexts = Index[b]
-            next_link = list(set(nexts) - set(Cycle))
-            if len(next_link)>0:
-                b = next_link[0]
-                Cycle.append(b)
-            else:
-                x,y = nexts
-                assert x== Cycle[0] or y == Cycle[0]
-                for c in Cycle:
-                    del Index[c]
-                return Cycle
-
-    Index  = build_index()
-    Graph  = GenomeGraph[:]
-    Genome = []
-    while len(Graph)>0:
-        a,b   = Graph[0]
-        Cycle = extract_cycle(Index,a,b)
-        Genome.append(Cycle)
-        Graph = [(a,b) for (a,b) in Graph if not a in Cycle]
-    return [CycleToChromosome(g) for g in Genome]
-
-def perform_2_BreakOnGenome(P,i0,i1,j0,j1):
-    def Edges(it):
-        return [(i,next(it)) for i in it]
-    def BlackEdges():
-        return Edges(iter(Nodes))     
-    def ColouredEdges():
-        return Edges(iter(Nodes[1:]+[Nodes[0]]))
-    Nodes = ChromosomeToCycle(P)
-    GenomeGraph =  BlackEdges() + ColouredEdges()
-    GenomeGraph = get2BreakOnGenomeGraph(GenomeGraph,i0,i1,j0,j1)
-    return GraphToGenomeAll(GenomeGraph)
 
             
 if __name__=='__main__':
