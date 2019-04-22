@@ -364,6 +364,15 @@ def GraphToGenomeAll(GenomeGraph):
         Graph = [(a,b) for (a,b) in Graph if not a in Cycle]
     return [CycleToChromosome(g) for g in Genome]
 
+def Edges(it):
+    return [(i,next(it)) for i in it]
+
+def BlackEdges(Nodes):
+    return Edges(iter(Nodes))
+
+def ColouredEdges(Nodes):
+    return Edges(iter(Nodes[1:]+[Nodes[0]]))
+    
 #    BA6K Implement 2-BreakOnGenome
 #
 #    perform_2_BreakOnGenome
@@ -375,18 +384,12 @@ def GraphToGenomeAll(GenomeGraph):
 #    Return: The genome P' resulting from applying the 2-break operation.
 
 def perform_2_BreakOnGenome(P,i0,i1,j0,j1):
-    def Edges(it):
-        return [(i,next(it)) for i in it]
-    def BlackEdges():
-        return Edges(iter(Nodes))     
-    def ColouredEdges():
-        return Edges(iter(Nodes[1:]+[Nodes[0]]))
     
     Nodes = ChromosomeToCycle(P)
     
     return GraphToGenomeAll(
         get2BreakOnGenomeGraph(
-            BlackEdges() + ColouredEdges(),i0,i1,j0,j1))
+            BlackEdges(Nodes) + ColouredEdges(Nodes),i0,i1,j0,j1))
 
 
 
