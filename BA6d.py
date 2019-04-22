@@ -49,17 +49,28 @@ def FindShortestTransformation(s,t,N=25,M=10):
                #print (Config,score)
                Config,score,path = leader_board[0]
                if score==0:
-                    return path
+                    return path,Blacks
      
      return FindShortestTransformationCycles(ChromosomeToCycle(s),ChromosomeToCycle(t))
 
+def CycleToChromosome1(Blacks,Coloured):
+     Chromosome = []
+     flattened = [y for x in Coloured for y in x]
+     for a,b in Blacks:
+          x = flattened.index(a)
+          if x%2==0:
+               a,b=b,a
+          if a<b:
+               Chromosome.append(b//2)
+          else:
+               Chromosome.append(-a//2)
+
+     return Chromosome
+     
 if __name__=='__main__':
-     for t in FindShortestTransformation([+1, -2, -3, +4],[+1, +2, -4, -3]):
-          print (t)
-          Chromosome=[]
-          for (a,b) in t:
-               if a<b:
-                    Chromosome.append(b//2)
-               else:
-                    Chromosome.append(-a//2)
-          print (Chromosome)
+     paths,Blacks = FindShortestTransformation([+1, -2, -3, +4],[+1, +2, -4, -3])
+     #print (len(paths))
+     for Coloured in paths:
+          #print (Coloured)
+          print (CycleToChromosome1(Blacks,Coloured))
+  
