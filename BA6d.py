@@ -15,45 +15,51 @@
 
 # BA6D Find a Shortest Transformation of One Genome into Another by 2-Breaks 
 
-from fragile import ChromosomeToCycle,ColouredEdges,BlackEdges,get2BreakOnGenomeGraph
+from fragile import ChromosomeToCycle,ColouredEdges,BlackEdges,get2BreakOnGenomeGraph,CycleToChromosome
 
-def FindShortestTransformation(s,t,N=5,M=10):
+def FindShortestTransformation(s,t,N=25,M=10):
      def mismatches(s,t):
-          return sum([0 if a==b else 1 for (a,b) in zip(s,t)])
+          return sum([0 if a==b else 1 for (a,b) in zip(sorted(s),sorted(t))])
+     def get2_breaks(Configuration):
+          result = []
+          for k in range(len(Configuration)):
+               for l in range(k):
+                    i0,j0 = Configuration[k]
+                    i1,j1 = Configuration[l]
+                    result.append((i0,j0,i1,j1))
+          return result
+     
      def FindShortestTransformationCycles(s,t):
-          print (s)
-          print (t)
-          print (mismatches(s,t))
-          Nodes       = ChromosomeToCycle(s)
-          check_nodes = ChromosomeToCycle(t)
-          assert sorted(Nodes)== sorted(check_nodes)
-          Coloured     = ColouredEdges(Nodes)
-          Blacks       = BlackEdges(Nodes)
-          ColouredT     = ColouredEdges(check_nodes)
-          leader_board = [([],Coloured,mismatches(Coloured,ColouredT))] #2-breaks, 2-break(s), score
+          assert sorted(s)== sorted(t)
+          ColouredS     = ColouredEdges(s)
+          Blacks        = BlackEdges(s)
+          ColouredT     = ColouredEdges(t)
+          leader_board = [(ColouredS,mismatches(ColouredS,ColouredT),[])] #Configuration, score
           for _ in range(M):
-               print ('---')
                new_leaders = []
-               for path,Coloured,_ in leader_board:
-                    for k in range(len(Coloured)):
-                         for l in range(k):
-                              i0,i1 = Coloured[k]
-                              j0,j1 = Coloured[l]
-                              if len(path)>0:
-                                   if (i0,i1,j0,j1)==path[-1]: continue
-                              transformed = get2BreakOnGenomeGraph(Blacks + Coloured,i0,i1,j0,j1)
-                              tt = sorted([t for t in transformed if not t in Blacks])
-                              new_leaders.append((path+[(i0,i1,j0,j1)],
-                                                  tt,
-                                                  mismatches(tt,ColouredT)))
-               leader_board = sorted(new_leaders)
+               for Configuration,_,path in leader_board:
+                    for i0,i1,j0,j1 in get2_breaks(Configuration):
+                         transformed = get2BreakOnGenomeGraph(Blacks + Configuration,i0,i1,j0,j1)
+                         Coloured    = [tt for tt in list(set(transformed)) if not tt in Blacks]
+                         new_leaders.append( (Coloured, mismatches(Coloured,ColouredT),path+[Coloured]))
+               leader_board = sorted(new_leaders,key=lambda tuple:tuple[1])
                if len(leader_board)>N:
                     leader_board = leader_board[:N]
-               path,_,score = leader_board[0]
-               print (score,path)
-          x=0
-               
+               #Config,score = leader_board[0]
+               #print (Config,score)
+               Config,score,path = leader_board[0]
+               if score==0:
+                    return path
+     
      return FindShortestTransformationCycles(ChromosomeToCycle(s),ChromosomeToCycle(t))
 
 if __name__=='__main__':
-     FindShortestTransformation([+1, -2, -3, +4],[+1, +2, -4, -3])
+     for t in FindShortestTransformation([+1, -2, -3, +4],[+1, +2, -4, -3]):
+          print (t)
+          Chromosome=[]
+          for (a,b) in t:
+               if a<b:
+                    Chromosome.append(b//2)
+               else:
+                    Chromosome.append(-a//2)
+          print (Chromosome)
