@@ -1,8 +1,8 @@
 # Bioinformatics
 
-Code inspired by [Finding Hidden Messages in DNA (Bioinformatics I)](https://class.coursera.org/hiddenmessages-003) and 
+Code inspired by [Bioinformatics Algorithms: an Active Learning Approach](http://bioinformaticsalgorithms.com/) and 
 from [Rosalind](http://rosalind.info). 
-NB: functions generally use zero based indexing; Rosalind uses 1-based.
+NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info) uses 1-based.
 
 | # | Location | Description |
 | ---- | ----------- | ------------------------------------------------|
@@ -21,6 +21,7 @@ NB: functions generally use zero based indexing; Rosalind uses 1-based.
 |BA1L|rosalind.py|[Implement PatternToNumber](http://rosalind.info/problems/ba1l/) |
 |BA1M|rosalind.py|[Implement NumberToPattern](http://rosalind.info/problems/ba1m/) |
 |BA1N|rosalind.py|[Generate the d-Neighborhood of a String](http://rosalind.info/problems/ba1n/) |
+|-|count_kmers.py| Challenge Problems from [Bioinformatics Algorithms](http://bioinformaticsalgorithms.com/): determine number of times each kmer appears in DNA, allowing for reverse complements and d-neighbourhoods.|
 |2|-|How do we sequence Antibiotics?|
 |BA2A|rosalind.py|[Implement MotifEnumeration](http://rosalind.info/problems/ba2a/) |
 |BA2B |rosalind.py|[Find a Median String ](http://rosalind.info/problems/ba1j/)
@@ -222,10 +223,3 @@ NB: functions generally use zero based indexing; Rosalind uses 1-based.
 |-|README.md|This file|
 |-|rosalind.py|Shared code|
 |-|rosalind.wpr|WingWare Project File |
-
-
-## Challenge Problems from the Text
-
-| # | Name | Description |
-|---:| ------------------------- | --------------------------------------------------------------------|
-| 1| count_kmers.py | Determine number of times each kmer appears in DNA, allowing for reverse complements and d-neighbourhoods |
