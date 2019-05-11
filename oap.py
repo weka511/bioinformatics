@@ -15,27 +15,29 @@
 
 # OAP Overlap Alignment
 
-from numpy import zeros,argmax,dtype,int
+from numpy import zeros,argmax,dtype,int,shape,unravel_index
 from time import time
 from reference_tables import createSimpleDNASubst
 
 def oap(v,w,match_bonus=+1,mismatch_cost=2,indel_cost=2):
     def dynamic_programming(v,w):
         distances = zeros((len(v)+1,len(w)+1),dtype=int)
-        start_time = time()
+ 
         for i in range(1,len(v)+1):
             for j in range(1,len(w)+1):
-                distances[i][j]  = max(distances[i-1][j]   - indel_cost,
-                                       distances[i][j-1]   - indel_cost,
-                                       distances[i-1][j-1] + (match_bonus if v[i-1]==w[j-1] else -mismatch_cost))
-        print (time() - start_time)
-        #i        = argmax(distances[:][len(w)])
-        j        = argmax(distances[len(v)][:])
-        distance = distances[i][j]
+                distances[i,j]  = max( distances[i-1,j]   - indel_cost,
+                                       distances[i,j-1]   - indel_cost,
+                                       distances[i-1,j-1] + (match_bonus if v[i-1]==w[j-1] else -mismatch_cost))
+                
+        i,j     = unravel_index(distances.argmax(), distances.shape)
+        distance = distances[i,j]
         v1       = []
         w1       = []
         while i>0 and j>0:
-            i1,j1 = path[(i,j)]
+            index =  argmax([distances[i-1,j]   - indel_cost,
+                             distances[i,j-1]   - indel_cost,
+                             distances[i-1,j-1] + (match_bonus if v[i-1]==w[j-1] else -mismatch_cost)])
+            i1,j1 = [(i-1,j),(i,j-1),(i-1,j-1)][index]
             v1.append(v[i1] if i1<i else '-')
             w1.append(w[j1] if j1<j else '-')
             i,j=i1,j1
@@ -47,10 +49,16 @@ def oap(v,w,match_bonus=+1,mismatch_cost=2,indel_cost=2):
 
 if __name__=='__main__':
     from helpers import create_strings
-    d,s1,t1 = oap('CTAAGGGATTCCGGTAATTAGACAG','ATAGACCATATGTCAGTGACTGTGTAA')
-    #strings  = create_strings('oap',fasta=1,ext=2)
-    #d,s1,t1 = oap(strings[0],strings[1])      
+    #d,s1,t1 = oap('CTAAGGGATTCCGGTAATTAGACAG','ATAGACCATATGTCAGTGACTGTGTAA')
+    start_time = time()
+    strings  = create_strings('oap',fasta=1,ext=3)
+    d,s1,t1 = oap(strings[0],strings[1])      
     print ('{0}'.format(d))
     print (s1)
-    print (t1)    
+    print (t1)
+    print (time()-start_time)
+    with open('oap.txt','w') as o:
+        o.write('{0}\n'.format(d))
+        o.write('{0}\n'.format(s1))
+        o.write('{0}\n'.format(t1))    
     
