@@ -114,7 +114,7 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 |-|align.py|[Alignment](http://rosalind.info/problems/topics/alignment/)|
 |edit|edit.py|[Edit Distance](http://rosalind.info/problems/edit/) |
 |edta|edta.py|[Edit Distance Alignment](http://rosalind.info/problems/edta/)|
-|gaff|gaff.py|[Global Alignment with Scoring Matrix and Affine Gap Penalty](http://rosalind.info/problems/gaff/) (WIP)|
+|gaff|gaff.py|[Global Alignment with Scoring Matrix and Affine Gap Penalty](http://rosalind.info/problems/gaff/)|
 |gcon|gcon.py|[Global Alignment with Constant Gap Penalty](http://rosalind.info/problems/gcon/)|
 |glob|GLOB.py|[Global Alignment with Scoring Matrix](http://rosalind.info/problems/glob/) -- test harness only|
 |loca|loca.py|[Local Alignment with Scoring Matrix ](http://rosalind.info/problems/loca/) |
