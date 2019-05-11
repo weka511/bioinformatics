@@ -15,19 +15,41 @@
 
 # OAP Overlap Alignment
 
-from align import create_distance_matrix
-from rosalind_old import highest_scoring_local_alignment
+from numpy import zeros,argmax,dtype,int
+from time import time
 from reference_tables import createSimpleDNASubst
 
-def oap(s,t):
-    return highest_scoring_local_alignment(s,t,
-                                           weights=createSimpleDNASubst(subst=2),
-                                           sigma=2)
+def oap(v,w,match_bonus=+1,mismatch_cost=2,indel_cost=2):
+    def dynamic_programming(v,w):
+        distances = zeros((len(v)+1,len(w)+1),dtype=int)
+        start_time = time()
+        for i in range(1,len(v)+1):
+            for j in range(1,len(w)+1):
+                distances[i][j]  = max(distances[i-1][j]   - indel_cost,
+                                       distances[i][j-1]   - indel_cost,
+                                       distances[i-1][j-1] + (match_bonus if v[i-1]==w[j-1] else -mismatch_cost))
+        print (time() - start_time)
+        #i        = argmax(distances[:][len(w)])
+        j        = argmax(distances[len(v)][:])
+        distance = distances[i][j]
+        v1       = []
+        w1       = []
+        while i>0 and j>0:
+            i1,j1 = path[(i,j)]
+            v1.append(v[i1] if i1<i else '-')
+            w1.append(w[j1] if j1<j else '-')
+            i,j=i1,j1
+    
+        return distance,v1[::-1],w1[::-1]
+    
+    score,u1,v1=dynamic_programming([vv for vv in v],[ww for ww in w])
+    return score,''.join(u1),''.join(v1)
+
 if __name__=='__main__':
     from helpers import create_strings
     d,s1,t1 = oap('CTAAGGGATTCCGGTAATTAGACAG','ATAGACCATATGTCAGTGACTGTGTAA')
-    #strings  = create_strings('oap',fasta=1)
-    #d,s1,t1 = overlap_assignment(strings[0],strings[1])      
+    #strings  = create_strings('oap',fasta=1,ext=2)
+    #d,s1,t1 = oap(strings[0],strings[1])      
     print ('{0}'.format(d))
     print (s1)
     print (t1)    
