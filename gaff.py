@@ -16,22 +16,58 @@
 # gaff.py Global Alignment with Scoring Matrix and Affine Gap Penalty
 
 from align import san_kai
+from Bio.SubsMat.MatrixInfo import blosum62
 
 def gaff(s,t):
     score,s1,t1 = san_kai([s0 for s0 in s],[t0 for t0 in t])
     return score,''.join(s1),''.join(t1)
 
+def get_score(s,t,replace_score=blosum62,sigma=11,epsilon=1):
+    score = 0
+    gap   = 0
+    match_s=False
+    match_t=False    
+    for i in range(len(s)):
+        if s[i]=='-':
+            match_s=False
+            gap+=1
+            if t[i]=='-':
+                match_t=False
+            else:
+                match_t=True            
+        else:
+            match_s=True
+            if t[i]=='-':
+                match_t=False
+                gap+=1
+            else:
+                match_t=True
+ 
+        if match_s and match_t:
+            if gap>0:
+                score-= (sigma + (gap-1)*epsilon)
+            gap=0
+            if (s[i],t[i]) in replace_score:
+                score+=replace_score[(s[i],t[i])]
+            else:
+                score+=replace_score[(t[i],s[i])]
+                
+    if gap>0:
+        score-= (sigma + (gap-1)*epsilon)
+        
+    return score
+    
 if __name__=='__main__':
     from helpers import create_strings
     #score,s,t = gaff('PRTEINS','PRTWPSEIN')
-    strings   = create_strings(fasta=True)
+    strings   = create_strings(fasta=True,ext=3)
     #print (strings[0])
     #print (strings[1])
     score,s,t = gaff(strings[0],strings[1])
-    print (score)
+    print (score,get_score(s,t))
     print (s)
     print (t)        
     with open('gaff.txt','w') as o:
-        o.write('{0}\n'.format(score))
+        o.write('{0}\n'.format(get_score(s,t)))
         o.write('{0}\n'.format(s))
         o.write('{0}\n'.format(t))

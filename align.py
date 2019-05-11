@@ -592,7 +592,7 @@ def san_kai(s,t, replace_score=blosum62,sigma=11,epsilon=1,backtrack=unwind_move
                             (i-1, j-1, s[i-1], t[j-1]),  # Comes from middle
                             (i,   j-1, '-',    t[j-1]    # Comes from upper
                              )][index]
-
+                    
     return backtrack(moves,middle[len(s)][len(t)],len(s),len(t))
 
 def FindMiddleEdge(s,t,replace_score=blosum62,indel_cost=5):
