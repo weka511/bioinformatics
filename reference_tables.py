@@ -62,11 +62,11 @@ integer_masses={
 
 class AminoAcid:
     def __init__(self,name,short,abbrev,mon_mass,average_mass):
-        self.name=name
-        self.short=short
-        self.abbrev=abbrev
-        self.mon_mass=mon_mass
-        self.average_mass=average_mass
+        self.name         = name
+        self.short        = short
+        self.abbrev       = abbrev
+        self.mon_mass     = mon_mass
+        self.average_mass = average_mass
     def __str__(self):
         return '%(name)s %(short)s %(abbrev)s %(int_mass)d %(mon_mass)f %(average_mass)f'%\
                {
