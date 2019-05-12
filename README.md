@@ -216,6 +216,9 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 |splc|rosalind.py|[RNA Splicing](http://rosalind.info/problems/splc/) |
 |sseq|rosalind.py|[Finding a Spliced Motif](http://rosalind.info/problems/sseq/) |
 |subs|rosalind.py|[Finding a Motif in DNA](http://rosalind.info/problems/subs/) |
+|-|-|[Computational Mass Spectrometry](http://rosalind.info/problems/topics/computational-mass-spectrometry/)|
+|prtm|rosalind.py|[Calculating Protein Mass](http://rosalind.info/problems/prtm/) - get_weight(...)|
+|spec|spectrum.py|[Inferring Protein from Spectrum](http://rosalind.info/problems/spec/) (wip)|
 |-|-|Support| 
 |-|helpers.py|Utilities for formatting output, parsing input, etc |
 |-|LICENSE|License Agreement|
