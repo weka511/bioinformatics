@@ -217,10 +217,10 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 |sseq|rosalind.py|[Finding a Spliced Motif](http://rosalind.info/problems/sseq/) |
 |subs|rosalind.py|[Finding a Motif in DNA](http://rosalind.info/problems/subs/) |
 |-|-|[Computational Mass Spectrometry](http://rosalind.info/problems/topics/computational-mass-spectrometry/)|
-|conv|conv.py|[Comparing Spectra with the Spectral Convolution](http://rosalind.info/problems/conv/)|
-|full|full.py|[Inferring Peptide from Full Spectrum](http://rosalind.info/problems/full/)|
+|conv|conv.py spectrum.py|[Comparing Spectra with the Spectral Convolution](http://rosalind.info/problems/conv/)|
+|full|full.py|[Inferring Peptide from Full Spectrum](http://rosalind.info/problems/full/) (WIP)|
 |prtm|rosalind.py|[Calculating Protein Mass](http://rosalind.info/problems/prtm/) - get_weight(...)|
-|spec|spec.py|[Inferring Protein from Spectrum](http://rosalind.info/problems/spec/)|
+|spec|spec.py spectrum.py|[Inferring Protein from Spectrum](http://rosalind.info/problems/spec/)|
 |-|-|Support| 
 |-|helpers.py|Utilities for formatting output, parsing input, etc |
 |-|LICENSE|License Agreement|

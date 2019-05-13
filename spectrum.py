@@ -15,8 +15,11 @@
 #
 #    Utilities for mass sprctroscopy
 
-from reference_tables import integer_masses
+from reference_tables import integer_masses,amino_acids
 from graphs import dfs
+from bisect import bisect
+from helpers import create_list
+from numpy import argmax
 
 # SpectrumGraph
 #
@@ -141,4 +144,49 @@ def CreatePeptide(vector):
     masses          = [b-a for (a,b) in zip([0]+masses_offset[:-1],masses_offset)]
     inverted_masses = invert(extended_masses)
     return ''.join( [str(inverted_masses[m][0]) for m in masses])
+
+# conv
+#
+# Comparing Spectra with the Spectral Convolution
+
+def conv(S,T,eps=0.001):
+    diff = sorted([s-t for s in S for t in T])
+    accumulated = []
+    latest      = diff[0]
+    count       = 1
     
+    for term in diff[1:]+[666]:
+        if abs(term-latest)<eps:
+            count+=1
+        else:
+            accumulated.append((count,latest))
+            latest = term
+            count  = 1
+    index_max = argmax([i for i,_ in accumulated])
+    c,v = accumulated[index_max]
+    return c,v
+
+# spectrum2protein
+#
+# spec Inferring Protein from Spectrum
+
+def spectrum2protein(ms):
+    def create_lookup(amino_acids=amino_acids):
+        pairs = sorted([(abbrev,value.mon_mass) for abbrev,value in amino_acids.items()],
+                       key =lambda x:x[1])
+        pairs.append(('?',999999999999))
+        masses = [mass for (_,mass) in pairs]
+        return masses,pairs    
+    masses,pairs = create_lookup()
+
+    diffs = [m1-m0 for m0,m1 in zip(ms[:-1],ms[1:])]
+    def get_abbrev(diff):
+        index = bisect(masses,diff)
+        m1 = masses[index]
+        m0 = masses[(index-1) if index>0 else 0]
+        if index>0 and diff-m0 < m1-diff:
+            index-=1
+        abbrev,_ = pairs[index]
+
+        return abbrev
+    return ''.join([get_abbrev(diff) for diff in diffs])    

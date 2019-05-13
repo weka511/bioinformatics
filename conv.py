@@ -15,24 +15,8 @@
 #
 #    conv Comparing Spectra with the Spectral Convolution
 
-from numpy import argmax
+from spectrum import conv
 
-def conv(S,T,eps=0.001):
-    diff = sorted([s-t for s in S for t in T])
-    accumulated = []
-    latest      = diff[0]
-    count       = 1
-    
-    for term in diff[1:]+[666]:
-        if abs(term-latest)<eps:
-            count+=1
-        else:
-            accumulated.append((count,latest))
-            latest = term
-            count  = 1
-    index_max = argmax([i for i,_ in accumulated])
-    c,v = accumulated[index_max]
-    return c,v
     
 if __name__=='__main__':
     print (conv(

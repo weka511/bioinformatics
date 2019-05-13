@@ -15,32 +15,7 @@
 #
 #    spec Inferring Protein from Spectrum
 
-from reference_tables import amino_acids
-from bisect import bisect
-from helpers import create_list
-
-def create_lookup(amino_acids=amino_acids):
-    pairs = sorted([(abbrev,value.mon_mass) for abbrev,value in amino_acids.items()],
-                   key =lambda x:x[1])
-    pairs.append(('?',999999999999))
-    masses = [mass for (_,mass) in pairs]
-    return masses,pairs
-    
-def spectrum2protein(ms):
-    masses,pairs = create_lookup()
-
-    diffs = [m1-m0 for m0,m1 in zip(ms[:-1],ms[1:])]
-    def get_abbrev(diff):
-        index = bisect(masses,diff)
-        m1 = masses[index]
-        m0 = masses[(index-1) if index>0 else 0]
-        if index>0 and diff-m0 < m1-diff:
-            index-=1
-        abbrev,_ = pairs[index]
-
-        return abbrev
-    return ''.join([get_abbrev(diff) for diff in diffs])
-  
+from spectrum import spectrum2protein 
 
 if __name__=='__main__':
 
@@ -147,4 +122,5 @@ if __name__=='__main__':
        
 ])
     with open('spec.txt','w') as o:
+        print (pp)
         o.write('{0}\n'.format(pp))    
