@@ -5,7 +5,7 @@ from [Rosalind](http://rosalind.info).
 NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info) uses 1-based.
 
 | # | Location | Description |
-| ---- | ----------- | ------------------------------------------------|
+| ---- | --------------- | ------------------------------------------------|
 |1|-| Where in the Genome does DNA replication begin?|
 |BA1A|rosalind.py|[Compute the Number of Times a Pattern Appears in a Text](http://rosalind.info/problems/ba1a/) |
 |BA1B|rosalind.py|[Find the Most Frequent Words in a String](http://rosalind.info/problems/ba1b/) |
@@ -217,10 +217,10 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 |sseq|rosalind.py|[Finding a Spliced Motif](http://rosalind.info/problems/sseq/) |
 |subs|rosalind.py|[Finding a Motif in DNA](http://rosalind.info/problems/subs/) |
 |-|-|[Computational Mass Spectrometry](http://rosalind.info/problems/topics/computational-mass-spectrometry/)|
-|conv|conv.py spectrum.py|[Comparing Spectra with the Spectral Convolution](http://rosalind.info/problems/conv/)|
+|conv|conv.py+spectrum.py|[Comparing Spectra with the Spectral Convolution](http://rosalind.info/problems/conv/)|
 |full|full.py|[Inferring Peptide from Full Spectrum](http://rosalind.info/problems/full/) (WIP)|
 |prtm|rosalind.py|[Calculating Protein Mass](http://rosalind.info/problems/prtm/) - get_weight(...)|
-|spec|spec.py spectrum.py|[Inferring Protein from Spectrum](http://rosalind.info/problems/spec/)|
+|spec|spec.py+spectrum.py|[Inferring Protein from Spectrum](http://rosalind.info/problems/spec/)|
 |-|-|Support| 
 |-|helpers.py|Utilities for formatting output, parsing input, etc |
 |-|LICENSE|License Agreement|
