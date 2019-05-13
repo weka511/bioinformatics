@@ -60,26 +60,44 @@ integer_masses={
     'W': 186
 }
 
+# AminoAcid
+#
+# This class represents the aspects of amino acids that are relevant to 
+# Mass Spectroscopy
+
+#   Attributes:
+#     name         Name of amino acid, e.g. Alanine
+#     short        Single letter code, e.g. A for Alanine
+#     abbrev       Three digit code, e.g. Ala
+#     mon_mass     Monoisotpic mass (Daltons)
+#     average_mass Average mass (Daltons)
+
 class AminoAcid:
+    
     def __init__(self,name,short,abbrev,mon_mass,average_mass):
         self.name         = name
         self.short        = short
         self.abbrev       = abbrev
         self.mon_mass     = mon_mass
         self.average_mass = average_mass
+        
     def __str__(self):
         return '%(name)s %(short)s %(abbrev)s %(int_mass)d %(mon_mass)f %(average_mass)f'%\
                {
-                   'name':self.name,
-                   'short' :self.short,
-                   'abbrev' : self.abbrev,
-                   'mon_mass' : self.mon_mass,
+                   'name'         : self.name,
+                   'short'        : self.short,
+                   'abbrev'       : self.abbrev,
+                   'mon_mass'     : self.mon_mass,
                    'average_mass' : self.average_mass,
-                   'int_mass' : self.asInteger()
+                   'int_mass'     : self.asInteger()
                }
+    
     def asInteger(self):
         return int(self.mon_mass)
-    
+ 
+# amino_acids
+#
+# Lookup table for amino acids, from
 # https://en.wikipedia.org/wiki/Proteinogenic_amino_acid#Mass_spectrometry
 
 amino_acids={
@@ -114,74 +132,8 @@ skew_step={
     'T': 0
 }
 
-# BLOSUM2
-#
-# populate the BLOSUM62 scoring table as described at http://rosalind.info/problems/ba5e/
 
-def createBLOSUM62():
-    amino_acids=['A', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'K', 'L', 'M', 'N',\
-          'P', 'Q', 'R', 'S', 'T', 'V', 'W', 'Y']
-    raw_weights=[
-        [4,0,-2,-1,-2,0,-2,-1,-1,-1,-1,-2,-1,-1,-1,1,0,0,-3,-2],
-        [0,9,-3,-4,-2,-3,-3,-1,-3,-1,-1,-3,-3,-3,-3,-1,-1,-1,-2,-2],
-        [-2,-3,6,2,-3,-1,-1,-3,-1,-4,-3,1,-1,0,-2,0,-1,-3,-4,-3],
-        [-1,-4,2,5,-3,-2,0,-3,1,-3,-2,0,-1,2,0,0,-1,-2,-3,-2],
-        [-2,-2,-3,-3,6,-3,-1,0,-3,0,0,-3,-4,-3,-3,-2,-2,-1,1,3],
-        [0,-3,-1,-2,-3,6,-2,-4,-2,-4,-3,0,-2,-2,-2,0,-2,-3,-2,-3],
-        [-2,-3,-1,0,-1,-2,8,-3,-1,-3,-2,1,-2,0,0,-1,-2,-3,-2,2],
-        [-1,-1,-3,-3,0,-4,-3,4,-3,2,1,-3,-3,-3,-3,-2,-1,3,-3,-1],
-        [-1,-3,-1,1,-3,-2,-1,-3,5,-2,-1,0,-1,1,2,0,-1,-2,-3,-2],
-        [-1,-1,-4,-3,0,-4,-3,2,-2,4,2,-3,-3,-2,-2,-2,-1,1,-2,-1],
-        [-1,-1,-3,-2,0,-3,-2,1,-1,2,5,-2,-2,0,-1,-1,-1,1,-1,-1],
-        [-2,-3,1,0,-3,0,1,-3,0,-3,-2,6,-2,0,0,1,0,-3,-4,-2],
-        [-1,-3,-1,-1,-4,-2,-2,-3,-1,-3,-2,-2,7,-1,-2,-1,-1,-2,-4,-3],
-        [-1,-3,0,2,-3,-2,0,-3,1,-2,0,0,-1,5,1,0,-1,-2,-2,-1],
-        [-1,-3,-2,0,-3,-2,0,-3,2,-2,-1,0,-2,1,5,-1,-1,-3,-3,-2],
-        [1,-1,0,0,-2,0,-1,-2,0,-2,-1,1,-1,0,-1,4,1,-2,-3,-2],
-        [0,-1,-1,-1,-2,-2,-2,-1,-1,-1,-1,0,-1,-1,-1,1,5,0,-2,-2],
-        [0,-1,-3,-2,-1,-3,-3,3,-2,1,1,-3,-2,-2,-3,-2,0,4,-3,-1],
-        [-3,-2,-4,-3,1,-2,-2,-3,-3,-2,-1,-4,-4,-2,-3,-3,-2,-3,11,2],
-        [-2,-2,-3,-2,3,-3,2,-1,-2,-1,-1,-2,-3,-1,-2,-2,-2,-1,2,7]
-    ]
-    weights={}
-    for i in range(len(amino_acids)):
-        for j in range(len(amino_acids)):
-            weights[(amino_acids[i],amino_acids[j])]=raw_weights[i][j]            
-    return weights
  
-# PAM250
-#
-# populate the PAM250 scoring table
-def createPAM250():
-    amino_acids=['A', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'K', 'L', 'M', 'N',\
-          'P', 'Q', 'R', 'S', 'T', 'V', 'W', 'Y']
-    raw_weights=[
-        [ 2,  -2,  0,  0, -3,1,-1,-1,-1,-2,-1,0,1,0,-2,1,1,0,-6,-3],
-        [-2,  12, -5, -5, -4,-3,-3,-2,-5,-6,-5,-4,-3,-5,-4,0,-2,-2,-8,0],
-        [ 0,  -5,  4,  3, -6,1,1,-2,0,-4,-3,2,-1,2,-1,0,0,-2,-7,-4],
-        [ 0,  -5,  3,  4, -5,0,1,-2,0,-3,-2,1,-1,2,-1,0,0,-2,-7,-4],
-        [-3,  -4, -6, -5,  9,-5,-2,1,-5,2,0,-3,-5,-5,-4,-3,-3,-1,0,7],
-        [ 1,  -3,  1,  0, -5,5,-2,-3,-2,-4,-3,0,0,-1,-3,1,0,-1,-7,-5],
-        [-1,  -3,  1,  1, -2,-2,6,-2,0,-2,-2,2,0,3,2,-1,-1,-2,-3,0],
-        [-1,  -2, -2, -2,  1,-3,-2,5,-2,2,2,-2,-2,-2,-2,-1,0,4,-5,-1],
-        [-1,  -5,  0,  0, -5,-2,0,-2,5,-3,0,1,-1,1,3,0,0,-2,-3,-4],
-        [-2,  -6, -4, -3,  2,-4,-2,2,-3,6,4,-3,-3,-2,-3,-3,-2,2,-2,-1],
-        [-1,  -5, -3, -2,  0,-3,-2,2,0,4,6,-2,-2,-1,0,-2,-1,2,-4,-2],
-        [ 0,  -4,  2,  1, -3,0,2,-2,1,-3,-2,2,0,1,0,1,0,-2,-4,-2],
-        [ 1,  -3, -1, -1, -5,0,0,-2,-1,-3,-2,0,6,0,0,1,0,-1,-6,-5],
-        [ 0,  -5,  2,  2, -5,-1,3,-2,1,-2,-1,1,0,4,1,-1,-1,-2,-5,-4],
-        [-2,  -4, -1, -1, -4,-3,2,-2,3,-3,0,0,0,1,6,0,-1,-2,2,-4],
-        [ 1,   0,  0,  0, -3,1,-1,-1,0,-3,-2,1,1,-1,0,2,1,-1,-2,-3],
-        [ 1,  -2,  0,  0, -3,0,-1,0,0,-2,-1,0,0,-1,-1,1,3,0,-5,-3],
-        [ 0,  -2,  -2, -2,-1,-1,-2,4,-2,2,2,-2,-1,-2,-2,-1,0,4,-6,-2],
-        [-6,  -8,  -7, -7,0,-7,-3,-5,-3,-2,-4,-4,-6,-5,2,-2,-5,-6,17,0],
-        [-3,   0,  -4, -4,7,-5,0,-1,-4,-1,-2,-2,-5,-4,-4,-3,-3,-2,0,10]       
-    ]
-    weights={}
-    for i in range(len(amino_acids)):
-        for j in range(len(amino_acids)):
-            weights[(amino_acids[i],amino_acids[j])]=raw_weights[i][j]            
-    return weights
 
 # createSimpleDNASubst
 #
@@ -198,18 +150,11 @@ def createSimpleDNASubst(match=+1,subst=1,bases='ATGC'):
     return weights
 
 if __name__=='__main__':
-    for a in amino_acids.values():
-        print (a)
-    for key in integer_masses:
-        print (integer_masses[key],amino_acids[key].asInteger())
-        if integer_masses[key]!=amino_acids[key].asInteger():
-            print ("mismatch")
-    print ('BLOSUM62')
-    weights= createBLOSUM62()
-    for pair in sorted(weights.keys()):
-        print (pair,weights[pair])
-    print ('PAM250')
-    weights= createPAM250()
-    for pair in sorted(weights.keys()):
-        print (pair,weights[pair])    
+    import unittest
     
+    class Test_Amino_acids(unittest.TestCase):
+        def test_match_integer(self):
+            for key in integer_masses:
+                self.assertEqual(integer_masses[key],amino_acids[key].asInteger())
+                
+    unittest.main()

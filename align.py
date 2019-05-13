@@ -17,8 +17,8 @@
 
 from numpy import argmax,argmin
 from sys import float_info
-from Bio.SubsMat.MatrixInfo import blosum62
-from reference_tables import createSimpleDNASubst,createBLOSUM62,createPAM250
+from Bio.SubsMat.MatrixInfo import blosum62,pam250
+from reference_tables import createSimpleDNASubst
 from helpers import zeroes,sign
 
 # BA5A 	Find the Minimum Number of Coins Needed to Make Change 	
@@ -219,20 +219,20 @@ def calculate_scores_for_alignment(s,string1, string2, weights,sigma,init_predec
         for j in range(len(string2)+1):
             predecessors[(i,j)]=init_predecessors
             if i>0:
-                s_new=s[i-1][j]-sigma
+                s_new = s[i-1][j]-sigma
                 if s_new>s[i][j]:
-                    s[i][j]=s_new
-                    predecessors[(i,j)]=(-1,0,i-1,j)
+                    s[i][j]             = s_new
+                    predecessors[(i,j)] = (-1,0,i-1,j)
             if j>0:
-                s_new=s[i][j-1]-sigma
+                s_new = s[i][j-1]-sigma
                 if s_new>s[i][j]:
-                    s[i][j]=s_new
-                    predecessors[(i,j)]=(0,-1,i,j-1)            
+                    s[i][j]             = s_new
+                    predecessors[(i,j)] = (0,-1,i,j-1)            
                 if i>0:
-                    s_new=s[i-1][j-1]+weights[(string1[i-1],string2[j-1])]
+                    s_new = s[i-1][j-1]+score((string1[i-1],string2[j-1]),weights)
                     if s_new>s[i][j]:
-                        s[i][j]=s_new
-                        predecessors[(i,j)]=(-1,-1,i-1,j-1)
+                        s[i][j]             = s_new
+                        predecessors[(i,j)] = (-1,-1,i-1,j-1)
     return (s,predecessors)
 
 def create_alignment(string1, string2,s_predecessors,i_start=-1,j_start=-1):
@@ -267,7 +267,7 @@ def create_alignment(string1, string2,s_predecessors,i_start=-1,j_start=-1):
 #         and indel penalty σ = 5. (If multiple alignments achieving the maximum 
 #         score exist, you may return any one.)
 
-def highest_scoring_global_alignment(string1,string2,weights=createBLOSUM62(),sigma=5):
+def highest_scoring_global_alignment(string1,string2,weights=blosum62,sigma=5):
     return create_alignment(string1,
                             string2,
                             calculate_scores_for_alignment(
@@ -287,7 +287,7 @@ def highest_scoring_global_alignment(string1,string2,weights=createBLOSUM62(),si
 # PAM250 scoring matrix and indel penalty  5. (If multiple local alignments
 # achieving the maximum score exist, you may return any one.)
 
-def highest_scoring_local_alignment(string1,string2,weights=createPAM250(),sigma=5):
+def highest_scoring_local_alignment(string1,string2,weights=pam250,sigma=5):
     def find_best_substring(s):
         s_right=0    
         i_best=-1
