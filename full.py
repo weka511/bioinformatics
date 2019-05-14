@@ -15,17 +15,33 @@
 #
 #    full Inferring Peptide from Full Spectrum
 
+from spectrum import create_lookup,get_abbrev
+from reference_tables import amino_acids
 
-def full(s):
-    def create_pairs(eps=0.0001):
+def full(s,epsilon=0.00001):
+    def create_candidates():
+        masses,pairs = create_lookup()
+        candidates={}
+        for diff in [m1-m0 for m0 in s[1:] for m1 in s[1:] if m1>m0]:
+            a = get_abbrev(diff,masses,pairs)
+            m = amino_acids[a].mon_mass
+            if abs(diff-amino_acids[a].mon_mass)<epsilon:
+                if a in candidates:
+                    candidates[a]+=1
+                else:
+                    candidates[a]=1
+        return candidates
+        
+    def create_pairs():
         pairs = []
         for i in range(1,len(s)//2+1):
-            assert(abs(s[i]+s[-i]-s[0])<eps)
+            assert(abs(s[i]+s[-i]-s[0])<epsilon)
             pairs.append((s[i],s[-i]))
         return pairs
     total = s[0]
     pairs = create_pairs()
-
+    candidates= create_candidates()
+ 
     protein = []
     return ''.join(protein)
 
