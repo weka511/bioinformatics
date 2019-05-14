@@ -166,27 +166,27 @@ def conv(S,T,eps=0.001):
     c,v = accumulated[index_max]
     return c,v
 
+def create_lookup(amino_acids=amino_acids):
+    pairs = sorted([(abbrev,value.mon_mass) for abbrev,value in amino_acids.items()],
+                   key =lambda x:x[1])
+    pairs.append(('?',999999999999))
+    masses = [mass for (_,mass) in pairs]
+    return masses,pairs    
+
+def get_abbrev(diff,masses,pairs):
+    index = bisect(masses,diff)
+    m1 = masses[index]
+    m0 = masses[(index-1) if index>0 else 0]
+    if index>0 and diff-m0 < m1-diff:
+        index-=1
+    abbrev,_ = pairs[index]
+
+    return abbrev
+
 # spectrum2protein
 #
 # spec Inferring Protein from Spectrum
 
 def spectrum2protein(ms):
-    def create_lookup(amino_acids=amino_acids):
-        pairs = sorted([(abbrev,value.mon_mass) for abbrev,value in amino_acids.items()],
-                       key =lambda x:x[1])
-        pairs.append(('?',999999999999))
-        masses = [mass for (_,mass) in pairs]
-        return masses,pairs    
-    masses,pairs = create_lookup()
-
-    diffs = [m1-m0 for m0,m1 in zip(ms[:-1],ms[1:])]
-    def get_abbrev(diff):
-        index = bisect(masses,diff)
-        m1 = masses[index]
-        m0 = masses[(index-1) if index>0 else 0]
-        if index>0 and diff-m0 < m1-diff:
-            index-=1
-        abbrev,_ = pairs[index]
-
-        return abbrev
-    return ''.join([get_abbrev(diff) for diff in diffs])    
+    masses,pairs = create_lookup() 
+    return ''.join([get_abbrev(diff,masses,pairs) for diff in [m1-m0 for m0,m1 in zip(ms[:-1],ms[1:])]])    
