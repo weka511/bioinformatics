@@ -20,38 +20,51 @@ from time import time
 from reference_tables import createSimpleDNASubst
 
 def oap(v,w,match_bonus=+1,mismatch_cost=2,indel_cost=2):
+    def score(v,w):
+        if v==w:
+            return match_bonus 
+        else:
+            return -mismatch_cost
+        
     def dynamic_programming(v,w):
         distances = zeros((len(v)+1,len(w)+1),dtype=int)
+        for j in range(1,len(w)+1):
+            #print (w[j-1])
+            for i in range(1,len(v)+1):
+                #print (v[i-1])
+                distances[i,j]  = max( 0,
+                                       distances[i-1,j]   - indel_cost,
+                                       distances[i,  j-1] - indel_cost,
+                                       distances[i-1,j-1] + score(v[i-1],w[j-1]))
  
-        for i in range(1,len(v)+1):
-            for j in range(1,len(w)+1):
-                distances[i,j]  = max( distances[i-1,j]   - indel_cost,
-                                       distances[i,j-1]   - indel_cost,
-                                       distances[i-1,j-1] + (match_bonus if v[i-1]==w[j-1] else -mismatch_cost))
-                
-        i,j     = unravel_index(distances.argmax(), distances.shape)
+        print(distances[i,:])
+        print(max(distances[i,:]))
+        j    = argmax(distances[i,:])
+        #i,j     = unravel_index(distances.argmax(), distances.shape)
         distance = distances[i,j]
         v1       = []
         w1       = []
         while i>0 and j>0:
-            index =  argmax([distances[i-1,j]   - indel_cost,
+            index =  argmax([0,
+                             distances[i-1,j]   - indel_cost,
                              distances[i,j-1]   - indel_cost,
-                             distances[i-1,j-1] + (match_bonus if v[i-1]==w[j-1] else -mismatch_cost)])
-            i1,j1 = [(i-1,j),(i,j-1),(i-1,j-1)][index]
+                             distances[i-1,j-1] + score(v[i-1],w[j-1])])
+            i1,j1 = [(0,j-1), (i-1,j), (i,j-1), (i-1,j-1)][index]
             v1.append(v[i1] if i1<i else '-')
             w1.append(w[j1] if j1<j else '-')
-            i,j=i1,j1
+            i,j = i1,j1
     
-        return distance,v1[::-1],w1[::-1]
+        return sum(score(u,v) for u,v in zip(v1,w1)),v1[::-1],w1[::-1]
     
     score,u1,v1=dynamic_programming([vv for vv in v],[ww for ww in w])
     return score,''.join(u1),''.join(v1)
 
 if __name__=='__main__':
     from helpers import create_strings
-    #d,s1,t1 = oap('CTAAGGGATTCCGGTAATTAGACAG','ATAGACCATATGTCAGTGACTGTGTAA')
+    #d,s1,t1 = oap('CTAAGGGATTCCGGTAATTAGACAG',
+                  #'ATAGACCATATGTCAGTGACTGTGTAA')
     start_time = time()
-    strings  = create_strings('oap',fasta=1,ext=3)
+    strings  = create_strings('oap',fasta=1,ext=4)
     d,s1,t1 = oap(strings[0],strings[1])      
     print ('{0}'.format(d))
     print (s1)
