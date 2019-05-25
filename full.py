@@ -60,17 +60,21 @@ def full(s,epsilon=0.00001):
     def create_pairs():
         return [(s[i],s[-i]) for i in range(1,len(s)//2+1)]
 
-    def lookup(x):
-        pass
-    masses,pairs = create_lookup()
+    def lookup(diff,fmasses,pairs):
+        a = get_abbrev(diff,masses,pairs)
+        m = amino_acids[a].mon_mass
+        if abs(diff-amino_acids[a].mon_mass)<epsilon:
+            return a
+    
+    masses,stuff = create_lookup()
     pairs = create_pairs()
     print (len(pairs),pairs)
     for (a,b) in pairs[1:]:
-        x=lookup(a-pairs[0][0])
-        y=lookup(b-pairs[0][0])
-        print (a-pairs[0][0],b-pairs[0][0])
-    candidates= create_candidates()
-    print (len(candidates),candidates)
+        x=lookup(a-pairs[0][0],masses,stuff)
+        y=lookup(b-pairs[0][0],masses,stuff)
+        print (a-pairs[0][0],b-pairs[0][0],x,y)
+    #candidates= create_candidates()
+    #print (len(candidates),candidates)
     protein = []
     return ''.join(protein)
 
