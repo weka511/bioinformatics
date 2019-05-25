@@ -220,6 +220,7 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 |conv|conv.py+spectrum.py|[Comparing Spectra with the Spectral Convolution](http://rosalind.info/problems/conv/)|
 |full|full.py|[Inferring Peptide from Full Spectrum](http://rosalind.info/problems/full/) (WIP)|
 |prtm|rosalind.py|[Calculating Protein Mass](http://rosalind.info/problems/prtm/) - get_weight(...)|
+|prsm|prsm.py|[Matching a Spectrum to a Protein](http://rosalind.info/problems/prsm/)|
 |spec|spec.py+spectrum.py|[Inferring Protein from Spectrum](http://rosalind.info/problems/spec/)|
 |-|-|Support| 
 |-|helpers.py|Utilities for formatting output, parsing input, etc |

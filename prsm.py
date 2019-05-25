@@ -25,7 +25,7 @@ def complete_spectrum(P):
     prefixes = [P[:i] for i in range(1,len(P))] +[P]
     suffixes = [P[i:] for i in range(1,len(P))]
     ss= [spectrum(p) for p in prefixes + suffixes]
-    return ss#[item for sublist in ss for item in sublist]
+    return ss
 
 
 
@@ -35,14 +35,12 @@ def prsm(s,R):
     m = 0
     i = 0
     Ss = [(P,complete_spectrum(P)) for P in s]
-    #for p,ss in Ss:
-        #print (p,ss)
+ 
     Cs = [(P,conv(R,S1,eps=0.00001)) for (P,S1) in Ss]
-    #for (p,(a,b)) in Cs:
-        #print (p,a,b)
+
     ii = argmax([count(c) for c in Cs])
-    #print (ii,Cs[ii])
-    a,(b,c) = Cs[ii]
+
+    _,(b,_) = Cs[ii]
     return b,s[ii]
 
 if __name__=='__main__':
