@@ -22,7 +22,7 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 |BA1M|rosalind.py|[Implement NumberToPattern](http://rosalind.info/problems/ba1m/) |
 |BA1N|rosalind.py|[Generate the d-Neighborhood of a String](http://rosalind.info/problems/ba1n/) |
 |-|count_kmers.py| Challenge Problems from [Bioinformatics Algorithms](http://bioinformaticsalgorithms.com/): determine number of times each kmer appears in DNA, allowing for reverse complements and d-neighbourhoods.|
-|2|-|How do we sequence Antibiotics?|
+|2|-|Which DNA Patterns Play the Role of Molecular Clocks?|
 |BA2A|rosalind.py|[Implement MotifEnumeration](http://rosalind.info/problems/ba2a/) |
 |BA2B |rosalind.py|[Find a Median String ](http://rosalind.info/problems/ba1j/)
 |BA2C |rosalind.py|[Find a Profile-most Probable k-mer in a String	](http://rosalind.info/problems/ba2c/)
@@ -31,7 +31,7 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 |BA2F |rosalind.py|[Implement RandomizedMotifSearch](http://rosalind.info/problems/ba2f/)	
 |BA2G |rosalind.py|[Implement GibbsSampler](http://rosalind.info/problems/ba2g/)
 |BA2H |rosalind.py|[Implement DistanceBetweenPatternAndStrings](http://rosalind.info/problems/ba2h/) 
-|3|-|Which DNA Patterna play the Role of Molecular Clocks?|
+|3|-|How Do We Assemble Genomes?|
 |BA3A|rosalind.py|[Generate the k-mer Composition of a String](http://rosalind.info/problems/ba3a/) |
 |BA3B|rosalind.py|[Reconstruct a String from its Genome Path](http://rosalind.info/problems/ba3a/)
 |BA3C|rosalind.py|[Construct the Overlap Graph of a Collection of k-mers](http://rosalind.info/problems/ba3a/)
@@ -42,7 +42,7 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 |BA3H |rosalind.py|[Reconstruct a String from its k-mer Composition](http://rosalind.info/problems/ba3a/)
 |BA3I |rosalind.py|[Find a k-Universal Circular String](http://rosalind.info/problems/ba3a/)
 |BA3J |rosalind.py|[Reconstruct a String from its Paired Composition](http://rosalind.info/problems/ba3a/)
-|4|spectrum.py|How do we assemble Genomes?|
+|4|spectrum.py|How Do We Sequence Antibiotics?|
 |BA4A|rosalind.py|[Translate an RNA String into an Amino Acid String](http://rosalind.info/problems/ba4a/) |
 |BA4B|rosalind.py|[Find Substrings of a Genome Encoding a Given Amino Acid String](http://rosalind.info/problems/ba4b/) |
 |BA4C|rosalind.py|[Generate the Theoretical Spectrum of a Cyclic Peptide](http://rosalind.info/problems/ba4c/) |
