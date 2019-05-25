@@ -2114,18 +2114,18 @@ def findEncodings(text,peptide):
 # We will assume that the theoretical spectrum can contain duplicate elements,
 # as is the case for "NQEL", where "NQ" and "EL" have the same mass.
 #
-# Input: An amino acid string Peptide.
+# Input: An amino acid string Peptide (1 char abbreviations).
 #
 # Return: Cyclospectrum(Peptide).
 
 def cycloSpectrum(peptide,mass=integer_masses):
+    
     def get_pairs(index_range):
-        n=len(index_range)
-        return [(i,j) for i in index_range for j in range(i,i+n) if j!=i]
-    augmented_peptide=peptide+peptide   # allows easy extraction of substrings
-                                        # fromcyclic peptide
-    spectrum=[get_mass(augmented_peptide[a:b],mass)\
-              for (a,b) in get_pairs(range(len(peptide)))]
+        return [(i,j) for i in index_range for j in range(i,i+len(index_range)) if j!=i]
+    
+    augmented_peptide = peptide+peptide   # allows easy extraction of substrings
+                                          # fromcyclic peptide
+    spectrum          = [get_mass(augmented_peptide[a:b],mass) for (a,b) in get_pairs(range(len(peptide)))]
     spectrum.append(get_mass('',mass))
     spectrum.append(get_mass(peptide,mass)) 
     spectrum.sort()
@@ -2177,6 +2177,11 @@ def count_peptides_linear(total_mass):
         
     return total
 
+# get_weight
+#
+# Input:  peptide   List of amino acids
+#
+# Return:  Monoisotopic mass of peptide
 
 def get_weight(peptide):
     return sum(amino_acids[amino_acid].mon_mass for amino_acid in peptide)
@@ -2199,40 +2204,49 @@ def parentMass(spectrum):
 #        Spectrum (if such a string exists).
 
 def find_cyclopeptide_sequence(spectrum):
+    
+    # isConsistent
+    #
+    # Determine whether peptide is consistent with spectrum
+    def isConsistent(peptide):
+        # count
+        #
+        # Determine number of items in spect that match specified element 
         
-    def consistent(peptide,spectrum):
         def count(element,spect):
             return len ([s for s in spect if s==element])
-        peptide_spectrum=linearSpectrum(peptide)
+        
+        peptide_spectrum = linearSpectrum(peptide)
+        
         for element in peptide_spectrum:
             if count(element,peptide_spectrum)>count(element,spectrum):
                 return False
         return True
     
-    def linearSpectrum(peptide):
-        def get_pairs():
-            return [(i,j) for i in range(len(peptide)) for j in range(i+1,len(peptide))]
-        
-        result=[sum(peptide[a:b]) for (a,b) in get_pairs()]
-        result.append(0)
-        result.append(sum(peptide)) 
-        result.sort()
-        return result 
-        
+    # cycloSpectrum
+    #
+    # Compute spectrum for cyclic peptide
+    #
+    # Inputs:  peptide   Peptide represented as a list of masses
+    #
+    # Returns: spectrum of peptide
+	
     def cycloSpectrum(peptide):
+        # get_pairs
+        #
+        # Pairs of indices delimiting sublists of peptide 
         def get_pairs(index_range):
-            n=len(index_range)
-            return [(i,j) for i in index_range for j in range(i,i+n) if j!=i]
-        augmented_peptide=peptide+peptide
-        result=[sum(augmented_peptide[a:b]) for (a,b) in get_pairs(range(len(peptide)))]
+            return [(i,j) for i in index_range for j in range(i,i+len(index_range)) if j!=i]
+        augmented_peptide = peptide+peptide
+        result            = [sum(augmented_peptide[a:b]) for (a,b) in get_pairs(range(len(peptide)))]
         result.append(0)
         result.append(sum(peptide)) 
         result.sort()
         return result  
       
-    peptides=[[]]
-    output=[]
-    masses=list(set(integer_masses.values()))
+    peptides = [[]]
+    output   = []
+    masses   = list(set(integer_masses.values()))
     
     while len(peptides)>0:
         next_peptides=[]
@@ -2241,9 +2255,10 @@ def find_cyclopeptide_sequence(spectrum):
                 if cycloSpectrum(peptide) == spectrum:
                     output.append(peptide)
             else:
-                if consistent(peptide,spectrum):
+                if isConsistent(peptide):
                     next_peptides.append(peptide)    
         peptides=next_peptides
+        
     return output
 
 # BA4F 	Compute the Score of a Cyclic Peptide Against a Spectrum 
