@@ -2119,6 +2119,12 @@ def findEncodings(text,peptide):
 # Return: Cyclospectrum(Peptide).
 
 def cycloSpectrum(peptide,mass=integer_masses):
+
+    # get_pairs
+    #
+    # Inputs: index_range
+    #
+    # Return:  Pairs of indices delimiting sublists of peptide
     
     def get_pairs(index_range):
         return [(i,j) for i in index_range for j in range(i,i+len(index_range)) if j!=i]
@@ -2232,11 +2238,16 @@ def find_cyclopeptide_sequence(spectrum):
     # Returns: spectrum of peptide
 	
     def cycloSpectrum(peptide):
+        
         # get_pairs
         #
-        # Pairs of indices delimiting sublists of peptide 
+        # Inputs: index_range
+        #
+        # Return:  Pairs of indices delimiting sublists of peptide
+        
         def get_pairs(index_range):
             return [(i,j) for i in index_range for j in range(i,i+len(index_range)) if j!=i]
+        
         augmented_peptide = peptide+peptide
         result            = [sum(augmented_peptide[a:b]) for (a,b) in get_pairs(range(len(peptide)))]
         result.append(0)
