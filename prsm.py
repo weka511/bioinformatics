@@ -21,9 +21,13 @@ from numpy import argmax
 
 def complete_spectrum(P):
     def spectrum(S):
-        return [amino_acids[s].mon_mass for s in S]
-    ss= [spectrum(P[i:j]) for i in range(len(P)) for j in range(i+1,len(P)+1)]
-    return [item for sublist in ss for item in sublist]
+        return sum([amino_acids[s].mon_mass for s in S])
+    prefixes = [P[:i] for i in range(1,len(P))] +[P]
+    suffixes = [P[i:] for i in range(1,len(P))]
+    ss= [spectrum(p) for p in prefixes + suffixes]
+    return ss#[item for sublist in ss for item in sublist]
+
+
 
 def prsm(s,R):
     def count(c):
@@ -31,26 +35,45 @@ def prsm(s,R):
     m = 0
     i = 0
     Ss = [(P,complete_spectrum(P)) for P in s]
-    for p,ss in Ss:
-        print (p,ss)
-    Cs = [(P,conv(R,S1)) for (P,S1) in Ss]
-    for (p,(a,b)) in Cs:
-        print (p,a,b)
+    #for p,ss in Ss:
+        #print (p,ss)
+    Cs = [(P,conv(R,S1,eps=0.00001)) for (P,S1) in Ss]
+    #for (p,(a,b)) in Cs:
+        #print (p,a,b)
     ii = argmax([count(c) for c in Cs])
-    print (ii,Cs[ii])
-    return m,s[i]
+    #print (ii,Cs[ii])
+    a,(b,c) = Cs[ii]
+    return b,s[ii]
 
 if __name__=='__main__':
-    m,s_max = prsm(['GSDMQS',
-                    'VWICN',
-                    'IASWMQS',
-                    'PVSMGAD'],
-                   [445.17838,
-                    115.02694,
-                    186.07931,
-                    314.13789,
-                    317.1198,
-                    215.09061]
-                   )
+    from helpers import create_strings
+    #m,s_max = prsm(['GSDMQS',
+                    #'VWICN',
+                    #'IASWMQS',
+                    #'PVSMGAD'],
+                   #[445.17838,
+                    #115.02694,
+                    #186.07931,
+                    #314.13789,
+                    #317.1198,
+                    #215.09061]
+                   #)
+
+    
+    i = 0
+    s = []
+    R = []
+    for ll in create_strings(ext=3):
+        if i ==0:
+            n = int(ll)
+        elif i<n+1:
+            s.append(ll)
+        else:
+            R.append(float(ll))
+        i+=1
+            
+    m,s_max = prsm(s,R)
+    
     print (m)
-    print (s_max)
+    print (s_max)    
+    
