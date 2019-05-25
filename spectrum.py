@@ -189,4 +189,39 @@ def get_abbrev(diff,masses,pairs):
 
 def spectrum2protein(ms):
     masses,pairs = create_lookup() 
-    return ''.join([get_abbrev(diff,masses,pairs) for diff in [m1-m0 for m0,m1 in zip(ms[:-1],ms[1:])]])    
+    return ''.join([get_abbrev(diff,masses,pairs) for diff in [m1-m0 for m0,m1 in zip(ms[:-1],ms[1:])]])   
+
+def complete_spectrum(P):
+    def spectrum(S):
+        return sum([amino_acids[s].mon_mass for s in S])
+    prefixes = [P[:i] for i in range(1,len(P))] +[P]
+    suffixes = [P[i:] for i in range(1,len(P))]
+    ss= [spectrum(p) for p in prefixes + suffixes]
+    return ss
+
+
+#  prsm
+#
+# Match a Spectrum to a Protein
+#
+# Inputs: A positive integer n followed by a collection of n protein strings s1, s2, ..., sn and a multiset R
+# of positive numbers (corresponding to the complete spectrum of some unknown protein string).
+
+# Return: The maximum multiplicity of R-S[sk]
+# taken over all strings sk, followed by the string sk for which this 
+# maximum multiplicity occurs (you may output any such value if multiple solutions exist).
+
+def prsm(s,R):
+    def count(c):
+        return c[1][0]
+    m = 0
+    i = 0
+    Ss = [(P,complete_spectrum(P)) for P in s]
+ 
+    Cs = [(P,conv(R,S1,eps=0.00001)) for (P,S1) in Ss]
+
+    index = argmax([count(c) for c in Cs])
+
+    _,(b,_) = Cs[index]
+    
+    return b,s[index]

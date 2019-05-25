@@ -15,33 +15,8 @@
 #
 #    prsm Matching a Spectrum to a Protein
 
-from spectrum import conv
-from reference_tables import amino_acids
-from numpy import argmax
+from spectrum import prsm
 
-def complete_spectrum(P):
-    def spectrum(S):
-        return sum([amino_acids[s].mon_mass for s in S])
-    prefixes = [P[:i] for i in range(1,len(P))] +[P]
-    suffixes = [P[i:] for i in range(1,len(P))]
-    ss= [spectrum(p) for p in prefixes + suffixes]
-    return ss
-
-
-
-def prsm(s,R):
-    def count(c):
-        return c[1][0]
-    m = 0
-    i = 0
-    Ss = [(P,complete_spectrum(P)) for P in s]
- 
-    Cs = [(P,conv(R,S1,eps=0.00001)) for (P,S1) in Ss]
-
-    ii = argmax([count(c) for c in Cs])
-
-    _,(b,_) = Cs[ii]
-    return b,s[ii]
 
 if __name__=='__main__':
     from helpers import create_strings
