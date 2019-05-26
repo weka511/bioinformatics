@@ -19,6 +19,11 @@ from spectrum import create_lookup,get_abbrev
 from reference_tables import amino_acids
 from rosalind import get_weight
 
+def get_n(L):
+    n = (len(L)-3)//2
+    assert(2*n+3==len(L))
+    return n
+
 #    full
 #
 #    Inferring Peptide from Full Spectrum
@@ -37,55 +42,95 @@ from rosalind import get_weight
 #            t-suffix weights correspond to the non-parent mass values of L.)
 #            If multiple solutions exist, you may output any one.
 
-def full(s,epsilon=0.00001):
+def full(s,epsilon=0.000001):
+    def extract(seq,candidates):
+        while True:
+            key = seq[-1]
+            if not key in candidates:
+                return seq
+            succs = candidates[key]
+            i,j,l1,l2,diff,candidate,_ = succs[0]
+            seq.append(j)    
+    masses,pairs   = create_lookup()
+    n              = get_n(L)
+    diffs          = [(i,j,L[i],L[j],abs(L[i] - L[j])) for i in range(1,len(L)) for j in range(i+1,len(L))]
+    candidates     = {}
+    for i,j,l1,l2,diff in diffs:
+        abbrev    = get_abbrev(diff,masses,pairs)
+        candidate = abbrev if abs(diff-amino_acids[abbrev].mon_mass)<epsilon else None
+        if candidate != None:
+            if not i in candidates:
+                candidates[i]=[]
+            candidates[i].append((i,j,l1,l2,diff,candidate,abs(diff-amino_acids[abbrev].mon_mass)))
+    for key in candidates:
+        candidates[key]= sorted(candidates[key],key=lambda x:x[6])
+  #      print (key,candidates[key])
     
-#   create_candidates
-#
-#   Find list of amino acids that coukld possible explain some of spectrum
-    def create_candidates():
-        masses,pairs = create_lookup()
-        candidates=[]
-        for diff in [m1-m0 for m0 in s[1:] for m1 in s[1:] if m1>m0]:
-            a = get_abbrev(diff,masses,pairs)
-            m = amino_acids[a].mon_mass
-            if abs(diff-amino_acids[a].mon_mass)<epsilon:
-                candidates.append(a)
-        return candidates
+    lefts = extract( [min(candidates.keys())],candidates)
+    rights = extract([min([r for r in candidates.keys() if not r in lefts])],candidates)
+    while len(lefts)>len(rights):
+        for r in rights:
+            if r in lefts:
+                ii = lefts.index(r)
+                lefts = lefts[:ii] + lefts[ii+1:]
+    ll = [candidates[l][0][5] for l in lefts]
+    return ''.join(ll[:-1])  
+##   create_candidates
+##
+##   Find list of amino acids that could possibly explain some of spectrum
+    #def create_candidates():
+        #masses,pairs = create_lookup()
+        #candidates=[]
+        #for diff in [m1-m0 for m0 in s[1:] for m1 in s[1:] if m1>m0]:
+            #a = get_abbrev(diff,masses,pairs)
+            #m = amino_acids[a].mon_mass
+            #if abs(diff-amino_acids[a].mon_mass)<epsilon:
+                #candidates.append(a)
+        #return candidates
     
-    # create_pairs
-    #
-    # Extract a list of pairs (x,y) such that x+y == s[0].
-    # Each pair is either of form (b_ion,y_ion) or (y_ion,b_ion)
+    ## create_pairs
+    ##
+    ## Extract a list of pairs (x,y) such that x+y == s[0].
+    ## Each pair is either of form (b_ion,y_ion) or (y_ion,b_ion)
     
-    def create_pairs():
-        return [(s[i],s[-i]) for i in range(1,len(s)//2+1)]
+    #def create_pairs():
+        #return [(s[i],s[-i]) for i in range(1,len(s)//2+1)]
 
-    def lookup(diff,fmasses,pairs):
-        a = get_abbrev(diff,masses,pairs)
-        m = amino_acids[a].mon_mass
-        if abs(diff-amino_acids[a].mon_mass)<epsilon:
-            return a
+    #def lookup(diff,fmasses,pairs):
+        #a = get_abbrev(diff,masses,pairs)
+        #m = amino_acids[a].mon_mass
+        #if abs(diff-amino_acids[a].mon_mass)<epsilon:
+            #return a
     
-    masses,stuff = create_lookup()
-    pairs = create_pairs()
-    print (len(pairs),pairs)
-    for (a,b) in pairs[1:]:
-        x=lookup(a-pairs[0][0],masses,stuff)
-        y=lookup(b-pairs[0][0],masses,stuff)
-        print (a-pairs[0][0],b-pairs[0][0],x,y)
-    #candidates= create_candidates()
-    #print (len(candidates),candidates)
-    protein = []
-    return ''.join(protein)
+    #masses,stuff = create_lookup()
+    #pairs = create_pairs()
+    #print (len(pairs),pairs)
+    #for (a,b) in pairs[1:]:
+        #x=lookup(a-pairs[0][0],masses,stuff)
+        #y=lookup(b-pairs[0][0],masses,stuff)
+        #print (a-pairs[0][0],b-pairs[0][0],x,y)
+    ##candidates= create_candidates()
+    ##print (len(candidates),candidates)
+    #protein = []
+    #return ''.join(protein)
 
-#def lluf(s):
+#def lluf(peptide,L):
+    #masses,pairs   = create_lookup()
+    #n              = get_n(L)
+    #suffixes       = [peptide[i:] for i in range(len(peptide))]
+    #prefixes       = [peptide[:i] for i in range(1,len(peptide))]
+    #suffix_weights = [get_weight(s) for s in suffixes]
+    #prefix_weights = [get_weight(p) for p in prefixes]
+    #diffs = [(i,j,L[i],L[j],abs(L[i] - L[j])) for i in range(1,len(L)) for j in range(i+1,len(L))]
+    #for i,j,l1,l2,d in diffs:
+        #print (i,j,l1,l2,d)
+    #return []
     #ll=[get_weight(s[i:]) for i in range(len(s))]
     #rr=[get_weight(s[:i]) for i in range(1,len(s))]
     #return sorted(ll+rr)
     
 if __name__=='__main__':
-    #print (lluf('KEKEP'))
-    print (full([           # expect KEKEP
+    L = [          
         1988.21104821, 
         610.391039105,
         738.485999105,
@@ -99,4 +144,7 @@ if __name__=='__main__':
         1221.7188991,
         1249.7250491,
         1377.8200091
-    ]))
+    ]
+    
+    #print (lluf('KEKEP',L))
+    print (full(L))  # expect KEKEP
