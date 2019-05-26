@@ -20,17 +20,7 @@ from spectrum import prsm
 
 if __name__=='__main__':
     from helpers import create_strings
-    #m,s_max = prsm(['GSDMQS',
-                    #'VWICN',
-                    #'IASWMQS',
-                    #'PVSMGAD'],
-                   #[445.17838,
-                    #115.02694,
-                    #186.07931,
-                    #314.13789,
-                    #317.1198,
-                    #215.09061]
-                   #)
+
 
     
     i = 0

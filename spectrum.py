@@ -210,7 +210,7 @@ def get_abbrev(diff,masses,pairs):
 #
 #    Introduction to Mass Spectrometry
 #
-#    In “Calculating Protein Mass”, we briefly mentioned an analytic chemical method called mass spectrometry,
+#    In "Calculating Protein Mass", we briefly mentioned an analytic chemical method called mass spectrometry,
 #    which aims to measure the mass-to-charge ratio of a particle or a molecule. In a mass spectrometer,
 #    a sample is vaporized (turned into gas), and then particles from the sample are ionized. The resulting
 #    ions are placed into an electromagnetic field, which separates them based on their charge and mass.
@@ -266,7 +266,7 @@ def complete_spectrum(P):
 # for a known protein with a highly similar spectrum. In this manner, many similar proteins 
 # found in different species have been identified, which aids researchers in determining protein function.
 #
-# In “Comparing Spectra with the Spectral Convolution”, we introduced the spectral convolution 
+# In "Comparing Spectra with the Spectral Convolution", we introduced the spectral convolution 
 # and used it to measure the similarity of simplified spectra. In this problem, we would like
 # to extend this idea to find the most similar protein in a database to a spectrum taken from
 # an unknown protein. Our plan is to use the spectral convolution to find the largest possible
@@ -375,3 +375,53 @@ def full(L,epsilon=0.000001):
                 prefixes = prefixes[:ii] + prefixes[ii+1:]
  
     return ''.join([candidates[l][0][5] for l in prefixes][:-1])  
+
+if __name__=='__main__':
+    import unittest
+    
+    class TestSpectrum(unittest.TestCase):
+        
+        def test_spec(self):
+            self.assertEqual('WMQS',
+                             spectrum2protein([3524.8542,3710.9335,3841.974,3970.0326,4057.0646]))
+            
+        def test_conv(self):
+            m,x=conv([186.07931, 287.12699 ,548.20532 ,580.18077 ,681.22845, 706.27446, 782.27613 ,968.35544, 968.35544],
+                 [101.04768, 158.06914 ,202.09536 ,318.09979 ,419.14747, 463.17369])
+            self.assertEqual(3,m)
+            self.assertAlmostEqual(85.03163,x,places=5)
+            
+        def test_prsm(self):
+            m,s_max = prsm(['GSDMQS',
+                            'VWICN',
+                            'IASWMQS',
+                            'PVSMGAD'],
+                           [445.17838,
+                            115.02694,
+                            186.07931,
+                            314.13789,
+                            317.1198,
+                            215.09061]
+                           )
+            self.assertEqual(3,m)
+            self.assertEqual('GSDMQS',s_max)
+            
+        def test_full(self):
+            self.assertEqual('KEKEP',
+                             full([
+                                1988.21104821, 
+                                610.391039105,
+                                738.485999105,
+                                766.492149105,
+                                863.544909105,
+                                867.528589105,
+                                992.587499105,
+                                995.623549105,
+                                1120.6824591,
+                                1124.6661391,
+                                1221.7188991,
+                                1249.7250491,
+                                1377.8200091
+                             ]))
+    
+    unittest.main()
