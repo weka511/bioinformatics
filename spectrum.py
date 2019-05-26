@@ -315,10 +315,21 @@ def prsm(s,R):
 
 def full(L,epsilon=0.000001):
     
-    def get_n(L):
+    # get_n
+    #
+    # Get n, and verify that it is odd
+    def get_n():
         n = (len(L)-3)//2
         assert(2*n+3==len(L))
         return n 
+    
+    # extract
+    #
+    # Extract prefixes or suffixes
+    # Inputs: seq  Start of prefixes of suffixes
+    #         candidates
+    #
+    # Returns: prefixes or suffixes
     
     def extract(seq,candidates):
         while True:
@@ -326,12 +337,19 @@ def full(L,epsilon=0.000001):
             if not key in candidates:
                 return seq
             succs = candidates[key]
-            i,j,l1,l2,diff,candidate,_ = succs[0]
+            _,j,_,_,_,_,_ = succs[0]
             seq.append(j)  
             
     masses,pairs   = create_lookup()
-    n              = get_n(L)
+    n              = get_n()
+    
+    # Idea: L = prefixes + suffixes, and each of prefexes and suffixes will have many elements whose
+    #           differences are equal to the mass of one amino acid. Start by compouting all differences
+    
     diffs          = [(i,j,L[i],L[j],abs(L[i] - L[j])) for i in range(1,len(L)) for j in range(i+1,len(L))]
+    
+    # Now compute a collection of candidates, i.e. differences that are close to the mass py one amino acid.
+    
     candidates     = {}
     for i,j,l1,l2,diff in diffs:
         abbrev    = get_abbrev(diff,masses,pairs)
@@ -340,15 +358,20 @@ def full(L,epsilon=0.000001):
             if not i in candidates:
                 candidates[i]=[]
             candidates[i].append((i,j,l1,l2,diff,candidate,abs(diff-amino_acids[abbrev].mon_mass)))
+            
+    # Now support the data so that they are organized in ascending order by difference from nearest amino acid
     for key in candidates:
         candidates[key]= sorted(candidates[key],key=lambda x:x[6])
     
-    lefts = extract( [min(candidates.keys())],candidates)
-    rights = extract([min([r for r in candidates.keys() if not r in lefts])],candidates)
-    while len(lefts)>len(rights):
-        for r in rights:
-            if r in lefts:
-                ii = lefts.index(r)
-                lefts = lefts[:ii] + lefts[ii+1:]
-    ll = [candidates[l][0][5] for l in lefts]
-    return ''.join(ll[:-1])  
+    prefixes = extract( [min(candidates.keys())],candidates)
+    suffixes = extract([min([r for r in candidates.keys() if not r in prefixes])],candidates)
+    # Our algorithm is a bit greedy, so there may be some overlap between prefixes and suffices
+    # Thius must be fixed!
+    
+    while len(prefixes)>len(suffixes):
+        for r in suffixes:
+            if r in prefixes:
+                ii = prefixes.index(r)
+                prefixes = prefixes[:ii] + prefixes[ii+1:]
+ 
+    return ''.join([candidates[l][0][5] for l in prefixes][:-1])  
