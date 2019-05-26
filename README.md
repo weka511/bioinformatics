@@ -218,7 +218,7 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 |subs|rosalind.py|[Finding a Motif in DNA](http://rosalind.info/problems/subs/) |
 |-|-|[Computational Mass Spectrometry](http://rosalind.info/problems/topics/computational-mass-spectrometry/)|
 |conv|conv.py+spectrum.py|[Comparing Spectra with the Spectral Convolution](http://rosalind.info/problems/conv/)|
-|full|full.py|[Inferring Peptide from Full Spectrum](http://rosalind.info/problems/full/)|
+|full|full.py+spectrum.py|[Inferring Peptide from Full Spectrum](http://rosalind.info/problems/full/)|
 |prtm|rosalind.py|[Calculating Protein Mass](http://rosalind.info/problems/prtm/) - get_weight(...)|
 |prsm|prsm.py+spectrum.py|[Matching a Spectrum to a Protein](http://rosalind.info/problems/prsm/)|
 |spec|spec.py+spectrum.py|[Inferring Protein from Spectrum](http://rosalind.info/problems/spec/)|

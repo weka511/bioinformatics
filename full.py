@@ -15,66 +15,7 @@
 #
 #    full Inferring Peptide from Full Spectrum
 
-from spectrum import create_lookup,get_abbrev
-from reference_tables import amino_acids
-from rosalind import get_weight
-
-def get_n(L):
-    n = (len(L)-3)//2
-    assert(2*n+3==len(L))
-    return n
-
-#    full
-#
-#    Inferring Peptide from Full Spectrum
-#
-#    Inputs : A list L containing 2n+3 positive real numbers (n<=100). 
-#             The first number in L is the parent mass of a peptide P, and all 
-#             other numbers represent the masses of some b-ions and y-ions of P
-#             (in no particular order). You may assume that if the mass of a b-ion is present, 
-#             then so is that of its complementary y-ion, and vice-versa.
-#
-#    Return: A protein string t
-#            of length n for which there exist two positive real numbers w1 and w2
-#            such that for every prefix p and suffix s of t, each of w(p)+w1 and w(s)+w2
-#            is equal to an element of L.
-#            (In other words, there exists a protein string whose t-prefix and 
-#            t-suffix weights correspond to the non-parent mass values of L.)
-#            If multiple solutions exist, you may output any one.
-
-def full(s,epsilon=0.000001):
-    def extract(seq,candidates):
-        while True:
-            key = seq[-1]
-            if not key in candidates:
-                return seq
-            succs = candidates[key]
-            i,j,l1,l2,diff,candidate,_ = succs[0]
-            seq.append(j)    
-    masses,pairs   = create_lookup()
-    n              = get_n(L)
-    diffs          = [(i,j,L[i],L[j],abs(L[i] - L[j])) for i in range(1,len(L)) for j in range(i+1,len(L))]
-    candidates     = {}
-    for i,j,l1,l2,diff in diffs:
-        abbrev    = get_abbrev(diff,masses,pairs)
-        candidate = abbrev if abs(diff-amino_acids[abbrev].mon_mass)<epsilon else None
-        if candidate != None:
-            if not i in candidates:
-                candidates[i]=[]
-            candidates[i].append((i,j,l1,l2,diff,candidate,abs(diff-amino_acids[abbrev].mon_mass)))
-    for key in candidates:
-        candidates[key]= sorted(candidates[key],key=lambda x:x[6])
-    
-    lefts = extract( [min(candidates.keys())],candidates)
-    rights = extract([min([r for r in candidates.keys() if not r in lefts])],candidates)
-    while len(lefts)>len(rights):
-        for r in rights:
-            if r in lefts:
-                ii = lefts.index(r)
-                lefts = lefts[:ii] + lefts[ii+1:]
-    ll = [candidates[l][0][5] for l in lefts]
-    return ''.join(ll[:-1])  
-
+from spectrum import full
     
 if __name__=='__main__':
     L = [          
