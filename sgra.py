@@ -15,8 +15,24 @@
 #
 #    sgra Using the Spectrum Graph to Infer Peptides
 
-def sgra(L):
-    pass
+from reference_tables import amino_acids
+from spectrum import create_lookup,get_abbrev
+
+def sgra(L,Alphabet=amino_acids,epsilon=0.00001):
+    def create_spectrum_graph():
+        masses,pairs   = create_lookup()
+        G = {}
+        for u in L:
+            G[u]=[]
+        for u in L:
+            for v in L:
+                if u<v:
+                    abbrev = get_abbrev(v-u,masses,pairs)
+                    if abs(v-u-amino_acids[abbrev].mon_mass)<epsilon:
+                        G[u].append(v)
+                    
+        return G
+    G = create_spectrum_graph()
 
 
 if __name__=='__main__':
