@@ -55,42 +55,34 @@ def sgra(L,Alphabet=amino_acids,epsilon=0.001):
                         G[u].append((abbrev,v))            
         return G
     
-    # get_possible_starts
-    #
-    # Starting value must have no predecessors
+    Outs = set()
+    Runs = []
+    def dfs(key,G,path):
+        Runs.append(path)
+        if key in Outs: return
+        if not key in G: return
+        for amino_acid,mass in G[key]:
+            dfs(mass,G,path+[amino_acid])
+            Outs.add(mass)
+            
+    G    = create_spectrum_graph()
     
-    def  get_possible_starts(G):
-        destinations = set()
-        for k,v in G.items():
-            print (k,v)
-            for _,d in v:
-                destinations.add(d)
-        return [k for k in G.keys() if not k in destinations and len(G[k])>0]
-    
-    def get_all_runs(possible_starts,G):
-        def get_runs_from_start(start):
-            nexts = G[start]
-            runs = [[run] for run in nexts]
-            return runs
-        runs = []
-        for start in possible_starts:
-            runs = runs + get_runs_from_start(start)
-        return runs
-    
-    G               = create_spectrum_graph()
-    possible_starts = get_possible_starts(G)
-    runs            = get_all_runs(possible_starts,G)
-    index           = argmax(len(run) for run in runs)
-    return ''.join(runs[index])        
+    for key in sorted(G.keys()):
+        #print (key,G[key])
+        dfs(key,G,[])
+ 
+    index           = argmax([len(run) for run in Runs])
+    return ''.join(Runs[index])        
 
 if __name__=='__main__':
-    print (sgra([3524.8542,
-                 3623.5245,
-                 3710.9335,
-                 3841.974,
-                 3929.00603,
-                 3970.0326,
-                 4026.05879,
-                 4057.0646,
-                 4083.08025
+    print (sgra([
+        3524.8542,
+        3623.5245,
+        3710.9335,
+        3841.974,
+        3929.00603,
+        3970.0326,
+        4026.05879,
+        4057.0646,
+        4083.08025
                  ]))
