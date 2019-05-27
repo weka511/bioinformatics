@@ -400,8 +400,8 @@ def sgra(L,Alphabet=amino_acids,epsilon=0.001):
     # We may then label the edge with this symbol.
     
     def create_spectrum_graph():
-        masses,pairs   = create_lookup()
-        G = {}
+        masses,pairs = create_lookup()
+        G            = {}
         for u in L:
             for v in L:
                 if u<v:
@@ -411,9 +411,10 @@ def sgra(L,Alphabet=amino_acids,epsilon=0.001):
                             G[u]=[]
                         G[u].append((abbrev,v))            
         return G
+    # dfs
+    #
+    # Depth first search to build up peptides
     
-    Outs = set()
-    Runs = []
     def dfs(key,G,path):
         Runs.append(path)
         if key in Outs: return
@@ -423,13 +424,13 @@ def sgra(L,Alphabet=amino_acids,epsilon=0.001):
             Outs.add(mass)
             
     G    = create_spectrum_graph()
+    Outs = set()     # Used by dfs to determine whter it has already processed node
+    Runs = []        # The peptids string that are being built by dfs
     
     for key in sorted(G.keys()):
-        #print (key,G[key])
         dfs(key,G,[])
  
-    index           = argmax([len(run) for run in Runs])
-    return ''.join(Runs[index])       
+    return ''.join(Runs[argmax([len(run) for run in Runs])])       
 
 
 if __name__=='__main__':

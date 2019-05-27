@@ -15,10 +15,7 @@
 #
 #    sgra Using the Spectrum Graph to Infer Peptides
 
-
 from spectrum import sgra
-
- 
 
 if __name__=='__main__':
     print (sgra([
@@ -110,5 +107,4 @@ if __name__=='__main__':
         8205.23288511,
         8290.83449049,
         8334.27547511
-        
-                 ]))
+    ]))
