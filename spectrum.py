@@ -13,12 +13,10 @@
 #    You should have received a copy of the GNU General Public License
 #    along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>
 #
-#    Utilities for mass sprctroscopy
+#    Utilities for mass sprectroscopy
 
 from reference_tables import integer_masses,amino_acids
-from graphs import dfs
 from bisect import bisect
-from helpers import create_list
 from numpy import argmax, isnan
 from math import sqrt
 
@@ -121,6 +119,8 @@ def DecodeIdealSpectrum(Spectrum):
 # table for the regular twenty amino acids. Examples sometimes use imaginary amino
 # acids X and Z having respective integer masses 4 and 5.
 
+import sys
+
 def create_extended():
     extended_masses = {'X':4,'Z':5}
     extended_masses.update(integer_masses)
@@ -187,22 +187,28 @@ def conv(S,T,eps=0.001):
             
     return accumulated[argmax([i for i,_ in accumulated])]
     
+#   create_lookup
+#
+#   Creates a lookup table for amino acid masses
 
 def create_lookup(amino_acids=amino_acids):
     pairs = sorted([(abbrev,value.mon_mass) for abbrev,value in amino_acids.items()],
                    key =lambda x:x[1])
-    pairs.append(('?',999999999999))
+    pairs.append(('?',sys.float_info.max))
     masses = [mass for (_,mass) in pairs]
     return masses,pairs    
 
+#  get_abbrev
+#
+#  Find amino acid whose mass best matches a specified difference
+
 def get_abbrev(diff,masses,pairs):
     index = bisect(masses,diff)
-    m1 = masses[index]
-    m0 = masses[(index-1) if index>0 else 0]
+    m1    = masses[index]
+    m0    = masses[(index-1) if index>0 else 0]
     if index>0 and diff-m0 < m1-diff:
         index-=1
     abbrev,_ = pairs[index]
-
     return abbrev
 
 # spectrum2protein
