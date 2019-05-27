@@ -2381,58 +2381,7 @@ def trim_for_strings(leaderBoard, spectrum,n,\
     trimmed=trim(numeric_peptides, spectrum,n,spectrum_generator)
     return [trans [tuple(peptide)] for peptide in trimmed]
 
-# BA4M 	Solve the Turnpike Problem 
-def turnpike(differences):
-    def diffs(seq):
-        return sorted([x-y for x in seq for y in seq if x>y]) 
-    def match(rs,ss):
-        for r,s in zip(rs,ss):
-            if r!=s:
-                return False
-        return True    
-    def get_length():
-        n_zeroes=0
-        i=0
-        j=len(differences)-1
-        index_first_pos=-1
-        while i<j:
-            if differences[i]+differences[j]!=0:
-                raise RosalindException('Mismatch %(i)d and %(j)d'%locals())
-            if differences[i]==0:
-                n_zeroes+=1
-            else:
-                index_first_pos=j
-            i+=1
-            j-=1
-        n_zeroes = 2*n_zeroes if len(differences)%2==0 else 2*n_zeroes+1
-        if n_zeroes*n_zeroes==len(differences):
-            return (index_first_pos,n_zeroes)
-        else:
-            raise RosalindException('Mismatched lengths')
-        
 
-    index_first_pos,length_result =get_length()
-    largest=differences[-1]
-    indices=[]
-    while len(indices)<length_result-2:
-        indices.append(index_first_pos+1)
-    
-    while True:
-        result=[0]
-        for index in indices:
-            result.append(differences[index])
-        result.append(largest)
-       
-        if match(diffs(result),differences[index_first_pos:]):
-            return result
-        j=len(indices)-1
-        while j>0:
-            if indices[j]<len(differences)-1:
-                indices[j]+=1
-                break
-            else:
-                indices[j]=index_first_pos+1
-                j-=1
             
         
 # BA4J 	Generate the Theoretical Spectrum of a Linear Peptide 
@@ -3235,16 +3184,6 @@ if __name__=='__main__':
                                   [0,71,87,101,113,158,184,188,259,271,372],
                                   2))
 
-# BA4M 	Solve the Turnpike Problem
 
-        def test_ba4m(self):        
-            self.assertEqual([0, 2, 4,7, 10],
-                             turnpike([
-                                 -10,-8, -7, -6, -5,
-                                 -4, -3, -3, -2, -2,
-                                 0, 0, 0, 0, 0, 
-                                 2, 2, 3, 3, 4,
-                                 5, 6, 7, 8, 10
-                             ]))
                     
     unittest.main() 
