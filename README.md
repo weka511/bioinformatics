@@ -56,6 +56,7 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 |BA4K|rosalind.py|[Compute the Score of a Linear Peptide ](http://rosalind.info/problems/ba4k/) |
 |BA4L|rosalind.py|[Trim a Peptide Leaderboard](http://rosalind.info/problems/ba4l/) |
 |BA4M|ba4m.py spectrum.py| [Solve the Turnpike Problem](http://rosalind.info/problems/ba4m/) |
+|-|tyrocidine.py| Challenge Problems from [Bioinformatics Algorithms](http://bioinformaticsalgorithms.com/): sequence Tyrocidine B1|
 |5|align.py|How do we compare Biological Sequences?|
 |BA5A|align.py|[Find the Minimum Number of Coins Needed to Make Change](http://rosalind.info/problems/ba5a/)|
 |BA5B|align.py|[Find the Length of a Longest Path in a Manhattan-like Grid](http://rosalind.info/problems/ba5b/)|
