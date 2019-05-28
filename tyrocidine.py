@@ -17,57 +17,30 @@
 
 from spectrum import create_lookup,get_abbrev
 from reference_tables import amino_acids
+from rosalind import convolution
 
-def cycloSpectrum(peptide):  # from helpers
-    def get_pairs(index_range):
-        n=len(index_range)
-        return [(i,j) for i in index_range for j in range(i,i+n) if j!=i]
-    augmented_peptide=peptide+peptide
-    result=[sum(augmented_peptide[a:b]) for (a,b) in get_pairs(range(len(peptide)))]
-    result.append(0)
-    result.append(sum(peptide)) 
-    result.sort()
-    return result 
 
-def linearSpectrum(peptide):
-    def get_pairs():
-        return [(i,j) for i in range(len(peptide)) for j in range(len(peptide)+1) if i<j]  
-    result=[sum(peptide[i:j]) for (i,j) in get_pairs()] 
-    #result.append(0)
-    result.sort()
-    return result 
+def sequence(spectrum,epsilon=0.1):
+     
+     def matches(mass):
+          abbrev = get_abbrev(mass,masses,pairs)
+          return abbrev if abs(mass-amino_acids[abbrev].mon_mass)<epsilon else None
 
-def consistent(peptide,spectrum):
-    def count(element,spect):
-        return len ([s for s in spect if abs(s-element)<0.001])
-    peptide_spectrum=linearSpectrum(peptide)
-    for element in peptide_spectrum:
-        if count(element,peptide_spectrum)>count(element,spectrum):
-            return False
-    return True
-
-def sequence(spectrum,epsilon=0.0001):
-    def isConsistent(peptide):
-        print (peptide)
-        for mass in linearSpectrum(peptide):
-            if mass==0: continue
-            abbrev = get_abbrev(mass,masses,pairs)
-            if abs(mass-amino_acids[abbrev].mon_mass)>epsilon:
-                return False
-        return True
-    
-    def expand(List):
-        return [peptide + [mass]  for peptide in List for mass in masses[:-1] if consistent(peptide + [mass],spectrum)]
-    List = [[]]
-    masses,pairs = create_lookup()
-    print (masses)
-    while len(List)>0:
-        List = expand(List)
-    return ''
+     masses,pairs = create_lookup();
+     conv = sorted(convolution(spectrum))
+     conv1 = [(mass,count,matches(mass)) for (mass,count) in conv]
+     conv2 = [(mass,count,abbrev) for (mass,count,abbrev) in conv1 if abbrev!=None]
+     counts = {}
+     for a in amino_acids.keys():
+          counts[a]=0
+     for _,count,abbrev in conv2:
+          counts[abbrev]+=count
+          
+     return ''
 
 if __name__=='__main__':
 
-    print (
+     print (
         sequence(
             [ 371.5,  375.4,  390.4,  392.2,  409.0,  420.2,  427.2,  443.3,  446.4,  461.3, 
               471.4,  477.4,  491.3,  505.3,  506.4,  519.2,  536.1,  546.5,  553.3,  562.3, 
