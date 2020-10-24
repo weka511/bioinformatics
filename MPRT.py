@@ -19,51 +19,39 @@
 import re
 from urllib.request import urlopen
 from urllib.parse import urljoin
+import reference_tables as rt
 
-def remove_white_space(motif):
-      pos_space = motif.find(' ')
-      return ''.join(motif[i] for i in range(len(motif)) if motif[i].isalpha() and motif[i].isupper()),pos_space
+      
+def read_unipro_as_fasta(url = 'http://www.uniprot.org/uniprot/',ID='B5ZC00'):
+      resource = urlopen(urljoin(url,ID+'.FASTA'))
+      return resource.read().decode("utf-8", "ignore")
 
+def get_protein_sequence(fasta):
+      pos=0
+      re_protein = rt.get_re_protein(min_length=8)
+      matched = re_protein.search(fasta,pos=pos)
+      amino_acids=[]
+      while matched:
+            amino_acids.append(matched.string[matched.start(0):matched.end(0)])
+            #print (pos, matched.string[matched.start(0):matched.end(0)])
+            pos = matched.end(0)+1
+            re_protein = rt.get_re_protein(min_length=1)
+            matched = re_protein.search(fasta,pos=pos)
+      return ''.join(amino_acids)            
 def mprt(url = 'http://www.uniprot.org/uniprot/',ID='B5ZC00',motif_pattern='N[\s]*[^P][\s]*[ST][\s]*[^P]'):
-      L        = 59
-      resource = urlopen(urljoin(url,ID))
-      content  = resource.read().decode(resource.headers.get_content_charset())
+      fasta = read_unipro_as_fasta(url=url,ID=ID)
+      protein_sequence = get_protein_sequence(fasta)
+      start_protein = fasta.find('\n')
       re_motif = re.compile(motif_pattern)
       motifs   = {}
-      pos      = content.find('Sequence status')
-      final    = content.find('Sequence databases')
+      pos = 0
       while True:
-            matched = re_motif.search(content,pos=pos)
+            matched = re_motif.search(protein_sequence,pos=pos)
             if matched:
-                  motif,pos_space = remove_white_space(matched.string[matched.start(0):matched.end(0)])
-                  if matched.start(0)>final:
-                        break
-                  pos=matched.end(0)
-                  if len(motif)!=4:
-                        continue
-                  #print (motif, matched.string[matched.start(0):matched.end(0)])
-                  seq_loc_start = matched.start(0) - L
-                  seq_loc_end   = matched.start(0) - L
-                  while content[seq_loc_start].isdigit():
-                        seq_loc_start-=1
-                  if seq_loc_start!=' ':
-                        seq_loc_start+=1  
-                  while not content[seq_loc_end].isdigit():
-                        seq_loc_end+=1
-                  while content[seq_loc_end].isdigit():
-                        seq_loc_end+=1
-                  try:
-                        xx=content[seq_loc_start:seq_loc_end]
-                        loc_upper_bound = int(content[seq_loc_start:seq_loc_end].strip())
-                        seq = loc_upper_bound - ( seq_loc_end-(matched.end(0)-L)) -len(motif) +1
-                        if pos_space>-1:
-                              seq-=(len(motif)-pos_space)
-                        #print(motif,loc_upper_bound, seq_loc_start - matched.start(0)+L, 
-                              #matched.end(0)-L, pos_space, seq_loc_end, seq_loc_end-(matched.end(0)-L),seq)
-         
-                        motifs[motif] = seq
-                  except ValueError:
-                        break
+                  motif = matched.string[matched.start(0):matched.end(0)]
+                  pos = matched.start(0) + 1
+                  matched = re_motif.search(protein_sequence,pos=pos)
+                  motifs[motif] = pos
             else:
                   break
       return motifs

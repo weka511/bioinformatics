@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2019 Greenweaves Software Limited
+# Copyright (C) 2015-2020 Greenweaves Software Limited
 
 # This is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -16,6 +16,7 @@
 # This file contains a collection of functions to solve the problems
 # at rosalind.info.
 
+import re
 bases='ACGT'
 
 codon_table={
@@ -148,6 +149,9 @@ def createSimpleDNASubst(match=+1,subst=1,bases='ATGC'):
         for j in range(len(bases)):
             weights[(bases[i],bases[j])] = +match if i==j else -subst          
     return weights
+
+def get_re_protein(min_length=1):
+    return re.compile('[A,C-IK-WY]{'+str(min_length)+',}')
 
 if __name__=='__main__':
     import unittest
