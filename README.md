@@ -214,6 +214,7 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 |prot|rosalind.py|[Translating RNA into Protein](http://rosalind.info/problems/prot/) |
 |revp|rosalind.py| [Locating Restriction Sites](http://rosalind.info/problems/revp/)|
 |rna|rosalind.py|[Transcribing DNA into RNA](http://rosalind.info/problems/rna/) |
+|sims|sims.py| [Finding Mutated Motifs](http://rosalind.info/problems/sims/)|
 |scsp|scsp.py|[Interleaving Two Motifs](http://rosalind.info/problems/scsp/)|
 |splc|rosalind.py|[RNA Splicing](http://rosalind.info/problems/splc/) |
 |sseq|rosalind.py|[Finding a Spliced Motif](http://rosalind.info/problems/sseq/) |
