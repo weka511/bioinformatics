@@ -195,6 +195,7 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 |inv|INV.py|[Counting Inversions](http://rosalind.info/problems/inv/) |
 |med|MED.py|[Median](http://rosalind.info/problems/med/)|
 |mer|MER.py|[Merge Two Sorted Arrays](http://rosalind.info/problems/mer/) |
+|mprt|MPRT.py|[Finding a Protein Motif](http://rosalind.info/problems/mprt/)|
 |ms|MS.py|[Mergesort](http://rosalind.info/problems/ms/)|
 |par|PAR.py|[2-Way Partition](http://rosalind.info/problems/par/) |
 |par3|PAR3.py|[3-Way Partition](http://rosalind.info/problems/par3/) |
