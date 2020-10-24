@@ -14,37 +14,56 @@
 #    along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>
 #
 #   MPRT Finding a Protein Motif
-
+# 
+#  N{P}[ST]{P}.
 import re
 from urllib.request import urlopen
 from urllib.parse import urljoin
-def mprt(url = 'http://www.uniprot.org/uniprot/',ID='B5ZC00',motif_pattern='N[A-O,Q-Z][ST][A-O,Q-Z]'):
+
+def remove_white_space(motif):
+      pos_space = motif.find(' ')
+      return ''.join(motif[i] for i in range(len(motif)) if motif[i].isalpha() and motif[i].isupper()),pos_space
+
+def mprt(url = 'http://www.uniprot.org/uniprot/',ID='B5ZC00',motif_pattern='N[\s]*[^P][\s]*[ST][\s]*[^P]'):
+      L        = 59
       resource = urlopen(urljoin(url,ID))
       content  = resource.read().decode(resource.headers.get_content_charset())
       re_motif = re.compile(motif_pattern)
       motifs   = {}
       pos      = content.find('Sequence status')
+      final    = content.find('Sequence databases')
       while True:
             matched = re_motif.search(content,pos=pos)
             if matched:
-                  motif         = matched.string[matched.start(0):matched.end(0)]
-                  pos           = matched.end(0)
-                  while content[pos].isalpha():
-                        pos+=1
-                  start = matched.start(0)
-                  while content[start-1].isalpha():
-                        start-=1                  
-                  L = 59
-
-                  try: 
-                        length = matched.end(0) - matched.start(0)
-                        n = int(content[start-L:pos-L])
-                        offset = pos - matched.end(0)
-                        p = n -length -offset +1
-                        #print (f'{motif}--{n}--{content[start-L:pos-L]}--{p}')
-                        motifs[motif] = (matched.start(0),start,matched.end(0),pos,p)
-                  except:
-                        ValueError
+                  motif,pos_space = remove_white_space(matched.string[matched.start(0):matched.end(0)])
+                  if matched.start(0)>final:
+                        break
+                  pos=matched.end(0)
+                  if len(motif)!=4:
+                        continue
+                  #print (motif, matched.string[matched.start(0):matched.end(0)])
+                  seq_loc_start = matched.start(0) - L
+                  seq_loc_end   = matched.start(0) - L
+                  while content[seq_loc_start].isdigit():
+                        seq_loc_start-=1
+                  if seq_loc_start!=' ':
+                        seq_loc_start+=1  
+                  while not content[seq_loc_end].isdigit():
+                        seq_loc_end+=1
+                  while content[seq_loc_end].isdigit():
+                        seq_loc_end+=1
+                  try:
+                        xx=content[seq_loc_start:seq_loc_end]
+                        loc_upper_bound = int(content[seq_loc_start:seq_loc_end].strip())
+                        seq = loc_upper_bound - ( seq_loc_end-(matched.end(0)-L)) -len(motif) +1
+                        if pos_space>-1:
+                              seq-=(len(motif)-pos_space)
+                        #print(motif,loc_upper_bound, seq_loc_start - matched.start(0)+L, 
+                              #matched.end(0)-L, pos_space, seq_loc_end, seq_loc_end-(matched.end(0)-L),seq)
+         
+                        motifs[motif] = seq
+                  except ValueError:
+                        break
             else:
                   break
       return motifs
@@ -52,10 +71,29 @@ def mprt(url = 'http://www.uniprot.org/uniprot/',ID='B5ZC00',motif_pattern='N[A-
 
       
 if __name__=='__main__':
-      for ID in ['A2Z669','B5ZC00','P07204_TRBM_HUMAN','P20840_SAG1_YEAST']:
+      for ID in [
+            'A2Z669',
+            'B5ZC00',
+            'P07204_TRBM_HUMAN',
+            'P20840_SAG1_YEAST'
+            ]:
+            #'P04141_CSF2_HUMAN',
+            #'P01190_COLI_BOVIN',
+            #'P07204_TRBM_HUMAN',
+            #'Q8WW18',
+            #'Q3B391',
+            #'P0AF66',
+            #'Q5FTZ8',
+            #'P80069_A45K_MYCBO',
+            #'P37803',
+            #'Q14ID0',
+            #'P80195_MPP3_BOVIN',
+            #'P11279_LMP1_HUMAN',
+            #'A5GIU0',
+            #'A7Z201'               
             motifs = mprt(ID=ID)
             if len(motifs)>0:
                   print (ID)
-                  positions = [pos for _,_,_,_,pos in motifs.values()]
-                  positions.sort()
-                  print (' '.join([str(p) for p in positions]))
+                  locations = [seq for seq in motifs.values()]
+                  locations.sort()
+                  print (' '.join([str(p) for p in locations]))
