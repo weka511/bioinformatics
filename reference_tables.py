@@ -150,6 +150,9 @@ def createSimpleDNASubst(match=+1,subst=1,bases='ATGC'):
             weights[(bases[i],bases[j])] = +match if i==j else -subst          
     return weights
 
+# get_re_protein
+# Produce a regular expression to recognize a straing of amino acids
+
 def get_re_protein(min_length=1):
     return re.compile('[A,C-IK-WY]{'+str(min_length)+',}')
 
