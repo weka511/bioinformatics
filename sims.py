@@ -15,9 +15,14 @@
 #
 # SIMS Finding Mutated Motifs
 
-def sims():
-    pass
+import numpy as np
+def sims(s,t):
+    scores = 0
+    return (0,'','')
 
 if __name__=='__main__':
-    sims()
+    
+    print (
+        sims('GCAAACCATAAGCCCTACGTGCCGCCTGTTTAAACTCGCGAACTGAATCTTCTGCTTCACGGTGAAAGTACCACAATGGTATCACACCCCAAGGAAAC',
+         'GCCGTCAGGCTGGTGTCCG'))
     
