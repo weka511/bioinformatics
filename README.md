@@ -101,7 +101,7 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 |9|snp.py|How do we locate disease causing mutations?|
 |BA9A|BA9A.py rosalind.py| [Construct a Trie from a Collection of Patterns](http://rosalind.info/problems/ba9a/) |
 |BA9B|BA9B.py snp.py| [Implement TrieMatching](http://rosalind.info/problems/ba9b/) |
-|BA9C|BA9C.py | [Construct the Suffix Tree of a String](http://rosalind.info/problems/ba9c/) (wip)|
+|BA9C|BA9C.py snp.py| [Construct the Suffix Tree of a String](http://rosalind.info/problems/ba9c/) (wip)|
 |BA9I|BA9I.py snp.py| [Construct the Burrows-Wheeler Transform of a String](http://rosalind.info/problems/ba9i/) |
 |10|hmm.py|Why have biologists still not developed an HIV vaccine?|
 |BA10A|BA10A.py hmm.py| [Compute the Probability of a Hidden Path](http://rosalind.info/problems/ba10a/) |
@@ -122,6 +122,7 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 |hamm|rosalind.py|[Counting Point Mutations](http://rosalind.info/problems/hamm/) |
 |oap|oap.py|[Overlap Alignment](http://rosalind.info/problems/oap/) (wip)|
 |pdst|rosalind.py|[Creating a Distance Matrix ](http://rosalind.info/problems/pdst/) |
+|sims|sims.py| [Finding Mutated Motifs](http://rosalind.info/problems/sims/)|
 |tran|rosalind.py|[Transitions and Transversions](http://rosalind.info/problems/tran/) |
 |-|-|[Combinatorics](http://rosalind.info/problems/topics/combinatorics/)|
 |aspc|rosalind.py|[Introduction to Alternative Splicing](http://rosalind.info/problems/aspc/) |
@@ -214,7 +215,6 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 |prot|rosalind.py|[Translating RNA into Protein](http://rosalind.info/problems/prot/) |
 |revp|rosalind.py| [Locating Restriction Sites](http://rosalind.info/problems/revp/)|
 |rna|rosalind.py|[Transcribing DNA into RNA](http://rosalind.info/problems/rna/) |
-|sims|sims.py| [Finding Mutated Motifs](http://rosalind.info/problems/sims/)|
 |scsp|scsp.py|[Interleaving Two Motifs](http://rosalind.info/problems/scsp/)|
 |splc|rosalind.py|[RNA Splicing](http://rosalind.info/problems/splc/) |
 |sseq|rosalind.py|[Finding a Spliced Motif](http://rosalind.info/problems/sseq/) |

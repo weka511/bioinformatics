@@ -55,6 +55,49 @@ def PrefixTreeMatching(Text,Tree):
 def MatchTries(s,t):
     return [i for i in range(len(s)-1) if PrefixTreeMatching(s[i:],t) ]
 
+
+# BA9C Construct the Suffix Tree of a String
+
+# ConstructModifiedSuffixTrie
+#
+# Construct Modified Suffix Trie, as described in 
+# Charging Station Bioinformatics Algorithms Vol II page 165
+#
+# See also https://sandipanweb.wordpress.com/2017/05/10/suffix-tree-construction-and-the-longest-repeated-substring-problem-in-python/
+
+
+def ConstructSuffixTreeEdges(s):
+    def explore(suffixes):
+        if len(suffixes)==0: return
+        prefixes = list(set([s[0] for s in suffixes]))
+        if len(prefixes)==len(suffixes):
+            for s in suffixes:
+                Edges.append(s)
+        else:
+            if len(prefixes)==1:
+                for k in range(2,min([len(s) for s in suffixes])):
+                    extended_prefixes = list(set([s[0:k] for s in suffixes]))
+                    if len(extended_prefixes)==1:
+                        prefixes = extended_prefixes
+                    else:
+                        break
+                    
+            for p in prefixes:
+                subset = [s[len(prefixes[0]):] for s in suffixes if s[0:len(prefixes[0])]==p ]
+                if len(subset)>1:
+                    Edges.append(p)
+                    explore(subset)
+                elif len(subset)==1:
+                    Edges.append(p+subset[0])
+                #else:
+                    #Edges.append(p)
+                    
+     
+    next_node = 0                
+    Edges     = []
+    explore (sorted([s[i:] for i in range(len(s))]))
+    return Edges
+
 # BA9I Construct the Burrows-Wheeler Transform of a String
 
 def BurrowsWheeler(s):
