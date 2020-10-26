@@ -31,8 +31,9 @@ def sims(s,t, match=1,mismatch=-1):
         for j in range(len(s)):
             scores[0]  = get_score(s[j],t[0],match=match,mismatch=mismatch)
         for i in range(1,len(t)):
-            scores[i,0]  = get_score(s[0],t[i],match=match,mismatch=mismatch)
-            for j in range(1,len(s)):
+            for j in range(i-1):
+                scores[i,j]  = get_score(s[j],t[i],match=match,mismatch=mismatch)
+            for j in range(i,len(s)):
                 score_diag       = scores[i-1][j-1] + get_score(s[j],t[i],match=match,mismatch=mismatch)
                 score_horizontal = scores[i][j-1]   + mismatch
                 score_vertical   = scores[i-1][j]   + mismatch
@@ -49,6 +50,7 @@ def sims(s,t, match=1,mismatch=-1):
     def trace_back(scores,predecessor):
         i      = len(scores)-1
         j      = np.argmax(scores[i])
+ 
         print (f'Number of maxima={sum(1 for s in scores[i] if s>=scores[i,j])}')
         s_match = [s[j]]
         t_match = [t[i]]
@@ -83,7 +85,7 @@ if __name__=='__main__':
     score,s1,t1 = sims('GCAAACCATAAGCCCTACGTGCCGCCTGTTTAAACTCGCGAACTGAATCTTCTGCTTCACGGTGAAAGTACCACAATGGTATCACACCCCAAGGAAAC',
                        'GCCGTCAGGCTGGTGTCCG')
     print (score)
-    print (s1)
-    print (t1)
+    print (len(s1),s1)
+    print (len(t1),len('GCCGTCAGGCTGGTGTCCG'),t1)
     print (score_string(s1,t1))
        
