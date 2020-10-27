@@ -19,11 +19,6 @@ import argparse
 from helpers import read_strings
 from snp import SuffixTree   
 
-           
-
-    
-# Each node has a symbol, position and labels of further edges
-
 
 def check(Edges,Expected):
     print (f'Expected = {len(Expected)} edges, actual={len(Edges)}')
@@ -53,8 +48,9 @@ def compare_edges(Edges,Expected):
             
 if __name__=='__main__':
     parser = argparse.ArgumentParser('BA9C Construct the Suffix Tree of a String ')
-    parser.add_argument('--sample', default=False, action='store_true', help='process sample dataset')
-    parser.add_argument('--extra',  default=False, action='store_true', help='process extra dataset')
+    parser.add_argument('--sample',   default=False, action='store_true', help='process sample dataset')
+    parser.add_argument('--extra',    default=False, action='store_true', help='process extra dataset')
+    parser.add_argument('--rosalind', default=False, action='store_true', help='process Rosalind dataset')
     args = parser.parse_args()
     if args.sample:
         tree = SuffixTree()
@@ -71,4 +67,11 @@ if __name__=='__main__':
         
         compare_edges(Edges,Expected) 
             
-            
+    if args.rosalind:
+        Input = read_strings(r'data/rosalind_ba9c.txt')
+        tree = SuffixTree()
+        tree.build(Input[0])
+        Edges  = tree.collectEdges()   
+        for e in Edges:
+            print (e)
+                     
