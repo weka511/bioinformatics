@@ -91,14 +91,11 @@ class SuffixTree:
                     edge.node.print(path=path+[symbol])
  
         def collectEdges(self,path=[],accumulator=[]):
-            #print (self.symbol,self.label)
             if len(self.edges)==0:
                 accumulator.append(path+[self.symbol])
             elif len(self.edges)==1:
                 for symbol,edge in self.edges.items():
                     edge.node.collectEdges(path+[symbol],accumulator=accumulator)                
-                #key = next(iter(self.edges)) 
-                #self.edges[key].node.collectEdges(path+[self.symbol],accumulator=accumulator)
             else:
                 if len(path)>0:
                     accumulator.append(path+[self.symbol])
