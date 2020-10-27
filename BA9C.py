@@ -1,4 +1,4 @@
-#  Copyright (C) 2019 Greenweaves Software Limited
+#  Copyright (C) 2019-2020 Greenweaves Software Limited
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -74,4 +74,5 @@ if __name__=='__main__':
         Edges  = tree.collectEdges()   
         for e in Edges:
             print (e)
+
                      
