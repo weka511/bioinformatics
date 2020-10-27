@@ -13,7 +13,7 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
-# BA9D Find the Longest Repeat in a String
+# BA9E Find the Longest Substring Shared by Two Strings
 
 import argparse
 from helpers import read_strings
