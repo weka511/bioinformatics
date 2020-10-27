@@ -103,6 +103,8 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 |BA9B|BA9B.py snp.py| [Implement TrieMatching](http://rosalind.info/problems/ba9b/) |
 |BA9C|BA9C.py snp.py| [Construct the Suffix Tree of a String](http://rosalind.info/problems/ba9c/)|
 |BA9D|BA9D.py| [Find the Longest Repeat in a String](http://rosalind.info/problems/ba9d/) (WIP)|
+|BA9E|BA9E.py| [Find the Longest Substring Shared by Two Strings](http://rosalind.info/problems/ba9e/) (WIP)|
+|BA9F|BA9F.py| [Find the Shortest Non-Shared Substring of Two Strings](http://rosalind.info/problems/ba9f/) (WIP)|
 |BA9I|BA9I.py snp.py| [Construct the Burrows-Wheeler Transform of a String](http://rosalind.info/problems/ba9i/) |
 |10|hmm.py|Why have biologists still not developed an HIV vaccine?|
 |BA10A|BA10A.py hmm.py| [Compute the Probability of a Hidden Path](http://rosalind.info/problems/ba10a/) |
