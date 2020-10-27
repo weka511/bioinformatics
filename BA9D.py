@@ -17,11 +17,22 @@
 
 import argparse
 from helpers import read_strings
-#from snp import SuffixTree   
+from snp import SuffixTree   
 import time
 
 def FindLongestRepeat(string):
-    pass
+    def sort_by_length(edges,reverse=False):
+        return [e for _,e in sorted([(len(edge),edge) for edge in edges],reverse=reverse)]
+        
+    tree = SuffixTree()
+    tree.build(string)
+    edges = sort_by_length(tree.collectEdges(),reverse=True)
+    for edge in edges:
+        index = string.find(edge)
+        if index==-1: break
+        if string.find(edge,index+1)>-1:
+            return edge
+
 
 if __name__=='__main__':
     start = time.time()
