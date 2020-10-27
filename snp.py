@@ -132,6 +132,32 @@ class SuffixTree:
     def collectEdges(self):
         return [ ''.join(run[:-1]) for run in self.root.collectEdges()]
 
+# BA9D Find the Longest Repeat in a String
+
+def FindLongestRepeat(string):
+    def sort_by_descending_length(edges):
+        return [e for _,e in sorted([(len(edge),edge) for edge in edges],reverse=True)]
+        
+    tree = SuffixTree()
+    tree.build(string)
+    edges = sort_by_descending_length(tree.collectEdges())
+    for edge in edges:
+        index1 = string.find(edge)
+        if index1==-1: continue
+        index2 = string.find(edge,index1+1)
+        if index2==-1: continue
+        # try to extend edge -- first to the left
+        i = 1
+        while string[index1-i]==string[index2-i]:
+            i+=1
+        i -= 1
+        # then to the right
+        j  = len(edge)
+        while index2+j<len(string) and string[index1+j]==string[index2+j]:
+            j+=1
+
+        return string[index1-i:index1+j]
+    
 # BA9I Construct the Burrows-Wheeler Transform of a String
 
 def BurrowsWheeler(s):

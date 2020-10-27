@@ -17,30 +17,11 @@
 
 import argparse
 from helpers import read_strings
-from snp import SuffixTree
+from snp import SuffixTree, FindLongestRepeat
 import sys
 import time
 
-def FindLongestRepeat(string):
-    def sort_by_length(edges,reverse=False):
-        return [e for _,e in sorted([(len(edge),edge) for edge in edges],reverse=reverse)]
-        
-    tree = SuffixTree()
-    tree.build(string)
-    edges = sort_by_length(tree.collectEdges(),reverse=True)
-    for edge in edges:
-        #if 69 < len(edge) and len(edge)<80:
-            #print (len(edge),edge)
-        index1 = string.find(edge)
-        if index1==-1: continue
-        index2 = string.find(edge,index1+1)
-        if index2==-1: continue
-        index = index1
-        while string[index1-1]==string[index2-1]:
-            index1-=1
-            index2-=1
-        prefix=string[index1:index]
-        return prefix+edge
+
 
 if __name__=='__main__':
     sys.setrecursionlimit(1500)
@@ -62,12 +43,10 @@ if __name__=='__main__':
         print (Actual)
 
     if args.rosalind:
-        Input = read_strings(r'C:\Users\Simon\Downloads\rosalind_ba9d.txt')
-        print (Input[0])
-        tree = SuffixTree()
+        Input  = read_strings('data/rosalind_ba9d.txt')
         Result = FindLongestRepeat(Input[0])
         print (Result)
-        with open('foo.txt','w') as f:
+        with open('ba9d.txt','w') as f:
             f.write(f'{Result}\n')
             
     elapsed = time.time()-start
