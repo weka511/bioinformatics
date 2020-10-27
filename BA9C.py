@@ -17,9 +17,65 @@
 
 import argparse
 from helpers import read_strings
-from snp import ConstructSuffixTreeEdges    
+#from snp import ConstructSuffixTreeEdges   
+
+           
+class SuffixTree:
+    
+    class Node:
+      
+        def __init__(self):
+            self.symbol = None
+            self.edges  = {}
+            self.label  = None
+        def hasLabelledEdge(self,symbol):
+            return symbol in self.edges
+        def endEdge(self,symbol):
+            return self.edges[symbol] 
+        def isLeaf(self):
+            return len(self.edges)==0
+        def setLabel(self,j):
+            self.label=j
+
+        def traverse(self,path=[]):
+            if len(self.edges)==0:
+                print (f"{self.label}, {''.join(path)}" )
+            else:
+                for symbol,edge in self.edges.items():
+                    edge.node.traverse(path=path+[symbol])
+                
+    class Edge:
+        def __init__(self,node,position):
+            self.node     = node
+            self.position = position
+        
+    def __init__(self):
+        self.root = self.Node()
+        
+    def build(self,text):
+        for i in range(len(text)):
+            currentNode = self.root
+            for j in range(i,len(text)):
+                currentSymbol = text[j]
+                if currentNode.hasLabelledEdge(currentSymbol):
+                    currentNode = currentNode.endEdge(currentSymbol).node
+                else:
+                    newNode                          = self.Node()
+                    currentNode.edges[currentSymbol] = self.Edge(newNode,j)
+                    currentNode                      = newNode
+            if currentNode.isLeaf():
+                currentNode.setLabel(i)
+    
+    def getEdges(self):
+        self.root.traverse()
+        x=0
+    
+    
+# Each node has a symbol, position and labels of further edges
+
 
 def check(Edges,Expected):
+    print (f'Expected = {len(Expected)} edges, actual={len(Edges)}')
     mismatches = 0
     for a,b in zip(sorted(Edges),sorted(Expected)):
         if a!=b:
@@ -28,7 +84,7 @@ def check(Edges,Expected):
     print(f'{0} mismatches')
 
 def compare_edges(Edges,Expected):
-    print ('Expected = {len(Expected)} edges, actual={len(Edges)}')
+    print (f'Expected = {len(Expected)} edges, actual={len(Edges)}')
     expected = iter(sorted(Expected))
     edges    = iter(sorted(Edges))
     exp      = next(expected)
@@ -50,7 +106,11 @@ if __name__=='__main__':
     parser.add_argument('--extra',  default=False, action='store_true', help='process extra dataset')
     args = parser.parse_args()
     if args.sample:
-        Edges = ConstructSuffixTreeEdges('ATAAATG$')
+        tree = SuffixTree()
+        tree.build('ATAAATG$')
+        tree.getEdges()
+        
+        Edges = tree.Edges
         print('---')
         for edge in Edges:
             print(edge)
@@ -72,10 +132,9 @@ if __name__=='__main__':
         check(Edges,Expected)
         
     if args.extra:
-        strings  = read_strings('data/SuffixTreeConstruction.txt')
-        Edges    = ConstructSuffixTreeEdges(strings[1])   
-        Expected = strings[3:]
+        Input,Expected  = read_strings('data/SuffixTreeConstruction.txt',init=0)
+        Edges           = ConstructSuffixTreeEdges(Input[0])   
         
-    compare_edges(Edges,Expected) 
+        compare_edges(Edges,Expected) 
             
             
