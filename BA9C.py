@@ -37,13 +37,29 @@ class SuffixTree:
         def setLabel(self,j):
             self.label=j
 
-        def traverse(self,path=[]):
+        def print(self,path=[]):
             if len(self.edges)==0:
                 print (f"{self.label}, {''.join(path)}" )
             else:
                 for symbol,edge in self.edges.items():
-                    edge.node.traverse(path=path+[symbol])
-                
+                    edge.node.print(path=path+[symbol])
+ 
+        def collectEdges(self,path=[],accumulator=[]):
+            #print (self.symbol,self.label)
+            if len(self.edges)==0:
+                accumulator.append(path+[self.symbol])
+            elif len(self.edges)==1:
+                for symbol,edge in self.edges.items():
+                    edge.node.collectEdges(path+[symbol],accumulator=accumulator)                
+                #key = next(iter(self.edges)) 
+                #self.edges[key].node.collectEdges(path+[self.symbol],accumulator=accumulator)
+            else:
+                if len(path)>0:
+                    accumulator.append(path+[self.symbol])
+                for symbol,edge in self.edges.items():
+                    edge.node.collectEdges([symbol],accumulator=accumulator)
+            return accumulator
+        
     class Edge:
         def __init__(self,node,position):
             self.node     = node
@@ -66,10 +82,12 @@ class SuffixTree:
             if currentNode.isLeaf():
                 currentNode.setLabel(i)
     
-    def getEdges(self):
-        self.root.traverse()
+    def print(self):
+        self.root.print()
         x=0
     
+    def collectEdges(self):
+        return [ ''.join(run[:-1]) for run in self.root.collectEdges()]
     
 # Each node has a symbol, position and labels of further edges
 
@@ -108,28 +126,28 @@ if __name__=='__main__':
     if args.sample:
         tree = SuffixTree()
         tree.build('ATAAATG$')
-        tree.getEdges()
+        tree.print()
         
-        Edges = tree.Edges
         print('---')
-        for edge in Edges:
-            print(edge)
+ 
         print('---')
-        Expected = [
-            'AAATG$',
-            'G$',
-            'T',
-            'ATG$',
-            'TG$',
-            'A',
-            'A',
-            'AAATG$',
-            'G$',
-            'T',
-            'G$',
-            '$'        
-        ]
-        check(Edges,Expected)
+        for edge in tree.collectEdges():
+            print (edge)
+        #Expected = [
+            #'AAATG$',
+            #'G$',
+            #'T',
+            #'ATG$',
+            #'TG$',
+            #'A',
+            #'A',
+            #'AAATG$',
+            #'G$',
+            #'T',
+            #'G$',
+            #'$'        
+        #]
+        #check(Edges,Expected)
         
     if args.extra:
         Input,Expected  = read_strings('data/SuffixTreeConstruction.txt',init=0)
