@@ -17,77 +17,10 @@
 
 import argparse
 from helpers import read_strings
-#from snp import ConstructSuffixTreeEdges   
+from snp import SuffixTree   
 
            
-class SuffixTree:
-    
-    class Node:
-      
-        def __init__(self):
-            self.symbol = None
-            self.edges  = {}
-            self.label  = None
-        def hasLabelledEdge(self,symbol):
-            return symbol in self.edges
-        def endEdge(self,symbol):
-            return self.edges[symbol] 
-        def isLeaf(self):
-            return len(self.edges)==0
-        def setLabel(self,j):
-            self.label=j
 
-        def print(self,path=[]):
-            if len(self.edges)==0:
-                print (f"{self.label}, {''.join(path)}" )
-            else:
-                for symbol,edge in self.edges.items():
-                    edge.node.print(path=path+[symbol])
- 
-        def collectEdges(self,path=[],accumulator=[]):
-            #print (self.symbol,self.label)
-            if len(self.edges)==0:
-                accumulator.append(path+[self.symbol])
-            elif len(self.edges)==1:
-                for symbol,edge in self.edges.items():
-                    edge.node.collectEdges(path+[symbol],accumulator=accumulator)                
-                #key = next(iter(self.edges)) 
-                #self.edges[key].node.collectEdges(path+[self.symbol],accumulator=accumulator)
-            else:
-                if len(path)>0:
-                    accumulator.append(path+[self.symbol])
-                for symbol,edge in self.edges.items():
-                    edge.node.collectEdges([symbol],accumulator=accumulator)
-            return accumulator
-        
-    class Edge:
-        def __init__(self,node,position):
-            self.node     = node
-            self.position = position
-        
-    def __init__(self):
-        self.root = self.Node()
-        
-    def build(self,text):
-        for i in range(len(text)):
-            currentNode = self.root
-            for j in range(i,len(text)):
-                currentSymbol = text[j]
-                if currentNode.hasLabelledEdge(currentSymbol):
-                    currentNode = currentNode.endEdge(currentSymbol).node
-                else:
-                    newNode                          = self.Node()
-                    currentNode.edges[currentSymbol] = self.Edge(newNode,j)
-                    currentNode                      = newNode
-            if currentNode.isLeaf():
-                currentNode.setLabel(i)
-    
-    def print(self):
-        self.root.print()
-        x=0
-    
-    def collectEdges(self):
-        return [ ''.join(run[:-1]) for run in self.root.collectEdges()]
     
 # Each node has a symbol, position and labels of further edges
 
@@ -126,32 +59,15 @@ if __name__=='__main__':
     if args.sample:
         tree = SuffixTree()
         tree.build('ATAAATG$')
-        tree.print()
-        
-        print('---')
- 
-        print('---')
         for edge in tree.collectEdges():
             print (edge)
-        #Expected = [
-            #'AAATG$',
-            #'G$',
-            #'T',
-            #'ATG$',
-            #'TG$',
-            #'A',
-            #'A',
-            #'AAATG$',
-            #'G$',
-            #'T',
-            #'G$',
-            #'$'        
-        #]
-        #check(Edges,Expected)
-        
+         
     if args.extra:
         Input,Expected  = read_strings('data/SuffixTreeConstruction.txt',init=0)
-        Edges           = ConstructSuffixTreeEdges(Input[0])   
+        tree = SuffixTree()
+        tree.build(Input[0])
+        #tree.print()
+        Edges  = tree.collectEdges()   
         
         compare_edges(Edges,Expected) 
             

@@ -66,37 +66,74 @@ def MatchTries(s,t):
 # See also https://sandipanweb.wordpress.com/2017/05/10/suffix-tree-construction-and-the-longest-repeated-substring-problem-in-python/
 
 
-def ConstructSuffixTreeEdges(s):
-    def explore(suffixes):
-        if len(suffixes)==0: return
-        prefixes = list(set([s[0] for s in suffixes]))
-        if len(prefixes)==len(suffixes):
-            for s in suffixes:
-                Edges.append(s)
-        else:
-            if len(prefixes)==1:
-                for k in range(2,min([len(s) for s in suffixes])):
-                    extended_prefixes = list(set([s[0:k] for s in suffixes]))
-                    if len(extended_prefixes)==1:
-                        prefixes = extended_prefixes
-                    else:
-                        break
-                    
-            for p in prefixes:
-                subset = [s[len(prefixes[0]):] for s in suffixes if s[0:len(prefixes[0])]==p ]
-                if len(subset)>1:
-                    Edges.append(p)
-                    explore(subset)
-                elif len(subset)==1:
-                    Edges.append(p+subset[0])
-                #else:
-                    #Edges.append(p)
-                    
-     
-    next_node = 0                
-    Edges     = []
-    explore (sorted([s[i:] for i in range(len(s))]))
-    return Edges
+class SuffixTree:
+    
+    class Node:
+      
+        def __init__(self):
+            self.symbol = None
+            self.edges  = {}
+            self.label  = None
+        def hasLabelledEdge(self,symbol):
+            return symbol in self.edges
+        def endEdge(self,symbol):
+            return self.edges[symbol] 
+        def isLeaf(self):
+            return len(self.edges)==0
+        def setLabel(self,j):
+            self.label=j
+
+        def print(self,path=[]):
+            if len(self.edges)==0:
+                print (f"{self.label}, {''.join(path)}" )
+            else:
+                for symbol,edge in self.edges.items():
+                    edge.node.print(path=path+[symbol])
+ 
+        def collectEdges(self,path=[],accumulator=[]):
+            #print (self.symbol,self.label)
+            if len(self.edges)==0:
+                accumulator.append(path+[self.symbol])
+            elif len(self.edges)==1:
+                for symbol,edge in self.edges.items():
+                    edge.node.collectEdges(path+[symbol],accumulator=accumulator)                
+                #key = next(iter(self.edges)) 
+                #self.edges[key].node.collectEdges(path+[self.symbol],accumulator=accumulator)
+            else:
+                if len(path)>0:
+                    accumulator.append(path+[self.symbol])
+                for symbol,edge in self.edges.items():
+                    edge.node.collectEdges([symbol],accumulator=accumulator)
+            return accumulator
+        
+    class Edge:
+        def __init__(self,node,position):
+            self.node     = node
+            self.position = position
+        
+    def __init__(self):
+        self.root = self.Node()
+        
+    def build(self,text):
+        for i in range(len(text)):
+            currentNode = self.root
+            for j in range(i,len(text)):
+                currentSymbol = text[j]
+                if currentNode.hasLabelledEdge(currentSymbol):
+                    currentNode = currentNode.endEdge(currentSymbol).node
+                else:
+                    newNode                          = self.Node()
+                    currentNode.edges[currentSymbol] = self.Edge(newNode,j)
+                    currentNode                      = newNode
+            if currentNode.isLeaf():
+                currentNode.setLabel(i)
+    
+    def print(self):
+        self.root.print()
+        x=0
+    
+    def collectEdges(self):
+        return [ ''.join(run[:-1]) for run in self.root.collectEdges()]
 
 # BA9I Construct the Burrows-Wheeler Transform of a String
 
