@@ -31,23 +31,29 @@ def read_dna(name):
     with open(name,'r') as f:
         return f.read().strip()
 
-def read_strings(test_data,init=1):
-    inputs=[]
+# read_strings
+#
+# Read an input file and return set of strings
+def read_strings(test_data,
+                 init=1      # Set to zero to handle format used in extra dataset
+                 ): 
+    inputs   = []
+    expected = []
     with open(test_data) as f:
-        state=init
+        state = init
         for line in f:
             content=line.strip()
             if state==0:
-                if content=='Input:':
+                if content=='Input':
                     state=1
             elif state==1:
-                if content=='Output:':
+                if content=='Output':
                     state=2
                 else:
                     inputs.append(content)
             else:
                 expected.append(content)
-    return inputs
+    return inputs if init==1 else (inputs,expected)
 
 def print_adjacency_list(adjacency_list,path=r'c:\temp\out.text'):
     with open(path,'w') as out:
