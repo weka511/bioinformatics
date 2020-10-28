@@ -15,6 +15,14 @@
 
 # BA9A Construct a Trie from a Collection of Patterns 
 
+# Trie - a trie, represented as a collection of Nodes and Edges
+# 
+#    The trie has a single root node with indegree 0, denoted root.
+#    Each edge of Trie(Patterns) is labeled with a letter of the alphabet.
+#    Edges leading out of a given node have distinct labels.
+#    Every string in Patterns is spelled out by concatenating the letters along some path from the root downward.
+#    Every path from the root to a leaf, or node with outdegree 0, spells a string from Patterns.
+
 class Trie:
     class Node:
         def __init__(self,id):
@@ -43,9 +51,10 @@ class Trie:
             
     def __init__(self,Patterns):
         self.nodeCounter = 0
-        self.root = self.Node(self.nodeCounter)
-        self.nodeCounter+=1
-        for Pattern in Patterns:
+        self.root        = self.Node(self.nodeCounter)
+        self.nodeCounter +=1
+        
+        for Pattern in Patterns: # Build Trie - http://rosalind.info/problems/ba9a/
             currentNode = self.root
             for currentSymbol in Pattern:
                 if currentNode.hasEdge(currentSymbol):

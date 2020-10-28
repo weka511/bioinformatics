@@ -99,7 +99,7 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 |BA8D|BA8D.py | [Implement the Soft k-Means Clustering Algorithm](http://rosalind.info/problems/ba8d/) |
 |BA8E|BA8E.py | [Implement Hierarchical Clustering](http://rosalind.info/problems/ba8e/) |
 |9|snp.py|How do we locate disease causing mutations?|
-|BA9A|BA9A.py rosalind.py| [Construct a Trie from a Collection of Patterns](http://rosalind.info/problems/ba9a/) |
+|BA9A|BA9A.py snp.py| [Construct a Trie from a Collection of Patterns](http://rosalind.info/problems/ba9a/) |
 |BA9B|BA9B.py snp.py| [Implement TrieMatching](http://rosalind.info/problems/ba9b/) |
 |BA9C|BA9C.py snp.py| [Construct the Suffix Tree of a String](http://rosalind.info/problems/ba9c/)|
 |BA9D|BA9D.py| [Find the Longest Repeat in a String](http://rosalind.info/problems/ba9d/)|
