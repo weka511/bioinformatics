@@ -13,6 +13,52 @@
 # You should have received a copy of the GNU General Public License
 # along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>
 
+# BA9A Construct a Trie from a Collection of Patterns 
+
+class Trie:
+    class Node:
+        def __init__(self,id):
+            self.edges = {}
+            self.id    = id
+            
+        def add(self,edge):
+            self.edges[edge.symbol] = edge
+            
+        def hasEdge(self,symbol):
+            return symbol in self.edges
+        
+        def getEdge(self,symbol):
+            return self.edges[symbol]        
+        
+        def Edges(self):
+            for symbol,edge in self.edges.items():
+                yield self.id, edge.end.id, edge.symbol
+                yield from edge.end.Edges()
+                
+            
+    class Edge:
+        def __init__(self,end=None,symbol=None):
+            self.end    = end
+            self.symbol = symbol
+            
+    def __init__(self,Patterns):
+        self.nodeCounter = 0
+        self.root = self.Node(self.nodeCounter)
+        self.nodeCounter+=1
+        for Pattern in Patterns:
+            currentNode = self.root
+            for currentSymbol in Pattern:
+                if currentNode.hasEdge(currentSymbol):
+                    currentNode = currentNode.getEdge(currentSymbol).end
+                else:
+                    newNode = self.Node(self.nodeCounter)
+                    self.nodeCounter+=1
+                    currentNode.add(self.Edge(end=newNode,symbol=currentSymbol))
+                    currentNode = newNode
+
+    def Edges(self):
+        return self.root.Edges()            
+            
 # BA9B Implement TrieMatching
 
 
@@ -130,21 +176,23 @@ class SuffixTree:
         x=0
     
     def collectEdges(self):
-        return [ ''.join(run[:-1]) for run in self.root.collectEdges()]
+        return [ ''.join(run[:-1]) for run in self.root.collectEdges(accumulator=[])]
 
 # BA9D Find the Longest Repeat in a String
+# BA9E Find the Longest Substring Shared by Two Strings
 
-def FindLongestRepeat(string):
-    def sort_by_descending_length(edges):
-        return [e for _,e in sorted([(len(edge),edge) for edge in edges],reverse=True)]
-        
+def sort_by_descending_length(edges):
+    return [e for _,e in sorted([(len(edge),edge) for edge in edges],reverse=True)]
+
+def FindLongestRepeat(string1,string2=None):        
     tree = SuffixTree()
+    string = string1 if string2 == None else string1 + string2
     tree.build(string)
     edges = sort_by_descending_length(tree.collectEdges())
     for edge in edges:
-        index1 = string.find(edge)
+        index1 = string.find(edge,0,-1 if string2==None else len(string1))
         if index1==-1: continue
-        index2 = string.find(edge,index1+1)
+        index2 = string.find(edge,(index1+1) if string2==None else len(string1))
         if index2==-1: continue
         # try to extend edge -- first to the left
         i = 1
@@ -159,7 +207,19 @@ def FindLongestRepeat(string):
         return string[index1-i:index1+j]
     
 # BA9I Construct the Burrows-Wheeler Transform of a String
-
+#
+# Given a string Text, form all possible cyclic rotations of Text; a cyclic
+# rotation is defined by chopping off a suffix from the end of Text and appending
+# this suffix to the beginning of Text. Next — similarly to suffix arrays — order
+# all the cyclic rotations of Text lexicographically to form a |Text| × |Text| matrix of symbols
+# that we call the Burrows-Wheeler matrix and denote by M(Text).
+#
+# Note that the first column of M(Text) contains the symbols of Text ordered lexicographically.
+# In turn, the second column of M(Text) contains the second symbols of all cyclic rotations of Text,
+# and so it too represents a (different) rearrangement of symbols from Text. 
+# The same reasoning applies to show that any column of M(Text) is some rearrangement 
+# of the symbols of Text. We are interested in the last column of M(Text), 
+# called the Burrows-Wheeler transform of Text, or BWT(Text).
 def BurrowsWheeler(s):
     def cyclicPermutation(s):
         return s[1:] + s[0:1]

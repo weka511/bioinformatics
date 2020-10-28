@@ -13,19 +13,37 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-
 # BA9A Construct a Trie from a Collection of Patterns 
 
-from rosalind import trie
-
+import argparse
+import time
+from helpers import read_strings
+from snp import Trie
+                  
 if __name__=='__main__':
-    for a,b,c in trie(['ATAGA','ATC','GAT'],one_based=False):
-        print (f'{a}->{b}:{c}')
-    #with open('/Users/Simon/Downloads/rosalind_ba9a.txt') as f:
-        #strings=[]
-        ##f.readline()
-        #for line in f:
-            ##if line.startswith('Output'): break
-            #strings.append(line.strip())
-        #for a,b,c in trie(strings,one_based=False):
-            #print ('{0}->{1}:{2}'.format(a,b,c))        
+    start = time.time()
+    parser = argparse.ArgumentParser('BA9D Find the Longest Repeat in a String')
+    parser.add_argument('--sample',   default=False, action='store_true', help='process sample dataset')
+    parser.add_argument('--extra',    default=False, action='store_true', help='process extra dataset')
+    parser.add_argument('--rosalind', default=False, action='store_true', help='process Rosalind dataset')
+    args = parser.parse_args()
+    if args.sample:
+        trie = Trie(['ATAGA','ATC','GAT'])
+        for a,b,c in trie.Edges():
+            print (f'{a}->{b}:{c}') 
+    
+    if args.extra:
+        Input,Expected  = read_strings('data/TrieConstruction.txt',init=0)
+        #print (Input[0]) 
+        trie = Trie(Input)
+        Actual = sorted([f'{a}->{b}:{c}' for a,b,c in trie.Edges()])
+        Expected.sort()
+        print (len(Expected),len(Actual))
+        diffs = [(e,a) for e,a in zip(Expected,Actual) if e!=a]
+        print (diffs)
+                
+    elapsed = time.time()-start
+    minutes = int(elapsed/60)
+    seconds = elapsed-60*minutes
+    print (f'Elapsed Time {minutes} m {seconds:.2f} s')    
+        
