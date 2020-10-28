@@ -16,6 +16,7 @@
 # BA9A Construct a Trie from a Collection of Patterns 
 
 import argparse
+import os
 import time
 from helpers import read_strings
 from snp import Trie
@@ -42,11 +43,11 @@ if __name__=='__main__':
         print (diffs)
   
     if args.rosalind:
-        Input  = read_strings('data/rosalind_ba9a.txt')
+        Input  = read_strings(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt')
         trie   = Trie(Input)
         Result = sorted([f'{a}->{b}:{c}' for a,b,c in trie.Edges()])
         print (Result)
-        with open('ba9a.txt','w') as f:
+        with open(f'{os.path.basename(__file__).split(".")[0]}.txt','w') as f:
             for line in Result:
                 f.write(f'{line}\n')
                 
