@@ -34,13 +34,21 @@ if __name__=='__main__':
     
     if args.extra:
         Input,Expected  = read_strings('data/TrieConstruction.txt',init=0)
-        #print (Input[0]) 
         trie = Trie(Input)
         Actual = sorted([f'{a}->{b}:{c}' for a,b,c in trie.Edges()])
         Expected.sort()
         print (len(Expected),len(Actual))
         diffs = [(e,a) for e,a in zip(Expected,Actual) if e!=a]
         print (diffs)
+  
+    if args.rosalind:
+        Input  = read_strings('data/rosalind_ba9a.txt')
+        trie   = Trie(Input)
+        Result = sorted([f'{a}->{b}:{c}' for a,b,c in trie.Edges()])
+        print (Result)
+        with open('ba9a.txt','w') as f:
+            for line in Result:
+                f.write(f'{line}\n')
                 
     elapsed = time.time()-start
     minutes = int(elapsed/60)
