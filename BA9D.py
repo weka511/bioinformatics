@@ -17,7 +17,7 @@
 
 import argparse
 from helpers import read_strings
-from snp import SuffixTree, FindLongestRepeat
+from snp import  FindLongestRepeat
 import sys
 import time
 
