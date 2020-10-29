@@ -150,6 +150,7 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 |rear|rear.py fragile.py|[Reversal distance](http://rosalind.info/problems/rear/) |
 |sort|sort.py fragile.py|[Sorting by Reversals](http://rosalind.info/problems/sort/) |
 |-|graphs.py|[Graphs](http://rosalind.info/problems/topics/graphs/) & [Graph Algorithms](http://rosalind.info/problems/topics/graph-algorithms/)|
+|2sat|sat.py|[2-Satisfiability](http://rosalind.info/problems/2sat/) (wip)|
 |bf|bf.py graphs.py|[Bellman-Ford Algorithm](http://rosalind.info/problems/bf/)|
 |bfs|bfs.py|[Beadth First search](http://rosalind.info/problems/bfs/) |
 |bins|BINS.py|[Binary Search](http://rosalind.info/problems/bfs/) |
@@ -164,9 +165,10 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 |grph|rosalind.py|[Overlap Graphs](http://rosalind.info/problems/grph/) |
 |gs|gs.py graphs.py|[General Sink](http://rosalind.info/problems/gs/)|
 |hdag|hdag.py graphs.py|[Hamiltonian Path in DAG](http://rosalind.info/problems/hdag/) |
-|nwc|nwc.py|[Negative Weight Cycle](http://rosalind.info/problems/nwc/)|
+|nwc|nwc.py graphs.py|[Negative Weight Cycle](http://rosalind.info/problems/nwc/)|
 |scc|scc.py graphs.py|[Strongly Connected Components](http://rosalind.info/problems/scc/)|
 |sc|sc.py graphs.py|[Semi-Connected Graph](http://rosalind.info/problems/sc/)|
+|sdag|sdag.py graphs.py|[Shortest Paths in DAG](http://rosalind.info/problems/sdag/)|
 |sq|sq.py graphics.py|[Square in a Graph](http://rosalind.info/problems/sq/)|
 |trie|rosalind.py|[Introduction to Pattern Matching](http://rosalind.info/problems/trie/) |
 |ts|ts.py align.py|[Topological sort](http://rosalind.info/problems/ts/)|

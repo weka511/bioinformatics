@@ -21,6 +21,7 @@ import time
 from   helpers import read_strings
 from   align   import topological_order
 from   nwc     import extract_data, extract_graphs
+from   graphs  import sdag
 
 def create_adjacency(edges):
     m,n       = edges[0]
@@ -40,20 +41,7 @@ def create_adjacency(edges):
         
     return m,n,product,weights
 
-def sdag(m,adjacency,weights):
-    t    = topological_order(adjacency.copy())
-    D    = [None]*(m+1)
-    D[1] = 0
-    for i  in t:
-        if D[i] == None: continue
-        for j in adjacency[i]:
-            if D[j]==None:
-                D[j] = D[i] +weights[(i,j)]
-            else:
-                trial = D[i] +weights[(i,j)]
-                if trial < D[j]:
-                    D[j] = trial                 
-    return D[1:]
+
 
 if __name__=='__main__':
     start = time.time()
