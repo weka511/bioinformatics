@@ -275,26 +275,26 @@ def BurrowsWheeler(s):
 
 # BA9J Reconstruct a String from its Burrows-Wheeler Transform
 
-def InverseBWT(string):
-    def getN(ch,row,column):
-        n = 0
-        i = 0
-        while i<=row:
-            if ch==column[i]:
-                n+=1
-            i+=1
-        return n
-    
-    def get_char(ch,column,seq):
-        pos   = 0
-        count = 0
-        for i in range(len(column)):
-            if column[i]==ch:
-                pos = i
-                count+=1
-                if count==seq:
-                    return pos,count
+def getN(ch,row,column):
+    n = 0
+    i = 0
+    while i<=row:
+        if ch==column[i]:
+            n+=1
+        i+=1
+    return n
+
+def get_char(ch,column,seq):
+    pos   = 0
+    count = 0
+    for i in range(len(column)):
+        if column[i]==ch:
+            pos = i
+            count+=1
+            if count==seq:
+                return pos,count
             
+def InverseBWT(string):
     lastColumn  = [a for a in string]
     firstColumn = sorted(lastColumn)
     Result      = [firstColumn[0]]
@@ -305,6 +305,15 @@ def InverseBWT(string):
         ch           = firstColumn[row]
         seq          = getN(ch,row,firstColumn)
         Result.append(ch)
-        x=0
+ 
     return ''.join(Result[1:]+Result[0:1])
 
+# BA9K Generate the Last-to-First Mapping of a String
+
+def LastToFirst(Transform,i):
+    last      = Transform
+    first     = sorted(Transform)
+    ch        = last[i-1]
+    n         = getN(ch,i,last)
+    pos,count = get_char(ch,first,n)
+    return pos
