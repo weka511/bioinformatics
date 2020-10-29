@@ -16,10 +16,36 @@
 # DIJ  Dijkstra's Algorithm: compute single-source shortest distances 
 #                            in a directed graph with positive edge weights.
 
+import argparse
+import os
+import time
+from helpers import read_strings
 from graphs import dij
+from helpers import create_list   
 
 if __name__=='__main__':
-  
-    from helpers import create_list    
-
-    print(' '.join([str(i) for i in dij(create_list(ext=1))]))
+    start = time.time()
+    parser = argparse.ArgumentParser('....')
+    parser.add_argument('--sample',   default=False, action='store_true', help='process sample dataset')
+    parser.add_argument('--extra',    default=False, action='store_true', help='process extra dataset')
+    parser.add_argument('--rosalind', default=False, action='store_true', help='process Rosalind dataset')
+    args = parser.parse_args()
+    if args.sample:
+        print (dij([[6 ,10],
+                   [1, 2, 4],
+                   [1, 3, 2],
+                   [2, 3, 3],
+                   [6, 3, 2],
+                   [3, 5, 5],
+                   [5, 4, 1],
+                   [3, 2, 1],
+                   [2, 4, 2],
+                   [2, 5, 3]]))
+    if args.rosalind:
+        print(' '.join([str(i) for i in dij(create_list(ext=1))]))
+        
+    elapsed = time.time()-start
+    minutes = int(elapsed/60)
+    seconds = elapsed-60*minutes
+    print (f'Elapsed Time {minutes} m {seconds:.2f} s')   
+       

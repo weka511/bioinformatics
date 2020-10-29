@@ -29,17 +29,22 @@ from collections import deque
 #         If i is not reachable from 1 set D[i] to x
 
 def bf(edges,s=1):
+    #def nwc_check(u,v,w):
+        #return 1 if dist[u]+w<dist[v] else -1
+    n,m         = edges[0]
+    dist        = [float('inf') for i in range(n+1)]
+    predecessor = [None for i in range(n+1)]
 
-    n,_         = edges[0]
-    dist        = [float('inf') for i in range(1,n+1)]
-    previous    = [None for i in range(1,n+1)]
-
-    dist[s-1]=0
-    for i in range(n-1):
+    dist[s]  = 0 # distance of source from itself is zero
+    for _ in range(n-1):
         for u,v,w in edges[1:]:
-            dist[v-1] = min(dist[v-1],dist[u-1]+w)
-
-    return [d if d<float('inf') else 'x' for d in dist]
+            if dist[u]+w       < dist[v]:
+                dist[v]        = dist[u]+w
+                predecessor[v] = u
+    negs = [1 if dist[u]+w<dist[v] else -1 for u,v,w in edges[1:]]            
+    return (max(negs),dist[1:],predecessor[1:])
+        
+    #return [d if d<float('inf') else 'x' for d in dist]
 
 # bip
 #
@@ -239,6 +244,24 @@ def deg(n,m,A):
 
 # DIJ  Dijkstra's Algorithm: compute single-source shortest distances 
 #                            in a directed graph with positive edge weights.
+#    1. Mark all nodes unvisited. Create a set of all the unvisited nodes called the unvisited set.
+#    2. Assign to every node a tentative distance value: set it to zero for our initial node and to
+#       infinity for all other nodes. Set the initial node as current.
+#    3. For the current node, consider all of its unvisited neighbours and calculate their
+#    tentative distances through the current node. Compare the newly calculated tentative 
+#    distance to the current assigned value and assign the smaller one. For example, if the 
+#    current node A is marked with a distance of 6, and the edge connecting it with a neighbour 
+#    B has length 2, then the distance to B through A will be 6 + 2 = 8. If B was previously
+#    marked with a distance greater than 8 then change it to 8. Otherwise, the current value will be kept.
+#    4. When we are done considering all of the unvisited neighbours of the current node,
+#       mark the current node as visited and remove it from the unvisited set. A visited 
+#       node will never be checked again.
+#    5. If the destination node has been marked visited (when planning a route between 
+#       two specific nodes) or if the smallest tentative distance among the nodes in the
+#       unvisited set is infinity (when planning a complete traversal; occurs when there 
+#       is no connection between the initial node and remaining unvisited nodes), then stop. The algorithm has finished.
+#    6. Otherwise, select the unvisited node that is marked with the smallest tentative distance,
+#       set it as the new "current node", and go back to step 3.
 def dij(g):
     n,_             = g[0]
     open_edges      = [edge for edge in g[1:]]
@@ -247,7 +270,7 @@ def dij(g):
     for i in range(n):
         for a,b,w in open_edges:
             if D[a]>-1:
-                proposed_distance = D[a]+w
+                proposed_distance = D[a] + w
                 if D[b]==-1 or D[b]>proposed_distance:
                     D[b]=proposed_distance
                 
