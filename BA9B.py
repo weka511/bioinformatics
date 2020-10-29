@@ -24,7 +24,7 @@ from snp import Trie
 
 if __name__=='__main__':
     start = time.time()
-    parser = argparse.ArgumentParser('BA9D Find the Longest Repeat in a String')
+    parser = argparse.ArgumentParser('BA9B Implement TrieMatching')
     parser.add_argument('--sample',   default=False, action='store_true', help='process sample dataset')
     parser.add_argument('--extra',    default=False, action='store_true', help='process extra dataset')
     parser.add_argument('--rosalind', default=False, action='store_true', help='process Rosalind dataset')
