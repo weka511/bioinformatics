@@ -106,6 +106,7 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 |BA9E|BA9E.py| [Find the Longest Substring Shared by Two Strings](http://rosalind.info/problems/ba9e/) (WIP)|
 |BA9F|BA9F.py| [Find the Shortest Non-Shared Substring of Two Strings](http://rosalind.info/problems/ba9f/) (WIP)|
 |BA9I|BA9I.py snp.py| [Construct the Burrows-Wheeler Transform of a String](http://rosalind.info/problems/ba9i/) |
+|BA9J|BA9J.py snp.py| [Reconstruct a String from its Burrows-Wheeler Transform](http://rosalind.info/problems/ba9j/) |
 |10|hmm.py|Why have biologists still not developed an HIV vaccine?|
 |BA10A|BA10A.py hmm.py| [Compute the Probability of a Hidden Path](http://rosalind.info/problems/ba10a/) |
 |BA10B|BA10B.py hmm.py| [Compute the Probability of an Outcome Given a Hidden Path](http://rosalind.info/problems/ba10b/) |
@@ -236,3 +237,4 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 |-|README.md|This file|
 |-|rosalind.py|Shared code|
 |-|rosalind.wpr|WingWare Project File |
+|-|template.py|Template for getting started on a problem|
