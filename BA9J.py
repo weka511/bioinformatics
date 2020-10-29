@@ -19,8 +19,41 @@ import argparse
 import os
 import time
 from helpers import read_strings
+from snp import BurrowsWheeler
 
-                  
+def InverseBWT(string):
+    def getN(ch,row,column):
+        n = 0
+        i = 0
+        while i<=row:
+            if ch==column[i]:
+                n+=1
+            i+=1
+        return n
+    
+    def get_char(ch,column,seq):
+        pos   = 0
+        count = 0
+        for i in range(len(column)):
+            if column[i]==ch:
+                pos = i
+                count+=1
+                if count==seq:
+                    return pos,count
+            
+    lastColumn  = [a for a in string]
+    firstColumn = sorted(lastColumn)
+    Result      = [firstColumn[0]]
+    ch          = min(string)
+    seq         = 1
+    while len(Result)<len(string):
+        row,count    = get_char(ch,lastColumn,seq)
+        ch           = firstColumn[row]
+        seq          = getN(ch,row,firstColumn)
+        Result.append(ch)
+        x=0
+    return ''.join(Result[1:-1]+Result[0:1])
+
 if __name__=='__main__':
     start = time.time()
     parser = argparse.ArgumentParser('BA9J Reconstruct a String from its Burrows-Wheeler Transform')
@@ -29,10 +62,12 @@ if __name__=='__main__':
     parser.add_argument('--rosalind', default=False, action='store_true', help='process Rosalind dataset')
     args = parser.parse_args()
     if args.sample:
-        pass
+        #s = BurrowsWheeler('panamabananas$')
+        #print (InverseBWT(s))
+        print (InverseBWT('TTCCTAACG$A'))
     
     if args.extra:
-        Input,Expected  = read_strings('data/....txt',init=0)
+        Input,Expected  = read_strings('data/InverseBWT.txt',init=0)
         trie = Trie(Input)
         Actual = None
         Expected.sort()
