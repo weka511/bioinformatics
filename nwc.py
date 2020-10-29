@@ -22,6 +22,15 @@ from helpers import read_strings
 from graphs import bf
 from helpers import create_list  
 
+def extract_data(Input):
+    Data = []
+    for row in Input:
+        data = [int(i) for i in row.split()]
+        if len(data)==0: continue
+        if len(data)==1: data=data[0]
+        Data.append(data)
+    return Data
+            
 def extract_graphs(data):
     Result = []
     Edges  = []
@@ -41,7 +50,6 @@ if __name__=='__main__':
     start = time.time()
     parser = argparse.ArgumentParser('....')
     parser.add_argument('--sample',   default=False, action='store_true', help='process sample dataset')
-    parser.add_argument('--extra',    default=False, action='store_true', help='process extra dataset')
     parser.add_argument('--rosalind', default=False, action='store_true', help='process Rosalind dataset')
     args = parser.parse_args()
     if args.sample:
@@ -60,25 +68,16 @@ if __name__=='__main__':
                  [3, 2, -30]]
         
         print ([n for n,_,_ in [bf(edges) for edges in extract_graphs(data)]])
-        #print (' '.join(str(x) for x in bf(edges) ))        
-    
-    if args.extra:
-        Input,Expected  = read_strings('data/....txt',init=0)
-        trie = Trie(Input)
-        Actual = None
-        Expected.sort()
-        print (len(Expected),len(Actual))
-        diffs = [(e,a) for e,a in zip(Expected,Actual) if e!=a]
-        print (diffs)
+
+   
   
     if args.rosalind:
-        Input  = read_strings(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt')
- 
-        Result = None
-        print (Result)
+        Input     = read_strings(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt')      
+        Result    = [n for n,_,_ in [bf(edges) for edges in extract_graphs(extract_data(Input))]] 
+        Formatted = ' '.join(str(r) for r in Result)
+        print (Formatted)
         with open(f'{os.path.basename(__file__).split(".")[0]}.txt','w') as f:
-            for line in Result:
-                f.write(f'{line}\n')
+            f.write(f'{Formatted}\n')
                 
     elapsed = time.time()-start
     minutes = int(elapsed/60)

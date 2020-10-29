@@ -28,10 +28,11 @@ from collections import deque
 # Return: An array D[1..n] where D[i] is the length of a shortest path from the vertex 1 to the vertex i (D[1]=0).
 #         If i is not reachable from 1 set D[i] to x
 
-def bf(edges,s=1):
-    #def nwc_check(u,v,w):
-        #return 1 if dist[u]+w<dist[v] else -1
+def bf(edges,s=0):
+
     n,m         = edges[0]
+    for i in range(1,n):
+        edges.append([0,i,0])
     dist        = [float('inf') for i in range(n+1)]
     predecessor = [None for i in range(n+1)]
 
@@ -41,10 +42,9 @@ def bf(edges,s=1):
             if dist[u]+w       < dist[v]:
                 dist[v]        = dist[u]+w
                 predecessor[v] = u
-    negs = [1 if dist[u]+w<dist[v] else -1 for u,v,w in edges[1:]]            
-    return (max(negs),dist[1:],predecessor[1:])
+          
+    return (max(1 if dist[u]+w<dist[v] else -1 for u,v,w in edges[1:]),dist[1:],predecessor[1:])
         
-    #return [d if d<float('inf') else 'x' for d in dist]
 
 # bip
 #
