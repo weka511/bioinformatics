@@ -20,6 +20,7 @@ import os
 import time
 from   helpers import read_strings
 from   align   import topological_order
+from   nwc     import extract_data, extract_graphs
 
 def create_adjacency(edges):
     m,n       = edges[0]
@@ -58,7 +59,6 @@ if __name__=='__main__':
     start = time.time()
     parser = argparse.ArgumentParser('....')
     parser.add_argument('--sample',   default=False, action='store_true', help='process sample dataset')
-    parser.add_argument('--extra',    default=False, action='store_true', help='process extra dataset')
     parser.add_argument('--rosalind', default=False, action='store_true', help='process Rosalind dataset')
     args = parser.parse_args()
     
@@ -79,23 +79,17 @@ if __name__=='__main__':
         Lengths = sdag(m,adjacency,weights)
         print (' '.join(str(l) if l!= None else 'x' for l in Lengths))
         
-    if args.extra:
-        Input,Expected  = read_strings('data/....txt',init=0)
-        trie = Trie(Input)
-        Actual = None
-        Expected.sort()
-        print (len(Expected),len(Actual))
-        diffs = [(e,a) for e,a in zip(Expected,Actual) if e!=a]
-        print (diffs)
   
     if args.rosalind:
         Input  = read_strings(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt')
- 
-        Result = None
+        Data   = extract_data(Input)
+        
+        m,n,adjacency,weights = create_adjacency(Data)
+        Lengths = sdag(m,adjacency,weights)
+        Result = ' '.join(str(l) if l!= None else 'x' for l in Lengths)
         print (Result)
         with open(f'{os.path.basename(__file__).split(".")[0]}.txt','w') as f:
-            for line in Result:
-                f.write(f'{line}\n')
+            f.write(f'{Result}\n')
                 
     elapsed = time.time()-start
     minutes = int(elapsed/60)
