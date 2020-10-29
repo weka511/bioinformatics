@@ -1,4 +1,4 @@
-# Copyright (C) 2019 Greenweaves Software Limited
+# Copyright (C) 2019-2020 Greenweaves Software Limited
 
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -16,19 +16,36 @@
 
 # BA9B Implement TrieMatching
 
-from snp import MatchTries
-from rosalind import trie
+import argparse
+import os
+import time
+from helpers import read_strings
+from snp import Trie
+#from snp import MatchTries
+#from rosalind import trie
 
 if __name__=='__main__':
-    s = 'AATCGGGTTCAATCGGGGT'
-    t = trie(['ATCG','GGGT'],one_based=False)
-    print (MatchTries(s,t))
-    #with open('/Users/Simon/Downloads/rosalind_ba9b.txt') as f:
-        #strings=[]
-
-        #text = f.readline().strip()
-        #for line in f:
-            ##if line.startswith('Output'): break
-            #strings.append(line.strip())
-        #matches = MatchTries(text,trie(strings,one_based=False))
-        #print (' '.join([str(m) for m in matches]))
+    start = time.time()
+    parser = argparse.ArgumentParser('BA9D Find the Longest Repeat in a String')
+    parser.add_argument('--sample',   default=False, action='store_true', help='process sample dataset')
+    parser.add_argument('--extra',    default=False, action='store_true', help='process extra dataset')
+    parser.add_argument('--rosalind', default=False, action='store_true', help='process Rosalind dataset')
+    args = parser.parse_args()
+    if args.sample:    
+        trie = Trie(['ATCG','GGGT'])
+        print (trie.MatchAll('AATCGGGTTCAATCGGGGT'))
+    
+    if args.extra:
+        Input,Expected  = read_strings('data/TrieMatching.txt',init=0)
+        trie            = Trie(Input[1:])
+        Actual          = trie.MatchAll(Input[0])
+        Expected        = [int(e) for e in Expected[0].split()]
+        print (len(Expected),len(Actual))
+        diffs = [(e,a) for e,a in zip(Expected,Actual) if e!=a]
+        print (diffs)
+ 
+    elapsed = time.time()-start
+    minutes = int(elapsed/60)
+    seconds = elapsed-60*minutes
+    print (f'Elapsed Time {minutes} m {seconds:.2f} s') 
+    
