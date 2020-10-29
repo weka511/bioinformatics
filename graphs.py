@@ -27,12 +27,29 @@ from collections import deque
 #
 # Return: An array D[1..n] where D[i] is the length of a shortest path from the vertex 1 to the vertex i (D[1]=0).
 #         If i is not reachable from 1 set D[i] to x
+# 
+# See Ayaan Hossain's comment on the Questions page for nwc
+# For anyone having a problem solving this, observe that in the problem statement,
+# unlike the Bellman-Ford Problem it has not been mentioned that you have to take vertex
+# 1 as the source node. If you do take vertex 1 or any other vertex for that matter,
+# as the source node and if there is no out-going edge from that vertex or
+# if the negative-weight cycle is unreachable from that vertex, then there
+# will be no way to possibly detect the negative-weight cycle.
 
-def bf(edges,s=0):
+# In this case we have to come up with a strategy to ensure that our source node is a 
+# vertex from which there are out-going edges and that the negative-weight cycle is
+# reachable from our source node. The simplest way to do this is to add a dummy "source_node"
+# to our graph and add an edge from this "source_node" to every other vertex in the 
+# graph with cost/weight/length 0. Then if we begin our Bellman-Ford Algorithm on this
+# "source_node", surely enough we will be able to detect any negative-weight cycle in the graph if it is present.
+
+def bf(edges,s=1):
 
     n,m         = edges[0]
-    for i in range(1,n):
-        edges.append([0,i,0])
+    if s==0:
+        for i in range(1,n):
+            edges.append([0,i,0])
+            
     dist        = [float('inf') for i in range(n+1)]
     predecessor = [None for i in range(n+1)]
 
