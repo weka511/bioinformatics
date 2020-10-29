@@ -21,8 +21,6 @@ import os
 import time
 from helpers import read_strings
 from snp import Trie
-#from snp import MatchTries
-#from rosalind import trie
 
 if __name__=='__main__':
     start = time.time()

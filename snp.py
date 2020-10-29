@@ -43,7 +43,9 @@ class Trie:
                 yield self.id, edge.end.id, edge.symbol
                 yield from edge.end.Edges()
                 
-            
+        def isLeaf(self):        
+            return len(self.edges)==0
+        
     class Edge:
         def __init__(self,end=None,symbol=None):
             self.end    = end
@@ -66,7 +68,36 @@ class Trie:
                     currentNode = newNode
 
     def Edges(self):
-        return self.root.Edges()            
+        return self.root.Edges()
+    
+    def MatchAll(self,text,minimum_length=1):
+        return [i for i in range(len(text)) if self.Match(text[i:]) and len(text[i:])>minimum_length]
+    
+    def Match(self,text):
+        def characters():
+            i = 0
+            while i<len(text):
+                yield text[i]
+                i += 1
+                
+        symbols = characters()
+        symbol = next(symbols)
+        v      = self.root
+        path   = []
+        while True:
+            if v.isLeaf():
+                return path
+            elif v.hasEdge(symbol):
+                edge   = v.getEdge(symbol)
+                path.append(edge.symbol)
+                v      = edge.end
+                try:
+                    symbol = next(symbols)
+                except StopIteration:
+                    return path
+            else:
+                return []
+                
             
 # BA9B Implement TrieMatching
 
@@ -219,8 +250,8 @@ def FindLongestRepeat(string1,string2=None):
 #
 # Given a string Text, form all possible cyclic rotations of Text; a cyclic
 # rotation is defined by chopping off a suffix from the end of Text and appending
-# this suffix to the beginning of Text. Next — similarly to suffix arrays — order
-# all the cyclic rotations of Text lexicographically to form a |Text| × |Text| matrix of symbols
+# this suffix to the beginning of Text. Next - similarly to suffix arrays - order
+# all the cyclic rotations of Text lexicographically to form a |Text| x |Text| matrix of symbols
 # that we call the Burrows-Wheeler matrix and denote by M(Text).
 #
 # Note that the first column of M(Text) contains the symbols of Text ordered lexicographically.
