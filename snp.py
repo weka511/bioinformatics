@@ -265,11 +265,46 @@ def BurrowsWheeler(s):
         return s[1:] + s[0:1]
 
     perms = []
-    perm = s
+    perm  = s
     for i in range(len(s)):
         perm = cyclicPermutation(perm)
         perms.append(perm)
     perms.sort()
     bwt = [perm[-1] for perm in perms]
     return ''.join(bwt)
+
+# BA9J Reconstruct a String from its Burrows-Wheeler Transform
+
+def InverseBWT(string):
+    def getN(ch,row,column):
+        n = 0
+        i = 0
+        while i<=row:
+            if ch==column[i]:
+                n+=1
+            i+=1
+        return n
+    
+    def get_char(ch,column,seq):
+        pos   = 0
+        count = 0
+        for i in range(len(column)):
+            if column[i]==ch:
+                pos = i
+                count+=1
+                if count==seq:
+                    return pos,count
+            
+    lastColumn  = [a for a in string]
+    firstColumn = sorted(lastColumn)
+    Result      = [firstColumn[0]]
+    ch          = min(string)
+    seq         = 1
+    while len(Result)<len(string):
+        row,count    = get_char(ch,lastColumn,seq)
+        ch           = firstColumn[row]
+        seq          = getN(ch,row,firstColumn)
+        Result.append(ch)
+        x=0
+    return ''.join(Result[1:]+Result[0:1])
 
