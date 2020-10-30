@@ -388,6 +388,8 @@ def create_adj(edges,reverse=False):
     for (a,b) in edges[1:]:
         if reverse:
             (a,b)=(b,a)
+        if not a in adj:
+            adj[a] = []
         adj[a].append(b)
     return adj
 
@@ -398,7 +400,10 @@ def create_adj(edges,reverse=False):
 #
 # Input: A simple directed graph with fewer than 1000 vertices in the edge list format.
 #
-# Return: The number of strongly connected components in the graph.
+# Return: A tuple ( ccs,adj,adj_R), where
+#         nscc The number of strongly connected components in the graph.
+#         adj
+#         adj_r
 
 def scc(edges):
 
@@ -426,25 +431,25 @@ def scc(edges):
     
     # Find sink nodes by looking for source nodes of the reversed graph
     
-    clock   = counter()
-    pre     = [-1 for v in range(n+1)]   # Zero element won't be used, but it does simplify indexing
-    post    = [-1 for v in range(n+1)]   # Zero element won't be used, but it does simplify indexing 
+    clock      = counter()
+    pre        = [-1 for v in range(n+1)]   # Zero element won't be used, but it does simplify indexing
+    post       = [-1 for v in range(n+1)]   # Zero element won't be used, but it does simplify indexing 
     adj_R      = create_adj(edges,reverse=True)
     dfs(adj_R,n,
-      sequence = range(1,n+1),
-      previsit = incr_pre,
+      sequence  = range(1,n+1),
+      previsit  = incr_pre,
       postvisit = incr_post)
 
     # construct components
     
     cc       = counter()
     ccnum    = [-1 for v in range(n+1)]   # Zero element won't be used, but it does simplify indexing
-    adj         = create_adj(edges)
+    adj      = create_adj(edges)
     dfs(adj,n,
       sequence    = decreasing(post[1:]),
       preexplore  = incr_ccnum)
 
-    return [cc+1 for cc in ccnum if cc>-1],adj,adj_R 
+    return len([cc+1 for cc in ccnum if cc>-1]),adj,adj_R 
 
 #    sc
 #
