@@ -608,11 +608,11 @@ def parse_graphs(f):
 #
 # Returns: A list of strings, one for each row
 
-def create_strings(problem=os.path.basename(sys.argv[0]).split('.')[0],
-                   path=os.path.join(os.path.expanduser('~'),'Downloads'),
-                   ext=None,
-                   fasta=False,
-                   name=None): 
+def create_strings(problem = os.path.basename(sys.argv[0]).split('.')[0],
+                   path    = os.path.join(os.path.expanduser('~'),'Downloads'),
+                   ext     = None,
+                   fasta   = False,
+                   name    = None): 
     product      = []
     label        = problem if ext==None else '{0}({1})'.format(problem,ext)
     base         = 'rosalind_{0}.txt'.format(label) if name==None else name+'.txt'
@@ -638,11 +638,11 @@ def create_strings(problem=os.path.basename(sys.argv[0]).split('.')[0],
 #
 # Returns: A list of lists, one for each row
 
-def create_list(problem=os.path.basename(sys.argv[0]).split('.')[0],
-                   path=os.path.join(os.path.expanduser('~'),'Downloads'),
-                   ext=None,
-                   fasta=False,
-                   name=None):
+def create_list(problem  = os.path.basename(sys.argv[0]).split('.')[0],
+                path     = os.path.join(os.path.expanduser('~'),'Downloads'),
+                ext      = None,
+                fasta    = False,
+                name     = None):
     g = []
     for row in create_strings(problem=problem,path=path,ext=ext,fasta=fasta,name=name):
         if len(row)>0:
