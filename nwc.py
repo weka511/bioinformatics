@@ -14,6 +14,10 @@
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 #    NWC Negative Weight Cycle
+#
+#   Check whether a given graph contains a cycle of negative weight.
+#   Given: A positive integer k, and k simple directed graphs with integer edge weights from -1000 to 1000
+#   Return: For each graph, output 1 if it contains a negative weight cycle and -1 otherwise.
 
 import argparse
 import os
@@ -23,14 +27,10 @@ from graphs import bf
 from helpers import create_list  
 
 def extract_data(Input):
-    Data = []
-    for row in Input:
-        data = [int(i) for i in row.split()]
-        if len(data)==0: continue
-        if len(data)==1: data=data[0]
-        Data.append(data)
-    return Data
-            
+    RowsAsInts = [[int(i) for i in row.split()] for row in Input]
+    return [data if len(data)>1 else data[0] for data in RowsAsInts if len(data)>0]
+
+          
 def extract_graphs(data):
     Result = []
     Edges  = []
@@ -69,11 +69,9 @@ if __name__=='__main__':
         
         print ([n for n,_,_ in [bf(edges) for edges in extract_graphs(data)]])
 
-   
-  
     if args.rosalind:
         Input     = read_strings(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt')      
-        Result    = [n for n,_,_ in [bf(edges) for edges in extract_graphs(extract_data(Input))]] 
+        Result    = [n for n,_,_ in [bf(edges,s=0) for edges in extract_graphs(extract_data(Input))]] 
         Formatted = ' '.join(str(r) for r in Result)
         print (Formatted)
         with open(f'{os.path.basename(__file__).split(".")[0]}.txt','w') as f:

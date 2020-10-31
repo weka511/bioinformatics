@@ -27,11 +27,23 @@ from collections import deque
 #
 # Return: neg    -1 if there is a negative cycle, else +1
 #         dists   distances from origin to each node
-#         pre     predecsrror of each node
+#         pre     predecessor of each node
 
 def bf(edges,
-       s=1):    # source
-
+       s=1):    # Set to zero for nwc - see Ayaan Hossain's comment http://rosalind.info/problems/nwc/questions/
+                # For anyone having a problem solving this, observe that in the problem statement,
+                #unlike the Bellman-Ford Problem it has not been mentioned that you have to take 
+                #  vertex 1 as the source node. If you do take vertex 1 or any other vertex for that matter,
+                # as the source node and if there is no out-going edge from that vertex or 
+                # if the negative-weight cycle is unreachable from that vertex, then there 
+                # will be no way to possibly detect the negative-weight cycle.
+                # In this case we have to come up with a strategy to ensure that our source node
+                # is a vertex from which there are out-going edges and that the negative-weight
+                # cycle is reachable from our source node. The simplest way to do this is to add
+                # a dummy "source_node" to our graph and add an edge from this "source_node"
+                # to every other vertex in the graph with cost/weight/length 0. 
+                # Then if we begin our Bellman-Ford Algorithm on this "source_node", surely enough
+                # we will be able to detect any negative-weight cycle in the graph if it is present.
     n,_         = edges[0]
  
     if s==0:
