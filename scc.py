@@ -18,9 +18,8 @@
 import argparse
 import os
 import time
-from   helpers import read_strings
+from   helpers import read_strings, create_list
 from   graphs  import scc 
-from   helpers import create_list
 
 
 if __name__=='__main__':

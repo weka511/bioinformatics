@@ -22,9 +22,8 @@
 import argparse
 import os
 import time
-from helpers import read_strings
-from graphs import bf
-from helpers import create_list  
+from helpers import read_strings,create_list 
+from graphs import bf  
 
 def extract_data(Input):
     RowsAsInts = [[int(i) for i in row.split()] for row in Input]
