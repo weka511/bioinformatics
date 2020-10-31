@@ -401,9 +401,9 @@ def create_adj(edges,reverse=False):
 # Input: A simple directed graph with fewer than 1000 vertices in the edge list format.
 #
 # Return: A tuple ( ccs,adj,adj_R), where
-#         nscc The number of strongly connected components in the graph.
-#         adj
-#         adj_r
+#         nscc  The number of strongly connected components in the graph.
+#         adj   Adjacency list from forward links
+#         adj_r Adjacency list from reverse links
 
 def scc(edges):
 
