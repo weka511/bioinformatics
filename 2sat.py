@@ -18,9 +18,17 @@
 import argparse
 import os
 import time
-from helpers import read_strings
-from graphs import scc 
+from helpers import read_strings,create_list,parse_graphs
+from graphs import scc,create_adj 
+import tarjan
 
+def to_int(s):
+    parts=s.split()
+    if len(parts)==1:
+        return int(s)
+    else:
+        return [int(p) for p in parts]
+    
 def two_sat(problem):
     def represent(i):
         return 2*i if i>0 else 2*(-i)+1
@@ -40,21 +48,15 @@ def two_sat(problem):
     
     n,m,clauses = problem
     edges       = [(represent(-a),represent(b)) for a,b in clauses] + [(represent(-b),represent(a)) for a,b in clauses]
-    ns,adj,adj_R = scc([[2*n+1,len(edges)]] + edges)
-    #print ([tneserper(i) for i in ns])
-    adjc = convert(adj)
-    #print (adjc)
-    best = []
-    for index in ns:
-        component = collect(index,adjc,path=[])
-        #print (component)
+    scc         = tarjan.tarjan(create_adj([[2*n+1,len(edges)]] + edges)) 
+    scc_conv    = [[tneserper(node) for node in component] for component in scc]
+    for component in scc_conv:
         for i in range(len(component)):
             for j in range(i+1,len(component)):
                 if component[i]==-component[j]:
-                    return 0,[]
-        if len(component)>len(best):
-            best = [c for c in component]
-    return 1,sorted(best,key= lambda x:abs(x))
+                    return 0,[]        
+    scc_new = sorted(scc_conv,reverse=True,key=lambda x:len(x))
+    return 1,scc_new[0]
 
 def create_sets(data):
     product = []
@@ -76,6 +78,7 @@ if __name__=='__main__':
     parser.add_argument('--rosalind', default=False, action='store_true', help='process Rosalind dataset')
     args = parser.parse_args()
     if args.sample:
+
         data = [2,
                 [2, 4],
                 [1 ,2],
@@ -93,15 +96,34 @@ if __name__=='__main__':
             status,Solution = two_sat(problem )
             print (Format(status,Solution))
 
-  
-    if args.rosalind:
-        Input  = read_strings(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt')
  
-        Result = None
-        print (Result)
+      
+    if args.rosalind:
         with open(f'{os.path.basename(__file__).split(".")[0]}.txt','w') as f:
-            for line in Result:
-                f.write(f'{line}\n')
+            Input  = read_strings(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt')
+            Data = [to_int(s) for s in Input if len(s)>0]
+            Sets = create_sets(Data)
+            for problem in Sets:
+                status,Solution = two_sat(problem )
+                print (Format(status,Solution))
+                f.write (f'{Format(status,Solution)}\n')                
+            #print (Sets[0])
+            #print (Data)
+        #with open(f'{os.path.basename(__file__).split(".")[0]}.txt','w') as f:
+            #with open(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt') as g:
+                #for problem in parse_graphs(g):
+                    #print (problem)
+                    #status,Solution = two_sat(problem )
+                    #print (status,Solution)
+                    #f.write (Format(status,Solution))
+            #print (format_list([bip(g) for g in parse_graphs(f)]))
+             
+        #Input  = read_strings(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt')
+        
+        #with open(f'{os.path.basename(__file__).split(".")[0]}.txt','w') as f:
+            #for line in Input:
+                #print (line)
+                #f.write(f'{line}\n')
                 
     elapsed = time.time()-start
     minutes = int(elapsed/60)
