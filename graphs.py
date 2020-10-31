@@ -1,4 +1,4 @@
-#    Copyright (C) 2019 Greenweaves Software Limited
+#    Copyright (C) 2019-2020 Greenweaves Software Limited
 #
 #    This is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -11,7 +11,7 @@
 #    GNU General Public License for more details.
 #
 #    You should have received a copy of the GNU General Public License
-#    along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>
 #
 #    Function to solve graphs problems from http://rosalind.info/problems/topics/graphs/
 
@@ -25,27 +25,15 @@ from collections import deque
 #
 # Given: A simple directed graph with integer edge weights and fewer than 1,000 vertices in the edge list format.
 #
-# Return: An array D[1..n] where D[i] is the length of a shortest path from the vertex 1 to the vertex i (D[1]=0).
-#         If i is not reachable from 1 set D[i] to x
-# 
-# See Ayaan Hossain's comment on the Questions page for nwc
-# For anyone having a problem solving this, observe that in the problem statement,
-# unlike the Bellman-Ford Problem it has not been mentioned that you have to take vertex
-# 1 as the source node. If you do take vertex 1 or any other vertex for that matter,
-# as the source node and if there is no out-going edge from that vertex or
-# if the negative-weight cycle is unreachable from that vertex, then there
-# will be no way to possibly detect the negative-weight cycle.
+# Return: neg    -1 if there is a negative cycle, else +1
+#         dists   distances from origin to each node
+#         pre     predecsrror of each node
 
-# In this case we have to come up with a strategy to ensure that our source node is a 
-# vertex from which there are out-going edges and that the negative-weight cycle is
-# reachable from our source node. The simplest way to do this is to add a dummy "source_node"
-# to our graph and add an edge from this "source_node" to every other vertex in the 
-# graph with cost/weight/length 0. Then if we begin our Bellman-Ford Algorithm on this
-# "source_node", surely enough we will be able to detect any negative-weight cycle in the graph if it is present.
+def bf(edges,
+       s=1):    # source
 
-def bf(edges,s=1):
-
-    n,m         = edges[0]
+    n,_         = edges[0]
+ 
     if s==0:
         for i in range(1,n):
             edges.append([0,i,0])
@@ -54,13 +42,26 @@ def bf(edges,s=1):
     predecessor = [None for i in range(n+1)]
 
     dist[s]  = 0 # distance of source from itself is zero
-    for _ in range(n-1):
+    
+    # See https://stackoverflow.com/questions/28857918/bellman-ford-algorithm-explanation
+    # Bellman--Ford has two relevant invariants that hold for all vertices u.
+    # There exists a path from the source to u of length dist[u] (unless dist[u] is INT_MAX).
+    # After i iterations of the outer loop, for all paths from the source to u with
+    # i or fewer edges, the length of that path is no less than dist[u].
+    #
+    # After V-1 iterations, the second invariant implies that no simple path
+    # from the source to u is shorter than dist[u]. The first hence implies
+    # that the path that we found is shortest.
+
+    for _ in range(n):
         for u,v,w in edges[1:]:
-            if dist[u]+w       < dist[v]:
-                dist[v]        = dist[u]+w
+            if dist[u] + w     < dist[v]:
+                dist[v]        = dist[u] + w
                 predecessor[v] = u
           
-    return (max(1 if dist[u]+w<dist[v] else -1 for u,v,w in edges[1:]),dist[1:],predecessor[1:])
+    return (max(1 if dist[u]+w<dist[v] else -1 for u,v,w in edges[1:]),
+            dist[1:],
+            predecessor[1:])
         
 
 # bip
