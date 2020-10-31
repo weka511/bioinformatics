@@ -18,9 +18,10 @@
 import argparse
 import os
 import time
-from helpers import read_strings
-from graphs import scc 
-from helpers import create_list
+from   helpers import read_strings
+from   graphs  import scc 
+from   helpers import create_list
+
 
 if __name__=='__main__':
     start = time.time()
@@ -30,14 +31,14 @@ if __name__=='__main__':
     args = parser.parse_args()
     if args.sample:
         nscc,adj,adj_R = scc([(6, 7),
-                             (4, 1),
-                             (1, 2),
-                             (2, 4),
-                             (5, 6),
-                             (3, 2),
-                             (5, 3),
-                             (3, 5)
-                             ])
+                              (4, 1),
+                              (1, 2),
+                              (2, 4),
+                              (5, 6),
+                              (3, 2),
+                              (5, 3),
+                              (3, 5)
+                              ])
         print (nscc,adj,adj_R)
         
    
