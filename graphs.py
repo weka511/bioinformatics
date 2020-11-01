@@ -15,10 +15,10 @@
 #
 #    Function to solve graphs problems from http://rosalind.info/problems/topics/graphs/
 
-from helpers import create_adjacency
-from align import topological_order
+from helpers     import create_adjacency
+from align       import topological_order
 from collections import deque
-
+from math        import isinf
 # bf
 #
 # Bellman-Ford Algorithm
@@ -293,18 +293,17 @@ def deg(n,m,A):
 #    6. Otherwise, select the unvisited node that is marked with the smallest tentative distance,
 #       set it as the new "current node", and go back to step 3.
 def dij(g):
-    n,_             = g[0]
-    open_edges      = [edge for edge in g[1:]]
-    D               = [-1 for i in range(n+1)]
+    n,_             = g[0]                     # Number of nodes
+    open_edges      = [edge for edge in g[1:]] # Edges that haven't been used
+    D               = [float('inf')]*(n+1)     # Distance from 1 to each node
     D[1]            = 0
-    for i in range(n):
+    
+    for _ in range(n):
         for a,b,w in open_edges:
-            if D[a]>-1:
-                proposed_distance = D[a] + w
-                if D[b]==-1 or D[b]>proposed_distance:
-                    D[b]=proposed_distance
+            if not isinf(D[a]): 
+                D[b] = min(D[b],D[a] + w)
                 
-    return D[1:]
+    return [d if not isinf(d) else -1 for d in D[1:]]
 
 # hdag
 #
@@ -330,19 +329,21 @@ def hdag(graph):
 # sq
 #
 # Square in a Graph
+#
+# Given: A positive integer k<=20 and k simple undirected graphs with n<=400 vertices in the edge list format.
+#
+# Return: For each graph, output 1 if it contains a simple cycle (that is, a cycle which doesn’t intersect
+# itself) of length 4 and -1 otherwise.
 
 def sq(g):
     def explore(node,path=[]):
         if len(path)>4: return -1
  
         for next_node in adj[node]:
-            if next_node==path[0] and len(path)==4:
-                #print (path+[next_node])
-                return 1
+            if next_node==path[0] and len(path)==4:  return 1
             if next_node in path: continue
             if explore(next_node,path+[next_node])==1: return 1
         return -1
-    
         
     adj = {}
     for a,b in g[1:]:

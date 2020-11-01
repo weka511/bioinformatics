@@ -19,9 +19,9 @@
 import argparse
 import os
 import time
-from helpers import read_strings
-from graphs import dij
-from helpers import create_list   
+from   helpers import read_strings
+from   graphs import dij
+from   helpers import create_list   
 
 if __name__=='__main__':
     start = time.time()
@@ -41,8 +41,12 @@ if __name__=='__main__':
                    [3, 2, 1],
                    [2, 4, 2],
                    [2, 5, 3]]))
+        
     if args.rosalind:
-        print(' '.join([str(i) for i in dij(create_list(ext=1))]))
+        with open(f'{os.path.basename(__file__).split(".")[0]}.txt','w') as f:
+            Solution = ' '.join([str(i) for i in dij(create_list(path='./data'))])
+            print (Solution)
+            f.writelines(f'{Solution}\n')
         
     elapsed = time.time()-start
     minutes = int(elapsed/60)
