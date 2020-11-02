@@ -117,6 +117,7 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 |BA11B|BA11B.py spectrum.py| [Implement DecodingIdealSpectrum](http://rosalind.info/problems/ba11b/) |
 |BA11C|BA11C.py spectrum.py| [Convert a Peptide into a Peptide Vector ](http://rosalind.info/problems/ba11c/) |
 |BA11D|BA11D.py spectrum.py| [Convert a Peptide Vector into a Peptide ](http://rosalind.info/problems/ba11d/) |
+|fibo|fibo.py|[Fibonacci numbers](http://rosalind.info/problems/fibo/) |
 |-|align.py|[Alignment](http://rosalind.info/problems/topics/alignment/)|
 |edit|edit.py|[Edit Distance](http://rosalind.info/problems/edit/) |
 |edta|edta.py|[Edit Distance Alignment](http://rosalind.info/problems/edta/)|

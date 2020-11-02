@@ -18,40 +18,26 @@
 import argparse
 import os
 import time
-from helpers import read_strings
+
 
 def fibo(N):
-    F     = []     
+    F     = [0,1]
+    while len(F)<N+1:
+        F.append(F[-1] + F[-2])
+    return F[-1]
+
 if __name__=='__main__':
     F     = []
     start = time.time()
     parser = argparse.ArgumentParser('FIBO Fibonacci Numbers')
     parser.add_argument('--sample',   default=False, action='store_true', help='process sample dataset')
-    parser.add_argument('--extra',    default=False, action='store_true', help='process extra dataset')
     parser.add_argument('--rosalind', default=False, action='store_true', help='process Rosalind dataset')
     args = parser.parse_args()
     if args.sample:
-        F[0] = 0
-        F[1] = 1
+        print (fibo(6))
         
-    
-    if args.extra:
-        Input,Expected  = read_strings('data/....txt',init=0)
-        trie = Trie(Input)
-        Actual = None
-        Expected.sort()
-        print (len(Expected),len(Actual))
-        diffs = [(e,a) for e,a in zip(Expected,Actual) if e!=a]
-        print (diffs)
-  
     if args.rosalind:
-        Input  = read_strings(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt')
- 
-        Result = None
-        print (Result)
-        with open(f'{os.path.basename(__file__).split(".")[0]}.txt','w') as f:
-            for line in Result:
-                f.write(f'{line}\n')
+        print (fibo(20))
                 
     elapsed = time.time()-start
     minutes = int(elapsed/60)
