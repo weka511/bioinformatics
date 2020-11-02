@@ -24,7 +24,7 @@ from   graphs  import scc
 
 if __name__=='__main__':
     start = time.time()
-    parser = argparse.ArgumentParser('....')
+    parser = argparse.ArgumentParser('SCC Strongly Connected Component')
     parser.add_argument('--sample',   default=False, action='store_true', help='process sample dataset')
     parser.add_argument('--rosalind', default=False, action='store_true', help='process Rosalind dataset')
     args = parser.parse_args()

@@ -24,7 +24,7 @@ from snp import LastToFirst
 
 if __name__=='__main__':
     start = time.time()
-    parser = argparse.ArgumentParser('....')
+    parser = argparse.ArgumentParser('BA9K Generate the Last-to-First Mapping of a String')
     parser.add_argument('--sample',   default=False, action='store_true', help='process sample dataset')
     parser.add_argument('--extra',    default=False, action='store_true', help='process extra dataset')
     parser.add_argument('--rosalind', default=False, action='store_true', help='process Rosalind dataset')
