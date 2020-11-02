@@ -1,4 +1,4 @@
-#    Copyright (C) 2019 Greenweaves Software Limited
+#    Copyright (C) 2019-2020 Greenweaves Software Limited
 #
 #    This is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -15,12 +15,19 @@
 #
 #    cat 	Catalan Numbers and RNA Secondary Structures (WIP)
 
+import argparse
+import os
+import time
+from helpers import read_strings
+
 from rosalind import RosalindException,verify_counts_complete_graph
 from Bio import SeqIO
 import os.path
 
-# 1 2 5 14
-
+# catalan
+#
+# Calculate Catalan numbers
+#
 # Verified against list from http://mathforum.org/advanced/robertd/catalan.html
 #
 # 1 1
@@ -38,11 +45,16 @@ import os.path
 # 13 742900
 # 14 2674440
 # 15 9694845
+#
+# Verified against Online Encyclopedia of Integer Sequences (https://oeis.org/A000108) for case:
+# 30 3814986502092304
 
-def catalan(n):
+def catalan(n,trace=False):
     c=[1]
     for n0 in range(1,n+1):
         c.append(sum([c[k]*c[n0-1-k] for k in range(n0)]))
+        if trace:
+            print (n0,c[-1])
     return c[n]
 
 def motzkin(n):
@@ -84,9 +96,34 @@ def read_fasta(file,path=r'C:\Users\Simon\Downloads'):
             return record.seq
         
 if __name__=='__main__':
-    print (cat('AUAU')%1000000)
-   
-    print (cat('CGGCUGCUACGCGUAAGCCGGCUGCUACGCGUAAGC')) # should be 736
     
-    print(cat(read_fasta('data.fna')))
+    start = time.time()
+    parser = argparse.ArgumentParser('....')
+    parser.add_argument('--sample',   default=False, action='store_true', help='process sample dataset')
+    parser.add_argument('--rosalind', default=False, action='store_true', help='process Rosalind dataset')
+    args = parser.parse_args()
+    if args.sample:
+        print (catalan(30))
+        print (cat('AUAU')%1000000)
+    
+  
+    if args.rosalind:
+        Input  = read_strings(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt')
+ 
+        Result = None
+        print (Result)
+        with open(f'{os.path.basename(__file__).split(".")[0]}.txt','w') as f:
+            for line in Result:
+                f.write(f'{line}\n')
+                
+    elapsed = time.time()-start
+    minutes = int(elapsed/60)
+    seconds = elapsed-60*minutes
+    print (f'Elapsed Time {minutes} m {seconds:.2f} s')
+    
+    
+   
+    #print (cat('CGGCUGCUACGCGUAAGCCGGCUGCUACGCGUAAGC')) # should be 736
+    
+    #print(cat(read_fasta('data.fna')))
 
