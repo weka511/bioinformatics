@@ -30,34 +30,32 @@ def to_int(s):
         return [int(p) for p in parts]
     
 def two_sat(problem):
-    def represent(i):
-        return 2*i if i>0 else 2*(-i)+1
-    def tneserper(i):
-        return i//2 if i%2==0 else -((i-1)//2)
-    def convert(adj,op=tneserper):
-        result={}
-        for head,tail in adj.items():
-            result[op(head)] = [op(i) for i in tail]
-        return result
-    def collect(index,adj,path=[]):
-        if index in path: return path
-        path.append(index)
-        for i in adj[index]:
-            path = collect(i,adj,path)
-        return path
+    #def collect(index,adj,path=[]):
+        #if index in path: return path
+        #path.append(index)
+        #for i in adj[index]:
+            #path = collect(i,adj,path)
+        #return path
     
     n,m,clauses = problem
-    edges       = [(represent(-a),represent(b)) for a,b in clauses] + [(represent(-b),represent(a)) for a,b in clauses]
-    scc         = tarjan.tarjan(create_adj([[2*n+1,len(edges)]] + edges)) 
-    scc_conv    = [[tneserper(node) for node in component] for component in scc]
-    for component in scc_conv:
+    edges       = [(-a,b) for a,b in clauses] + [(-b,a) for a,b in clauses]
+    scc         = tarjan.tarjan(create_adj([[n,len(edges)]] + edges)) 
+    for component in scc:
         for i in range(len(component)):
             for j in range(i+1,len(component)):
                 if component[i]==-component[j]:
-                    return 0,[]        
-    scc_new = sorted(scc_conv,reverse=True,key=lambda x:len(x))
-    return 1,scc_new[0]
+                    return 0,[] 
+    
+    return 1,create_assignment(scc)
 
+def create_assignment(consensation):
+    assignment = []
+    for component in consensation:
+        for v in component:
+            if not v in assignment and not -v in assignment:
+                assignment.append(v)
+    return sorted(assignment,key=lambda x: abs(x))
+    
 def create_sets(data):
     product = []
     i    = 1
@@ -101,29 +99,14 @@ if __name__=='__main__':
     if args.rosalind:
         with open(f'{os.path.basename(__file__).split(".")[0]}.txt','w') as f:
             Input  = read_strings(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt')
-            Data = [to_int(s) for s in Input if len(s)>0]
-            Sets = create_sets(Data)
+            Data   = [to_int(s) for s in Input if len(s)>0]
+            Sets   = create_sets(Data)
             for problem in Sets:
+                #print (problem[0], problem[-1][0], problem[-1][-1])
                 status,Solution = two_sat(problem )
                 print (Format(status,Solution))
                 f.write (f'{Format(status,Solution)}\n')                
-            #print (Sets[0])
-            #print (Data)
-        #with open(f'{os.path.basename(__file__).split(".")[0]}.txt','w') as f:
-            #with open(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt') as g:
-                #for problem in parse_graphs(g):
-                    #print (problem)
-                    #status,Solution = two_sat(problem )
-                    #print (status,Solution)
-                    #f.write (Format(status,Solution))
-            #print (format_list([bip(g) for g in parse_graphs(f)]))
-             
-        #Input  = read_strings(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt')
-        
-        #with open(f'{os.path.basename(__file__).split(".")[0]}.txt','w') as f:
-            #for line in Input:
-                #print (line)
-                #f.write(f'{line}\n')
+ 
                 
     elapsed = time.time()-start
     minutes = int(elapsed/60)
