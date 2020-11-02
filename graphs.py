@@ -15,10 +15,12 @@
 #
 #    Function to solve graphs problems from http://rosalind.info/problems/topics/graphs/
 
-from helpers     import create_adjacency
-from align       import topological_order
-from collections import deque
-from math        import isinf
+from   helpers     import create_adjacency
+from   align       import topological_order
+from   collections import deque
+from   math        import isinf
+import tarjan
+
 # bf
 #
 # Bellman-Ford Algorithm
@@ -533,3 +535,34 @@ def sdag(m,adjacency,weights):
                 if trial < D[j]:
                     D[j] = trial                 
     return D[1:]
+
+# two_sat
+#
+# 2SAT 2-Satisfiability
+#
+# Given: A positive integer k<=20 and k 2SAT formulas represented as follows.
+# The first line gives the number of variables n and the number of clauses m, 
+# each of the following m lines gives a clause of length 2 by specifying two different literals.
+# Return: For each formula, output 0 if it cannot be satisfied or 1 followed by a satisfying assignment otherwise.
+#
+# See description in Wikipedia -- https://en.wikipedia.org/wiki/2-satisfiability#Strongly_connected_components
+
+def two_sat(problem):
+    def create_assignment(condensation):
+        assignment = []
+        for component in condensation:
+            for v in component:
+                if not v in assignment and not -v in assignment:
+                    assignment.append(v)
+        return sorted(assignment,key=lambda x: abs(x))
+
+    n,m,clauses = problem
+    edges       = [(-a,b) for a,b in clauses] + [(-b,a) for a,b in clauses]
+    scc         = tarjan.tarjan(create_adj([[n,len(edges)]] + edges)) 
+    for component in scc:
+        for i in range(len(component)):
+            for j in range(i+1,len(component)):
+                if component[i]==-component[j]:
+                    return 0,[] 
+    
+    return 1,create_assignment(scc)
