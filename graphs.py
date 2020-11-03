@@ -276,6 +276,8 @@ def deg(n,m,A):
 
 # DIJ  Dijkstra's Algorithm: compute single-source shortest distances 
 #                            in a directed graph with positive edge weights.
+#
+#    I have followed the version described in Wikipedia -- https://en.wikipedia.org/wiki/Dijkstra's_algorithm
 #    1. Mark all nodes unvisited. Create a set of all the unvisited nodes called the unvisited set.
 #    2. Assign to every node a tentative distance value: set it to zero for our initial node and to
 #       infinity for all other nodes. Set the initial node as current.
