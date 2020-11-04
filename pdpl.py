@@ -21,33 +21,45 @@ import os
 import random
 import time
 from   helpers import read_strings
-
-# get_n
-#
-# Solve simple quadratic Dipphantine equation: n*(n-1) ==2*m
-def get_n(m):
-    for i in range(-1,2):
-        n = int(math.sqrt(2*m) + 0.5) + i
-        if n*(n-1)==2*m:
-            return n
-
-def get_diffs(X):
-    return sorted([b-a for a in X for b in X if b>a])
-
-def compare(list1,list2):
-    return sum([i1!=i2 for i1,i2 in zip(list1,list2)])
-
+        
 def pdpl(L):
-    def select():
-        while (True):
-            selectors = random.sample(list(range(m)),n-2) + [m-1]
-            yield sorted([0] + [L[k] for k in selectors])
+    def get_n(m):  # Solve simple quadratic Diophantine equation: n*(n-1) ==2*m
+        return (1+math.isqrt(8*m+1))//2
+    
+    def compare(list1,list2):
+        return sum([i1!=i2 for i1,i2 in zip(list1,list2)])
+    
+    def get_signature(L):
+        signature = {}
+        for i in L:
+            if i in signature:
+                signature[i]+=1
+            else:
+                signature[i]=1
+        return signature  
+    
+    def get_diffs(X):
+        return sorted([b-a for a in X for b in X if b>a])  
+    
+    def isCompatible(X):
+        sx = get_signature(get_diffs(X))
+        for x,count in sx.items():
+            if x not in signature or count>signature[x]:
+                return False
+        return True
+    
     m = len(L)
     n = get_n(len(L))
-    assert 2 * len(L) == n*(n-1)
-    for X in select():
-        if compare(L,get_diffs(X))==0:
-            return X
+    assert n*(n-1)==2*m
+    signature = get_signature(L)
+    X = [0,L[-1]]
+    for i in L:
+        if isCompatible(X+[i]):             
+            X.append(i)
+    print (m,n,len(X))
+    LL = get_diffs(X)
+    print (compare(L,LL))
+    return sorted(X)
 
 if __name__=='__main__':
     start = time.time()
@@ -61,11 +73,11 @@ if __name__=='__main__':
     if args.rosalind:
         Input     = read_strings(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt')
         converted = [int(i) for i in Input[0].split()]
-        Result    = pdpl(converted)
-        Formatted = ' '.join(int(r) for r in Result)
-        print (Result)
+        Result    = pdpl(sorted(converted))
+        Formatted = ' '.join(str(r) for r in Result)
+        print (Formatted)
         with open(f'{os.path.basename(__file__).split(".")[0]}.txt','w') as f:
-                f.write(f'{Result}\n')
+                f.write(f'{Formatted}\n')
                 
     elapsed = time.time()-start
     minutes = int(elapsed/60)
