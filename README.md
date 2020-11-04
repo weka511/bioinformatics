@@ -236,6 +236,8 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 |sgra|sgra.py+spectrum.py|[Using the Spectrum Graph to Infer Peptides](http://rosalind.info/problems/sgra/)|
 |-|-|[Set Theory](http://rosalind.info/problems/topics/set-theory/)|
 |pdpl|pdpl|[Creating a Restriction Map](http://rosalind.info/problems/pfpl/)|
+|seto|-|[Set operations](http://rosalind.info/problems/seto/) Solved using Python shell|
+|sset|-|[Counting Subsets](http://rosalind.info/problems/sset/) Solved with a single line in Python shell: 2**n%1000000|
 |-|-|Support| 
 |-|helpers.py|Utilities for formatting output, parsing input, etc |
 |-|LICENSE|License Agreement|
