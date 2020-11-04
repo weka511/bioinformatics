@@ -16,18 +16,32 @@
 #  PDPL Creating a Restriction Map
 
 import argparse
-import math
 import os
-import random
 import time
 from   helpers import read_strings
-        
+
+# pdpl
+#
+# Given: A multiset L containing n*(n-1)/s positive integers for some positive integer n
+# Return: A set X containing n nonnegative integers such that L is set of positive differences.
+#
+# Idea: set X isn't unique, as we can add a constant offset to all elements. So we can always take
+#       X to contain zero, and also max(L). If 0 is X, X must also contain many of the same elements
+#       as L. We therefore try adding them one by one, then check to see whether this allows us to
+#       generate an invalid value.
+
 def pdpl(L):
-    def get_n(m):  # Solve simple quadratic Diophantine equation: n*(n-1) ==2*m
-        return (1+math.isqrt(8*m+1))//2
+    
+    # compare
+    #
+    # Used to check solution-returns zero if the two lists are identical
     
     def compare(list1,list2):
         return sum([i1!=i2 for i1,i2 in zip(list1,list2)])
+    
+    # get_signature
+    #
+    # Takes a "census" of a string: all elemnts plus their counts
     
     def get_signature(L):
         signature = {}
@@ -38,27 +52,28 @@ def pdpl(L):
                 signature[i]=1
         return signature  
     
+    # get_diffs
+    #
+    # Calculate difference multiset
+    
     def get_diffs(X):
         return sorted([b-a for a in X for b in X if b>a])  
     
+    # isCompatible
+    #
+    # Determine whether differences of X are a subset of L
     def isCompatible(X):
-        sx = get_signature(get_diffs(X))
-        for x,count in sx.items():
-            if x not in signature or count>signature[x]:
-                return False
+        for x,count in get_signature(get_diffs(X)).items():
+            if x not in signature: return False      # generated element that isn't in L
+            if count>signature[x]: return False      # generated too many of some value that is in L
         return True
     
-    m = len(L)
-    n = get_n(len(L))
-    assert n*(n-1)==2*m
     signature = get_signature(L)
     X = [0,L[-1]]
     for i in L:
         if isCompatible(X+[i]):             
             X.append(i)
-    print (m,n,len(X))
-    LL = get_diffs(X)
-    print (compare(L,LL))
+    assert 0==compare(L,get_diffs(X)),'Inconsistent solution'
     return sorted(X)
 
 if __name__=='__main__':

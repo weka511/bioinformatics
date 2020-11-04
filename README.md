@@ -235,7 +235,7 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 |spec|spec.py+spectrum.py|[Inferring Protein from Spectrum](http://rosalind.info/problems/spec/)|
 |sgra|sgra.py+spectrum.py|[Using the Spectrum Graph to Infer Peptides](http://rosalind.info/problems/sgra/)|
 |-|-|[Set Theory](http://rosalind.info/problems/topics/set-theory/)|
-|pdpl|pdpl|[Creating a Restriction Map](http://rosalind.info/problems/pfpl/) WIP|
+|pdpl|pdpl|[Creating a Restriction Map](http://rosalind.info/problems/pfpl/)|
 |-|-|Support| 
 |-|helpers.py|Utilities for formatting output, parsing input, etc |
 |-|LICENSE|License Agreement|
