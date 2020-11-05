@@ -19,17 +19,38 @@ import argparse
 import os
 import time
 from   helpers import read_strings
-import math
+import numpy as np
 
+class Clade:
+    seq = 0
+    def __init__(self,symbols,character):
+        self.symbols   = symbols
+        self.character = character
+        self.seq       = Clade.seq
+        Clade.seq      += 1
+    def distance(self,other):
+        return sum([abs(a-b) for a,b in zip(self.character,other.character)] )
+    def __str__(self):
+        return f'{self.seq}: {self.symbols} {self.character}'
+    
 def chbp(species,character_table):
-    characters = {}
-    for i in range(len(species)):
-        value = 0
-        for j in range(len(character_table)):
-            value = 2*value + character_table[j][i]
-        characters[species[i]] = value
-    x=0
-
+    clades = {}
+    for clade in [Clade(species[i],
+                        [character_table[j][i] for j in range(len(character_table))]) for i in range(len(species))]:
+        clades[clade.seq] = clade
+    while len(clades)>1:
+        keys      = [(cl1,cl2) for cl1 in clades.keys() for cl2 in clades.keys() if cl1<cl2]
+        distances = [ clades[i].distance(clades[j]) for i,j in keys]       
+        index     = np.argmin(distances)
+        i,j       = keys[index]
+        clade1    = clades[i]
+        clade2    = clades[j]
+        merged    = Clade(f'({clade1.symbols},{clade2.symbols})',[(a+b)/2 for a,b in zip(clade1.character,clade2.character)])
+        print (f'Merged {clade1.symbols} and {clade2.symbols}=>{merged}')
+        clades[merged.seq] = merged
+        del clades[clade1.seq]
+        del clades[clade2.seq]
+        
 def expand_as_ints(s):
     return [int(c) for c in s]
 
