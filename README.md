@@ -163,7 +163,7 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 |deg|DEG.py graphs.py|[Degree Array](http://rosalind.info/problems/deg/) |
 |dfs| graphs.py|[Depth First Search](http://rosalind.info/problems/dfs/) ???|
 |dij|dij.py graphs.py|[Dijkstra's Algorithm](http://rosalind.info/problems/dij/) |
-|grph|rosalind.py|[Overlap Graphs](http://rosalind.info/problems/grph/) |
+|grph|graphs.py|[Overlap Graphs](http://rosalind.info/problems/grph/) |
 |gs|gs.py graphs.py|[General Sink](http://rosalind.info/problems/gs/)|
 |hdag|hdag.py graphs.py|[Hamiltonian Path in DAG](http://rosalind.info/problems/hdag/) |
 |nwc|nwc.py graphs.py|[Negative Weight Cycle](http://rosalind.info/problems/nwc/)|
