@@ -179,9 +179,10 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 |iprb|rosalind.py|[Mendel's First Law](http://rosalind.info/problems/iprb/) |
 |lia|rosalind.py|[Independent Alleles](http://rosalind.info/problems/lia/) |
 |sexl|rosalind.py|[Sex-Linked Inheritance ](http://rosalind.info/problems/sexl/) |
-|-|-|[Phylogeny](http://rosalind.info/problems/topics/phylogeny/)|
-|cstr|cstr.py|[Creating a Character Table from Genetic Strings](http://rosalind.info/problems/cstr/)|
-|ctbl|ctbl.py|[Creating a Character Table](http://rosalind.info/problems/ctbl/) |
+|-|phylogeny.py|[Phylogeny](http://rosalind.info/problems/topics/phylogeny/)|
+|chbp|chbp.py phylogeny.py|[Character-Based Phylogeny](http://rosalind.info/problems/chbp/) WIP|
+|cstr|cstr.py phylogeny.py|[Creating a Character Table from Genetic Strings](http://rosalind.info/problems/cstr/)|
+|ctbl|ctbl.py phylogeny.py|[Creating a Character Table](http://rosalind.info/problems/ctbl/) |
 |mend|mend.py|[Inferring a Genotype from a Pedigree](http://rosalind.info/problems/mend/) |
 |nwck|nwck.py|[Distances in Trees](http://rosalind.info/problems/nwck/) |
 |-|-|[Population Dynamics](http://rosalind.info/problems/topics/population-dynamics/)|

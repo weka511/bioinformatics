@@ -1,4 +1,4 @@
-# Copyright (C) 2017-2020 Greenweaves Software Limited
+# Copyright (C) 2020 Greenweaves Software Limited
 
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -13,42 +13,37 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-# cstr Creating a Character Table from Genetic Strings  http://rosalind.info/problems/cstr/
+#  chbp Character-Based Phylogeny
 
-
-from phylogeny import cstr
 import argparse
 import os
 import time
-from helpers import read_strings
- 
+from   helpers import read_strings
+from   phylogeny import chbp
+  
 if __name__=='__main__':
     start = time.time()
     parser = argparse.ArgumentParser('....')
     parser.add_argument('--sample',   default=False, action='store_true', help='process sample dataset')
     parser.add_argument('--rosalind', default=False, action='store_true', help='process Rosalind dataset')
     args = parser.parse_args()
-    if args.sample:       
-        for row in cstr([
-            'ATGCTACC',
-            'CGTTTACC',
-            'ATTCGACC',
-            'AGTCTCCC',
-            'CGTCTATC'    
-            ]):
-            print (row)
-        
+    if args.sample:
+        print (chbp(
+            ['cat', 'dog', 'elephant', 'mouse', 'rabbit', 'rat'],
+            ['011101',
+             '001101',
+             '001100'] ))
+  
     if args.rosalind:
         Input  = read_strings(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt')
  
-        Result = cstr(Input)
- 
+        Result = None
+        print (Result)
         with open(f'{os.path.basename(__file__).split(".")[0]}.txt','w') as f:
             for line in Result:
-                print (line)
                 f.write(f'{line}\n')
-                               
+                
     elapsed = time.time()-start
     minutes = int(elapsed/60)
     seconds = elapsed-60*minutes
-    print (f'Elapsed Time {minutes} m {seconds:.2f} s')
+    print (f'Elapsed Time {minutes} m {seconds:.2f} s')    
