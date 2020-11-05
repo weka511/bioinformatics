@@ -19,8 +19,20 @@ import argparse
 import os
 import time
 from   helpers import read_strings
-from   phylogeny import chbp
-  
+import math
+
+def chbp(species,character_table):
+    characters = {}
+    for i in range(len(species)):
+        value = 0
+        for j in range(len(character_table)):
+            value = 2*value + character_table[j][i]
+        characters[species[i]] = value
+    x=0
+
+def expand_as_ints(s):
+    return [int(c) for c in s]
+
 if __name__=='__main__':
     start = time.time()
     parser = argparse.ArgumentParser('....')
@@ -30,9 +42,9 @@ if __name__=='__main__':
     if args.sample:
         print (chbp(
             ['cat', 'dog', 'elephant', 'mouse', 'rabbit', 'rat'],
-            ['011101',
-             '001101',
-             '001100'] ))
+            [expand_as_ints('011101'),
+             expand_as_ints('001101'),
+             expand_as_ints('001100')] ))
   
     if args.rosalind:
         Input  = read_strings(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt')
