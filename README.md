@@ -185,6 +185,7 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 |ctbl|ctbl.py phylogeny.py|[Creating a Character Table](http://rosalind.info/problems/ctbl/) |
 |mend|mend.py|[Inferring a Genotype from a Pedigree](http://rosalind.info/problems/mend/) |
 |nwck|nwck.py|[Distances in Trees](http://rosalind.info/problems/nwck/) |
+|tree|tree.py|[Completing a Tree ](http://rosalind.info/problems/tree/) |
 |-|-|[Population Dynamics](http://rosalind.info/problems/topics/population-dynamics/)|
 |afrq|rosalind.py|[Counting Disease Carriers](http://rosalind.info/problems/afrq/) |
 |foun|rosalind.py|[The Founder Effect and Genetic Drift](http://rosalind.info/problems/foun/) |

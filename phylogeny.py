@@ -15,6 +15,49 @@
 
 # Phylogeny -- http://rosalind.info/problems/topics/phylogeny/
 
+
+#  tree -- Completing a Tree 
+#
+# Given: A positive integer n (n<=1000) and an adjacency list corresponding to a graph on n nodes that contains no cycles.
+#
+# Return: The minimum number of edges that can be added to the graph to produce a tree.
+#         This is the number of independent components - 1
+def CompleteTree(n,adj):
+    # create_twigs
+    #
+    # Build dictionary tow show which node is linked to what
+    
+    def create_twigs():        
+        twigs = {i:set() for i in range(1,n+1)}
+        for a,b in adj:
+            twigs[a].add(b)
+            twigs[b].add(a)
+        return twigs
+    
+    # find_component
+    #
+    # Find one component of graph
+    
+    def find_component(start):
+        component = []      # The component being built 
+        todo      = set()   # Nodes being considered for inclusion
+        todo.add(start)
+        while len(todo)>0:
+            current = todo.pop()
+            component.append(current)
+            for node in twigs[current]:
+                if node not in component:
+                    todo.add(node)
+        for c in component:
+            del twigs[c]
+        return component    
+
+    twigs = create_twigs()
+    components = []
+    while len(twigs)>0:
+        components.append(find_component(list(twigs.keys())[0]))
+    return len(components)-1
+
 def chbp(species,character_table):
     pass
 
