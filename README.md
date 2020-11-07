@@ -127,7 +127,6 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 |loca|loca.py|[Local Alignment with Scoring Matrix ](http://rosalind.info/problems/loca/) |
 |hamm|rosalind.py|[Counting Point Mutations](http://rosalind.info/problems/hamm/) |
 |oap|oap.py|[Overlap Alignment](http://rosalind.info/problems/oap/) (wip)|
-|pdst|rosalind.py|[Creating a Distance Matrix ](http://rosalind.info/problems/pdst/) |
 |sims|sims.py| [Finding Mutated Motifs](http://rosalind.info/problems/sims/)|
 |tran|rosalind.py|[Transitions and Transversions](http://rosalind.info/problems/tran/) |
 |-|-|[Combinatorics](http://rosalind.info/problems/topics/combinatorics/)|
@@ -183,8 +182,13 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 |chbp|chbp.py phylogeny.py|[Character-Based Phylogeny](http://rosalind.info/problems/chbp/) WIP|
 |cstr|cstr.py phylogeny.py|[Creating a Character Table from Genetic Strings](http://rosalind.info/problems/cstr/)|
 |ctbl|ctbl.py phylogeny.py|[Creating a Character Table](http://rosalind.info/problems/ctbl/) |
+|cunr|phylogeny.py|[Counting Unrooted Binary Trees](http://rosalind.info/problems/cunr/) |
+|inod|Trivial|[Counting Phylogenetic Ancestors](http://rosalind.info/problems/inod/) |
 |mend|mend.py|[Inferring a Genotype from a Pedigree](http://rosalind.info/problems/mend/) |
+|nkew|nwck.py|[Weighting the Tree](http://rosalind.info/problems/nkew/) |
 |nwck|nwck.py|[Distances in Trees](http://rosalind.info/problems/nwck/) |
+|pdst|rosalind.py|[Creating a Distance Matrix ](http://rosalind.info/problems/pdst/) |
+|root|phylogeny.py|[Counting Rooted Binary Trees ](http://rosalind.info/problems/root/) |
 |tree|tree.py|[Completing a Tree ](http://rosalind.info/problems/tree/) |
 |-|-|[Population Dynamics](http://rosalind.info/problems/topics/population-dynamics/)|
 |afrq|rosalind.py|[Counting Disease Carriers](http://rosalind.info/problems/afrq/) |

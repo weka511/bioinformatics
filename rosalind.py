@@ -1181,7 +1181,7 @@ def tran(fasta):
 
 # PDST 	Creating a Distance Matrix 
 #
-# Input: A collection of nn (n≤10n≤10) DNA strings s1,…,sns1,…,sn of equal 
+# Input: A collection of n of equal 
 # length (at most 1 kbp). Strings are given in FASTA format.
 #
 # Return: The matrix DD corresponding to the p-distance dpdp on the given 

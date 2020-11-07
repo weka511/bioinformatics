@@ -119,3 +119,17 @@ def CharacterTable(tree):
     clades=[clade for clade in tree.find_clades(terminal=False)]
     # we iterate over all Clades except the root
     return [create_character([spec.name for spec in split.find_elements(terminal=True)]) for split in clades[1:]]
+
+# NumberBinaryTrees
+#
+# cunr  Counting Unrooted Binary Trees
+# root  Counting Rooted Binary Trees
+# See http://carrot.mcb.uconn.edu/~olgazh/bioinf2010/class16.html
+
+def NumberBinaryTrees(n,rooted=True):
+    N = 1
+    m = 2*n-3 if rooted else 2*n-5
+    while m>1:
+        N *=m
+        m -= 2
+    return N
