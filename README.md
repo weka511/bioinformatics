@@ -183,12 +183,15 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 |cstr|cstr.py phylogeny.py|[Creating a Character Table from Genetic Strings](http://rosalind.info/problems/cstr/)|
 |ctbl|ctbl.py phylogeny.py|[Creating a Character Table](http://rosalind.info/problems/ctbl/) |
 |cunr|phylogeny.py|[Counting Unrooted Binary Trees](http://rosalind.info/problems/cunr/) |
+|eubt|eubt.py|[Enumerating Unrooted Binary Trees  ](http://rosalind.info/problems/teubt/) WIP|
 |inod|Trivial|[Counting Phylogenetic Ancestors](http://rosalind.info/problems/inod/) |
 |mend|mend.py|[Inferring a Genotype from a Pedigree](http://rosalind.info/problems/mend/) |
 |nkew|nwck.py|[Weighting the Tree](http://rosalind.info/problems/nkew/) |
 |nwck|nwck.py|[Distances in Trees](http://rosalind.info/problems/nwck/) |
 |pdst|rosalind.py|[Creating a Distance Matrix ](http://rosalind.info/problems/pdst/) |
+|qrt|qrt.py|[Quartets](http://rosalind.info/problems/qrt/) WIP|
 |root|phylogeny.py|[Counting Rooted Binary Trees ](http://rosalind.info/problems/root/) |
+|sptb|sptb.py|[Phylogeny Comparison with Split Distance](http://rosalind.info/problems/sptb/) WIP|
 |tree|tree.py|[Completing a Tree ](http://rosalind.info/problems/tree/) |
 |-|-|[Population Dynamics](http://rosalind.info/problems/topics/population-dynamics/)|
 |afrq|rosalind.py|[Counting Disease Carriers](http://rosalind.info/problems/afrq/) |

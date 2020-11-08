@@ -1312,10 +1312,10 @@ def perm(n):
 
 # LEXF	Enumerating k-mers Lexicographically
 #
-# Input: A positive integer nÃ‚Â¡ÃƒÅ“7.
+# Input: A positive integer n
 # 
 # Return: The total number of permutations of length n, followed by a list of
-# all such permutations (in any order)
+#          all such permutations (in any order)
 
 def lexf(alphabet,k):
     if k<=0:
