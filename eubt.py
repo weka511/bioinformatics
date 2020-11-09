@@ -46,13 +46,18 @@ class Graph:
 
 
 def insert(species,edge,graph):
-    nextNode = list(graph.adj.keys())[-1] + 1
+    nextNode = max(list(graph.adj.keys())) + 1
     n1,n2    = edge
     adj      = {}
     if type(n2)==int:
-        pass
+        adj[nextNode] = [species,n2]
+        for node,links in graph.adj.items():
+            if node==n1:
+                adj[node] = [nextNode if ll==n2 else ll for ll in links]
+            else:
+                adj[node] = links        
     else:
-        adj[nextNode]=[species,n2]
+        adj[nextNode] = [species,n2]
         for node,links in graph.adj.items():
             if node==n1:
                 adj[node] = [nextNode if ll==n2 else ll for ll in links]
@@ -67,13 +72,13 @@ def insert(species,edge,graph):
 # Return: A list containing all unrooted binary trees whose leaves are these n
 #         taxa. Trees should be given in Newick format, with one tree on each line; 
 #         the order of the trees is unimportant.
+#
+# Idea: all rooted trees with a given number of leaves are isomorphic if we
+#       ignore the labels of the leaves and nodes. Therfore it is enough to 
+#       build a tree with 3 leaves, and keep adding one leaf at a time in all available positions.
 
-    
 def EnumerateUnrootedBinaryTrees(species):
-    n              = len(species)
-    N              = NumberBinaryTrees(n,rooted=False)
-    nInternalNodes = n - 2 
-    
+    n              = len(species) 
     def enumerate(n):
         if n==3:
             return [Graph({0:[species[0], species[1], species[2]]})]
@@ -84,11 +89,8 @@ def EnumerateUnrootedBinaryTrees(species):
                     Enumeration.append(insert(species[n-1],edge,graph))
             return Enumeration
         
-    return enumerate(n)#[bfs_newick(adj) for adj in enumerate(n)]
+    return enumerate(n)
     
-
-    
-
 if __name__=='__main__':
     start = time.time()
     parser = argparse.ArgumentParser('....')
@@ -96,7 +98,7 @@ if __name__=='__main__':
     parser.add_argument('--rosalind', default=False, action='store_true', help='process Rosalind dataset')
     args = parser.parse_args()
     if args.sample:
-        for tree in EnumerateUnrootedBinaryTrees('dog cat mouse elephant'.split()):
+        for tree in EnumerateUnrootedBinaryTrees('dog cat mouse elephant unicorn'.split()):
             print (f'{tree};\n')
          
     if args.rosalind:
@@ -110,74 +112,3 @@ if __name__=='__main__':
     minutes = int(elapsed/60)
     seconds = elapsed-60*minutes
     print (f'Elapsed Time {minutes} m {seconds:.2f} s')    
-
-
-#def EnumerateUnrootedBinaryTrees(species):
-    #def permutations(xs):
-        #if len(xs)==1:
-            #return [xs]
-        #else:
-            #Result = []
-            #for x in xs:
-                #rest = permutations([xx for xx in xs if xx !=x])
-                #for perm in rest:
-                    #Result.append([x]+perm)
-            #return Result
-                
-    #def selector():
-        #perms = permutations(list(range(n)))
-        #for perm in perms:
-            #yield perm
-    #n              = len(species)
-    #N              = NumberBinaryTrees(n,rooted=False)
-    #nInternalNodes = n - 2 
-    #InternalNodes  = list(range(nInternalNodes))
-    #sel            = selector()
-    #for i in range(N):
-        #edges     = [(i,i+1) for i in range(nInternalNodes-1)]
-        #selection = next(sel)
-        #for i in range(nInternalNodes):
-            #edges.append((i,species[selection[i]]))
-        #edges.append((0,species[selection[-2]]))
-        #edges.append((nInternalNodes-1,species[selection[-1]]))
-        #yield newick(edges)
-
-        #def create_adj(edges):
-            #product = {}
-            #for a,b in edges:
-                #if a in product:
-                    #product[a].append(b)
-                #else:
-                    #product[a] = [b]
-            #return product
-        #def newick(edges):
-            #return f'{bfs_newick(create_adj(edges))};'
-            
-            #def permutations(xs):
-                #if len(xs)==1:
-                    #return [xs]
-                #else:
-                    #Result = []
-                    #for x in xs:
-                        #rest = permutations([xx for xx in xs if xx !=x])
-                        #for perm in rest:
-                            #Result.append([x]+perm)
-                    #return Result
-                        
-            #def selector():
-                #perms = permutations(list(range(n)))
-                #for perm in perms:
-                    #yield perm
-            #n              = len(species)
-            #N              = NumberBinaryTrees(n,rooted=False)
-            #nInternalNodes = n - 2 
-            #InternalNodes  = list(range(nInternalNodes))
-            #sel            = selector()
-            #for i in range(N):
-                #edges     = [(i,i+1) for i in range(nInternalNodes-1)]
-                #selection = next(sel)
-                #for i in range(nInternalNodes):
-                    #edges.append((i,species[selection[i]]))
-                #edges.append((0,species[selection[-2]]))
-                #edges.append((nInternalNodes-1,species[selection[-1]]))
-                #yield newick(edges)            
