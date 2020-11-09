@@ -1,4 +1,4 @@
-# Copyright (C) 2020 Greenweaves Software Limited
+#   Copyright (C) 2020 Greenweaves Software Limited
 
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@ import argparse
 import os
 import time
 from   helpers import read_strings
-from   phylogeny import Graph
+from   phylogeny import UnrootedBinaryTree
     
 if __name__=='__main__':
     start = time.time()
@@ -28,13 +28,13 @@ if __name__=='__main__':
     parser.add_argument('--rosalind', default=False, action='store_true', help='process Rosalind dataset')
     args = parser.parse_args()
     if args.sample:
-        for tree in Graph.EnumerateUnrootedBinaryTrees('dog cat mouse elephant'.split()):
+        for tree in UnrootedBinaryTree.Enumerate('dog cat mouse elephant'.split()):
             print (f'{tree};\n')
          
     if args.rosalind:
         Input = read_strings(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt')
         with open(f'{os.path.basename(__file__).split(".")[0]}.txt','w') as f:
-            for tree in Graph.EnumerateUnrootedBinaryTrees(Input[0].split()):
+            for tree in UnrootedBinaryTree.Enumerate(Input[0].split()):
                 print (f'{tree};')
                 f.write(f'{tree};\n')
                 

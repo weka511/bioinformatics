@@ -1,4 +1,4 @@
-# Copyright (C) 2020 Greenweaves Software Limited
+#   Copyright (C) 2020 Greenweaves Software Limited
 
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -134,7 +134,7 @@ def NumberBinaryTrees(n,rooted=True):
         m -= 2
     return N
 
-class Graph:
+class UnrootedBinaryTree:
     @classmethod
     # EnumerateUnrootedBinaryTrees
     #
@@ -148,40 +148,28 @@ class Graph:
     #       ignore the labels of the leaves and nodes. Therfore it is enough to 
     #       build a tree with 3 leaves, and keep adding one leaf at a time in all available positions.
     
-    def EnumerateUnrootedBinaryTrees(cls,species):
-        n              = len(species) 
+    def Enumerate(cls,species):
         def enumerate(n):
             if n==3:
-                return [Graph({0:[species[0], species[1], species[2]]})]
+                return [cls({0:[species[0], species[1], species[2]]})]
             else:
-                Enumeration = []
-                for graph in enumerate(n-1):
-                    for edge in graph.Edges():
-                        Enumeration.append(Graph.insert(species[n-1],edge,graph))
-                return Enumeration
+                return [cls.insert(species[n-1],edge,graph) for graph in enumerate(n-1) for edge in graph.Edges()] 
             
-        return enumerate(n)
+        return enumerate(len(species))
     
+    # insert
+    #
+    # Create a rooted tree by adding one nre inernal node and a leaf to a specifed edge
     @classmethod
     def insert(cls,species,edge,graph):
         nextNode = max(list(graph.adj.keys())) + 1
         n1,n2    = edge
-        adj      = {}
-        if type(n2)==int:
-            adj[nextNode] = [species,n2]
-            for node,links in graph.adj.items():
-                if node==n1:
-                    adj[node] = [nextNode if ll==n2 else ll for ll in links]
-                else:
-                    adj[node] = links        
-        else:
-            adj[nextNode] = [species,n2]
-            for node,links in graph.adj.items():
-                if node==n1:
-                    adj[node] = [nextNode if ll==n2 else ll for ll in links]
-                else:
-                    adj[node] = links
-        return Graph(adj)
+        adj      = {nextNode: [species,n2]}
+ 
+        for node,links in graph.adj.items():
+                adj[node] = [nextNode if ll==n2 else ll for ll in links] if node==n1 else links        
+ 
+        return cls(adj)
     
     def __init__(self,adj):
         self.adj = adj
@@ -189,10 +177,13 @@ class Graph:
     def __str__(self):
         return self.bfs_newick()
     
+    # bfs_newick
+    #
+    # Create Newick representation by best first search
+    
     def bfs_newick(self,node=0):
-        children = self.adj[node]
         newick = []
-        for child in children:
+        for child in  self.adj[node]:
             if type(child)==int:
                 newick.append(self.bfs_newick(node=child))
             else:
