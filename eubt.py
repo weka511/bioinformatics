@@ -19,77 +19,7 @@ import argparse
 import os
 import time
 from   helpers import read_strings
-from   phylogeny import NumberBinaryTrees
-
-class Graph:
-    def __init__(self,adj):
-        self.adj = adj
-    
-    def __str__(self):
-        return self.bfs_newick()
-    
-    def bfs_newick(self,node=0):
-        children = self.adj[node]
-        newick = []
-        for child in children:
-            if type(child)==int:
-                newick.append(self.bfs_newick(node=child))
-            else:
-                newick.append(child)
-        representation = ','.join(newick) 
-        return f'({representation})'
-    
-    def Edges(self):
-        for a,b in self.adj.items():
-            for c in b:
-                yield a,c
-
-
-def insert(species,edge,graph):
-    nextNode = max(list(graph.adj.keys())) + 1
-    n1,n2    = edge
-    adj      = {}
-    if type(n2)==int:
-        adj[nextNode] = [species,n2]
-        for node,links in graph.adj.items():
-            if node==n1:
-                adj[node] = [nextNode if ll==n2 else ll for ll in links]
-            else:
-                adj[node] = links        
-    else:
-        adj[nextNode] = [species,n2]
-        for node,links in graph.adj.items():
-            if node==n1:
-                adj[node] = [nextNode if ll==n2 else ll for ll in links]
-            else:
-                adj[node] = links
-    return Graph(adj)
-    
-# EnumerateUnrootedBinaryTrees
-#
-# Given: A collection of species names representing n taxa.
-#
-# Return: A list containing all unrooted binary trees whose leaves are these n
-#         taxa. Trees should be given in Newick format, with one tree on each line; 
-#         the order of the trees is unimportant.
-#
-# Idea: all rooted trees with a given number of leaves are isomorphic if we
-#       ignore the labels of the leaves and nodes. Therfore it is enough to 
-#       build a tree with 3 leaves, and keep adding one leaf at a time in all available positions.
-
-def EnumerateUnrootedBinaryTrees(species):
-    n              = len(species) 
-    def enumerate(n):
-        if n==3:
-            return [Graph({0:[species[0], species[1], species[2]]})]
-        else:
-            Enumeration = []
-            for graph in enumerate(n-1):
-                for edge in graph.Edges():
-                    Enumeration.append(insert(species[n-1],edge,graph))
-            return Enumeration
-        
-    return enumerate(n)
+from   phylogeny import Graph
     
 if __name__=='__main__':
     start = time.time()
@@ -98,13 +28,13 @@ if __name__=='__main__':
     parser.add_argument('--rosalind', default=False, action='store_true', help='process Rosalind dataset')
     args = parser.parse_args()
     if args.sample:
-        for tree in EnumerateUnrootedBinaryTrees('dog cat mouse elephant unicorn'.split()):
+        for tree in Graph.EnumerateUnrootedBinaryTrees('dog cat mouse elephant'.split()):
             print (f'{tree};\n')
          
     if args.rosalind:
         Input = read_strings(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt')
         with open(f'{os.path.basename(__file__).split(".")[0]}.txt','w') as f:
-            for tree in EnumerateUnrootedBinaryTrees(Input[0].split()):
+            for tree in Graph.EnumerateUnrootedBinaryTrees(Input[0].split()):
                 print (f'{tree};')
                 f.write(f'{tree};\n')
                 

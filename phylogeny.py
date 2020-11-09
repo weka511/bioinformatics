@@ -133,3 +133,74 @@ def NumberBinaryTrees(n,rooted=True):
         N *=m
         m -= 2
     return N
+
+class Graph:
+    @classmethod
+    # EnumerateUnrootedBinaryTrees
+    #
+    # Given: A collection of species names representing n taxa.
+    #
+    # Return: A list containing all unrooted binary trees whose leaves are these n
+    #         taxa. Trees should be given in Newick format, with one tree on each line; 
+    #         the order of the trees is unimportant.
+    #
+    # Idea: all rooted trees with a given number of leaves are isomorphic if we
+    #       ignore the labels of the leaves and nodes. Therfore it is enough to 
+    #       build a tree with 3 leaves, and keep adding one leaf at a time in all available positions.
+    
+    def EnumerateUnrootedBinaryTrees(cls,species):
+        n              = len(species) 
+        def enumerate(n):
+            if n==3:
+                return [Graph({0:[species[0], species[1], species[2]]})]
+            else:
+                Enumeration = []
+                for graph in enumerate(n-1):
+                    for edge in graph.Edges():
+                        Enumeration.append(Graph.insert(species[n-1],edge,graph))
+                return Enumeration
+            
+        return enumerate(n)
+    
+    @classmethod
+    def insert(cls,species,edge,graph):
+        nextNode = max(list(graph.adj.keys())) + 1
+        n1,n2    = edge
+        adj      = {}
+        if type(n2)==int:
+            adj[nextNode] = [species,n2]
+            for node,links in graph.adj.items():
+                if node==n1:
+                    adj[node] = [nextNode if ll==n2 else ll for ll in links]
+                else:
+                    adj[node] = links        
+        else:
+            adj[nextNode] = [species,n2]
+            for node,links in graph.adj.items():
+                if node==n1:
+                    adj[node] = [nextNode if ll==n2 else ll for ll in links]
+                else:
+                    adj[node] = links
+        return Graph(adj)
+    
+    def __init__(self,adj):
+        self.adj = adj
+    
+    def __str__(self):
+        return self.bfs_newick()
+    
+    def bfs_newick(self,node=0):
+        children = self.adj[node]
+        newick = []
+        for child in children:
+            if type(child)==int:
+                newick.append(self.bfs_newick(node=child))
+            else:
+                newick.append(child)
+        representation = ','.join(newick) 
+        return f'({representation})'
+    
+    def Edges(self):
+        for a,b in self.adj.items():
+            for c in b:
+                yield a,c

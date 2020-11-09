@@ -183,7 +183,7 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 |cstr|cstr.py phylogeny.py|[Creating a Character Table from Genetic Strings](http://rosalind.info/problems/cstr/)|
 |ctbl|ctbl.py phylogeny.py|[Creating a Character Table](http://rosalind.info/problems/ctbl/) |
 |cunr|phylogeny.py|[Counting Unrooted Binary Trees](http://rosalind.info/problems/cunr/) |
-|eubt|eubt.py|[Enumerating Unrooted Binary Trees  ](http://rosalind.info/problems/teubt/)|
+|eubt|phylogeny.py eubt.py|[Enumerating Unrooted Binary Trees  ](http://rosalind.info/problems/teubt/)|
 |inod|Trivial|[Counting Phylogenetic Ancestors](http://rosalind.info/problems/inod/) |
 |mend|mend.py|[Inferring a Genotype from a Pedigree](http://rosalind.info/problems/mend/) |
 |nkew|nwck.py|[Weighting the Tree](http://rosalind.info/problems/nkew/) |
