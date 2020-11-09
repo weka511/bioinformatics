@@ -189,7 +189,7 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 |nkew|nwck.py|[Weighting the Tree](http://rosalind.info/problems/nkew/) |
 |nwck|nwck.py|[Distances in Trees](http://rosalind.info/problems/nwck/) |
 |pdst|rosalind.py|[Creating a Distance Matrix ](http://rosalind.info/problems/pdst/) |
-|qrt|qrt.py|[Quartets](http://rosalind.info/problems/qrt/) WIP|
+|qrt|qrt.py phylogeny.py|[Quartets](http://rosalind.info/problems/qrt/)|
 |root|phylogeny.py|[Counting Rooted Binary Trees ](http://rosalind.info/problems/root/) |
 |sptb|sptb.py|[Phylogeny Comparison with Split Distance](http://rosalind.info/problems/sptb/) WIP|
 |tree|tree.py|[Completing a Tree ](http://rosalind.info/problems/tree/) |

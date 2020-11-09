@@ -195,3 +195,34 @@ class UnrootedBinaryTree:
         for a,b in self.adj.items():
             for c in b:
                 yield a,c
+
+#  qrt Incomplete Characters
+#
+# Given: A partial character table C
+#
+# Return: The collection of all quartets that can be inferred from the splits corresponding to the underlying characters of C
+
+def qrt(taxa,characters):
+    
+    def tuples(n):
+        for i in range(n):
+            for j in range(n):
+                if i==j: continue
+                for k in range(n):
+                    if k in [i,j]: continue
+                    for l in range(n):
+                        if l in [i,j,k]: continue
+                        if i<j and k<l and i<k:
+                            yield i,j,k,l
+                        
+    def isConsistent(selector):
+        for char in characters:
+            character = [char[i] for i in selector]
+            if any(c is None for c in character): continue
+            if character[0]==character[1] and character[2]==character[3] and character[0]!=character[2]: return True
+        return False
+    
+    for (i,j,k,l) in tuples(len(taxa)):     
+        selector =  [i,j,k,l]
+        if isConsistent(selector):
+            yield [taxa[m] for m in selector]

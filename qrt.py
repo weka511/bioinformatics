@@ -18,32 +18,8 @@
 import argparse
 import os
 import time
-from helpers import read_strings
-
-def tuples(n):
-    for i in range(n):
-        for j in range(n):
-            if i==j: continue
-            for k in range(n):
-                if k in [i,j]: continue
-                for l in range(n):
-                    if l in [i,j,k]: continue
-                    if i<j and k<l and i<k:
-                        yield i,j,k,l
-
-def qrt(taxa,characters):
-    def isConsistent(selector):
-        for char in characters:
-            character = [char[i] for i in selector]
-            if any(c is None for c in character): continue
-            if character[0]==character[1] and character[2]==character[3] and character[0]!=character[2]: return True
-        return False
-    
-    for (i,j,k,l) in tuples(len(taxa)):     
-        selector =  [i,j,k,l]
-        if isConsistent(selector):
-            yield [taxa[m] for m in selector]
-
+from   helpers import read_strings
+from   phylogeny import qrt
 
 def expand_character(s):
     return [int(c) if c.isdigit() else None for c in s]
@@ -73,7 +49,7 @@ if __name__=='__main__':
                 print (Result)
                 f.write(f'{Result}\n')
                 
-    elapsed = time.time()-start
+    elapsed = time.time() - start
     minutes = int(elapsed/60)
-    seconds = elapsed-60*minutes
+    seconds = elapsed - 60*minutes
     print (f'Elapsed Time {minutes} m {seconds:.2f} s')    
