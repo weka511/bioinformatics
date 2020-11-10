@@ -22,40 +22,40 @@ from   helpers import read_strings
 import numpy as np
 
 class Clade:
-    seq = 0
-    def __init__(self,symbols,character,weight=1):
-        self.symbols   = symbols
+    def __init__(self,index=None,character=None,children=[]):
+        self.index     = index
         self.character = character
-        self.seq       = Clade.seq
-        self.weight    = weight
-        Clade.seq      += 1
+        self.fresh     = True
+        self.children  = children
+        self.weight    = max(1,len(children))
+        
     def distance(self,other):
-        return sum([abs(a/self.weight-b/other.weight) for a,b in zip(self.character,other.character)] )
-    def __str__(self):
-        return f'{self.seq}: {self.symbols} {self.character} {self.weight}]'
+        return sum([abs(a*self.weight-b*other.weight)/(self.weight+other.weight) for a,b in zip(self.character,other.character)] )
     
 def chbp(species,character_table):
-    clades = {}
-    for clade in [Clade(species[i],
-                        [character_table[j][i] for j in range(len(character_table))]) for i in range(len(species))]:
-        clades[clade.seq] = clade
-    while len(clades)>1:
-        keys      = [(cl1,cl2) for cl1 in clades.keys() for cl2 in clades.keys() if cl1<cl2]
-        distances = [ clades[i].distance(clades[j]) for i,j in keys]       
-        index     = np.argmin(distances)
-        i,j       = keys[index]
-        clade1    = clades[i]
-        clade2    = clades[j]
-        merged    = Clade(f'({clade1.symbols},{clade2.symbols})',
-                          [a+b for a,b in zip(clade1.character,clade2.character)],
-                          weight=clade1.weight+clade2.weight)
-        print (f'Merged {clade1.symbols} and {clade2.symbols}=>{merged}')
-        clades[merged.seq] = merged
-        del clades[clade1.seq]
-        del clades[clade2.seq] 
-    #v = list(clades.values())
-    return list(clades.values())[0]
-
+    def bfs(clade,suffix='',index=len(species)+1):
+        if len(clade.children)>0:
+            return f'({",".join([bfs(Clades[child],index=child) for child in clade.children])}){suffix}'
+        if index<len(species):
+            return species[index]
+        
+    Clades = [Clade(index=i, 
+                    character=[c[i] for c in character_table]) for i in range(len(species))]
+    while True:
+        D     = [(i,j,Clades[i].distance(Clades[j]))     \
+                        for i in range(len(Clades))      \
+                        for j in range(i+1,len(Clades))  \
+                        if Clades[i].fresh and Clades[j].fresh]
+        index = np.argmin([d for _,_,d in D])
+        i,j,_ = D[index]
+        Clades.append(Clade(index=len(Clades),
+                            children=[i,j],
+                            character = np.mean([Clades[child].character for child in [i,j]],axis=0)))
+        Clades[i].fresh = False
+        Clades[j].fresh = False
+        if len(D)<2: break
+    return bfs(Clades[-1],suffix=';')
+    
 def expand_as_ints(s):
     return [int(c) for c in s]
 
@@ -67,12 +67,11 @@ if __name__=='__main__':
     parser.add_argument('--rosalind', default=False, action='store_true', help='process Rosalind dataset')
     args = parser.parse_args()
     if args.sample:
-        clade = chbp(
-            ['cat', 'dog', 'elephant', 'mouse', 'rabbit', 'rat'],
-            [expand_as_ints('011101'),
-             expand_as_ints('001101'),
-             expand_as_ints('001100')] )
-        print (f'{clade.symbols};')
+        print (chbp(
+                ['cat', 'dog', 'elephant', 'mouse', 'rabbit', 'rat'],
+                [expand_as_ints('011101'),
+                expand_as_ints('001101'),
+                expand_as_ints('001100')] ))
         
     if args.abcde:
         clade = chbp(
@@ -89,9 +88,9 @@ if __name__=='__main__':
         species = Input[0].split()
         character_table = [expand_as_ints(row) for row in Input[1:]]
         clade = chbp(species,character_table)
-        print (f'{clade.symbols};')
+        print (clade)
         with open(f'{os.path.basename(__file__).split(".")[0]}.txt','w') as f:
-            f.write(f'{clade.symbols};\n')
+            f.write(f'{clade}\n')
                 
     elapsed = time.time()-start
     minutes = int(elapsed/60)
