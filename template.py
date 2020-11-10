@@ -1,4 +1,4 @@
-# Copyright (C) 2020 Greenweaves Software Limited
+#   Copyright (C) 2020 Greenweaves Software Limited
 
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -45,7 +45,7 @@ if __name__=='__main__':
             for line in Result:
                 f.write(f'{line}\n')
                 
-    elapsed = time.time()-start
+    elapsed = time.time() - start
     minutes = int(elapsed/60)
-    seconds = elapsed-60*minutes
+    seconds = elapsed - 60*minutes
     print (f'Elapsed Time {minutes} m {seconds:.2f} s')    

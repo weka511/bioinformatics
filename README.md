@@ -180,6 +180,7 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 |sexl|rosalind.py|[Sex-Linked Inheritance ](http://rosalind.info/problems/sexl/) |
 |-|phylogeny.py|[Phylogeny](http://rosalind.info/problems/topics/phylogeny/)|
 |chbp|chbp.py phylogeny.py|[Character-Based Phylogeny](http://rosalind.info/problems/chbp/) WIP|
+|cntq|chtq.py |[Counting Quartets](http://rosalind.info/problems/cntq/) WIP|
 |cstr|cstr.py phylogeny.py|[Creating a Character Table from Genetic Strings](http://rosalind.info/problems/cstr/)|
 |ctbl|ctbl.py phylogeny.py|[Creating a Character Table](http://rosalind.info/problems/ctbl/) |
 |cunr|phylogeny.py|[Counting Unrooted Binary Trees](http://rosalind.info/problems/cunr/) |

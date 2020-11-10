@@ -436,10 +436,10 @@ class Tree(Newick):
     def __init__(self,subtree):
         self.subtree=subtree
     def __str__(self):
-        return '{};'.format(str(self.subtree))
+        return f'{self.subtree};'
+
     @staticmethod
     def parse(string):
-        print (string)
         s=string.replace(' ','')
         branch=Branch.parse(s[0:-1])
         if branch and s[-1]==';':

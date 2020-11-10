@@ -88,6 +88,12 @@ def cntq(n,newick):
             Unique.append(Quartets[i])
     return len(Unique),Unique
 
+# cntq is desparately slow for read problems (e.g. n=4525). This quick hack works - ignores actual tree!
+
+def q(n):
+    return (n*(n-1)*(n-2)*(n-3))/(4*3*2*1)
+
+
 if __name__=='__main__':
     start = time.time()
     parser = argparse.ArgumentParser('....')
@@ -101,11 +107,10 @@ if __name__=='__main__':
     if args.rosalind:
         Input  = read_strings(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt')
  
-        Result = None
+        Result = cntq(int(Input[0]), Input[1])
         print (Result)
         with open(f'{os.path.basename(__file__).split(".")[0]}.txt','w') as f:
-            for line in Result:
-                f.write(f'{line}\n')
+                f.write(f'{Result}\n')
                 
     elapsed = time.time() - start
     minutes = int(elapsed/60)
