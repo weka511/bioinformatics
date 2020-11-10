@@ -179,10 +179,10 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 |lia|rosalind.py|[Independent Alleles](http://rosalind.info/problems/lia/) |
 |sexl|rosalind.py|[Sex-Linked Inheritance ](http://rosalind.info/problems/sexl/) |
 |-|phylogeny.py|[Phylogeny](http://rosalind.info/problems/topics/phylogeny/)|
-|alph|alph.py|[Phylogeny Comparison with Split Distance](http://rosalind.info/problems/alph/) WIP|
+|alph|alph.py|[Alignment-Based Phylogeny](http://rosalind.info/problems/alph/) WIP|
 |chbp|chbp.py phylogeny.py|[Character-Based Phylogeny](http://rosalind.info/problems/chbp/) WIP|
 |cntq|chtq.py |[Counting Quartets](http://rosalind.info/problems/cntq/) WIP|
-|cset|cset.py|[Phylogeny Comparison with Split Distance](http://rosalind.info/problems/cset/) WIP|
+|cset|cset.py|[Fixing an Inconsistent Character Set](http://rosalind.info/problems/cset/) WIP|
 |cstr|cstr.py phylogeny.py|[Creating a Character Table from Genetic Strings](http://rosalind.info/problems/cstr/)|
 |ctbl|ctbl.py phylogeny.py|[Creating a Character Table](http://rosalind.info/problems/ctbl/) |
 |cunr|phylogeny.py|[Counting Unrooted Binary Trees](http://rosalind.info/problems/cunr/) |
@@ -193,10 +193,10 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 |nwck|nwck.py|[Distances in Trees](http://rosalind.info/problems/nwck/) |
 |pdst|rosalind.py|[Creating a Distance Matrix ](http://rosalind.info/problems/pdst/) |
 |qrt|qrt.py phylogeny.py|[Quartets](http://rosalind.info/problems/qrt/)|
-|qrtd|qrtd.py|[Phylogeny Comparison with Split Distance](http://rosalind.info/problems/qrtb/) WIP|
+|qrtd|qrtd.py|[Quartet Distance](http://rosalind.info/problems/qrtd/) WIP|
 |root|phylogeny.py|[Counting Rooted Binary Trees ](http://rosalind.info/problems/root/) |
-|rsub|rsub.py|[Phylogeny Comparison with Split Distance](http://rosalind.info/problems/rsub/) WIP|
-|sptb|sptb.py|[Phylogeny Comparison with Split Distance](http://rosalind.info/problems/sptb/) WIP|
+|rsub|rsub.py|[Identifying Reversing Substitutions](http://rosalind.info/problems/rsub/) WIP|
+|sptd|sptb.py|[Phylogeny Comparison with Split Distance](http://rosalind.info/problems/sptd/) WIP|
 |tree|tree.py|[Completing a Tree ](http://rosalind.info/problems/tree/) |
 |-|-|[Population Dynamics](http://rosalind.info/problems/topics/population-dynamics/)|
 |afrq|rosalind.py|[Counting Disease Carriers](http://rosalind.info/problems/afrq/) |
