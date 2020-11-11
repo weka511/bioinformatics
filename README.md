@@ -120,23 +120,12 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 |BA11C|BA11C.py spectrum.py| [Convert a Peptide into a Peptide Vector ](http://rosalind.info/problems/ba11c/) |
 |BA11D|BA11D.py spectrum.py| [Convert a Peptide Vector into a Peptide ](http://rosalind.info/problems/ba11d/) |
 
-## Other
+
+
+## [Combinatorics](http://rosalind.info/problems/topics/combinatorics/)
 
 | # | Location | Description |
 | ---- | --------------- | ------------------------------------------------|
-|fibo|fibo.py|[Fibonacci numbers](http://rosalind.info/problems/fibo/) |
-|-|align.py|[Alignment](http://rosalind.info/problems/topics/alignment/)|
-|edit|edit.py|[Edit Distance](http://rosalind.info/problems/edit/) |
-|edta|edta.py|[Edit Distance Alignment](http://rosalind.info/problems/edta/)|
-|gaff|gaff.py|[Global Alignment with Scoring Matrix and Affine Gap Penalty](http://rosalind.info/problems/gaff/)|
-|gcon|gcon.py|[Global Alignment with Constant Gap Penalty](http://rosalind.info/problems/gcon/)|
-|glob|GLOB.py|[Global Alignment with Scoring Matrix](http://rosalind.info/problems/glob/) -- test harness only|
-|loca|loca.py|[Local Alignment with Scoring Matrix ](http://rosalind.info/problems/loca/) |
-|hamm|rosalind.py|[Counting Point Mutations](http://rosalind.info/problems/hamm/) |
-|oap|oap.py|[Overlap Alignment](http://rosalind.info/problems/oap/) (wip)|
-|sims|sims.py| [Finding Mutated Motifs](http://rosalind.info/problems/sims/)|
-|tran|rosalind.py|[Transitions and Transversions](http://rosalind.info/problems/tran/) |
-|-|-|[Combinatorics](http://rosalind.info/problems/topics/combinatorics/)|
 |aspc|rosalind.py|[Introduction to Alternative Splicing](http://rosalind.info/problems/aspc/) |
 |cat|rosalind.py|[Catalan Numbers and RNA Secondary Structures ](http://rosalind.info/problems/cat/) (WIP)|
 |fibd|rosalind.py|[Mortal Fibonacci Rabbits](http://rosalind.info/problems/fibd/) |
@@ -145,18 +134,30 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 |orf|orf.py|[Open Reading Frames](http://rosalind.info/problems/orf/)|
 |pmch|pmch.py|[Perfect Matchings and RNA Secondary Structures](http://rosalind.info/problems/pmch/) |
 |pper|rosalind.py|[Partial Permutations](http://rosalind.info/problems/pper/) |
-|-|-|[Genome Assembly](http://rosalind.info/problems/topics/genome-assembly/)|
+
+## [Genome Assembly](http://rosalind.info/problems/topics/genome-assembly/)
+
+| # | Location | Description |
+| ---- | --------------- | ------------------------------------------------|
 |corr|CORR.py|[Error Correction in Reads](http://rosalind.info/problems/corr/) |
 |asmq|ASMQ.py|[Assessing Assembly Quality with N50 and N75](http://rosalind.info/problems/asmq/) |
 |gasm|GASM.py|[Genome Assembly Using Reads](http://rosalind.info/problems/gasm/) |
 |grep|GREP.py|[Genome Assembly with Perfect Coverage and Repeats](http://rosalind.info/problems/grep/)|
 |long|LONG.py|[Genome Assembly as Shortest Superstring](http://rosalind.info/problems/long/) |
 |pcov|PCOV.py|[Genome Assembly with Perfect Coverage](http://rosalind.info/problems/pcov/) |
-|-|-|[Genome Rearrangements](http://rosalind.info/problems/topics/genome-rearrangements/)|
+
+##[Genome Rearrangements](http://rosalind.info/problems/topics/genome-rearrangements/)
+
+| # | Location | Description |
+| ---- | --------------- | ------------------------------------------------|
 |lgis|lgis.py|[Longest Increasing Subsequence](http://rosalind.info/problems/lgis/) |
 |rear|rear.py fragile.py|[Reversal distance](http://rosalind.info/problems/rear/) |
 |sort|sort.py fragile.py|[Sorting by Reversals](http://rosalind.info/problems/sort/) |
-|-|graphs.py|[Graphs](http://rosalind.info/problems/topics/graphs/) & [Graph Algorithms](http://rosalind.info/problems/topics/graph-algorithms/)|
+
+## [Graphs](http://rosalind.info/problems/topics/graphs/) & [Graph Algorithms](http://rosalind.info/problems/topics/graph-algorithms/)
+
+| # | Location | Description |
+| ---- | --------------- | ------------------------------------------------|
 |2sat|sat.py graphs.py|[2-Satisfiability](http://rosalind.info/problems/2sat/)|
 |bf|bf.py graphs.py|[Bellman-Ford Algorithm](http://rosalind.info/problems/bf/)|
 |bfs|bfs.py|[Beadth First search](http://rosalind.info/problems/bfs/) |
@@ -228,7 +229,7 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 |eval|rosalind.py|[Expected Number of Restriction Sites](http://rosalind.info/problems/eval/) |
 |rstr|rosalind.py|[Matching Random Motifs](http://rosalind.info/problems/rstr/) |
 
-## Sequence Analysis
+## [Sequence Analysis](http://rosalind.info/problems/topics/sequence-analysis/)
 | # | Location | Description |
 | ---- | --------------- | ------------------------------------------------|
 |frmt|FRMT.py|[Data Formats](http://rosalind.info/problems/frmt/)|
@@ -287,6 +288,24 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 |pdpl|pdpl|[Creating a Restriction Map](http://rosalind.info/problems/pfpl/)|
 |seto|-|[Set operations](http://rosalind.info/problems/seto/) Solved using Python shell|
 |sset|-|[Counting Subsets](http://rosalind.info/problems/sset/) Solved with a single line in Python shell: 2**n%1000000|
+
+## Other Problems
+
+
+| # | Location | Description |
+| ---- | --------------- | ------------------------------------------------|
+|fibo|fibo.py|[Fibonacci numbers](http://rosalind.info/problems/fibo/) |
+|-|align.py|[Alignment](http://rosalind.info/problems/topics/alignment/)|
+|edit|edit.py|[Edit Distance](http://rosalind.info/problems/edit/) |
+|edta|edta.py|[Edit Distance Alignment](http://rosalind.info/problems/edta/)|
+|gaff|gaff.py|[Global Alignment with Scoring Matrix and Affine Gap Penalty](http://rosalind.info/problems/gaff/)|
+|gcon|gcon.py|[Global Alignment with Constant Gap Penalty](http://rosalind.info/problems/gcon/)|
+|glob|GLOB.py|[Global Alignment with Scoring Matrix](http://rosalind.info/problems/glob/) -- test harness only|
+|loca|loca.py|[Local Alignment with Scoring Matrix ](http://rosalind.info/problems/loca/) |
+|hamm|rosalind.py|[Counting Point Mutations](http://rosalind.info/problems/hamm/) |
+|oap|oap.py|[Overlap Alignment](http://rosalind.info/problems/oap/) (wip)|
+|sims|sims.py| [Finding Mutated Motifs](http://rosalind.info/problems/sims/)|
+|tran|rosalind.py|[Transitions and Transversions](http://rosalind.info/problems/tran/) |
 
 ## Support
 
