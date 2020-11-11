@@ -179,13 +179,19 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 |sq|sq.py graphics.py|[Square in a Graph](http://rosalind.info/problems/sq/)|
 |trie|rosalind.py|[Introduction to Pattern Matching](http://rosalind.info/problems/trie/) |
 |ts|ts.py align.py|[Topological sort](http://rosalind.info/problems/ts/)|
-|-|-|[Heredity](http://rosalind.info/problems/topics/heredity/)|
+
+## [Heredity](http://rosalind.info/problems/topics/heredity/)
+| # | Location | Description |
+| ---- | --------------- | ------------------------------------------------|
 |iev|rosalind.py| [Calculating Expected Offspring](http://rosalind.info/problems/iev/)|
 |indq|rosalind.py|[Independent Segregation of Chromosomes](http://rosalind.info/problems/indq/) |
 |iprb|rosalind.py|[Mendel's First Law](http://rosalind.info/problems/iprb/) |
 |lia|rosalind.py|[Independent Alleles](http://rosalind.info/problems/lia/) |
 |sexl|rosalind.py|[Sex-Linked Inheritance ](http://rosalind.info/problems/sexl/) |
-|-|phylogeny.py|[Phylogeny](http://rosalind.info/problems/topics/phylogeny/)|
+
+## [Phylogeny](http://rosalind.info/problems/topics/phylogeny/)
+| # | Location | Description |
+| ---- | --------------- | ------------------------------------------------|
 |alph|alph.py|[Alignment-Based Phylogeny](http://rosalind.info/problems/alph/) WIP|
 |chbp|chbp.py phylogeny.py|[Character-Based Phylogeny](http://rosalind.info/problems/chbp/) WIP|
 |cntq|chtq.py |[Counting Quartets](http://rosalind.info/problems/cntq/) WIP|
@@ -205,20 +211,35 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 |rsub|rsub.py|[Identifying Reversing Substitutions](http://rosalind.info/problems/rsub/) WIP|
 |sptd|sptb.py phylogeny.py|[Phylogeny Comparison with Split Distance](http://rosalind.info/problems/sptd/) |
 |tree|tree.py|[Completing a Tree ](http://rosalind.info/problems/tree/) |
-|-|-|[Population Dynamics](http://rosalind.info/problems/topics/population-dynamics/)|
+
+## [Population Dynamics](http://rosalind.info/problems/topics/population-dynamics/)
+
+| # | Location | Description |
+| ---- | --------------- | ------------------------------------------------|
 |afrq|rosalind.py|[Counting Disease Carriers](http://rosalind.info/problems/afrq/) |
 |foun|rosalind.py|[The Founder Effect and Genetic Drift](http://rosalind.info/problems/foun/) |
 |wfmd|rosalind.py|[The Wright-Fisher Model of Genetic Drift](http://rosalind.info/problems/wfmd/) |
-|-|-|[Probability](http://rosalind.info/problems/topics/probability/)|
+
+## [Probability](http://rosalind.info/problems/topics/probability/)
+
+| # | Location | Description |
+| ---- | --------------- | ------------------------------------------------|
 |ebin|rosalind.py|[Wright-Fisher's Expected Behavior](http://rosalind.info/problems/ebin/) |
 |eval|rosalind.py|[Expected Number of Restriction Sites](http://rosalind.info/problems/eval/) |
 |rstr|rosalind.py|[Matching Random Motifs](http://rosalind.info/problems/rstr/) |
-|-|-|Sequence Analysis|
+
+## Sequence Analysis
+| # | Location | Description |
+| ---- | --------------- | ------------------------------------------------|
 |frmt|FRMT.py|[Data Formats](http://rosalind.info/problems/frmt/)|
 |gbk|GBK.py|[GenBank Introduction](http://rosalind.info/problems/gbk/) |
 |orfr|orfr.py|[Finding Genes with Open Reading Frames](http://rosalind.info/problems/orfr/) |
 |ptra|PTRA.py|[Protein Translation](http://rosalind.info/problems/ptra/) |
-|-|-|[Sorting](http://rosalind.info/problems/topics/sorting/)|
+
+## [Sorting](http://rosalind.info/problems/topics/sorting/)|
+
+| # | Location | Description |
+| ---- | --------------- | ------------------------------------------------|
 |2sum|2sum.py|[2SUM](http://rosalind.info/problems/2sum/) |
 |3sum|3sum.py|[3SUM](http://rosalind.info/problems/3sum/) |
 |ins|INS.py|[Insertion Sort](http://rosalind.info/problems/ins/) |
@@ -248,14 +269,21 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 |splc|rosalind.py|[RNA Splicing](http://rosalind.info/problems/splc/) |
 |sseq|rosalind.py|[Finding a Spliced Motif](http://rosalind.info/problems/sseq/) |
 |subs|rosalind.py|[Finding a Motif in DNA](http://rosalind.info/problems/subs/) |
-|-|-|[Computational Mass Spectrometry](http://rosalind.info/problems/topics/computational-mass-spectrometry/)|
+
+## [Computational Mass Spectrometry](http://rosalind.info/problems/topics/computational-mass-spectrometry/)|
+
+| # | Location | Description |
+| ---- | --------------- | ------------------------------------------------|
 |conv|conv.py+spectrum.py|[Comparing Spectra with the Spectral Convolution](http://rosalind.info/problems/conv/)|
 |full|full.py+spectrum.py|[Inferring Peptide from Full Spectrum](http://rosalind.info/problems/full/)|
 |prtm|rosalind.py|[Calculating Protein Mass](http://rosalind.info/problems/prtm/) - get_weight(...)|
 |prsm|prsm.py+spectrum.py|[Matching a Spectrum to a Protein](http://rosalind.info/problems/prsm/)|
 |spec|spec.py+spectrum.py|[Inferring Protein from Spectrum](http://rosalind.info/problems/spec/)|
 |sgra|sgra.py+spectrum.py|[Using the Spectrum Graph to Infer Peptides](http://rosalind.info/problems/sgra/)|
-|-|-|[Set Theory](http://rosalind.info/problems/topics/set-theory/)|
+
+## [Set Theory](http://rosalind.info/problems/topics/set-theory/)
+| # | Location | Description |
+| ---- | --------------- | ------------------------------------------------|
 |pdpl|pdpl|[Creating a Restriction Map](http://rosalind.info/problems/pfpl/)|
 |seto|-|[Set operations](http://rosalind.info/problems/seto/) Solved using Python shell|
 |sset|-|[Counting Subsets](http://rosalind.info/problems/sset/) Solved with a single line in Python shell: 2**n%1000000|
