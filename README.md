@@ -231,7 +231,7 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 | ---- | --------------- | ------------------------------------------------|
 |alph|alph.py|[Alignment-Based Phylogeny](http://rosalind.info/problems/alph/) WIP|
 |chbp|chbp.py phylogeny.py|[Character-Based Phylogeny](http://rosalind.info/problems/chbp/) WIP|
-|cntq|chtq.py |[Counting Quartets](http://rosalind.info/problems/cntq/) WIP|
+|cntq|chtq.py |[Counting Quartets](http://rosalind.info/problems/cntq/)|
 |cset|cset.py|[Fixing an Inconsistent Character Set](http://rosalind.info/problems/cset/) WIP|
 |cstr|cstr.py phylogeny.py|[Creating a Character Table from Genetic Strings](http://rosalind.info/problems/cstr/)|
 |ctbl|ctbl.py phylogeny.py|[Creating a Character Table](http://rosalind.info/problems/ctbl/) |

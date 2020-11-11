@@ -319,7 +319,6 @@ def sptd(species,newick1,newick2):
     
     n       = len(species)
     seiceps = {species[i]:i for i in range(n)}
-    tree1   = replace_leaves(create_adj(parse(newick1,start=n)))
-    tree2   = replace_leaves(create_adj(parse(newick2,start=n)))
 
-    return ds(tree1,tree2)
+    return ds(replace_leaves(create_adj(parse(newick1,start=n))),
+              replace_leaves(create_adj(parse(newick2,start=n))))
