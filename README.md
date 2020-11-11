@@ -4,6 +4,8 @@ Code inspired by [Bioinformatics Algorithms: an Active Learning Approach](http:/
 from [Rosalind](http://rosalind.info). 
 NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info) uses 1-based.
 
+## Bioinformatics Algorithms TextBook Track
+
 | # | Location | Description |
 | ---- | --------------- | ------------------------------------------------|
 |1|-| Where in the Genome does DNA replication begin?|
@@ -117,6 +119,11 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 |BA11B|BA11B.py spectrum.py| [Implement DecodingIdealSpectrum](http://rosalind.info/problems/ba11b/) |
 |BA11C|BA11C.py spectrum.py| [Convert a Peptide into a Peptide Vector ](http://rosalind.info/problems/ba11c/) |
 |BA11D|BA11D.py spectrum.py| [Convert a Peptide Vector into a Peptide ](http://rosalind.info/problems/ba11d/) |
+
+## Other
+
+| # | Location | Description |
+| ---- | --------------- | ------------------------------------------------|
 |fibo|fibo.py|[Fibonacci numbers](http://rosalind.info/problems/fibo/) |
 |-|align.py|[Alignment](http://rosalind.info/problems/topics/alignment/)|
 |edit|edit.py|[Edit Distance](http://rosalind.info/problems/edit/) |
@@ -252,7 +259,11 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 |pdpl|pdpl|[Creating a Restriction Map](http://rosalind.info/problems/pfpl/)|
 |seto|-|[Set operations](http://rosalind.info/problems/seto/) Solved using Python shell|
 |sset|-|[Counting Subsets](http://rosalind.info/problems/sset/) Solved with a single line in Python shell: 2**n%1000000|
-|-|-|Support| 
+
+## Support
+
+| # | Location | Description |
+| ---- | --------------- | ------------------------------------------------|
 |-|helpers.py|Utilities for formatting output, parsing input, etc |
 |-|LICENSE|License Agreement|
 |-|newick.py|Parser for files in [Newick format](http://evolution.genetics.washington.edu/phylip/newicktree.html) |
