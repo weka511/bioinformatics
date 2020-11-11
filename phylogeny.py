@@ -15,6 +15,7 @@
 
 # Phylogeny -- http://rosalind.info/problems/topics/phylogeny/
 
+import re
 
 #  tree -- Completing a Tree 
 #
@@ -226,3 +227,38 @@ def qrt(taxa,characters):
         selector =  [i,j,k,l]
         if isConsistent(selector):
             yield [taxa[m] for m in selector]
+            
+# snarfed from https://stackoverflow.com/questions/51373300/how-to-convert-newick-tree-format-to-a-tree-like-hierarchical-object
+def parse(newick,start=0):
+    tokens = re.findall(r"([^:;,()\s]*)(?:\s*:\s*([\d.]+)\s*)?([,);])|(\S)", newick+";")
+    
+    def recurse(nextid = start, parentid = -1): # one node
+        thisid = nextid;
+        children = []
+
+        name, length, delim, ch = tokens.pop(0)
+        if ch == "(":
+            while ch in "(,":
+                node, ch, nextid = recurse(nextid+1, thisid)
+                children.append(node)
+            name, length, delim, ch = tokens.pop(0)
+        return {"id": thisid, "name": name, "length": float(length) if length else None, 
+                "parentid": parentid, "children": children}, delim, nextid
+
+    return recurse()[0]
+
+def create_adj(tree):
+    adj = {}
+    def bfs(tree):
+        id       = tree['id']
+        name     = tree['name']
+        children = tree['children']
+        parentid = tree['parentid']
+        if len(name)==0:
+            adj[id]=[]
+        if parentid>-1:
+            adj[parentid].append(id if len(name)==0 else name)     
+        for child in children:
+            bfs(child)
+    bfs(tree)
+    return adj
