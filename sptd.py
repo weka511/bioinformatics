@@ -43,34 +43,42 @@ def sptd(species,newick1,newick2):
             find_leaves(child,s1)#[leaf for leaf in find_leaves(child)]
             if len(s1)<min_size: continue
             s2 = [leaf for leaf in range(n) if not leaf in s1]
-            yield s1,s2
+            yield sorted(s1),sorted(s2)
         if terminator!=None:
             yield terminator
            
     def ds(adj1,adj2):
         shared = 0
-        splits1 = splits(adj1,terminator=([],[]))
-        splits2 = splits(adj2,terminator=([],[]))
-  
-        i1,_ = next(splits1)
-        i2,_ = next(splits2)
-        while True:
-            i1.sort()
-            i2.sort()
-
-            if len(i1)==0: break
-                       
-            if len(i2)==0: break
+        splits1 = sorted([s for s,_ in splits(adj1)])
+        splits2 = sorted([s for s,_ in splits(adj2)])
+        k1 = 0
+        k2 = 0
+        i1 = splits1[k1]#next(splits1)
+        i2 = splits2[k2]#next(splits2)      
+        while k1<len(splits1) and k2<len(splits2): 
+            #if len(i1)==0: break  
+            #if len(i2)==0: break
    
             if i1==i2:
                 shared+=1
-                i1,_ = next(splits1)
-                i2,_ = next(splits2)
+                k1+=1
+                k2+=1
+                if k1<len(splits1) and k2<len(splits2):
+                    i1 = splits1[k1]
+                    i2 = splits2[k2]
+                 #i1,_ = next(splits1)
+                #i2,_ = next(splits2)
             elif i1<i2:
-                i1,_ = next(splits1)
+                k1+=1
+                if k1<len(splits1):
+                    i1 = splits1[k1]            
+                #i1,_ = next(splits1)         
             else:
-                i2,_ = next(splits2)                
-                
+                k2+=1
+                if k2<len(splits2):
+                    i2 = splits2[k2]  
+
+                #i2,_ = next(splits2) 
         return 2*(n-3)- 2* shared
     
     n       = len(species)
