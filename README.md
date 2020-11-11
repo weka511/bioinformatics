@@ -292,13 +292,10 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 |seto|-|[Set operations](http://rosalind.info/problems/seto/) Solved using Python shell|
 |sset|-|[Counting Subsets](http://rosalind.info/problems/sset/) Solved with a single line in Python shell: 2**n%1000000|
 
-## Other Problems
-
+## [Alignment](http://rosalind.info/problems/topics/alignment/)
 
 | # | Location | Description |
 | ---- | --------------- | ------------------------------------------------|
-|fibo|fibo.py|[Fibonacci numbers](http://rosalind.info/problems/fibo/) |
-|-|align.py|[Alignment](http://rosalind.info/problems/topics/alignment/)|
 |edit|edit.py|[Edit Distance](http://rosalind.info/problems/edit/) |
 |edta|edta.py|[Edit Distance Alignment](http://rosalind.info/problems/edta/)|
 |gaff|gaff.py|[Global Alignment with Scoring Matrix and Affine Gap Penalty](http://rosalind.info/problems/gaff/)|
@@ -307,8 +304,15 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 |loca|loca.py|[Local Alignment with Scoring Matrix ](http://rosalind.info/problems/loca/) |
 |hamm|rosalind.py|[Counting Point Mutations](http://rosalind.info/problems/hamm/) |
 |oap|oap.py|[Overlap Alignment](http://rosalind.info/problems/oap/) (wip)|
-|sims|sims.py| [Finding Mutated Motifs](http://rosalind.info/problems/sims/)|
 |tran|rosalind.py|[Transitions and Transversions](http://rosalind.info/problems/tran/) |
+
+## Other Problems
+
+| # | Location | Description |
+| ---- | --------------- | ------------------------------------------------|
+|fibo|fibo.py|[Fibonacci numbers](http://rosalind.info/problems/fibo/) |
+|sims|sims.py| [Finding Mutated Motifs](http://rosalind.info/problems/sims/)|
+
 
 ## Support
 
