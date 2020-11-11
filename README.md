@@ -6,9 +6,10 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 
 ## Bioinformatics Algorithms TextBook Track
 
+### 1. Where in the Genome does DNA replication begin?
+
 | # | Location | Description |
 | ---- | --------------- | ------------------------------------------------|
-|1|-| Where in the Genome does DNA replication begin?|
 |BA1A|rosalind.py|[Compute the Number of Times a Pattern Appears in a Text](http://rosalind.info/problems/ba1a/) |
 |BA1B|rosalind.py|[Find the Most Frequent Words in a String](http://rosalind.info/problems/ba1b/) |
 |BA1C|rosalind.py|[Find the Reverse Complement of a String](http://rosalind.info/problems/ba1c/) |
@@ -24,7 +25,11 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 |BA1M|rosalind.py|[Implement NumberToPattern](http://rosalind.info/problems/ba1m/) |
 |BA1N|rosalind.py|[Generate the d-Neighborhood of a String](http://rosalind.info/problems/ba1n/) |
 |-|count_kmers.py| Challenge Problems from [Bioinformatics Algorithms](http://bioinformaticsalgorithms.com/): determine number of times each kmer appears in DNA, allowing for reverse complements and d-neighbourhoods.|
-|2|-|Which DNA Patterns Play the Role of Molecular Clocks?|
+
+### 2. Which DNA Patterns Play the Role of Molecular Clocks?
+
+| # | Location | Description |
+| ---- | --------------- | ------------------------------------------------|
 |BA2A|rosalind.py|[Implement MotifEnumeration](http://rosalind.info/problems/ba2a/) |
 |BA2B |rosalind.py|[Find a Median String ](http://rosalind.info/problems/ba1j/)
 |BA2C |rosalind.py|[Find a Profile-most Probable k-mer in a String	](http://rosalind.info/problems/ba2c/)
@@ -33,7 +38,11 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 |BA2F |rosalind.py|[Implement RandomizedMotifSearch](http://rosalind.info/problems/ba2f/)	
 |BA2G |rosalind.py|[Implement GibbsSampler](http://rosalind.info/problems/ba2g/)
 |BA2H |rosalind.py|[Implement DistanceBetweenPatternAndStrings](http://rosalind.info/problems/ba2h/) 
-|3|-|How Do We Assemble Genomes?|
+
+### 3. How Do We Assemble Genomes?
+
+| # | Location | Description |
+| ---- | --------------- | ------------------------------------------------|
 |BA3A|rosalind.py|[Generate the k-mer Composition of a String](http://rosalind.info/problems/ba3a/) |
 |BA3B|rosalind.py|[Reconstruct a String from its Genome Path](http://rosalind.info/problems/ba3a/)
 |BA3C|rosalind.py|[Construct the Overlap Graph of a Collection of k-mers](http://rosalind.info/problems/ba3a/)
@@ -44,7 +53,11 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 |BA3H |rosalind.py|[Reconstruct a String from its k-mer Composition](http://rosalind.info/problems/ba3a/)
 |BA3I |rosalind.py|[Find a k-Universal Circular String](http://rosalind.info/problems/ba3a/)
 |BA3J |rosalind.py|[Reconstruct a String from its Paired Composition](http://rosalind.info/problems/ba3a/)
-|4|spectrum.py|How Do We Sequence Antibiotics?|
+
+### 4. How Do We Sequence Antibiotics?
+
+| # | Location | Description |
+| ---- | --------------- | ------------------------------------------------|
 |BA4A|rosalind.py|[Translate an RNA String into an Amino Acid String](http://rosalind.info/problems/ba4a/) |
 |BA4B|rosalind.py|[Find Substrings of a Genome Encoding a Given Amino Acid String](http://rosalind.info/problems/ba4b/) |
 |BA4C|rosalind.py|[Generate the Theoretical Spectrum of a Cyclic Peptide](http://rosalind.info/problems/ba4c/) |
@@ -59,7 +72,11 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 |BA4L|rosalind.py|[Trim a Peptide Leaderboard](http://rosalind.info/problems/ba4l/) |
 |BA4M|ba4m.py spectrum.py| [Solve the Turnpike Problem](http://rosalind.info/problems/ba4m/) |
 |-|tyrocidine.py| Challenge Problems from [Bioinformatics Algorithms](http://bioinformaticsalgorithms.com/): sequence Tyrocidine from supplied spectrum (WIP)|
-|5|align.py|How do we compare Biological Sequences?|
+
+### 5. How do we compare Biological Sequences?
+ 
+| # | Location | Description |
+| ---- | --------------- | ------------------------------------------------|
 |BA5A|align.py|[Find the Minimum Number of Coins Needed to Make Change](http://rosalind.info/problems/ba5a/)|
 |BA5B|align.py|[Find the Length of a Longest Path in a Manhattan-like Grid](http://rosalind.info/problems/ba5b/)|
 |BA5C|align.py|[Find a Longest Common Subsequence of Two Strings](http://rosalind.info/problems/ba5c/)|
@@ -74,7 +91,11 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 |BA5L|BA5L.py align.py|[Align Two Strings Using Linear Space](http://rosalind.info/problems/ba5l/) (WIP)|    
 |BA5M|BA5M.py align.py|[Find a Highest-Scoring Multiple Sequence Alignment](http://rosalind.info/problems/ba5m/) | 
 |BA5N |align.py|[Find a Topological Ordering of a DAG](http://rosalind.info/problems/ba5n/) | 
-|6|fragile.py|Are there fragile regions in the human genome?|
+
+### 6. Are there fragile regions in the human genome?
+
+| # | Location | Description |
+| ---- | --------------- | ------------------------------------------------|
 |BA6A|BA6A.py fragile.py|[Implement GreedySorting to Sort a Permutation by Reversals ](http://rosalind.info/problems/ba6a/)|
 |BA6B|BA6B.py fragile.py|[Compute the Number of Breakpoints in a Permutation](http://rosalind.info/problems/ba6b/)|
 |BA6C|BA6C.py fragile.py|[Compute the 2-Break Distance Between a Pair of Genomes](http://rosalind.info/problems/ba6c/)|
@@ -86,7 +107,11 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 |BA6I|BA6I.py fragile.py|[Implement GraphToGenome ](http://rosalind.info/problems/ba6i/)|
 |BA6J|BA6J.py fragile.py|[Implement 2-BreakOnGenomeGraph ](http://rosalind.info/problems/ba6j/)|
 |BA6K|BA6K.py fragile.py|[Implement 2-BreakOnGenome ](http://rosalind.info/problems/ba6k/)|
-|7|-|Which animal gave us SARS?|
+
+### 7. Which animal gave us SARS?
+
+| # | Location | Description |
+| ---- | --------------- | ------------------------------------------------|
 |BA7A|BA7A.py|[Compute Distances Between Leaves](http://rosalind.info/problems/ba7a/)|
 |BA7B|BA7B.py|[Limb Length Problem](http://rosalind.info/problems/ba7b/)|
 |BA7C|BA7C.py|[Implement Additive Phylogeny](http://rosalind.info/problems/ba7c/)|
@@ -94,13 +119,21 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 |BA7E|BA7E.py|[Implement the Neighbor Joining Algorithm](http://rosalind.info/problems/ba7e/)|
 |BA7F|BA7F.py|[Implement SmallParsimony](http://rosalind.info/problems/ba7f/)|
 |BA7G|BA7G.py|[Adapt SmallParsimony to Unrooted Trees](http://rosalind.info/problems/ba7g/)|
-|8|-|How did Yeast become a Winemaker?|
+
+### 8. How did Yeast become a Winemaker?
+
+| # | Location | Description |
+| ---- | --------------- | ------------------------------------------------|
 |BA8A|BA8A.py | [Implement FarthestFirstTraversal](http://rosalind.info/problems/ba8a/) |
 |BA8B|BA8B.py | [Compute the Squared Error Distortion](http://rosalind.info/problems/ba8b/) |
 |BA8C|BA8C.py | [Implement the Lloyd Algorithm for k-Means Clustering](http://rosalind.info/problems/ba8c/) |
 |BA8D|BA8D.py | [Implement the Soft k-Means Clustering Algorithm](http://rosalind.info/problems/ba8d/) |
 |BA8E|BA8E.py | [Implement Hierarchical Clustering](http://rosalind.info/problems/ba8e/) |
-|9|snp.py|How do we locate disease causing mutations?|
+
+### 9. How do we locate disease causing mutations?
+
+| # | Location | Description |
+| ---- | --------------- | ------------------------------------------------|
 |BA9A|BA9A.py snp.py| [Construct a Trie from a Collection of Patterns](http://rosalind.info/problems/ba9a/) |
 |BA9B|BA9B.py snp.py| [Implement TrieMatching](http://rosalind.info/problems/ba9b/) |
 |BA9C|BA9C.py snp.py| [Construct the Suffix Tree of a String](http://rosalind.info/problems/ba9c/)|
@@ -110,7 +143,10 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 |BA9I|BA9I.py snp.py| [Construct the Burrows-Wheeler Transform of a String](http://rosalind.info/problems/ba9i/) |
 |BA9J|BA9J.py snp.py| [Reconstruct a String from its Burrows-Wheeler Transform](http://rosalind.info/problems/ba9j/) |
 |BA9K|BA9K.py snp.py| [Generate the Last-to-First Mapping of a String](http://rosalind.info/problems/ba9k/) (WIP)|
-|10|hmm.py|Why have biologists still not developed an HIV vaccine?|
+
+### 10. Why have biologists still not developed an HIV vaccine?
+| # | Location | Description |
+| ---- | --------------- | ------------------------------------------------|
 |BA10A|BA10A.py hmm.py| [Compute the Probability of a Hidden Path](http://rosalind.info/problems/ba10a/) |
 |BA10B|BA10B.py hmm.py| [Compute the Probability of an Outcome Given a Hidden Path](http://rosalind.info/problems/ba10b/) |
 |BA10C|BA10C.py hmm.py| [Implement the Viterbi Algorithm](http://rosalind.info/problems/ba10c/) |
