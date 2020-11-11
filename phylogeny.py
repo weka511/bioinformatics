@@ -262,3 +262,64 @@ def create_adj(tree):
             bfs(child)
     bfs(tree)
     return adj
+
+#  SPTD Phylogeny Comparison with Split Distance
+
+def sptd(species,newick1,newick2):
+    def replace_leaves(adj):
+        return {parent:sorted([seiceps[child] if child in seiceps else child for child in children]) for parent,children in adj.items() }
+    def edges(adj):
+        for parent,children in adj.items():
+            for child in children:
+                if child >= n:
+                    yield parent,child
+    def splits(adj,min_size=2):
+        def find_leaves(node,path=[]):
+            for child in adj[node]:
+                if child<n:
+                    path.append(child)
+                else:
+                    find_leaves(child,path=path)            
+  
+        for parent,child in edges(adj):
+            s1 = []
+            find_leaves(child,s1)#[leaf for leaf in find_leaves(child)]
+            if len(s1)<min_size: continue
+            s2 = [leaf for leaf in range(n) if not leaf in s1]
+            yield sorted(s1),sorted(s2)
+  
+           
+    def ds(adj1,adj2):
+        shared  = 0
+        splits1 = sorted([s for s,_ in splits(adj1)])
+        splits2 = sorted([s for s,_ in splits(adj2)])
+        k1      = 0
+        k2      = 0
+        i1      = splits1[k1]
+        i2      = splits2[k2]      
+        while k1<len(splits1) and k2<len(splits2): 
+            if i1==i2:
+                shared += 1
+                k1     += 1
+                k2     += 1
+                if k1<len(splits1) and k2<len(splits2):
+                    i1 = splits1[k1]
+                    i2 = splits2[k2]
+  
+            elif i1<i2:
+                k1+=1
+                if k1<len(splits1):
+                    i1 = splits1[k1]                  
+            else:
+                k2+=1
+                if k2<len(splits2):
+                    i2 = splits2[k2]  
+
+        return 2*(n-3)- 2* shared
+    
+    n       = len(species)
+    seiceps = {species[i]:i for i in range(n)}
+    tree1   = replace_leaves(create_adj(parse(newick1,start=n)))
+    tree2   = replace_leaves(create_adj(parse(newick2,start=n)))
+
+    return ds(tree1,tree2)

@@ -196,7 +196,7 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 |qrtd|qrtd.py|[Quartet Distance](http://rosalind.info/problems/qrtd/) WIP|
 |root|phylogeny.py|[Counting Rooted Binary Trees ](http://rosalind.info/problems/root/) |
 |rsub|rsub.py|[Identifying Reversing Substitutions](http://rosalind.info/problems/rsub/) WIP|
-|sptd|sptb.py|[Phylogeny Comparison with Split Distance](http://rosalind.info/problems/sptd/) WIP|
+|sptd|sptb.py phylogeny.py|[Phylogeny Comparison with Split Distance](http://rosalind.info/problems/sptd/) |
 |tree|tree.py|[Completing a Tree ](http://rosalind.info/problems/tree/) |
 |-|-|[Population Dynamics](http://rosalind.info/problems/topics/population-dynamics/)|
 |afrq|rosalind.py|[Counting Disease Carriers](http://rosalind.info/problems/afrq/) |
