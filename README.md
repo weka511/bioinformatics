@@ -146,7 +146,7 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 |long|LONG.py|[Genome Assembly as Shortest Superstring](http://rosalind.info/problems/long/) |
 |pcov|PCOV.py|[Genome Assembly with Perfect Coverage](http://rosalind.info/problems/pcov/) |
 
-##[Genome Rearrangements](http://rosalind.info/problems/topics/genome-rearrangements/)
+## [Genome Rearrangements](http://rosalind.info/problems/topics/genome-rearrangements/)
 
 | # | Location | Description |
 | ---- | --------------- | ------------------------------------------------|
