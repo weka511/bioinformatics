@@ -253,7 +253,10 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 |par3|PAR3.py|[3-Way Partition](http://rosalind.info/problems/par3/) |
 |ps|ps.py|[Partial sort](http://rosalind.info/problems/ps/)|
 |qs|QS.py|[Quicksort](http://rosalind.info/problems/qs/)|
-|-|-|Strings & [String Algorithms](http://rosalind.info/problems/topics/string-algorithms/)|
+
+## Strings & [String Algorithms](http://rosalind.info/problems/topics/string-algorithms/)
+| # | Location | Description |
+| ---- | --------------- | ------------------------------------------------|
 |cons|rosalind.py|[Consensus and Profile](http://rosalind.info/problems/cons/) |
 |dna|rosalind.py|[Counting DNA Nucleotides](http://rosalind.info/problems/dna/) |
 |gc|rosalind.py|[Computing GC Content](http://rosalind.info/problems/gc/) |
