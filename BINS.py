@@ -1,52 +1,72 @@
-# Copyright (C) 2017 Greenweaves Software Pty Ltd
+#   Copyright (C) 2017-2020 Greenweaves Software Limited
 
-# This is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
+#   This program is free software: you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation, either version 3 of the License, or
+#   (at your option) any later version.
 
-# This software is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
 
-# You should have received a copy of the GNU General Public License
-# along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+# BINS Binary Search
+
+import argparse
+import os
+import time
+from helpers import read_strings
+
+# bins
+#
+# Find a given set of keys in a given array.
 
 def bins(n,m,a,values):
+    
     def search(value,imin,imax):
         if imin>imax:
             return -1
-        elif imin==imax:
+        if imin==imax:
             return imin if value==a[imin-1] else -1
-        else:
-            imid=(imax+imin)//2
-            left=search(value,imin,imid)
-            if left>-1:
-                return left
-            else:
-                return search(value,imid+1,imax)
+   
+        imid = (imax+imin)//2
+        left = search(value,imin,imid)
+        
+        return left if left>-1 else search(value,imid+1,imax)
+            
     return [search(value,1,n) for value in values]
 
 
-with open('c:/Users/Weka/Downloads/rosalind_bins(1).txt') as f:
-    i=0
-    n=0
-    m=0
-    a=[]
-    values=[]
-    for line in f:
-        text=line.strip()
-        if i==0:
-            n=int(text)
-        elif i==1:
-            m=int(text)
-        elif i==2:
-            a=[int(t) for t in text.split(' ')]
-            print (a)
-        else:
-            values=[int(t) for t in text.split(' ')]
-        i+=1
-    indices = bins(n,m,a,values)
+if __name__=='__main__':
+    start = time.time()
+    parser = argparse.ArgumentParser('....')
+    parser.add_argument('--sample',   default=False, action='store_true', help='process sample dataset')
+    parser.add_argument('--extra',    default=False, action='store_true', help='process extra dataset')
+    parser.add_argument('--rosalind', default=False, action='store_true', help='process Rosalind dataset')
+    args = parser.parse_args()
+    if args.sample:
+        print (bins(5,
+                    6,
+                    [10, 20, 30, 40, 50],
+                    [40, 10, 35, 15, 40, 20]))
+  
+    if args.rosalind:
+        Input  = read_strings(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt')
+ 
+        Result = ' '.join([str(r) for r in bins(int(Input[0]),
+                                                int(Input[1]),
+                                                [int(i) for i in Input[2].split()],
+                                                [int(i) for i in Input[3].split()])])
+        
+        print (Result)
+        with open(f'{os.path.basename(__file__).split(".")[0]}.txt','w') as f:
+            f.write(f'{Result}\n')
+                
+    elapsed = time.time() - start
+    minutes = int(elapsed/60)
+    seconds = elapsed - 60*minutes
+    print (f'Elapsed Time {minutes} m {seconds:.2f} s') 
     
-print (' '.join([str(r) for r in indices]))

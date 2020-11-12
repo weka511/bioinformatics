@@ -197,7 +197,7 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 |2sat|sat.py graphs.py|[2-Satisfiability](http://rosalind.info/problems/2sat/)|
 |bf|bf.py graphs.py|[Bellman-Ford Algorithm](http://rosalind.info/problems/bf/)|
 |bfs|bfs.py|[Beadth First search](http://rosalind.info/problems/bfs/) |
-|bins|BINS.py|[Binary Search](http://rosalind.info/problems/bfs/) |
+|bins|BINS.py|[Binary Search](http://rosalind.info/problems/bins/) |
 |bip|bip.py graphs.py|[Testing Bipartiteness](http://rosalind.info/problems/bip/) |
 |cc|cc.py graphs.py|[Connected Components](http://rosalind.info/problems/cc/) |
 |cte|cte.py graphs.py|[Shortest Cycle Through a Given Edge](http://rosalind.info/problems/cte/)|
@@ -213,7 +213,7 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 |scc|scc.py graphs.py|[Strongly Connected Components](http://rosalind.info/problems/scc/)|
 |sc|sc.py graphs.py|[Semi-Connected Graph](http://rosalind.info/problems/sc/)|
 |sdag|sdag.py graphs.py|[Shortest Paths in DAG](http://rosalind.info/problems/sdag/)|
-|sq|sq.py graphics.py|[Square in a Graph](http://rosalind.info/problems/sq/)|
+|sq|sq.py graphs.py|[Square in a Graph](http://rosalind.info/problems/sq/)|
 |trie|rosalind.py|[Introduction to Pattern Matching](http://rosalind.info/problems/trie/) |
 |ts|ts.py align.py|[Topological sort](http://rosalind.info/problems/ts/)|
 
