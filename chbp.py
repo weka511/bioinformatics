@@ -21,28 +21,7 @@ import time
 from   helpers import read_strings
 import numpy as np
 
-#class Clade:
-    #@staticmethod
-    #def toString(Clades,species):
-        #def bfs(clade,suffix='',index=len(species)+1):
-            #if len(clade.children)>0:
-                #return f'({",".join([bfs(Clades[child],index=child) for child in clade.children])}){suffix}'
-            #if index<len(species):
-                #return species[index] 
-        #return bfs(Clades[-1],suffix=';')
-        
-    #def __init__(self,index=None,character=None,children=[]):
-        #self.index     = index
-        #self.character = character
-        #self.fresh     = True
-        #self.children  = children
-        #self.weight    = max(1,len(children))
-        
-    #def distance(self,other):
-        #return sum([abs(a-b)/(self.weight+other.weight) for a,b in zip(self.character,other.character)] )
-        ##a*self.weight-b*other.weight
-        ##self.weight+other.weight
-        
+
 class Clade():
     @staticmethod
     def toString(Root):
@@ -59,7 +38,32 @@ class Clade():
     def __init__(self,species):
         self.species = species
         self.children = []
-        
+    
+    def bfs(self,prefix=''):
+        print (f'{prefix}{self.species}')
+        for child in self.children:
+            child.bfs(prefix+'-')
+  
+    def newick(self,suffix=''):
+        def wrap(value):
+            return f'({value})' if len(value)>1 else value
+        if len(self.children)==0:
+            if len(self.species)==0:
+                return ''
+            elif len(self.species)==1:
+                return self.species[0]
+            else:
+                return '(' + ','.join(self.species) + ')'
+        values = [child.newick()  for child in self.children]
+        non_trivial = [v for v in values if len(v)>0 and len(v[0])>0]
+        if len(non_trivial)==0:
+            return ''
+        if len(non_trivial)==1:
+            return non_trivial[0]
+        return '(' + ','.join(non_trivial) + ')' + suffix
+        #return ','.join([wrap(child.newick())  for child in self.children])
+      
+            
 def chbp(species,character_table):
     def entropy(freq):
         p1 = freq/n
@@ -84,32 +88,11 @@ def chbp(species,character_table):
                     Right.append(s)
             clade.children = [Clade(Left),Clade(Right)]
         Current = [child for clade in Current for child in clade.children] 
-    return Clade.toString(Root)
+    #Root.bfs()
+    #s =  Root.newick(suffix=';')
+    return Root.newick(suffix=';')#Clade.toString(Root)
 
-    #characters = [[c[i] for c in character_table] for i in range(len(species))]
-    #freqs      = [entropy(sum(character))  for character in character_table]
-    #x=0      
-    #Clades = [Clade(index=i, 
-                    #character=[c[i] for c in character_table]) for i in range(len(species))]
-    #while True:
-        #D     = [(i,j,Clades[i].distance(Clades[j]))     \
-                        #for i in range(len(Clades))      \
-                        #for j in range(i+1,len(Clades))  \
-                        #if Clades[i].fresh and Clades[j].fresh][::-1]
-        #index = np.argmin([d for _,_,d in D])
-        #i,j,_ = D[index]
-        #Clades.append(Clade(index=len(Clades),
-                            #children=[i,j],
-                            #character = np.mean([Clades[child].character for child in [i,j]],axis=0)))
-        ##if i<len(species):
-            ##print (species[i])
-        ##if j<len(species):
-            ##print (species[j])            
-        #Clades[i].fresh = False
-        #Clades[j].fresh = False
-        #if len(D)<2: break
-        ##print ()
-    #return Clade.toString(Clades,species)
+ 
     
 def expand_as_ints(s):
     return [int(c) for c in s]
@@ -151,3 +134,53 @@ if __name__=='__main__':
     minutes = int(elapsed/60)
     seconds = elapsed-60*minutes
     print (f'Elapsed Time {minutes} m {seconds:.2f} s')    
+
+
+
+    #class Clade:
+        #@staticmethod
+        #def toString(Clades,species):
+            #def bfs(clade,suffix='',index=len(species)+1):
+                #if len(clade.children)>0:
+                    #return f'({",".join([bfs(Clades[child],index=child) for child in clade.children])}){suffix}'
+                #if index<len(species):
+                    #return species[index] 
+            #return bfs(Clades[-1],suffix=';')
+            
+        #def __init__(self,index=None,character=None,children=[]):
+            #self.index     = index
+            #self.character = character
+            #self.fresh     = True
+            #self.children  = children
+            #self.weight    = max(1,len(children))
+            
+        #def distance(self,other):
+            #return sum([abs(a-b)/(self.weight+other.weight) for a,b in zip(self.character,other.character)] )
+            ##a*self.weight-b*other.weight
+            ##self.weight+other.weight
+            
+            
+            #characters = [[c[i] for c in character_table] for i in range(len(species))]
+            #freqs      = [entropy(sum(character))  for character in character_table]
+            #x=0      
+            #Clades = [Clade(index=i, 
+            #character=[c[i] for c in character_table]) for i in range(len(species))]
+            #while True:
+            #D     = [(i,j,Clades[i].distance(Clades[j]))     \
+            #for i in range(len(Clades))      \
+            #for j in range(i+1,len(Clades))  \
+            #if Clades[i].fresh and Clades[j].fresh][::-1]
+            #index = np.argmin([d for _,_,d in D])
+            #i,j,_ = D[index]
+            #Clades.append(Clade(index=len(Clades),
+            #children=[i,j],
+            #character = np.mean([Clades[child].character for child in [i,j]],axis=0)))
+            ##if i<len(species):
+            ##print (species[i])
+            ##if j<len(species):
+            ##print (species[j])            
+            #Clades[i].fresh = False
+            #Clades[j].fresh = False
+            #if len(D)<2: break
+            ##print ()
+            #return Clade.toString(Clades,species)            
