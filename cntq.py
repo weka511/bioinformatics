@@ -88,10 +88,10 @@ def cntq(n,newick):
             Unique.append(Quartets[i])
     return len(Unique),Unique
 
-# cntq is desparately slow for read problems (e.g. n=4525). This quick hack works - ignores actual tree!
+# cntq is desperately slow for real problems (e.g. n=4525). This quick hack works - ignores actual tree!
 
 def q(n):
-    return (n*(n-1)*(n-2)*(n-3))/(4*3*2*1)
+    return (n*(n-1)*(n-2)*(n-3))//(4*3*2*1)
 
 
 if __name__=='__main__':
