@@ -164,12 +164,16 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 | ---- | --------------- | ------------------------------------------------|
 |aspc|rosalind.py|[Introduction to Alternative Splicing](http://rosalind.info/problems/aspc/) |
 |cat|rosalind.py|[Catalan Numbers and RNA Secondary Structures ](http://rosalind.info/problems/cat/) (WIP)|
+|cntq|cntq.py |[Counting Quartets](http://rosalind.info/problems/cntq/)|
+|cunr|phylogeny.py|[Counting Unrooted Binary Trees](http://rosalind.info/problems/cunr/) |
+|eubt|eubt.py phylogeny.py|[Enumerating Unrooted Binary Trees](http://rosalind.info/problems/eubt/)|
 |fibd|rosalind.py|[Mortal Fibonacci Rabbits](http://rosalind.info/problems/fibd/) |
 |fib|rosalind.py|[Rabbits and Recurrence Relations](http://rosalind.info/problems/fib/) |
 |mrna|rosalind.py|[Inferring mRNA from Protein](http://rosalind.info/problems/mrna/) |
 |orf|orf.py|[Open Reading Frames](http://rosalind.info/problems/orf/)|
 |pmch|pmch.py|[Perfect Matchings and RNA Secondary Structures](http://rosalind.info/problems/pmch/) |
 |pper|rosalind.py|[Partial Permutations](http://rosalind.info/problems/pper/) |
+|root|phylogeny.py|[Counting Rooted Binary Trees ](http://rosalind.info/problems/root/) |
 
 ## [Genome Assembly](http://rosalind.info/problems/topics/genome-assembly/)
 
@@ -214,6 +218,7 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 |sc|sc.py graphs.py|[Semi-Connected Graph](http://rosalind.info/problems/sc/)|
 |sdag|sdag.py graphs.py|[Shortest Paths in DAG](http://rosalind.info/problems/sdag/)|
 |sq|sq.py graphs.py|[Square in a Graph](http://rosalind.info/problems/sq/)|
+|tree|tree.py phylogeny.py|[Completing a Tree ](http://rosalind.info/problems/tree/) |
 |trie|rosalind.py|[Introduction to Pattern Matching](http://rosalind.info/problems/trie/) |
 |ts|ts.py align.py|[Topological sort](http://rosalind.info/problems/ts/)|
 
@@ -224,6 +229,7 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 |indq|rosalind.py|[Independent Segregation of Chromosomes](http://rosalind.info/problems/indq/) |
 |iprb|rosalind.py|[Mendel's First Law](http://rosalind.info/problems/iprb/) |
 |lia|rosalind.py|[Independent Alleles](http://rosalind.info/problems/lia/) |
+|mend|mend.py phylogeny.py|[Inferring a Genotype from a Pedigree](http://rosalind.info/problems/mend/) |
 |sexl|rosalind.py|[Sex-Linked Inheritance ](http://rosalind.info/problems/sexl/) |
 
 ## [Phylogeny](http://rosalind.info/problems/topics/phylogeny/)
@@ -236,8 +242,8 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 |cstr|cstr.py phylogeny.py|[Creating a Character Table from Genetic Strings](http://rosalind.info/problems/cstr/)|
 |ctbl|ctbl.py phylogeny.py|[Creating a Character Table](http://rosalind.info/problems/ctbl/) |
 |cunr|phylogeny.py|[Counting Unrooted Binary Trees](http://rosalind.info/problems/cunr/) |
-|eubt|eubt.py phylogeny.py|[Enumerating Unrooted Binary Trees](http://rosalind.info/problems/teubt/)|
-|inod|Trivial|[Counting Phylogenetic Ancestors](http://rosalind.info/problems/inod/) |
+|eubt|eubt.py phylogeny.py|[Enumerating Unrooted Binary Trees](http://rosalind.info/problems/eubt/)|
+|inod|-|[Counting Phylogenetic Ancestors](http://rosalind.info/problems/inod/) No code needed|
 |mend|mend.py phylogeny.py|[Inferring a Genotype from a Pedigree](http://rosalind.info/problems/mend/) |
 |nkew|nwck.py|[Weighting the Tree](http://rosalind.info/problems/nkew/) |
 |nwck|nwck.py|[Distances in Trees](http://rosalind.info/problems/nwck/) |
@@ -247,7 +253,7 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 |root|phylogeny.py|[Counting Rooted Binary Trees ](http://rosalind.info/problems/root/) |
 |rsub|rsub.py|[Identifying Reversing Substitutions](http://rosalind.info/problems/rsub/) WIP|
 |sptd|sptb.py phylogeny.py|[Phylogeny Comparison with Split Distance](http://rosalind.info/problems/sptd/) |
-|tree|tree.py|[Completing a Tree ](http://rosalind.info/problems/tree/) |
+|tree|tree.py phylogeny.py|[Completing a Tree ](http://rosalind.info/problems/tree/) |
 
 ## [Population Dynamics](http://rosalind.info/problems/topics/population-dynamics/)
 
@@ -263,6 +269,7 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 | ---- | --------------- | ------------------------------------------------|
 |ebin|rosalind.py|[Wright-Fisher's Expected Behavior](http://rosalind.info/problems/ebin/) |
 |eval|rosalind.py|[Expected Number of Restriction Sites](http://rosalind.info/problems/eval/) |
+|mend|mend.py phylogeny.py|[Inferring a Genotype from a Pedigree](http://rosalind.info/problems/mend/) |
 |rstr|rosalind.py|[Matching Random Motifs](http://rosalind.info/problems/rstr/) |
 
 ## [Sequence Analysis](http://rosalind.info/problems/topics/sequence-analysis/)
@@ -340,6 +347,7 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 |loca|loca.py|[Local Alignment with Scoring Matrix ](http://rosalind.info/problems/loca/) |
 |hamm|rosalind.py|[Counting Point Mutations](http://rosalind.info/problems/hamm/) |
 |oap|oap.py|[Overlap Alignment](http://rosalind.info/problems/oap/) (wip)|
+|pdst|rosalind.py|[Creating a Distance Matrix ](http://rosalind.info/problems/pdst/) |
 |tran|rosalind.py|[Transitions and Transversions](http://rosalind.info/problems/tran/) |
 
 ## Other Problems
