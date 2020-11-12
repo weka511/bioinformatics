@@ -54,14 +54,13 @@ class Clade():
                 return self.species[0]
             else:
                 return '(' + ','.join(self.species) + ')'
-        values = [child.newick()  for child in self.children]
+        values      = [child.newick()  for child in self.children]
         non_trivial = [v for v in values if len(v)>0 and len(v[0])>0]
         if len(non_trivial)==0:
             return ''
         if len(non_trivial)==1:
             return non_trivial[0]
         return '(' + ','.join(non_trivial) + ')' + suffix
-        #return ','.join([wrap(child.newick())  for child in self.children])
       
             
 def chbp(species,character_table):
@@ -70,27 +69,31 @@ def chbp(species,character_table):
         p2 = 1-p1
         return - p1 *np.log(p1) - p2 * np.log(p2)
     
-    n          = len(species)
-    char_table_info = sorted(character_table,reverse=True,key=lambda char:entropy(sum(char)) )
-    species_table = {species[i]:i for i in range(n)}
-    Root = Clade(species)
-    Current = [Root]
-    for char in char_table_info:
-        print (char)
+    n               = len(species)
+    entropies       = [entropy(sum(char)) for char in character_table]
+    indices         = np.argsort(entropies)
+
+    Root            = Clade(list(range(n)))
+    Current         = [Root]
+    for k in range(len(character_table)):
+        character = character_table[indices[len(character_table)-k-1]]
+        l = 0
+        r = 0
         for clade in Current:
             Left = []
             Right = []
-            for s in clade.species:
-                i = species_table[s]
-                if char[i]==0:
-                    Left.append(s)
+            for i in clade.species:
+                if character[i]==0:
+                    Left.append(i)
                 else:
-                    Right.append(s)
+                    Right.append(i)
+            l=max(l,len(Left))
+            r=max(r,len(Right))
             clade.children = [Clade(Left),Clade(Right)]
+            clade.species = None
         Current = [child for clade in Current for child in clade.children] 
-    #Root.bfs()
-    #s =  Root.newick(suffix=';')
-    return Root.newick(suffix=';')#Clade.toString(Root)
+        print (k,entropies[indices[len(character_table)-k-1]],l,r)
+    return ''#Root.newick(suffix=';')
 
  
     
@@ -134,53 +137,3 @@ if __name__=='__main__':
     minutes = int(elapsed/60)
     seconds = elapsed-60*minutes
     print (f'Elapsed Time {minutes} m {seconds:.2f} s')    
-
-
-
-    #class Clade:
-        #@staticmethod
-        #def toString(Clades,species):
-            #def bfs(clade,suffix='',index=len(species)+1):
-                #if len(clade.children)>0:
-                    #return f'({",".join([bfs(Clades[child],index=child) for child in clade.children])}){suffix}'
-                #if index<len(species):
-                    #return species[index] 
-            #return bfs(Clades[-1],suffix=';')
-            
-        #def __init__(self,index=None,character=None,children=[]):
-            #self.index     = index
-            #self.character = character
-            #self.fresh     = True
-            #self.children  = children
-            #self.weight    = max(1,len(children))
-            
-        #def distance(self,other):
-            #return sum([abs(a-b)/(self.weight+other.weight) for a,b in zip(self.character,other.character)] )
-            ##a*self.weight-b*other.weight
-            ##self.weight+other.weight
-            
-            
-            #characters = [[c[i] for c in character_table] for i in range(len(species))]
-            #freqs      = [entropy(sum(character))  for character in character_table]
-            #x=0      
-            #Clades = [Clade(index=i, 
-            #character=[c[i] for c in character_table]) for i in range(len(species))]
-            #while True:
-            #D     = [(i,j,Clades[i].distance(Clades[j]))     \
-            #for i in range(len(Clades))      \
-            #for j in range(i+1,len(Clades))  \
-            #if Clades[i].fresh and Clades[j].fresh][::-1]
-            #index = np.argmin([d for _,_,d in D])
-            #i,j,_ = D[index]
-            #Clades.append(Clade(index=len(Clades),
-            #children=[i,j],
-            #character = np.mean([Clades[child].character for child in [i,j]],axis=0)))
-            ##if i<len(species):
-            ##print (species[i])
-            ##if j<len(species):
-            ##print (species[j])            
-            #Clades[i].fresh = False
-            #Clades[j].fresh = False
-            #if len(D)<2: break
-            ##print ()
-            #return Clade.toString(Clades,species)            
