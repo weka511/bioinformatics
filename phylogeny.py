@@ -334,9 +334,17 @@ def sptd(species,newick1,newick2):
 
 def mend(node):
 
+    # combine
+    #
+    # Combine two genomes with known probabilities - work out proabilites in next generation
+    #
+    # NB: the tree is a pedigree, not a phylogeny: the root is the descendent!
+    
     def combine(f1,f2):
-        return np.sum([[f*f1[i]*f2[j] for f in factors[i][j]] for i in range(3) for j in range(3)],
+        return np.sum([[f*f1[i]*f2[j] for f in factors[i][j]] for i in range(n) for j in range(n)],
                       axis=0)
+    
+    # Probability of each combination in the initial generation, when we know the genome
     
     frequencies = {
         'aa': (0,0,1),
@@ -344,12 +352,17 @@ def mend(node):
         'AA': (1,0,0)
     }
     
-    factors=[
-       [ [1,0,0],     [0.5,0.5,0],       [0,1,0]       ],
-       [ [0.5,0.5,0], [0.25, 0.5, 0.25], [0, 0.5, 0.5] ],
-       [ [0, 1,0],    [0,0.5,0.5],       [0,0,1]       ]
+    # Probabilty of each combination when we combine two genomes
+    
+    factors=[#          AA                  Aa/aA                  aa
+                [ [1.0, 0.0, 0.0],  [0.50, 0.50, 0.00],  [0.0, 1.0, 0.0] ], #AA
+                [ [0.5, 0.5, 0.0],  [0.25, 0.50, 0.25],  [0.0, 0.5, 0.5] ], #Aa/aA
+                [ [0.0, 1.0, 0.0],  [0.00, 0.50, 0.50],  [0.0, 0.0, 1.0] ]  #aa
     ]
     
+    n = len(frequencies)  # Number of combinations
+    
+    # If we are at a leaf, we have a known ancestor
     if len(node.nodes)==0:
         try: 
             return frequencies['Aa' if node.name=='aA' else node.name]
@@ -357,5 +370,5 @@ def mend(node):
             return (0,0)
         
     parent_freqs = [mend(parent) for parent in node.nodes]
-    parent_freqs = [pp for pp in parent_freqs if len(pp)==3]
+    parent_freqs = [pp for pp in parent_freqs if len(pp)==n]
     return combine(parent_freqs[0],parent_freqs[1])
