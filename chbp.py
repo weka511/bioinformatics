@@ -21,54 +21,95 @@ import time
 from   helpers import read_strings
 import numpy as np
 
-class Clade:
+#class Clade:
+    #@staticmethod
+    #def toString(Clades,species):
+        #def bfs(clade,suffix='',index=len(species)+1):
+            #if len(clade.children)>0:
+                #return f'({",".join([bfs(Clades[child],index=child) for child in clade.children])}){suffix}'
+            #if index<len(species):
+                #return species[index] 
+        #return bfs(Clades[-1],suffix=';')
+        
+    #def __init__(self,index=None,character=None,children=[]):
+        #self.index     = index
+        #self.character = character
+        #self.fresh     = True
+        #self.children  = children
+        #self.weight    = max(1,len(children))
+        
+    #def distance(self,other):
+        #return sum([abs(a-b)/(self.weight+other.weight) for a,b in zip(self.character,other.character)] )
+        ##a*self.weight-b*other.weight
+        ##self.weight+other.weight
+        
+class Clade():
     @staticmethod
-    def toString(Clades,species):
-        def bfs(clade,suffix='',index=len(species)+1):
+    def toString(Root):
+        def bfs(clade,suffix=''):
             if len(clade.children)>0:
-                return f'({",".join([bfs(Clades[child],index=child) for child in clade.children])}){suffix}'
-            if index<len(species):
-                return species[index] 
-        return bfs(Clades[-1],suffix=';')
+                pp = [bfs(child) for child in clade.children]
+                ppp=[pppp for pppp in pp if len(pppp)>0]
+                ll = ",".join(ppp) 
+                return f'({ll}){suffix}'
+            else:
+                return ','.join(clade.species)
+            
+        return bfs(Root,suffix=';')    
+    def __init__(self,species):
+        self.species = species
+        self.children = []
         
-    def __init__(self,index=None,character=None,children=[]):
-        self.index     = index
-        self.character = character
-        self.fresh     = True
-        self.children  = children
-        self.weight    = max(1,len(children))
-        
-    def distance(self,other):
-        return sum([abs(a-b)/(self.weight+other.weight) for a,b in zip(self.character,other.character)] )
-        #a*self.weight-b*other.weight
-        #self.weight+other.weight
-        
-    
 def chbp(species,character_table):
-    characters = sorted([([c[i] for c in character_table],i) for i in range(len(species))])
- 
-    x=0      
-    Clades = [Clade(index=i, 
-                    character=[c[i] for c in character_table]) for i in range(len(species))]
-    while True:
-        D     = [(i,j,Clades[i].distance(Clades[j]))     \
-                        for i in range(len(Clades))      \
-                        for j in range(i+1,len(Clades))  \
-                        if Clades[i].fresh and Clades[j].fresh][::-1]
-        index = np.argmin([d for _,_,d in D])
-        i,j,_ = D[index]
-        Clades.append(Clade(index=len(Clades),
-                            children=[i,j],
-                            character = np.mean([Clades[child].character for child in [i,j]],axis=0)))
-        #if i<len(species):
-            #print (species[i])
-        #if j<len(species):
-            #print (species[j])            
-        Clades[i].fresh = False
-        Clades[j].fresh = False
-        if len(D)<2: break
-        #print ()
-    return Clade.toString(Clades,species)
+    def entropy(freq):
+        p1 = freq/n
+        p2 = 1-p1
+        return - p1 *np.log(p1) - p2 * np.log(p2)
+    
+    n          = len(species)
+    char_table_info = sorted(character_table,reverse=True,key=lambda char:entropy(sum(char)) )
+    species_table = {species[i]:i for i in range(n)}
+    Root = Clade(species)
+    Current = [Root]
+    for char in char_table_info:
+        print (char)
+        for clade in Current:
+            Left = []
+            Right = []
+            for s in clade.species:
+                i = species_table[s]
+                if char[i]==0:
+                    Left.append(s)
+                else:
+                    Right.append(s)
+            clade.children = [Clade(Left),Clade(Right)]
+        Current = [child for clade in Current for child in clade.children] 
+    return Clade.toString(Root)
+
+    #characters = [[c[i] for c in character_table] for i in range(len(species))]
+    #freqs      = [entropy(sum(character))  for character in character_table]
+    #x=0      
+    #Clades = [Clade(index=i, 
+                    #character=[c[i] for c in character_table]) for i in range(len(species))]
+    #while True:
+        #D     = [(i,j,Clades[i].distance(Clades[j]))     \
+                        #for i in range(len(Clades))      \
+                        #for j in range(i+1,len(Clades))  \
+                        #if Clades[i].fresh and Clades[j].fresh][::-1]
+        #index = np.argmin([d for _,_,d in D])
+        #i,j,_ = D[index]
+        #Clades.append(Clade(index=len(Clades),
+                            #children=[i,j],
+                            #character = np.mean([Clades[child].character for child in [i,j]],axis=0)))
+        ##if i<len(species):
+            ##print (species[i])
+        ##if j<len(species):
+            ##print (species[j])            
+        #Clades[i].fresh = False
+        #Clades[j].fresh = False
+        #if len(D)<2: break
+        ##print ()
+    #return Clade.toString(Clades,species)
     
 def expand_as_ints(s):
     return [int(c) for c in s]
