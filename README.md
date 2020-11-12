@@ -196,7 +196,7 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 | ---- | --------------- | ------------------------------------------------|
 |2sat|sat.py graphs.py|[2-Satisfiability](http://rosalind.info/problems/2sat/)|
 |bf|bf.py graphs.py|[Bellman-Ford Algorithm](http://rosalind.info/problems/bf/)|
-|bfs|bfs.py|[Beadth First search](http://rosalind.info/problems/bfs/) |
+|bfs|bfs.py|[Breadth First search](http://rosalind.info/problems/bfs/) |
 |bins|BINS.py|[Binary Search](http://rosalind.info/problems/bins/) |
 |bip|bip.py graphs.py|[Testing Bipartiteness](http://rosalind.info/problems/bip/) |
 |cc|cc.py graphs.py|[Connected Components](http://rosalind.info/problems/cc/) |
