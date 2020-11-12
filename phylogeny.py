@@ -16,6 +16,7 @@
 # Phylogeny -- http://rosalind.info/problems/topics/phylogeny/
 
 import re
+import numpy as np
 
 #  tree -- Completing a Tree 
 #
@@ -322,3 +323,39 @@ def sptd(species,newick1,newick2):
 
     return ds(replace_leaves(create_adj(parse(newick1,start=n))),
               replace_leaves(create_adj(parse(newick2,start=n))))
+
+# MEND Inferring Genotype from a Pedigree
+#
+# Given: A rooted binary tree T in Newick format encoding an individual's pedigree 
+#       for a Mendelian factor whose alleles are A (dominant) and a (recessive).
+#
+#       Return: Three numbers between 0 and 1, corresponding to the respective probabilities
+#       that the individual at the root of T will exhibit the "AA", "Aa" and "aa" genotypes.
+
+def mend(node):
+
+    def combine(f1,f2):
+        return np.sum([[f*f1[i]*f2[j] for f in factors[i][j]] for i in range(3) for j in range(3)],
+                      axis=0)
+    
+    frequencies = {
+        'aa': (0,0,1),
+        'Aa': (0,1,0),
+        'AA': (1,0,0)
+    }
+    
+    factors=[
+       [ [1,0,0],     [0.5,0.5,0],       [0,1,0]       ],
+       [ [0.5,0.5,0], [0.25, 0.5, 0.25], [0, 0.5, 0.5] ],
+       [ [0, 1,0],    [0,0.5,0.5],       [0,0,1]       ]
+    ]
+    
+    if len(node.nodes)==0:
+        try: 
+            return frequencies['Aa' if node.name=='aA' else node.name]
+        except KeyError:
+            return (0,0)
+        
+    parent_freqs = [mend(parent) for parent in node.nodes]
+    parent_freqs = [pp for pp in parent_freqs if len(pp)==3]
+    return combine(parent_freqs[0],parent_freqs[1])

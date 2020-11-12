@@ -231,14 +231,14 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 | ---- | --------------- | ------------------------------------------------|
 |alph|alph.py|[Alignment-Based Phylogeny](http://rosalind.info/problems/alph/) WIP|
 |chbp|chbp.py phylogeny.py|[Character-Based Phylogeny](http://rosalind.info/problems/chbp/) WIP|
-|cntq|chtq.py |[Counting Quartets](http://rosalind.info/problems/cntq/)|
+|cntq|cntq.py |[Counting Quartets](http://rosalind.info/problems/cntq/)|
 |cset|cset.py|[Fixing an Inconsistent Character Set](http://rosalind.info/problems/cset/) WIP|
 |cstr|cstr.py phylogeny.py|[Creating a Character Table from Genetic Strings](http://rosalind.info/problems/cstr/)|
 |ctbl|ctbl.py phylogeny.py|[Creating a Character Table](http://rosalind.info/problems/ctbl/) |
 |cunr|phylogeny.py|[Counting Unrooted Binary Trees](http://rosalind.info/problems/cunr/) |
 |eubt|eubt.py phylogeny.py|[Enumerating Unrooted Binary Trees](http://rosalind.info/problems/teubt/)|
 |inod|Trivial|[Counting Phylogenetic Ancestors](http://rosalind.info/problems/inod/) |
-|mend|mend.py|[Inferring a Genotype from a Pedigree](http://rosalind.info/problems/mend/) |
+|mend|mend.py phylogeny.py|[Inferring a Genotype from a Pedigree](http://rosalind.info/problems/mend/) |
 |nkew|nwck.py|[Weighting the Tree](http://rosalind.info/problems/nkew/) |
 |nwck|nwck.py|[Distances in Trees](http://rosalind.info/problems/nwck/) |
 |pdst|rosalind.py|[Creating a Distance Matrix ](http://rosalind.info/problems/pdst/) |
