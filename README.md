@@ -213,6 +213,7 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 |grph|graphs.py|[Overlap Graphs](http://rosalind.info/problems/grph/) |
 |gs|gs.py graphs.py|[General Sink](http://rosalind.info/problems/gs/)|
 |hdag|hdag.py graphs.py|[Hamiltonian Path in DAG](http://rosalind.info/problems/hdag/) |
+|lrep|lrep.py|[Finding the Longest Multiple Repeat](http://rosalind.info/problems/lrep/) [WIP](https://github.com/weka511/bioinformatics/issues/51)|
 |nwc|nwc.py graphs.py|[Negative Weight Cycle](http://rosalind.info/problems/nwc/)|
 |scc|scc.py graphs.py|[Strongly Connected Components](http://rosalind.info/problems/scc/)|
 |sc|sc.py graphs.py|[Semi-Connected Graph](http://rosalind.info/problems/sc/)|
