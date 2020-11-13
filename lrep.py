@@ -20,11 +20,82 @@ import os
 import time
 from   helpers import read_strings
 
-def create_suffix_tree(string,symbols='ATCG$'):
-    starts = {s:[] for s in symbols}
-    for i in range(len(string)):
-        starts[string[i]].append(i)
+class Node:
+    seq = 0
+    def __init__(self):
+        self.Edges =  {}
+        self.Label =  None
+        self.seq   =  Node.seq
+        Node.seq   += 1
         
+    def isLeaf(self):
+        return len(self.Edges)==0
+    
+    def bfs(self,
+            prefix        = '',
+            visitLeaf     = lambda prefix,node:print (f'{prefix}{node.Label}'),
+            visitInternal = lambda prefix,symbol,node:print (f'{prefix}{symbol}')):
+        if self.isLeaf():
+            visitLeaf(prefix,self)
+        else:
+            for symbol,edge in self.Edges.items():
+                visitInternal(prefix,symbol,self)
+                edge.EndingNode.bfs(prefix + '-')
+                           
+class Edge:
+    def __init__(self,EndingNode,Position):
+        self.EndingNode = EndingNode
+        self.Position   = Position
+        
+def create_suffix_trie(Text):
+    Nodes = []
+    Trie = Node()
+    Nodes.append(Trie)
+    
+    for i in range(len(Text)):
+        currentNode = Trie
+        for j in range(i,len(Text)):
+            currentSymbol = Text[j]
+            if currentSymbol in currentNode.Edges:
+                currentNode = currentNode.Edges[currentSymbol].EndingNode
+            else:
+                newNode                          = Node()
+                Nodes.append(newNode)
+                newEdge                          = Edge(newNode,j)
+                currentNode.Edges[currentSymbol] = newEdge
+                currentNode                      = newNode
+        if currentNode.isLeaf():
+            currentNode.Label = i
+        
+    return Trie,Nodes
+ 
+def create_suffix_tree(Text):
+    def create_branches(Nodes):
+        OpenNodes  = {node.seq: node for node in Nodes if len(node.Edges)==1}
+        
+        for seq in sorted([seq for seq in OpenNodes.keys()]):
+            if seq in OpenNodes:
+                node   = OpenNodes.pop(seq)
+                Branch = [Node]
+                keys   = []
+                while len(node.Edges)==1:
+                    key    = list(node.Edges.keys())[0]
+                    node   = node.Edges[key].EndingNode
+                    Branch.append(node)
+                    keys.append(key)
+                    OpenNodes.pop(node.seq,'')
+                
+                yield Branch,keys
+    
+    Trie,Nodes = create_suffix_trie(Text)
+    
+    for Branch,keys in create_branches(Nodes):
+        text      = ''.join(keys)
+        firstNode = Branch[0]
+        lastNode  = Branch[-1]
+        print (text,[key for key in lastNode.Edges.keys()])
+        if len(lastNode.Edges)==0:
+            pass
     x=0
     
 if __name__=='__main__':
@@ -34,7 +105,9 @@ if __name__=='__main__':
     parser.add_argument('--rosalind', default=False, action='store_true', help='process Rosalind dataset')
     args = parser.parse_args()
     if args.sample:
-        create_suffix_tree('GTCCGAAGCTCCGG$')
+        Trie,_ = create_suffix_trie('GTCCGAAGCTCCGG$')
+        Trie.bfs()
+        #create_suffix_tree('GTCCGAAGCTCCGG$')
         
     
 
