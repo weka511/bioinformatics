@@ -31,16 +31,23 @@ class Node:
     def isLeaf(self):
         return len(self.Edges)==0
     
+    def get_symbols(self):
+        return list(self.Edges.keys())
+    
     def bfs(self,
             prefix        = '',
-            visitLeaf     = lambda prefix,node:print (f'{prefix}{node.Label}'),
-            visitInternal = lambda prefix,symbol,node:print (f'{prefix}{symbol}')):
+            predecessor   = None,
+            visitLeaf     = lambda prefix,node:None,
+            visitInternal = lambda prefix,symbol,node,predecessor:None):
         if self.isLeaf():
             visitLeaf(prefix,self)
         else:
             for symbol,edge in self.Edges.items():
-                visitInternal(prefix,symbol,self)
-                edge.EndingNode.bfs(prefix + '-')
+                visitInternal(prefix,symbol,self,predecessor)
+                edge.EndingNode.bfs(prefix        = prefix + '-',
+                                    predecessor   = self,
+                                    visitLeaf     = visitLeaf,
+                                    visitInternal = visitInternal)
                            
 class Edge:
     def __init__(self,EndingNode,Position):
@@ -48,9 +55,7 @@ class Edge:
         self.Position   = Position
         
 def create_suffix_trie(Text):
-    Nodes = []
     Trie = Node()
-    Nodes.append(Trie)
     
     for i in range(len(Text)):
         currentNode = Trie
@@ -60,44 +65,45 @@ def create_suffix_trie(Text):
                 currentNode = currentNode.Edges[currentSymbol].EndingNode
             else:
                 newNode                          = Node()
-                Nodes.append(newNode)
                 newEdge                          = Edge(newNode,j)
                 currentNode.Edges[currentSymbol] = newEdge
                 currentNode                      = newNode
         if currentNode.isLeaf():
             currentNode.Label = i
         
-    return Trie,Nodes
+    return Trie
  
-def create_suffix_tree(Text):
-    def create_branches(Nodes):
-        OpenNodes  = {node.seq: node for node in Nodes if len(node.Edges)==1}
-        
-        for seq in sorted([seq for seq in OpenNodes.keys()]):
-            if seq in OpenNodes:
-                node   = OpenNodes.pop(seq)
-                Branch = [Node]
-                keys   = []
-                while len(node.Edges)==1:
-                    key    = list(node.Edges.keys())[0]
-                    node   = node.Edges[key].EndingNode
-                    Branch.append(node)
-                    keys.append(key)
-                    OpenNodes.pop(node.seq,'')
-                
-                yield Branch,keys
+def create_branches(Trie):      
+    def visitInternal(prefix,symbol,node,predecessor,Branches):
+        if len(node.Edges.items())==1:
+            if len(predecessor.Edges)>1:
+                print (f'<<{predecessor.get_symbols()}')
+                if len(Branches[-1])>0:
+                    Branches.append([])
+                #Branches[-1].append(predecessor)
+            Branches[-1].append(node)
+            b = ''.join(s for n in Branches[-1] for s in n.get_symbols())
+            print (f'{node.seq} {node.get_symbols()} {b}')
+        else:
+            if len(Branches[-1])>0:
+                Branches.append([])
+            
+    def visitLeaf(prefix,node,Branches):
+        if len(Branches[-1])>0:
+            Branches.append([])
     
-    Trie,Nodes = create_suffix_trie(Text)
+    Branches      = [[]]
     
-    for Branch,keys in create_branches(Nodes):
-        text      = ''.join(keys)
-        firstNode = Branch[0]
-        lastNode  = Branch[-1]
-        print (text,[key for key in lastNode.Edges.keys()])
-        if len(lastNode.Edges)==0:
-            pass
-    x=0
+    Trie.bfs(visitLeaf     = lambda prefix,node:visitLeaf (prefix,node,Branches),
+             visitInternal = lambda prefix,symbol,node,predecessor: visitInternal(prefix,symbol,node,predecessor,Branches))
+   
+    return Branches
+
+def create_suffix_tree(Trie):
+    pass   
     
+ 
+
 if __name__=='__main__':
     start = time.time()
     parser = argparse.ArgumentParser('....')
@@ -105,9 +111,16 @@ if __name__=='__main__':
     parser.add_argument('--rosalind', default=False, action='store_true', help='process Rosalind dataset')
     args = parser.parse_args()
     if args.sample:
-        Trie,_ = create_suffix_trie('GTCCGAAGCTCCGG$')
-        Trie.bfs()
-        #create_suffix_tree('GTCCGAAGCTCCGG$')
+        Trie = create_suffix_trie('GTCCGAAGCTCCGG$')
+        Trie.bfs(visitLeaf     = lambda prefix,node:print (f'{prefix}{node.Label}'),
+                 visitInternal = lambda prefix,symbol,node,predecessor:print (f'{prefix}{symbol}'))
+        print ('==========')
+        for Branch in create_branches(Trie):
+            symbols = [s for node in Branch for s in node.Edges.keys()]
+            if len(symbols)>0:
+                print ('-'.join(symbols))
+        x=0        
+        #Tree = create_suffix_tree(Trie)
         
     
 
