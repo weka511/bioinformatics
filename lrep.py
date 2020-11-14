@@ -77,13 +77,14 @@ def create_branches(Trie):
     def visitInternal(prefix,symbol,node,predecessor,Branches):
         if len(node.Edges.items())==1:
             if len(predecessor.Edges)>1:
-                print (f'<<{predecessor.get_symbols()}')
+                #print (f'<<{predecessor.get_symbols()}')
                 if len(Branches[-1])>0:
                     Branches.append([])
+                Predecessors.append(predecessor)
                 #Branches[-1].append(predecessor)
             Branches[-1].append(node)
-            b = ''.join(s for n in Branches[-1] for s in n.get_symbols())
-            print (f'{node.seq} {node.get_symbols()} {b}')
+            #b = ''.join(s for n in Branches[-1] for s in n.get_symbols())
+            #print (f'{node.seq} {node.get_symbols()} {b}')
         else:
             if len(Branches[-1])>0:
                 Branches.append([])
@@ -93,10 +94,15 @@ def create_branches(Trie):
             Branches.append([])
     
     Branches      = [[]]
-    
+    Predecessors  = []
     Trie.bfs(visitLeaf     = lambda prefix,node:visitLeaf (prefix,node,Branches),
              visitInternal = lambda prefix,symbol,node,predecessor: visitInternal(prefix,symbol,node,predecessor,Branches))
-   
+    #print( len(Predecessors),len(Branches))
+    #for b in Branches:
+        #print (len(b))
+    if len(Branches[-1])==0:
+        Branches.pop()
+    assert len(Predecessors)==len(Branches) 
     return Branches
 
 def create_suffix_tree(Trie):
