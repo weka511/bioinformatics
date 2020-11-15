@@ -219,6 +219,7 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 |sc|sc.py graphs.py|[Semi-Connected Graph](http://rosalind.info/problems/sc/)|
 |sdag|sdag.py graphs.py|[Shortest Paths in DAG](http://rosalind.info/problems/sdag/)|
 |sq|sq.py graphs.py|[Square in a Graph](http://rosalind.info/problems/sq/)|
+|suff|suff.py|[Creating a Suffix Tree]((http://rosalind.info/problems/suff/) [](https://github.com/weka511/bioinformatics/issues/52)|
 |tree|tree.py phylogeny.py|[Completing a Tree ](http://rosalind.info/problems/tree/) |
 |trie|rosalind.py|[Introduction to Pattern Matching](http://rosalind.info/problems/trie/) |
 |ts|ts.py align.py|[Topological sort](http://rosalind.info/problems/ts/)|
