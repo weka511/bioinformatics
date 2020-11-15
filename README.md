@@ -281,7 +281,7 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 |orfr|orfr.py|[Finding Genes with Open Reading Frames](http://rosalind.info/problems/orfr/) |
 |ptra|PTRA.py|[Protein Translation](http://rosalind.info/problems/ptra/) |
 
-## [Sorting](http://rosalind.info/problems/topics/sorting/)|
+## [Sorting](http://rosalind.info/problems/topics/sorting/)
 
 | # | Location | Description |
 | ---- | --------------- | ------------------------------------------------|
@@ -318,7 +318,7 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 |sseq|rosalind.py|[Finding a Spliced Motif](http://rosalind.info/problems/sseq/) |
 |subs|rosalind.py|[Finding a Motif in DNA](http://rosalind.info/problems/subs/) |
 
-## [Computational Mass Spectrometry](http://rosalind.info/problems/topics/computational-mass-spectrometry/)|
+## [Computational Mass Spectrometry](http://rosalind.info/problems/topics/computational-mass-spectrometry/)
 
 | # | Location | Description |
 | ---- | --------------- | ------------------------------------------------|
