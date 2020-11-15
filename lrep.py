@@ -19,64 +19,74 @@ import argparse
 import os
 import time
 from   helpers import read_strings
+from   numpy import argsort
 
+def lrep(text,target_count,edges):
+    
+    # extract_entries_from_edges
+    #
+    # Convert edges from string to list of lists:
+    #       -from
+    #       -to
+    #       - start of substring
+    #       - length of substring
+    
+    def extract_entries_from_edges():
+        return [[int(e.replace('node','')) for e in edge.split()] for edge in edges]
+    
+    # standardize_entry
+    #
+    # 1. If string includes '$', remove it (so it matches same substring as internal)
+    # 2. Change start of substring to have zero offset as in Python
+    
+    def standardize_entry(entry):
+        link1,link2,pos,length = entry
+        if pos+length>len(text):
+            length -=1
+        return [link1,link2,pos-1,length]
+    
+    # remove_duplicates
+    def remove_duplicates(entries):
+        Result = []
+        i = 0
+        while i < len(entries):
+            j = i + 1
+            while j<len(entries) and entries[i][LENGTH]==entries[j][LENGTH]:
+                j +=1
+            same_length = sorted(entries[i:j],key=lambda x:x[POS])
+            Result.append(entries[i])
+            for k in range(i+1,j):
+                if Result[-1][POS]!=entries[k][POS]:
+                    Result.append(entries[k])
+            i = j
+        return Result
+    
+    POS    = 2 # Index in entry
+    LENGTH = 3 # Index in entry 
+    n      = len(text)
 
-
-class Node:
-    def __init__(self,seq):
-        self.seq        = seq
-        self.edges      = []
-    def bfs(self,
-            Nodes,
-            text,
-            prefix        = '',
-            visitLeaf     = lambda prefix:None,
-            visitInternal = lambda prefix,symbol:None):
-        if len(self.edges)==0:
-            visitLeaf(prefix)
-        else:
-            for next_pos,s,l in self.edges:
-                visitInternal(prefix,text[s:s+l])
-                Nodes[next_pos].bfs(Nodes,
-                                    text,
-                                    prefix        = prefix + '-',
-                                    visitLeaf     = visitLeaf,
-                                    visitInternal = visitInternal)
-        
-def lrep(text,k,edges):
-    entries    = sorted([[int(e.replace('node','')) for e in edge.split()] for edge in edges],key=lambda x:-x[-1])
-    #for i in range(len(entries)):
-        #_,_,pos_i,length_i = entries[i]
-        #if pos_i+length_i>len(text):
-            #length_i-=1
-        #for j in range(i,len(entries)):
-            #_,_,pos_j,length_j = entries[j]
-            #if pos_j==pos_i: continue
-            #if pos_j+length_j>len(text):
-                #length_j-=1        
-            #if text[pos_i-1:pos_i-1+length_i]==text[pos_j-1:pos_j-1+length_j]:
-                #while pos_i>1 and pos_j>1 and text[pos_i-2]==text[pos_j-2]:
-                    #pos_i    -= 1
-                    #pos_j    -= 1
-                    #length_i += 1
-                #return text[pos_i-1:pos_i-1+length_i]
-    return "foo"
-    #def create_suffix_tree():
-        #Nodes = []
-        #for edge in edges:
-            #entry = [int(e.replace('node','')) for e in edge.split()]
-            #while len(Nodes)<max(entry[0],entry[1]):
-                #Nodes.append(None)
-            #if Nodes[entry[0]-1] ==None:
-                #Nodes[entry[0]-1] = Node(entry[0]-1)
-            #if Nodes[entry[1]-1] ==None:
-                #Nodes[entry[1]-1] = Node(entry[1]-1)
-            #Nodes[entry[0]-1].edges.append([entry[1]-1,entry[2]-1,entry[3]])
-        #return Nodes
-    #Nodes = create_suffix_tree()
-    #Nodes[0].bfs(Nodes,s,
-                 #visitInternal = lambda prefix,symbol:print (f'{prefix}{symbol}'))
-    x=0
+    # Sort entries into descending order by length
+    entries = remove_duplicates(
+                   sorted([standardize_entry(entry) for entry in extract_entries_from_edges()],
+                          key=lambda x:-x[LENGTH]))
+    i = 0
+    while True:
+        j       = i
+        strings = []
+        while entries[j][LENGTH] == entries[i][LENGTH]:
+            strings.append(text[entries[j][POS]: entries[j][POS] + entries[j][LENGTH]])
+            j += 1
+        if len(strings)>=target_count:
+            indices = argsort(strings)
+            for k in range(len(strings)):
+                candidate = strings[indices[k]]
+                m         = k + 1
+                while m<  len(strings) and strings[indices[m]]==candidate:
+                    if m-k >= target_count-1:  return candidate
+                    m += k
+                k = m
+        i = j+1
+  
 
 if __name__=='__main__':
     start = time.time()
@@ -116,101 +126,3 @@ if __name__=='__main__':
     minutes = int(elapsed/60)
     seconds = elapsed - 60*minutes
     print (f'Elapsed Time {minutes} m {seconds:.2f} s') 
-        
-        
-        #Trie = create_suffix_trie('GTCCGAAGCTCCGG$')
-        #Trie.bfs(visitLeaf     = lambda prefix,node:print (f'{prefix}{node.Label}'),
-                 #visitInternal = lambda prefix,symbol,node,predecessor:print (f'{prefix}{symbol}'))
-        #print ('==========')
-        #Branches,Predecessors = create_branches(Trie)
-        #for Branch,pre in zip(Branches,Predecessors):
-            #_,symbol = pre
-            #symbols = [s for node in Branch for s in node.Edges.keys()]
-            #if len(symbols)>0:
-                #print (f'{symbol}-{"".join(symbols)}')
-        #x=0        
-        #Tree = create_suffix_tree(Trie)
-
-    #class Node:
-        #seq = 0
-        #def __init__(self):
-            #self.Edges =  {}
-            #self.Label =  None
-            #self.seq   =  Node.seq
-            #Node.seq   += 1
-            
-        #def isLeaf(self):
-            #return len(self.Edges)==0
-        
-        #def get_symbols(self):
-            #return list(self.Edges.keys())
-        
-        #def bfs(self,
-                #prefix        = '',
-                #predecessor   = None,
-                #visitLeaf     = lambda prefix,node:None,
-                #visitInternal = lambda prefix,symbol,node,predecessor:None):
-            #if self.isLeaf():
-                #visitLeaf(prefix,self)
-            #else:
-                #for symbol,edge in self.Edges.items():
-                    #visitInternal(prefix,symbol,self,predecessor)
-                    #edge.EndingNode.bfs(prefix        = prefix + '-',
-                                        #predecessor   = self,
-                                        #visitLeaf     = visitLeaf,
-                                        #visitInternal = visitInternal)
-                               
-    #class Edge:
-        #def __init__(self,EndingNode,Position):
-            #self.EndingNode = EndingNode
-            #self.Position   = Position
-            
-    #def create_suffix_trie(Text):
-        #Trie = Node()
-        
-        #for i in range(len(Text)):
-            #currentNode = Trie
-            #for j in range(i,len(Text)):
-                #currentSymbol = Text[j]
-                #if currentSymbol in currentNode.Edges:
-                    #currentNode = currentNode.Edges[currentSymbol].EndingNode
-                #else:
-                    #newNode                          = Node()
-                    #newEdge                          = Edge(newNode,j)
-                    #currentNode.Edges[currentSymbol] = newEdge
-                    #currentNode                      = newNode
-            #if currentNode.isLeaf():
-                #currentNode.Label = i
-            
-        #return Trie
-     
-    #def create_branches(Trie):
-        
-        #def visitInternal(prefix,symbol,node,predecessor,Branches):
-            #if len(node.Edges.items())==1:
-                #if len(predecessor.Edges)>1:
-                    #if len(Branches[-1])>0:
-                        #Branches.append([])
-                    #Predecessors.append((predecessor,symbol))
-                #Branches[-1].append(node)
-    
-            #else:
-                #if len(Branches[-1])>0:
-                    #Branches.append([])
-                
-        #def visitLeaf(prefix,node,Branches):
-            #if len(Branches[-1])>0:
-                #Branches.append([])
-        
-        #Branches      = [[]]
-        #Predecessors  = []
-        #Trie.bfs(visitLeaf     = lambda prefix,node:visitLeaf (prefix,node,Branches),
-                 #visitInternal = lambda prefix,symbol,node,predecessor: visitInternal(prefix,symbol,node,predecessor,Branches))
-    
-        #if len(Branches[-1])==0:
-            #Branches.pop()
-        #assert len(Predecessors)==len(Branches) 
-        #return Branches,Predecessors
-    
-    #def create_suffix_tree(Trie):
-        #pass   
