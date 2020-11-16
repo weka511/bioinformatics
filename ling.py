@@ -1,4 +1,4 @@
-#    Copyright (C) 2019 Greenweaves Software Limited
+#    Copyright (C) 2019-2020 Greenweaves Software Limited
 #
 #    This is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -11,15 +11,21 @@
 #    GNU General Public License for more details.
 #
 #    You should have received a copy of the GNU General Public License
-#    along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>
 #
+#    LING   Linguistic Complexity of a Genome
+
+import argparse
+import os
+import time
+from   helpers import read_strings
 
 def ling(s,a=4):
     def sub():
         def subk(k):
             kmers=set()
             for i in range(len(s)-k+1):
-                print (s[i:i+k])
+                #print (s[i:i+k])
                 kmers.add(s[i:i+k])
             return len(kmers)
         return sum(subk(k) for k in range(1,len(s)+1))
@@ -31,4 +37,24 @@ def ling(s,a=4):
     return sub()/m(len(s))
 
 if __name__=='__main__':
-    print (ling('ATTTGGATT'))
+    start = time.time()
+    parser = argparse.ArgumentParser('....')
+    parser.add_argument('--sample',   default=False, action='store_true', help='process sample dataset')
+    parser.add_argument('--rosalind', default=False, action='store_true', help='process Rosalind dataset')
+    args = parser.parse_args()
+    if args.sample:
+        print (ling('ATTTGGATT'))
+
+    if args.rosalind:
+        Input  = read_strings(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt')
+ 
+        Result = ling(Input[0])
+        print (Result)
+        with open(f'{os.path.basename(__file__).split(".")[0]}.txt','w') as f:
+            for line in Result:
+                f.write(f'{line}\n')
+                
+    elapsed = time.time() - start
+    minutes = int(elapsed/60)
+    seconds = elapsed - 60*minutes
+    print (f'Elapsed Time {minutes} m {seconds:.2f} s') 
