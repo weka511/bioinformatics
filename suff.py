@@ -21,21 +21,30 @@ import time
 from   helpers import read_strings
 
 class Node:
+    
+    seq = 0
+    
     def __init__(self):
+        self.seq       = Node.seq
         self.edges     = {}
         self.positions = {}
         self.label     = None
+        Node.seq       += 1
         
     def bfs(self,
-            prefix        = '',
-            visitLeaf     = lambda label,prefix:print (f'{prefix} {label}'),
-            visitInternal = lambda node,symbol,position,prefix: print (f'{prefix} {symbol} {position}')):
+            path          = [],
+            propagatePath = lambda path: path,
+            visitLeaf     = lambda label,path:None,
+            visitInternal = lambda node,symbol,position,path: None):
         if len(self.edges)==0:
-            visitLeaf(self.label,prefix+'-')
+            visitLeaf(self.label,propagatePath(path))
         else:
             for symbol,node in self.edges.items():
-                visitInternal(node,symbol,self.positions[symbol],prefix)
-                node.bfs(prefix+'-')
+                visitInternal(node,symbol,self.positions[symbol],path)
+                node.bfs(propagatePath(path),
+                         propagatePath,
+                         visitInternal=visitInternal,
+                         visitLeaf=visitLeaf)
                 
 def suff(string):
     def createTrie():
@@ -54,9 +63,48 @@ def suff(string):
             if len(currentNode.edges)==0:
                 currentNode.label = i
         return Trie
-    
+ 
+    def convertToTree(Trie):
+        Starts = []
+        def identifyBranchPoints(node,symbol,position,prefix):
+            if len(node.edges)>1:
+                Starts.append(node)
+                print (symbol,position,node.seq,len(node.edges))
+        
+        Trie.bfs(visitInternal=identifyBranchPoints)
+
+        for node in Starts:
+            branches  = {}
+            jumps     = {}
+            positions = {}
+            for symbol,nextNode in node.edges.items():
+                candidateBranch = [symbol]
+                while len(list(nextNode.edges.items()))==1:
+                    nextSymbol    = list(nextNode.edges.keys())[0]
+                    nextNode      = nextNode.edges[nextSymbol]
+                    candidateBranch.append(nextSymbol)
+                if len(candidateBranch)>1:
+                    branches[symbol]            = ''.join(candidateBranch)
+                    jumps[branches[symbol]]     = nextNode
+                    positions[branches[symbol]] = node.positions[symbol]
+            for symbol,symbols in branches.items():
+                node.edges[symbols]     = jumps[symbols]
+                node.positions[symbols] = positions[symbols]
+                del node.edges[symbol]
+                del node.positions[symbol]
+                
     Trie = createTrie()
-    Trie.bfs()
+    convertToTree(Trie)
+    Trie.bfs(path        = '',
+            propagatePath = lambda path: path,
+            visitLeaf     = lambda label,prefix:None,
+            visitInternal = lambda node,symbol,position,prefix: print (f'{symbol}'))
+    #Trie.bfs(path        = '',
+            #propagatePath = lambda path: path+'-',
+            #visitLeaf     = lambda label,prefix:print (f'{prefix} {label}'),
+            #visitInternal = lambda node,symbol,position,prefix: print (f'{prefix} {symbol} {position}'))    
+    
+    return []
     
 if __name__=='__main__':
     start = time.time()
@@ -68,15 +116,13 @@ if __name__=='__main__':
         for substring in suff('ATAAATG$'):
             print (substring)
         
-    
-
     if args.rosalind:
         Input  = read_strings(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt')
  
-        Result = None
-        print (Result)
+        Result = suff(Input[0])
         with open(f'{os.path.basename(__file__).split(".")[0]}.txt','w') as f:
             for line in Result:
+                print (line)
                 f.write(f'{line}\n')
                 
     elapsed = time.time() - start
