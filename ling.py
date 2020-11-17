@@ -19,20 +19,21 @@ import argparse
 import os
 import time
 from   helpers import read_strings
+from   graphs  import suff
 
 def ling(s,a=4):
     def sub():
-        def subk(k):
-            kmers=set()
-            for i in range(len(s)-k+1):
-                #print (s[i:i+k])
-                kmers.add(s[i:i+k])
-            return len(kmers)
-        return sum(subk(k) for k in range(1,len(s)+1))
+        substrings = suff(s)
+        return len(set(substrings))
+
+        #def subk(k):
+            #kmers=set()
+            #for i in range(len(s)-k+1):
+                #kmers.add(s[i:i+k])
+            #return len(kmers)
+        #return sum(subk(k) for k in range(1,len(s)+1))
     def m(n):
-        def mm(k):
-            return a if k==1 else n-k+1
-        return sum(mm(k) for k in range(1,n+1))
+        return sum(a if k==1 else n-k+1 for k in range(1,n+1))
 
     return sub()/m(len(s))
 
