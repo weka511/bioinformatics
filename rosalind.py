@@ -24,7 +24,7 @@ import random
 import re
 import sys
 
-from helpers import translate,count_subset,create_frequency_table,best,triplets,binomial_coefficients
+from helpers import count_subset,create_frequency_table,best,triplets,binomial_coefficients
 from helpers import prod,zeroes,k_mers,iterate_markov,create_wf_initial_probabilites,create_wf_transition_matrix
 from helpers import create_binomial,binomial_index,rotate,linearSpectrum,countMatchesInSpectra,cycloSpectrum1,get_mass
 from fasta import FastaContent
@@ -430,7 +430,11 @@ def count_nucleotides(s):
 # Return: The transcribed RNA string of t.
 
 def dna_to_rna(dna):
-    return translate(dna,{'A': 'A', 'C': 'C', 'G':'G', 'T': 'U'})
+    return dna.translate({
+                ord('A'): 'A',
+                ord('C'): 'C',
+                ord('G'):'G', 
+                ord('T'): 'U'})   
 
 ### Where in the Genome does DNA raplication begin? ###
 

@@ -67,9 +67,6 @@ def print_list(list,path=r'c:\temp\out.text'):
             out.write('{0} {1}'.format(sep,el))
             sep = ' '
         
-def translate(string,trans):
-    return ''.join([trans[c] for c in string])
-
 # count_subset
 #
 # Count occurences of specific characters

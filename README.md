@@ -313,7 +313,7 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 |revc|rosalind.py| [Complementing a Strand of DNA](http://rosalind.info/problems/revc/)|
 |prot|rosalind.py|[Translating RNA into Protein](http://rosalind.info/problems/prot/) |
 |revp|rosalind.py| [Locating Restriction Sites](http://rosalind.info/problems/revp/)|
-|rna|rosalind.py|[Transcribing DNA into RNA](http://rosalind.info/problems/rna/) |
+|rna|rna.py rosalind.py|[Transcribing DNA into RNA](http://rosalind.info/problems/rna/) |
 |scsp|scsp.py|[Interleaving Two Motifs](http://rosalind.info/problems/scsp/)|
 |splc|rosalind.py|[RNA Splicing](http://rosalind.info/problems/splc/) |
 |sseq|rosalind.py|[Finding a Spliced Motif](http://rosalind.info/problems/sseq/) |
