@@ -15,6 +15,7 @@
 #
 #    Function to solve graphs problems from http://rosalind.info/problems/topics/graphs/
 
+from   functools   import reduce
 from   helpers     import create_adjacency
 from   align       import topological_order
 from   collections import deque
@@ -600,3 +601,141 @@ def grph(fasta,k):
                 graph.append((name_s,name_t))
             
     return graph
+
+def suff(string):
+    
+    class Node:
+        
+        seq = 0
+        
+        def __init__(self):
+            self.seq       = Node.seq
+            self.edges     = {}
+            self.positions = {}
+            self.label     = None
+            Node.seq       += 1
+            
+        def bfs(self,
+                path          = [],
+                propagatePath = lambda path: path,
+                visitLeaf     = lambda label,path:None,
+                visitInternal = lambda node,symbol,position,path: None):
+            if len(self.edges)==0:
+                visitLeaf(self.label,propagatePath(path))
+            else:
+                for symbol,node in self.edges.items():
+                    visitInternal(node,symbol,self.positions[symbol],path)
+                    node.bfs(propagatePath(path),
+                             propagatePath,
+                             visitInternal=visitInternal,
+                             visitLeaf=visitLeaf)
+    
+        
+    def createTrie():
+        Trie = Node()
+        for i in range(len(string)):
+            currentNode = Trie
+            for j in range(i,len(string)):
+                currentSymbol = string[j]
+                if currentSymbol in currentNode.edges:
+                    currentNode = currentNode.edges[currentSymbol]
+                else:
+                    newNode                              = Node()
+                    currentNode.edges[currentSymbol]     = newNode
+                    currentNode.positions[currentSymbol] = j
+                    currentNode                          = newNode
+            if len(currentNode.edges)==0:
+                currentNode.label = i
+        return Trie
+ 
+    def convertToTree(Trie):
+        Starts = []
+        def identifyBranchPoints(node,symbol,position,prefix):
+            if len(node.edges)>1:
+                Starts.append(node)
+                #print (symbol,position,node.seq,len(node.edges))
+        
+        Trie.bfs(visitInternal=identifyBranchPoints)
+
+        for node in Starts:
+            branches  = {}
+            jumps     = {}
+            positions = {}
+            for symbol,nextNode in node.edges.items():
+                candidateBranch = [symbol]
+                while len(list(nextNode.edges.items()))==1:
+                    nextSymbol    = list(nextNode.edges.keys())[0]
+                    nextNode      = nextNode.edges[nextSymbol]
+                    candidateBranch.append(nextSymbol)
+                if len(candidateBranch)>1:
+                    branches[symbol]            = ''.join(candidateBranch)
+                    jumps[branches[symbol]]     = nextNode
+                    positions[branches[symbol]] = node.positions[symbol]
+            for symbol,symbols in branches.items():
+                node.edges[symbols]     = jumps[symbols]
+                node.positions[symbols] = positions[symbols]
+                del node.edges[symbol]
+                del node.positions[symbol]
+                
+    Trie = createTrie()
+    convertToTree(Trie)
+    Result = []
+    Trie.bfs(path        = '',
+            propagatePath = lambda path: path,
+            visitLeaf     = lambda label,prefix:None,
+            visitInternal = lambda node,symbol,position,prefix: Result.append(symbol))
+  
+    return Result
+
+#TRIE  Pattern matching
+
+# trie
+#
+# Given: A list of at most 100 DNA strings of length at most 100 bp, none of which is a prefix of another.
+#         one_based Indicates whether numnering of nodes should start at 1 or zero
+#
+# Return: The adjacency list corresponding to the trie T
+#         for these patterns, in the following format. 
+#         If T has n nodes, first label the root with 1 and then label the remaining nodes
+#         with the integers 2 through n in any order you like.
+#         Each edge of the adjacency list of T will be encoded by a triple
+#         containing the integer representing the edge's parent node, followed by the integer
+#         representing the edge's child node, and finally the symbol labeling the edge.
+
+def trie(strings,one_based=True):
+    def find_string_in_adjacency_list(string, adjacency_list):
+        index=0
+        parent=0
+        path=[]
+        for cc in string:
+            matched=False
+            while index<len(adjacency_list) and not matched:
+                a,b,c=adjacency_list[index]
+                if a==parent and c==cc:
+                    matched=True
+                    path.append(index)
+                    parent=b
+                else:
+                    index+=1
+        return (parent,path)
+    
+    def create_suffix(parent,path,string,b):
+        result=[]
+        a = parent
+        for i in range(len(path),len(string)):
+            b+=1
+            result.append((a,b,string[i]))
+            a=b
+
+        return result
+    
+    def merge_string_with_adjacency_list(adjacency_list,string):
+        parent,path=find_string_in_adjacency_list(string, adjacency_list)
+        return adjacency_list+create_suffix(parent,path,string,len(adjacency_list))
+    
+    incr = 1 if one_based else 0
+    
+    def increment_indices(adjacency_list):
+        return [(a+incr,b+incr,c) for (a,b,c) in adjacency_list] 
+    
+    return increment_indices(reduce(merge_string_with_adjacency_list,strings,[]))
