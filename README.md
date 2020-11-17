@@ -303,7 +303,7 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 | # | Location | Description |
 | ---- | --------------- | ------------------------------------------------|
 |cons|rosalind.py|[Consensus and Profile](http://rosalind.info/problems/cons/) |
-|dna|rosalind.py|[Counting DNA Nucleotides](http://rosalind.info/problems/dna/) |
+|dna|dna.py rosalind.py|[Counting DNA Nucleotides](http://rosalind.info/problems/dna/) |
 |gc|rosalind.py|[Computing GC Content](http://rosalind.info/problems/gc/) |
 |kmer|rosalind.py|[Generalizing GC-Content](http://rosalind.info/problems/kmer/) |
 |kmp|kmp.py|[Speeding Up Motif Finding](http://rosalind.info/problems/kmp/) |

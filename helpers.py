@@ -70,6 +70,15 @@ def print_list(list,path=r'c:\temp\out.text'):
 def translate(string,trans):
     return ''.join([trans[c] for c in string])
 
+# count_subset
+#
+# Count occurences of specific characters
+#
+#   Parameters:
+#          s       String in which occurences are to be counted
+#          subset  String specifying subset of characters to be counted
+#
+#   Returns:  counts in the same sequence as in subset
 def count_subset(s,subset):
     return [s.count(c) for c in subset]
 
