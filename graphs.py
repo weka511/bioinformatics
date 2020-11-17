@@ -602,7 +602,9 @@ def grph(fasta,k):
             
     return graph
 
-def suff(string):
+#  SUFF Creating a Suffix Tree
+
+def createTrie(string):
     
     class Node:
         
@@ -617,71 +619,72 @@ def suff(string):
             
         def bfs(self,
                 path          = [],
-                propagatePath = lambda path: path,
+                propagatePath = lambda path,symbol: path,
                 visitLeaf     = lambda label,path:None,
                 visitInternal = lambda node,symbol,position,path: None):
             if len(self.edges)==0:
-                visitLeaf(self.label,propagatePath(path))
+                visitLeaf(self.label,propagatePath(path,''))
             else:
                 for symbol,node in self.edges.items():
                     visitInternal(node,symbol,self.positions[symbol],path)
-                    node.bfs(propagatePath(path),
+                    node.bfs(propagatePath(path,symbol),
                              propagatePath,
                              visitInternal=visitInternal,
                              visitLeaf=visitLeaf)
     
         
-    def createTrie():
-        Trie = Node()
-        for i in range(len(string)):
-            currentNode = Trie
-            for j in range(i,len(string)):
-                currentSymbol = string[j]
-                if currentSymbol in currentNode.edges:
-                    currentNode = currentNode.edges[currentSymbol]
-                else:
-                    newNode                              = Node()
-                    currentNode.edges[currentSymbol]     = newNode
-                    currentNode.positions[currentSymbol] = j
-                    currentNode                          = newNode
-            if len(currentNode.edges)==0:
-                currentNode.label = i
-        return Trie
  
-    def convertToTree(Trie):
-        Starts = []
-        def identifyBranchPoints(node,symbol,position,prefix):
-            if len(node.edges)>1:
-                Starts.append(node)
-                #print (symbol,position,node.seq,len(node.edges))
-        
-        Trie.bfs(visitInternal=identifyBranchPoints)
+    Trie = Node()
+    for i in range(len(string)):
+        currentNode = Trie
+        for j in range(i,len(string)):
+            currentSymbol = string[j]
+            if currentSymbol in currentNode.edges:
+                currentNode = currentNode.edges[currentSymbol]
+            else:
+                newNode                              = Node()
+                currentNode.edges[currentSymbol]     = newNode
+                currentNode.positions[currentSymbol] = j
+                currentNode                          = newNode
+        if len(currentNode.edges)==0:
+            currentNode.label = i
+    return Trie
+ 
+def convertToTree(Trie):
+    Starts = []
+    def identifyBranchPoints(node,symbol,position,prefix):
+        if len(node.edges)>1:
+            Starts.append(node)
+            #print (symbol,position,node.seq,len(node.edges))
+    
+    Trie.bfs(visitInternal=identifyBranchPoints)
 
-        for node in Starts:
-            branches  = {}
-            jumps     = {}
-            positions = {}
-            for symbol,nextNode in node.edges.items():
-                candidateBranch = [symbol]
-                while len(list(nextNode.edges.items()))==1:
-                    nextSymbol    = list(nextNode.edges.keys())[0]
-                    nextNode      = nextNode.edges[nextSymbol]
-                    candidateBranch.append(nextSymbol)
-                if len(candidateBranch)>1:
-                    branches[symbol]            = ''.join(candidateBranch)
-                    jumps[branches[symbol]]     = nextNode
-                    positions[branches[symbol]] = node.positions[symbol]
-            for symbol,symbols in branches.items():
-                node.edges[symbols]     = jumps[symbols]
-                node.positions[symbols] = positions[symbols]
-                del node.edges[symbol]
-                del node.positions[symbol]
-                
-    Trie = createTrie()
+    for node in Starts:
+        branches  = {}
+        jumps     = {}
+        positions = {}
+        for symbol,nextNode in node.edges.items():
+            candidateBranch = [symbol]
+            while len(list(nextNode.edges.items()))==1:
+                nextSymbol    = list(nextNode.edges.keys())[0]
+                nextNode      = nextNode.edges[nextSymbol]
+                candidateBranch.append(nextSymbol)
+            if len(candidateBranch)>1:
+                branches[symbol]            = ''.join(candidateBranch)
+                jumps[branches[symbol]]     = nextNode
+                positions[branches[symbol]] = node.positions[symbol]
+        for symbol,symbols in branches.items():
+            node.edges[symbols]     = jumps[symbols]
+            node.positions[symbols] = positions[symbols]
+            del node.edges[symbol]
+            del node.positions[symbol]
+            
+def suff(string):             
+    Trie = createTrie(string)
     convertToTree(Trie)
     Result = []
     Trie.bfs(path        = '',
-            propagatePath = lambda path: path,
+            propagatePath = lambda path,symbol: path,
             visitLeaf     = lambda label,prefix:None,
             visitInternal = lambda node,symbol,position,prefix: Result.append(symbol))
   

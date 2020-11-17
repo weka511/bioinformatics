@@ -19,23 +19,25 @@ import argparse
 import os
 import time
 from   helpers import read_strings
-from   graphs  import suff
+from   graphs  import createTrie,convertToTree
 
-def ling(s,a=4):
+def ling(string,a=4):
     def sub():
-        substrings = suff(s)
-        return len(set(substrings))
+        Trie       = createTrie(string)
+        convertToTree(Trie)
+        Substrings = []
+        Trie.bfs(path         = [],
+                propagatePath = lambda path,symbol: path+[symbol],
+                visitLeaf     = lambda label,path: Substrings.append(''.join(path)),
+                visitInternal = lambda node,symbol,position,path: None)        
+        for row in list(set(Substrings)):
+            print (row)
+        return len(set(Substrings))
 
-        #def subk(k):
-            #kmers=set()
-            #for i in range(len(s)-k+1):
-                #kmers.add(s[i:i+k])
-            #return len(kmers)
-        #return sum(subk(k) for k in range(1,len(s)+1))
     def m(n):
         return sum(a if k==1 else n-k+1 for k in range(1,n+1))
 
-    return sub()/m(len(s))
+    return sub()/m(len(string))
 
 if __name__=='__main__':
     start = time.time()
