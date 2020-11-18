@@ -37,8 +37,12 @@ def ling_naive(string,a=4):
 
 class Node:
     def __init__(self,k=None):
-        self.Edges = {}
-
+        self.Edges = [None]*4
+        self.count = 0
+        
+def convert_to_indices(string,lookup = {'A':0,'C':1,'G':2,'T':3}):
+    return [lookup[c] for c in string] 
+    
 # explore
 #
 # k      4^k
@@ -49,21 +53,18 @@ def explore(string,a=4):
     def possible(k):
         return a if k==1 else min(a**k,n-k+1) 
     
-    n       = len(string)    
+    indices = convert_to_indices(string)
+    n       = len(indices)    
     Root    = Node(k=0)
     Current = [Root]
+    m       = possible(1)
     
-    Nodes=[]
-    
-    for k in range(10):
-        for l in range(possible(k)):
-            Nodes.append(Node())
-        
     for i in range(n):
-        if len(Root.Edges)==m: break
-        if string[i] not in Root.Edges:
-            Root.Edges[string[i]] = Node(k=1)
-           
+        if Root.count==m: break
+        if Root.Edges[indices[i]] == None :
+            Root.Edges[indices[i]] = Node(k=1)
+            Root.count             += 1
+            
     for k in range(2,10):
         m = possible(k)
         Current = [edge for node in Current for edge in node.Edges.values()]
