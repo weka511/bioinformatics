@@ -19,26 +19,60 @@ import argparse
 import os
 import time
 from   helpers import read_strings
-from   graphs  import createTrie,convertToTree
 
-def ling(string,a=4):
-    def sub():
-        Trie       = createTrie(string)
-        convertToTree(Trie)
-        Substrings = []
-        Trie.bfs(path         = [],
-                propagatePath = lambda path,symbol: path+[symbol],
-                visitLeaf     = lambda label,path: Substrings.append(''.join(path)),
-                visitInternal = lambda node,symbol,position,path: None)        
-        for row in list(set(Substrings)):
-            print (row)
-        return len(set(Substrings))
+# ling_naive
 
-    def m(n):
-        return sum(a if k==1 else n-k+1 for k in range(1,n+1))
+def ling_naive(string,a=4):
+    def possible(k):
+        return a if k==1 else min(a**k,n-k+1)
+    
+    def actual(k):
+        return len({string[i:i+k]:True for i in range(n-k+1)})
+    
+    n   = len(string)
+    sub = [actual(k) for k in range(1,n+1)]
+    m   = [possible(k) for k in range(1,n+1)]
 
-    return sub()/m(len(string))
+    return sum(sub)/sum(m)
 
+class Node:
+    def __init__(self,k=None):
+        self.Edges = {}
+
+# explore
+#
+# k      4^k
+# 8	65,536
+# 9	262,144
+#       
+def explore(string,a=4):
+    def possible(k):
+        return a if k==1 else min(a**k,n-k+1) 
+    
+    n       = len(string)    
+    Root    = Node(k=0)
+    Current = [Root]
+    
+    Nodes=[]
+    
+    for k in range(10):
+        for l in range(possible(k)):
+            Nodes.append(Node())
+        
+    for i in range(n):
+        if len(Root.Edges)==m: break
+        if string[i] not in Root.Edges:
+            Root.Edges[string[i]] = Node(k=1)
+           
+    for k in range(2,10):
+        m = possible(k)
+        Current = [edge for node in Current for edge in node.Edges.values()]
+        x=0
+    for i in range(n-k+1):
+        if len(substrings)>=m: break
+        substrings.add(string[i:i+k])
+        print (len(substrings),substrings)
+        
 if __name__=='__main__':
     start = time.time()
     parser = argparse.ArgumentParser('....')
@@ -46,16 +80,16 @@ if __name__=='__main__':
     parser.add_argument('--rosalind', default=False, action='store_true', help='process Rosalind dataset')
     args = parser.parse_args()
     if args.sample:
-        print (ling('ATTTGGATT'))
+        print (ling_naive('ATTTGGATT'))
 
     if args.rosalind:
         Input  = read_strings(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt')
- 
-        Result = ling(Input[0])
-        print (Result)
-        with open(f'{os.path.basename(__file__).split(".")[0]}.txt','w') as f:
-            for line in Result:
-                f.write(f'{line}\n')
+        explore(Input[0])
+        #Result = ling(Input[0])
+        #print (Result)
+        #with open(f'{os.path.basename(__file__).split(".")[0]}.txt','w') as f:
+            #for line in Result:
+                #f.write(f'{line}\n')
                 
     elapsed = time.time() - start
     minutes = int(elapsed/60)
