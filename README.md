@@ -305,6 +305,7 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 |cons|rosalind.py|[Consensus and Profile](http://rosalind.info/problems/cons/) |
 |dna|dna.py rosalind.py|[Counting DNA Nucleotides](http://rosalind.info/problems/dna/) |
 |gc|rosalind.py|[Computing GC Content](http://rosalind.info/problems/gc/) |
+|itwv|itwv.py|[Finding Disjoint Motifs in a Gene ](http://rosalind.info/problems/itwv/) [WIP](https://github.com/weka511/bioinformatics/issues/56)|
 |kmer|rosalind.py|[Generalizing GC-Content](http://rosalind.info/problems/kmer/) |
 |kmp|kmp.py|[Speeding Up Motif Finding](http://rosalind.info/problems/kmp/) |
 |lcsm|rosalind.py|[Finding a Shared Motif](http://rosalind.info/problems/lcsm/) |
