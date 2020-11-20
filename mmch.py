@@ -20,7 +20,15 @@ import os
 import time
 from   helpers import read_strings
 
-  
+def mmch(s):
+    def prod(a,b):
+        return max(1, counts[a] * counts[b])
+    
+    counts = {'A':0,'C':0,'G':0,'U':0}
+    for c in s:
+        counts[c]+=1
+    return prod('A','U') * prod('C','G')
+
 if __name__=='__main__':
     start = time.time()
     parser = argparse.ArgumentParser('....')
@@ -28,18 +36,17 @@ if __name__=='__main__':
     parser.add_argument('--rosalind', default=False, action='store_true', help='process Rosalind dataset')
     args = parser.parse_args()
     if args.sample:
-        pass
+        print (mmch('AUGCUUC'))
         
     
 
     if args.rosalind:
         Input  = read_strings(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt')
  
-        Result = None
+        Result = mmch(Input[1])
         print (Result)
         with open(f'{os.path.basename(__file__).split(".")[0]}.txt','w') as f:
-            for line in Result:
-                f.write(f'{line}\n')
+            f.write(f'{Result}\n')
                 
     elapsed = time.time() - start
     minutes = int(elapsed/60)
