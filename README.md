@@ -311,6 +311,7 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 |lcsq|lcsq.py|[Finding a Shared Spliced Motif](http://rosalind.info/problems/lcsq/) |
 |ling|ling.py|[Linguistic Complexity of a Genome](http://rosalind.info/problems/ling/)|
 ||ukkonen.py|[µTuX's implementation of Ukkonen's algorithm](https://github.com/mutux/Ukkonen-s-Suffix-Tree-Algorithm/blob/master/suffixtree.py)|
+|mmch|mmch.py|[Maximum Matchings and RNA Secondary Structures](http://rosalind.info/problems/mmch/) [WIP](https://github.com/weka511/bioinformatics/issues/55)|
 |revc|rosalind.py| [Complementing a Strand of DNA](http://rosalind.info/problems/revc/)|
 |prot|rosalind.py|[Translating RNA into Protein](http://rosalind.info/problems/prot/) |
 |revp|rosalind.py| [Locating Restriction Sites](http://rosalind.info/problems/revp/)|

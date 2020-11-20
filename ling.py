@@ -32,7 +32,7 @@ from   ukkonen import build,Node
 # for calculating linguistic complexity. Bioinformatics. 2002 May;18(5):679-88.
 # doi: 10.1093/bioinformatics/18.5.679. PMID: 12050064.
 #
-# "Therfore the number of non-terminal characters represented on the edges of the suffix
+# "Therefore the number of non-terminal characters represented on the edges of the suffix
 #   tree T for string S is equal to the number of different subwords contained in S."
 
 def ling(string,a=4):
