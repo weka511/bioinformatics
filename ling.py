@@ -19,7 +19,7 @@ import argparse
 import os
 import time
 from   helpers import read_strings
-from   ukkonen import build
+from   ukkonen import build,Node
 
 # ling_naive
 
@@ -39,8 +39,13 @@ def ling_naive(string,a=4):
 def ling(string,a=4):
     def possible(k):
         return a if k==1 else min(a**k,n-k+1)
-         
-
+    tree, pst = build(string, regularize=True)
+    #Node.draw(tree, pst, ed='#')
+       
+    n   = len(string)
+    m   = [possible(k) for k in range(1,n+1)]
+    
+    return Node.count(tree, pst, ed='#')  /sum(m)
         
 def convert_to_indices(string,lookup = {'A':0,'C':1,'G':2,'T':3}):
     return [lookup[c] for c in string] 
@@ -55,17 +60,15 @@ if __name__=='__main__':
     args = parser.parse_args()
         
     if args.sample:
-        print (ling_naive('ATTTGGATT'))
+        print (ling('ATTTGGATT'))
 
     if args.rosalind:
         Input  = read_strings(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt')
-        tree, pst = build(Input[0], regularize=True)
-        #explore(Input[0])
-        #Result = ling(Input[0])
-        #print (Result)
-        #with open(f'{os.path.basename(__file__).split(".")[0]}.txt','w') as f:
-            #for line in Result:
-                #f.write(f'{line}\n')
+
+        Result = ling(Input[0])
+        print (Result)
+        with open(f'{os.path.basename(__file__).split(".")[0]}.txt','w') as f:
+            f.write(f'{Result:.3f}\n')
                 
     elapsed = time.time() - start
     minutes = int(elapsed/60)

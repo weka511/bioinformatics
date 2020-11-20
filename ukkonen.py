@@ -42,6 +42,23 @@ class Node:
         return self.id
 
     @staticmethod
+    def __count__(rnode, chars, v, ed='#'):
+        total = 0
+        l = len(chars)
+        if rnode.getoutedges()==None: return 0
+        edges = rnode.getoutedges().items()
+        #print (len(edges))
+        for key,value in edges:
+            _,start,end,linked = value
+            fin = end+1 if type(end)==int else -1
+            suffix = chars[start:fin ]
+            #print (start,end, suffix)
+            total+= len(suffix)
+            total += Node.__count__(linked,chars,v,ed=ed)
+        return total
+        
+    
+    @staticmethod
     def __draw__(rnode, chars, v, ed='#'):
         l = len(chars)
         edges = rnode.getoutedges().items()
@@ -86,11 +103,16 @@ class Node:
 
     @staticmethod
     def draw(root, chars, ed='#'):
-        print ('\n', chars, '\n● (0)')
+        #print ('\n', chars, '\n● (0)')
         v = 0
         Node.__draw__(root, chars, v, ed)
 
-
+    @staticmethod
+    def count(root, chars, ed='#'):
+        #print ('\n', chars, '\n● (0)')
+        v = 0
+        return Node.__count__(root, chars, v, ed)
+        
 def build(chars, regularize=False):
     root = Node(None, None, None)
     actnode = root
