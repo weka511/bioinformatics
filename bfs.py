@@ -33,7 +33,9 @@ def create_tree(links):
 
 def format(Result):
     return ' '.join(str(i) for i in Result)
-    
+
+
+
 if __name__=='__main__':
     start  = time.time()
     parser = argparse.ArgumentParser('....')
@@ -42,16 +44,16 @@ if __name__=='__main__':
     args = parser.parse_args()
     if args.sample:
         print(
-            format(
-                ShortestDistances(
-                    create_tree([(6, 6),
-                                 (4, 6),
-                                 (6, 5),
-                                 (4, 3),
-                                 (3, 5),
-                                 (2, 1),
-                                 (1, 4)]))))
-    
+           format(
+               ShortestDistances(
+                   create_tree([(6, 6),
+                                (4, 6),
+                                (6, 5),
+                                (4, 3),
+                                (3, 5),
+                                (2, 1),
+                                (1, 4)]))))
+   
     
 
     if args.rosalind:

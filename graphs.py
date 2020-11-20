@@ -743,19 +743,37 @@ def trie(strings,one_based=True):
     
     return increment_indices(reduce(merge_string_with_adjacency_list,strings,[]))
 
-#    bfs 	Breadth First search
+#    bfs 
+
+#   Perform Breadth First search
+
+def bfs(tree,root,isGoal=lambda v:False,visit=lambda v: None,pre_visit=lambda v,w:None):
+    Q               = [root]
+    discovered      = {root}
+    while len(Q)>0:
+        v = Q.pop(0)
+        visit(v)
+        if isGoal(v): return v
+        for w in tree[v]:
+            if w not in discovered:
+                Q.append(w)
+                discovered.add(w)
+                pre_visit(v,w)
+
+# ShortestDistances
+#
+# use breadth-first search to compute single-source shortest distances in an unweighted directed graph.
 
 def ShortestDistances(tree):
-    result = []
-    def BreadthFirstSearch(start,dist=0):
-        result[start-1] = dist
-        dist            += 1
-        if start in tree:
-            for node in tree[start]:
-                if result[node-1]<0 or result[node-1]>dist:
-                    BreadthFirstSearch(node,dist)   
-                    
-    max_node,tree = tree
-    result        = [-1]*max_node
-    BreadthFirstSearch(1)
-    return result
+    
+    def update_distance(v,w):
+        distances[w-1] = distances[v-1]+1
+    
+    def start(v):
+        if v>1: return
+        distances[0] = 0
+        
+    max_node,tree    = tree
+    distances        = [-1]*max_node
+    bfs(tree,1,visit=start,pre_visit=update_distance)
+    return distances
