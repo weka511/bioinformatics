@@ -21,26 +21,24 @@ import time
 from   helpers import read_strings
 from   ukkonen import build,Node
 
-# ling_naive
-
-def ling_naive(string,a=4):
-    def possible(k):
-        return a if k==1 else min(a**k,n-k+1)
-    
-    def actual(k):
-        return len({string[i:i+k]:True for i in range(n-k+1)})
-    
-    n   = len(string)
-    sub = [actual(k) for k in range(1,n+1)]
-    m   = [possible(k) for k in range(1,n+1)]
-
-    return sum(sub)/sum(m)
+#  ling
+#
+#  Given: A DNA string s of length at most 100 kbp.
+#
+#  Return: The linguistic complexity lc(s)
+#
+# This follows  Troyanskaya OG, Arbell O, Koren Y, Landau GM, Bolshoy A.
+# Sequence complexity profiles of prokaryotic genomic sequences: a fast algorithm 
+# for calculating linguistic complexity. Bioinformatics. 2002 May;18(5):679-88.
+# doi: 10.1093/bioinformatics/18.5.679. PMID: 12050064.
+#
+# "Therfore the number of non-terminal characters represented on the edges of the suffix
+#   tree T for string S is equal to the number of different subwords contained in S."
 
 def ling(string,a=4):
     def possible(k):
         return a if k==1 else min(a**k,n-k+1)
     tree, pst = build(string, regularize=True)
-    #Node.draw(tree, pst, ed='#')
        
     n   = len(string)
     m   = [possible(k) for k in range(1,n+1)]

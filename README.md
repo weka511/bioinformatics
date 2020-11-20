@@ -309,7 +309,7 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 |kmp|kmp.py|[Speeding Up Motif Finding](http://rosalind.info/problems/kmp/) |
 |lcsm|rosalind.py|[Finding a Shared Motif](http://rosalind.info/problems/lcsm/) |
 |lcsq|lcsq.py|[Finding a Shared Spliced Motif](http://rosalind.info/problems/lcsq/) |
-|ling|ling.py|[Linguistic Complexity of a Genome](http://rosalind.info/problems/ling/) (WIP)|
+|ling|ling.py|[Linguistic Complexity of a Genome](http://rosalind.info/problems/ling/)|
 ||ukkonen.py|[µTuX's implementation of Ukkonen's algorithm](https://github.com/mutux/Ukkonen-s-Suffix-Tree-Algorithm/blob/master/suffixtree.py)|
 |revc|rosalind.py| [Complementing a Strand of DNA](http://rosalind.info/problems/revc/)|
 |prot|rosalind.py|[Translating RNA into Protein](http://rosalind.info/problems/prot/) |
