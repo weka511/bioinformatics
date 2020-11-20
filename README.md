@@ -308,6 +308,7 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 |itwv|itwv.py|[Finding Disjoint Motifs in a Gene ](http://rosalind.info/problems/itwv/) [WIP](https://github.com/weka511/bioinformatics/issues/56)|
 |kmer|rosalind.py|[Generalizing GC-Content](http://rosalind.info/problems/kmer/) |
 |kmp|kmp.py|[Speeding Up Motif Finding](http://rosalind.info/problems/kmp/) |
+|ksim|ksim.py|[Finding All Similar Motifs ](http://rosalind.info/problems/ksim/) [WIP](https://github.com/weka511/bioinformatics/issues/62)|
 |lcsm|rosalind.py|[Finding a Shared Motif](http://rosalind.info/problems/lcsm/) |
 |lcsq|lcsq.py|[Finding a Shared Spliced Motif](http://rosalind.info/problems/lcsq/) |
 |ling|ling.py|[Linguistic Complexity of a Genome](http://rosalind.info/problems/ling/)|
