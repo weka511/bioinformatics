@@ -21,6 +21,8 @@ import time
 from   helpers import read_strings
 from   graphs  import ShortestDistances
 
+# Construct tree from edgelist
+
 def create_tree(links):
     max_node,_ = links[0]
     result     = {a:[] for a in range(1,max_node+1)}
