@@ -747,14 +747,21 @@ def trie(strings,one_based=True):
 
 #   Perform Breadth First search
 
-def bfs(tree,root,isGoal=lambda v:False,visit=lambda v: None,pre_visit=lambda v,w:None):
-    Q               = [root]
-    discovered      = {root}
+def bfs(graph,                           # Graph to be searched
+        start,                          # Starting node
+        isGoal    = lambda v   : False, # Used to terminate search
+                                        # before visiting all nodes
+        visit     = lambda v   : None,  # Action to be performed when node processed
+        pre_visit = lambda v,w : None,  # Action to be performed when node discovered
+        selector  = 0                   # set to -1 for depth first instead of breadth first
+        ):
+    Q               = [start]
+    discovered      = {start}
     while len(Q)>0:
-        v = Q.pop(0)
+        v = Q.pop(selector)
         visit(v)
         if isGoal(v): return v
-        for w in tree[v]:
+        for w in graph[v]:
             if w not in discovered:
                 Q.append(w)
                 discovered.add(w)
@@ -764,7 +771,7 @@ def bfs(tree,root,isGoal=lambda v:False,visit=lambda v: None,pre_visit=lambda v,
 #
 # use breadth-first search to compute single-source shortest distances in an unweighted directed graph.
 
-def ShortestDistances(tree):
+def ShortestDistances(graph):
     
     def update_distance(v,w):
         distances[w-1] = distances[v-1]+1
@@ -773,7 +780,7 @@ def ShortestDistances(tree):
         if v>1: return
         distances[0] = 0
         
-    max_node,tree    = tree
+    max_node,graph    = graph
     distances        = [-1]*max_node
-    bfs(tree,1,visit=start,pre_visit=update_distance)
+    bfs(graph,1,visit=start,pre_visit=update_distance)
     return distances
