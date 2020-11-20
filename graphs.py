@@ -742,3 +742,20 @@ def trie(strings,one_based=True):
         return [(a+incr,b+incr,c) for (a,b,c) in adjacency_list] 
     
     return increment_indices(reduce(merge_string_with_adjacency_list,strings,[]))
+
+#    bfs 	Breadth First search
+
+def ShortestDistances(tree):
+    result = []
+    def BreadthFirstSearch(start,dist=0):
+        result[start-1] = dist
+        dist            += 1
+        if start in tree:
+            for node in tree[start]:
+                if result[node-1]<0 or result[node-1]>dist:
+                    BreadthFirstSearch(node,dist)   
+                    
+    max_node,tree = tree
+    result        = [-1]*max_node
+    BreadthFirstSearch(1)
+    return result
