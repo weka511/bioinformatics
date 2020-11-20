@@ -19,6 +19,7 @@ import argparse
 import os
 import time
 from   helpers import read_strings
+from   ukkonen import build
 
 # ling_naive
 
@@ -35,44 +36,16 @@ def ling_naive(string,a=4):
 
     return sum(sub)/sum(m)
 
-class Node:
-    def __init__(self,k=None):
-        self.Edges = [None]*4
-        self.count = 0
+def ling(string,a=4):
+    def possible(k):
+        return a if k==1 else min(a**k,n-k+1)
+         
+
         
 def convert_to_indices(string,lookup = {'A':0,'C':1,'G':2,'T':3}):
     return [lookup[c] for c in string] 
-    
-# explore
-#
-# k      4^k
-# 8	65,536
-# 9	262,144
-#       
-def explore(string,a=4):
-    def possible(k):
-        return a if k==1 else min(a**k,n-k+1) 
-    
-    indices = convert_to_indices(string)
-    n       = len(indices)    
-    Root    = Node(k=0)
-    Current = [Root]
-    m       = possible(1)
-    
-    for i in range(n):
-        if Root.count==m: break
-        if Root.Edges[indices[i]] == None :
-            Root.Edges[indices[i]] = Node(k=1)
-            Root.count             += 1
-            
-    for k in range(2,10):
-        m = possible(k)
-        Current = [edge for node in Current for edge in node.Edges.values()]
-        x=0
-    for i in range(n-k+1):
-        if len(substrings)>=m: break
-        substrings.add(string[i:i+k])
-        print (len(substrings),substrings)
+
+
         
 if __name__=='__main__':
     start = time.time()
@@ -80,12 +53,14 @@ if __name__=='__main__':
     parser.add_argument('--sample',   default=False, action='store_true', help='process sample dataset')
     parser.add_argument('--rosalind', default=False, action='store_true', help='process Rosalind dataset')
     args = parser.parse_args()
+        
     if args.sample:
         print (ling_naive('ATTTGGATT'))
 
     if args.rosalind:
         Input  = read_strings(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt')
-        explore(Input[0])
+        tree, pst = build(Input[0], regularize=True)
+        #explore(Input[0])
         #Result = ling(Input[0])
         #print (Result)
         #with open(f'{os.path.basename(__file__).split(".")[0]}.txt','w') as f:
