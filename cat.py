@@ -20,49 +20,6 @@ import os
 import time
 from helpers import read_strings
 
-from rosalind import RosalindException,verify_counts_complete_graph
-from Bio import SeqIO
-import os.path
-
-# catalan
-#
-# Calculate Catalan numbers
-#
-# Verified against list from http://mathforum.org/advanced/robertd/catalan.html
-#
-# 1 1
-# 2 2
-# 3 5
-# 4 14
-# 5 42
-# 6 132
-# 7 429
-# 8 1430
-# 9 4862
-# 10 16796
-# 11 58786
-# 12 208012
-# 13 742900
-# 14 2674440
-# 15 9694845
-#
-# Verified against Online Encyclopedia of Integer Sequences (https://oeis.org/A000108) for case:
-# 30 3814986502092304
-
-def catalan(n,trace=False):
-    c=[1]
-    for n0 in range(1,n+1):
-        c.append(sum([c[k]*c[n0-1-k] for k in range(n0)]))
-        if trace:
-            print (n0,c[-1])
-    return c[n]
-
-def motzkin(n):
-    s=[1,1]
-    for n0 in range(1,n):
-        s.append(s[-1]+sum([s[k]*s[n0-1-k] for k in range(n0)]))
-        #print (s[-1])
-    return s[n]
 
 # >seq01
 #GCGCCGGCGGCCGCGUACAGUUAACAUUACGAUUAUGAUAAUAGCUUAUCGCUCAUAUGA
@@ -74,9 +31,15 @@ def motzkin(n):
 # expect 412480
 
 def cat(s):
-    return motzkin(int(len(s)/2))
+    pass
 
 def perfect_matchings(s):
+    def isCrossing(i,j,k,l):
+        return i<k and k<j and j<l
+    
+    def doesMatch(a,b):
+        return b==matches[a]
+    
     matches = {
         'A':'U',
         'U':'A',
@@ -86,9 +49,13 @@ def perfect_matchings(s):
     s = ''.join([c for c in s if c in 'AUCG']) # purge white spaces and other junk
     for i in range(len(s)):
         for k in range(i+1,len(s)):
-            for j in range(k+1,len(s)):
-                for l in range(j+1,len(s)):
-                    print (i,k,j,l)
+            print ('------------')
+            for j in range(i+1,len(s)):
+                for l in range(k+1,len(s)):
+                    if i in [j,k,l] or j in [k,l] or k==l: continue
+                    if isCrossing(i,j,k,l): continue
+                    if doesMatch(s[i],s[j]) and doesMatch(s[k],s[l]):
+                        print (f'{{{i},{j}}}, {{{k},{l}}}')
 
 def read_fasta(file,path=r'C:\Users\Simon\Downloads'):
     with open(os.path.join(path,file),'rU') as handle:
@@ -103,8 +70,9 @@ if __name__=='__main__':
     parser.add_argument('--rosalind', default=False, action='store_true', help='process Rosalind dataset')
     args = parser.parse_args()
     if args.sample:
-        print (catalan(30))
-        print (cat('AUAU')%1000000)
+        perfect_matchings('UAGCGUGAUCAC')
+        #print (catalan(30))
+        #print (cat('AUAU')%1000000)
     
   
     if args.rosalind:

@@ -162,6 +162,7 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 
 | # | Location | Description |
 | ---- | --------------- | ------------------------------------------------|
+||combinatorics.py|[Combinatorics](http://rosalind.info/problems/topics/combinatorics/)|
 |aspc|rosalind.py|[Introduction to Alternative Splicing](http://rosalind.info/problems/aspc/) |
 |cat|rosalind.py|[Catalan Numbers and RNA Secondary Structures ](http://rosalind.info/problems/cat/) (WIP)|
 |cntq|cntq.py |[Counting Quartets](http://rosalind.info/problems/cntq/)|
