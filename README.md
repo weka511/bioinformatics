@@ -164,7 +164,7 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 | ---- | --------------- | ------------------------------------------------|
 ||combinatorics.py|[Combinatorics](http://rosalind.info/problems/topics/combinatorics/)|
 |aspc|rosalind.py|[Introduction to Alternative Splicing](http://rosalind.info/problems/aspc/) |
-|cat|rosalind.py|[Catalan Numbers and RNA Secondary Structures ](http://rosalind.info/problems/cat/) (WIP)|
+|cat|rosalind.py|[Catalan Numbers and RNA Secondary Structures ](http://rosalind.info/problems/cat/)|
 |cntq|cntq.py |[Counting Quartets](http://rosalind.info/problems/cntq/)|
 |cunr|phylogeny.py|[Counting Unrooted Binary Trees](http://rosalind.info/problems/cunr/) |
 |eubt|eubt.py phylogeny.py|[Enumerating Unrooted Binary Trees](http://rosalind.info/problems/eubt/)|
