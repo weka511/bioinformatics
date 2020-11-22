@@ -164,12 +164,13 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 | ---- | --------------- | ------------------------------------------------|
 ||combinatorics.py|[Combinatorics](http://rosalind.info/problems/topics/combinatorics/)|
 |aspc|rosalind.py|[Introduction to Alternative Splicing](http://rosalind.info/problems/aspc/) |
-|cat|rosalind.py|[Catalan Numbers and RNA Secondary Structures ](http://rosalind.info/problems/cat/)|
+|cat|cat.py combinatorics.py|[Catalan Numbers and RNA Secondary Structures ](http://rosalind.info/problems/cat/)|
 |cntq|cntq.py |[Counting Quartets](http://rosalind.info/problems/cntq/)|
 |cunr|phylogeny.py|[Counting Unrooted Binary Trees](http://rosalind.info/problems/cunr/) |
 |eubt|eubt.py phylogeny.py|[Enumerating Unrooted Binary Trees](http://rosalind.info/problems/eubt/)|
 |fibd|rosalind.py|[Mortal Fibonacci Rabbits](http://rosalind.info/problems/fibd/) |
 |fib|rosalind.py|[Rabbits and Recurrence Relations](http://rosalind.info/problems/fib/) |
+|motz|motz.py|[Motzkin Numbers and RNA Secondary Structures](http://rosalind.info/problems/motz/) [WIP](https://github.com/weka511/bioinformatics/issues/66)|
 |mrna|rosalind.py|[Inferring mRNA from Protein](http://rosalind.info/problems/mrna/) |
 |orf|orf.py|[Open Reading Frames](http://rosalind.info/problems/orf/)|
 |pmch|pmch.py|[Perfect Matchings and RNA Secondary Structures](http://rosalind.info/problems/pmch/) |
