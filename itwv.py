@@ -18,9 +18,31 @@
 import argparse
 import os
 import time
-from   helpers import read_strings
+from   helpers import read_strings,format_list
+from   graphs   import trie
 
-  
+def itwv(s,patterns):
+    def can_interweave(s,t):
+        J = len(s)
+        K = len(t)
+        for i in range(n-J-K):
+            j = 0
+            k = 0
+        return 0
+    def interweave(j,k):
+        if can_interweave(patterns[j],patterns[k]):
+            return 1
+        else:
+            return can_interweave(patterns[k],patterns[j])
+    n = len(patterns)
+    M = [[float('nan') for k in range(n)] for j in range(n)]
+    for j in range(n):
+        for k in range(j,n):
+            M[j][k] = interweave(j,k)
+            if k>j:
+                M[k][j] = M[j][k]
+    return M
+
 if __name__=='__main__':
     start = time.time()
     parser = argparse.ArgumentParser('....')
@@ -28,18 +50,22 @@ if __name__=='__main__':
     parser.add_argument('--rosalind', default=False, action='store_true', help='process Rosalind dataset')
     args = parser.parse_args()
     if args.sample:
-        pass
+        for line in itwv('GACCACGGTT',
+                    ['ACAG',
+                     'GT',
+                     'CCG']):
+            print (format_list(line))
         
     
 
     if args.rosalind:
         Input  = read_strings(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt')
  
-        Result = None
-        print (Result)
+        Result = itwv(Input[0],Input[1:])
         with open(f'{os.path.basename(__file__).split(".")[0]}.txt','w') as f:
             for line in Result:
-                f.write(f'{line}\n')
+                out = format_list(line)
+                f.write(f'{out}\n')
                 
     elapsed = time.time() - start
     minutes = int(elapsed/60)
