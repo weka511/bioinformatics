@@ -65,7 +65,7 @@ class Motzkin:
 
 #    cat 	Catalan Numbers and RNA Secondary Structures (WIP)
 
-def count_matchings(seq):
+def count_perfect_matchings(seq):
     def partition(indices,i,j):
         I1 = []
         I2 = []
@@ -101,7 +101,7 @@ def count_matchings(seq):
     
 def cat(s):
     to_int = {'A':+1, 'U':-1, 'G':+2, 'C':-2}
-    return count_matchings ([to_int[c] for c in s])
+    return count_perfect_matchings ([to_int[c] for c in s])
     
 if __name__=='__main__':
     start = time.time()
