@@ -21,46 +21,38 @@ import time
 from helpers import read_strings
 
 
-# >seq01
-#GCGCCGGCGGCCGCGUACAGUUAACAUUACGAUUAUGAUAAUAGCUUAUCGCUCAUAUGA
-#GCAUCGCCGGGCGCAGUACAUUGCAUGCGCGGUAUUAUAAGCCCAUGAUCUAUAGUGCCG
-#ACCAUGCAUAUAUAUAUUAGCGCGGCGAUCAUCGAUCGCGUACUCUGCAGAGAUUAGAUG
-#CACGCGCUCGAGUGCGCGCACGUGCGCCGACGGCUGCCGGAUAUAUCAUAUAUUAUAGCC
-#CGCGCGCGCGCCAUGGGC
-#
-# expect 412480
-
+def count_matchings(seq):
+    def partition(indices,i,j):
+        I1 = []
+        I2 = []
+        for k in indices:
+            if k==i: continue
+            if k==j: continue
+            if i<k and k <j:
+                I1.append(k)
+            else:
+                I2.append(k)
+        return (I1,I2)
+    
+    def count(indices):
+        result = 0
+        if 0 != sum(seq[i] for i in indices if abs(seq[i])==1): return 0
+        if 0 != sum(seq[i] for i in indices if abs(seq[i])==2): return 0
+        if len(indices)==0: return 1
+        if len(indices)==2: return 1
+        i = min(indices)
+        for j in range(i+1,max(indices)+1,2):
+            I1,I2  = partition(indices,i,j)
+            count1 = count(I1)
+            count2 = count(I2)
+            result += (count1*count2)
+        return result
+    
+    return count(list(range(len(seq))))
+    
 def cat(s):
-    pass
-
-def perfect_matchings(s):
-    def isCrossing(i,j,k,l):
-        return i<k and k<j and j<l
-    
-    def doesMatch(a,b):
-        return b==matches[a]
-    
-    matches = {
-        'A':'U',
-        'U':'A',
-        'C':'G',
-        'G':'C'
-    }
-    s = ''.join([c for c in s if c in 'AUCG']) # purge white spaces and other junk
-    for i in range(len(s)):
-        for k in range(i+1,len(s)):
-            print ('------------')
-            for j in range(i+1,len(s)):
-                for l in range(k+1,len(s)):
-                    if i in [j,k,l] or j in [k,l] or k==l: continue
-                    if isCrossing(i,j,k,l): continue
-                    if doesMatch(s[i],s[j]) and doesMatch(s[k],s[l]):
-                        print (f'{{{i},{j}}}, {{{k},{l}}}')
-
-def read_fasta(file,path=r'C:\Users\Simon\Downloads'):
-    with open(os.path.join(path,file),'rU') as handle:
-        for record in SeqIO.parse(handle, "fasta"):
-            return record.seq
+    to_int = {'A':+1, 'U':-1, 'G':+2, 'C':-2}
+    return count_matchings ([to_int[c] for c in s])
         
 if __name__=='__main__':
     
@@ -70,28 +62,19 @@ if __name__=='__main__':
     parser.add_argument('--rosalind', default=False, action='store_true', help='process Rosalind dataset')
     args = parser.parse_args()
     if args.sample:
-        perfect_matchings('UAGCGUGAUCAC')
-        #print (catalan(30))
-        #print (cat('AUAU')%1000000)
-    
+        print (cat('AUAU'))
+        print (cat('UAGCGUGAUCAC'))
+        print (cat('CGGCUGCUACGCGUAAGCCGGCUGCUACGCGUAAGC'))
   
     if args.rosalind:
         Input  = read_strings(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt')
  
-        Result = None
+        Result = cat(''.join(line for line in Input[1:]))
         print (Result)
         with open(f'{os.path.basename(__file__).split(".")[0]}.txt','w') as f:
-            for line in Result:
-                f.write(f'{line}\n')
+            f.write(f'{Result}\n')
                 
     elapsed = time.time()-start
     minutes = int(elapsed/60)
     seconds = elapsed-60*minutes
     print (f'Elapsed Time {minutes} m {seconds:.2f} s')
-    
-    
-   
-    #print (cat('CGGCUGCUACGCGUAAGCCGGCUGCUACGCGUAAGC')) # should be 736
-    
-    #print(cat(read_fasta('data.fna')))
-

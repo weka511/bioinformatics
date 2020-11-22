@@ -174,7 +174,11 @@ def read_list(file_name):
 def print_adjacency_graph(graph):
     for (a,b) in graph:
         print ('%(a)s -> %(b)s'%locals())
-        
+
+# format_list
+# 
+# Format a list of numbers for usine as a Rosalind solution
+
 def format_list(list):
     return ' '.join([str(l) for l in list])
 
