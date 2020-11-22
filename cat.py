@@ -35,6 +35,9 @@ def count_matchings(seq):
         return (I1,I2)
     
     def count(indices):
+        key = str(indices)
+        if key in cache:
+            return cache[key]
         result = 0
         if 0 != sum(seq[i] for i in indices if abs(seq[i])==1): return 0
         if 0 != sum(seq[i] for i in indices if abs(seq[i])==2): return 0
@@ -46,8 +49,9 @@ def count_matchings(seq):
             count1 = count(I1)
             count2 = count(I2)
             result += (count1*count2)
+        cache[str(indices)]= result
         return result
-    
+    cache = {}
     return count(list(range(len(seq))))
     
 def cat(s):
@@ -69,7 +73,7 @@ if __name__=='__main__':
     if args.rosalind:
         Input  = read_strings(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt')
  
-        Result = cat(''.join(line for line in Input[1:]))
+        Result = cat(''.join(line for line in Input[1:]))%1000000
         print (Result)
         with open(f'{os.path.basename(__file__).split(".")[0]}.txt','w') as f:
             f.write(f'{Result}\n')
