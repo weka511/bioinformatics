@@ -347,6 +347,7 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 
 | # | Location | Description |
 | ---- | --------------- | ------------------------------------------------|
+|ctea|ctea.py|[Counting Optimal Alignments](http://rosalind.info/problems/ctea/) [WIP](https://github.com/weka511/bioinformatics/issues/67)|
 |edit|edit.py|[Edit Distance](http://rosalind.info/problems/edit/) |
 |edta|edta.py|[Edit Distance Alignment](http://rosalind.info/problems/edta/)|
 |gaff|gaff.py|[Global Alignment with Scoring Matrix and Affine Gap Penalty](http://rosalind.info/problems/gaff/)|
