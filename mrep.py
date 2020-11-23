@@ -13,35 +13,33 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-#  MOTZ 	Motzkin Numbers and RNA Secondary Structures 
+#  MREP Identifying Maximal Repeats
 
 import argparse
 import os
 import time
 from   helpers import read_strings
-from   combinatorics import catmotz,count_matchings
 
   
-
 if __name__=='__main__':
     start = time.time()
-    parser = argparse.ArgumentParser('MOTZ Motzkin Numbers and RNA Secondary Structures')
+    parser = argparse.ArgumentParser('....')
     parser.add_argument('--sample',   default=False, action='store_true', help='process sample dataset')
     parser.add_argument('--rosalind', default=False, action='store_true', help='process Rosalind dataset')
     args = parser.parse_args()
     if args.sample:
-        print (catmotz('AUAU',        counter=count_matchings))   # expect 7
-        print (catmotz('AUCG',        counter=count_matchings))   # expect 4
-        print (catmotz('AUGAUC',      counter=count_matchings))   # expect 11
-        print (catmotz('GCAUGCAUGCA', counter=count_matchings))   # expect 226
+        pass
         
+    
+
     if args.rosalind:
         Input  = read_strings(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt')
  
-        Result = catmotz(''.join(line for line in Input[1:]),counter=count_matchings)%1000000
+        Result = None
         print (Result)
         with open(f'{os.path.basename(__file__).split(".")[0]}.txt','w') as f:
-            f.write(f'{Result}\n')
+            for line in Result:
+                f.write(f'{line}\n')
                 
     elapsed = time.time() - start
     minutes = int(elapsed/60)
