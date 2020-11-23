@@ -20,59 +20,25 @@ import os
 import time
 from   helpers import read_strings
 
-# catalan
-#
-# Calculate Catalan numbers
-#
-# Verified against list from http://mathforum.org/advanced/robertd/catalan.html
-#
-# 1 1
-# 2 2
-# 3 5
-# 4 14
-# 5 42
-# 6 132
-# 7 429
-# 8 1430
-# 9 4862
-# 10 16796
-# 11 58786
-# 12 208012
-# 13 742900
-# 14 2674440
-# 15 9694845
-#
-# Verified against Online Encyclopedia of Integer Sequences (https://oeis.org/A000108) for case:
-# 30 3814986502092304
 
-class Catalan:
-    def __init__(self):
-        self.c = [1]
-        
-    def get(self,n):
-        for m in range(len(self.c),n+1):
-            self.c.append(sum([self.c[k]*self.c[m-1-k] for k in range(m)]))
-        return self.c[n]
 
-class Motzkin:
-    def __init__(self):
-        self.s=[1,1]
-        
-    def get(n):
-        for n0 in range(1,n):
-            self.s.append(self.s[-1]+sum([self.s[k]*self.s[n0-1-k] for k in range(n0)]))
-        return self.s[n]
-
-#    cat 	Catalan Numbers and RNA Secondary Structures (WIP)
+#    cat 	Catalan Numbers and RNA Secondary Structures
 #    motz 	Motzkin Numbers and RNA Secondary Structures 
 
 # partition
 #
-# Split set into two partitions, one between i and and j, one outside
+# Ensure that matching are non-crossing by splitting set into two partitions,
+# one between i and and j, one outside
+# 
+#   Parameters:
+#       indices The set (of indices) that are to be partitioned
+#       i       One end of bond
+#       j       The other end of bond
 
 def partition(indices,i,j):
     I1 = []
     I2 = []
+    
     for k in indices:
         if k==i: continue
         if k==j: continue
@@ -80,7 +46,13 @@ def partition(indices,i,j):
             I1.append(k)
         else:
             I2.append(k)
+            
     return (I1,I2)
+
+#    count_perfect_matchings
+#
+#    Used by CAT Catalan Numbers and RNA Secondary Structures
+#    to count perfect matchings, i.e. every base must be linked to another
 
 def count_perfect_matchings(seq):
 
@@ -106,6 +78,12 @@ def count_perfect_matchings(seq):
     cache = {}
     return count(list(range(len(seq))))
 
+# count_matchings
+#
+# Used by MOTZ 	Motzkin Numbers and RNA Secondary Structures to
+# count possible matches, which need not be perfect. Includes the
+# case where n nodes match
+
 def count_matchings(seq):
     def wrapped_count(indices):
         def count():
@@ -128,35 +106,18 @@ def count_matchings(seq):
         return cache[key]
     cache = {}
     return wrapped_count(list(range(len(seq)))) 
-    
+
+# catmotz
+#
+# Count entries in bonding graph (probleme CAT, MOTZ, and RNAS).
+# Function starts be translating sting to list of ints. Fow CAT and MOTZ,
+# a bond it possible iff to tho end of the bond sum to zero. RNAS allows
+# CG also - both potitive.
+#
+# Parameters:  s        The string
+#              counter   Function that performs counting
+
 def catmotz(s,counter=count_perfect_matchings):
-    to_int = {'A':+1, 'U':-1, 'G':+2, 'C':-2}
+    to_int = {'A':+1, 'U':-1, 'G':-2, 'C':+2}
     return counter([to_int[c] for c in s])
     
-if __name__=='__main__':
-    start = time.time()
-    parser = argparse.ArgumentParser('....')
-    parser.add_argument('--sample',   default=False, action='store_true', help='process sample dataset')
-    parser.add_argument('--rosalind', default=False, action='store_true', help='process Rosalind dataset')
-    args = parser.parse_args()
-    if args.sample:
-        catalan = Catalan()
-        for i in range(31):
-            print (i,catalan.get(i))
- 
-        
-    
-
-    if args.rosalind:
-        Input  = read_strings(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt')
- 
-        Result = None
-        print (Result)
-        with open(f'{os.path.basename(__file__).split(".")[0]}.txt','w') as f:
-            for line in Result:
-                f.write(f'{line}\n')
-                
-    elapsed = time.time() - start
-    minutes = int(elapsed/60)
-    seconds = elapsed - 60*minutes
-    print (f'Elapsed Time {minutes} m {seconds:.2f} s')    
