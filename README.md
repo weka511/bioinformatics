@@ -176,6 +176,7 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 |orf|orf.py|[Open Reading Frames](http://rosalind.info/problems/orf/)|
 |pmch|pmch.py|[Perfect Matchings and RNA Secondary Structures](http://rosalind.info/problems/pmch/) |
 |pper|rosalind.py|[Partial Permutations](http://rosalind.info/problems/pper/) |
+|rnas|rnas.py|[Wobble Bonding and RNA Secondary Structures](http://rosalind.info/problems/rnas/) [WIP](https://github.com/weka511/bioinformatics/issues/70)|
 |root|phylogeny.py|[Counting Rooted Binary Trees ](http://rosalind.info/problems/root/) |
 
 ## [Genome Assembly](http://rosalind.info/problems/topics/genome-assembly/)
