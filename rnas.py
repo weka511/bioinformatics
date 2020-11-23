@@ -19,8 +19,37 @@ import argparse
 import os
 import time
 from   helpers import read_strings
+from   combinatorics import catmotz, partition
 
-  
+def count_wobble(seq):
+    def wrapped_count(indices):
+        def valid_bonds():
+            j      = min(indices)
+            for k in range(j+4,max(indices)+1):
+                if seq[j] + seq[k]==0 or (seq[j]<0 and seq[k]<0): # Bond or wobble bond
+                    yield (j,k)
+                    
+        def count():
+            n      = len(indices)
+            if n<2: return 1
+            #j      = min(indices)          
+            count1 = wrapped_count(indices[1:]) #  If first node is not involved in a matching            
+            count2 = 0                            #  If first node is involved in a matching
+            #for k in range(j+4,max(indices)+1):
+                #if seq[j] + seq[k]==0 or (seq[j]<0 and seq[k]<0): # Bond or wobble bond
+            for j,k in valid_bonds():
+                I1,I2   = partition(indices,j,k)
+                count21 = wrapped_count(I1)
+                count22 = wrapped_count(I2)
+                count2 += (count21*count22)                
+            return count1 + count2
+        key = str(indices)
+        if not key in cache:
+            cache[key] = count()        
+        return cache[key]
+    cache = {}
+    return wrapped_count(list(range(len(seq))))         
+
 if __name__=='__main__':
     start = time.time()
     parser = argparse.ArgumentParser('....')
@@ -28,7 +57,11 @@ if __name__=='__main__':
     parser.add_argument('--rosalind', default=False, action='store_true', help='process Rosalind dataset')
     args = parser.parse_args()
     if args.sample:
-        pass
+        print (catmotz('CGAUGCUAG',
+                       counter=count_wobble))        
+        print (catmotz('AUGCUAGUACGGAGCGAGUCUAGCGAGCGAUGUCGUGAGUACUAUAUAUGCGCAUAAGCCACGU',
+                       counter=count_wobble))
+ 
         
     
 
