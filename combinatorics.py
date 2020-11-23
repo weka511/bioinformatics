@@ -65,23 +65,29 @@ class Motzkin:
 
 #    cat 	Catalan Numbers and RNA Secondary Structures (WIP)
 
+# partition
+#
+# Split set into two partitions, one between i and and j, one outside
+
+def partition(indices,i,j):
+    I1 = []
+    I2 = []
+    for k in indices:
+        if k==i: continue
+        if k==j: continue
+        if i<k and k <j:
+            I1.append(k)
+        else:
+            I2.append(k)
+    return (I1,I2)
+
 def count_perfect_matchings(seq):
-    def partition(indices,i,j):
-        I1 = []
-        I2 = []
-        for k in indices:
-            if k==i: continue
-            if k==j: continue
-            if i<k and k <j:
-                I1.append(k)
-            else:
-                I2.append(k)
-        return (I1,I2)
-    
+
     def count(indices):
         key = str(indices)
         if key in cache:
             return cache[key]
+        
         result = 0
         if 0 != sum(seq[i] for i in indices if abs(seq[i])==1): return 0
         if 0 != sum(seq[i] for i in indices if abs(seq[i])==2): return 0
@@ -89,19 +95,19 @@ def count_perfect_matchings(seq):
         if len(indices)==2: return 1
         i = min(indices)
         for j in range(i+1,max(indices)+1,2):
+            if seq[i] + seq[j]!=0: continue # Is i-j a valid split of the data?
             I1,I2  = partition(indices,i,j)
-            count1 = count(I1)
-            count2 = count(I2)
-            result += (count1*count2)
+            result += count(I1)*count(I2)
+            
         cache[str(indices)]= result
         return result
     
     cache = {}
     return count(list(range(len(seq))))
     
-def cat(s):
+def catmotz(s,counter=count_perfect_matchings):
     to_int = {'A':+1, 'U':-1, 'G':+2, 'C':-2}
-    return count_perfect_matchings ([to_int[c] for c in s])
+    return counter([to_int[c] for c in s])
     
 if __name__=='__main__':
     start = time.time()
