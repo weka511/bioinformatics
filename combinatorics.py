@@ -49,13 +49,23 @@ def partition(indices,i,j):
             
     return (I1,I2)
 
+# valid_bonds
+#
+# Used to iterate through valid pairs of bonds, all originating
+# from first index
+
+def valid_bonds(seq,indices):
+    j = min(indices)
+    for k in range(j+1,max(indices)+1):
+        if seq[j] + seq[k]==0:
+            yield(j,k)
+            
 #    count_perfect_matchings
 #
 #    Used by CAT Catalan Numbers and RNA Secondary Structures
 #    to count perfect matchings, i.e. every base must be linked to another
 
 def count_perfect_matchings(seq):
-
     def count(indices):
         key = str(indices)
         if key in cache:
@@ -66,9 +76,7 @@ def count_perfect_matchings(seq):
         if 0 != sum(seq[i] for i in indices if abs(seq[i])==2): return 0
         if len(indices)==0: return 1
         if len(indices)==2: return 1
-        i = min(indices)
-        for j in range(i+1,max(indices)+1,2):
-            if seq[i] + seq[j]!=0: continue # Is i-j a valid split of the data?
+        for i,j in valid_bonds(seq,indices):
             I1,I2  = partition(indices,i,j)
             result += count(I1)*count(I2)
             
@@ -85,19 +93,15 @@ def count_perfect_matchings(seq):
 # case where n nodes match
 
 def count_matchings(seq):
-    def wrapped_count(indices):
+    def wrapped_count(indices):                
         def count():
             n      = len(indices)
             if n<2: return 1
-            i      = min(indices)          
             count1 = wrapped_count(indices[1:]) #  If first node is not involved in a matching            
-            count2 = 0                            #  If first node is involved in a matching
-            for j in range(i+1,max(indices)+1):
-                if seq[i] + seq[j]!=0: continue
-                I1,I2   = partition(indices,i,j)
-                count21 = wrapped_count(I1)
-                count22 = wrapped_count(I2)
-                count2 += (count21*count22)                
+            count2 = 0                          #  If first node is involved in a matching
+            for j,k in valid_bonds(seq,indices):
+                I1,I2   = partition(indices,j,k)
+                count2 += (wrapped_count(I1)* wrapped_count(I2))                
             return count1 + count2
         
         key = str(indices)
