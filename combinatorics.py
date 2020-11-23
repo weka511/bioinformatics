@@ -56,7 +56,7 @@ class Catalan:
 
 class Motzkin:
     def __init__(self):
-        selfs=[1,1]
+        self.s=[1,1]
         
     def get(n):
         for n0 in range(1,n):
@@ -64,6 +64,7 @@ class Motzkin:
         return self.s[n]
 
 #    cat 	Catalan Numbers and RNA Secondary Structures (WIP)
+#    motz 	Motzkin Numbers and RNA Secondary Structures 
 
 # partition
 #
@@ -104,6 +105,29 @@ def count_perfect_matchings(seq):
     
     cache = {}
     return count(list(range(len(seq))))
+
+def count_matchings(seq):
+    def wrapped_count(indices):
+        def count():
+            n      = len(indices)
+            if n<2: return 1
+            i      = min(indices)          
+            count1 = wrapped_count(indices[1:]) #  If first node is not involved in a matching            
+            count2 = 0                            #  If first node is involved in a matching
+            for j in range(i+1,max(indices)+1):
+                if seq[i] + seq[j]!=0: continue
+                I1,I2   = partition(indices,i,j)
+                count21 = wrapped_count(I1)
+                count22 = wrapped_count(I2)
+                count2 += (count21*count22)                
+            return count1 + count2
+        
+        key = str(indices)
+        if not key in cache:
+            cache[key] = count()        
+        return cache[key]
+    cache = {}
+    return wrapped_count(list(range(len(seq)))) 
     
 def catmotz(s,counter=count_perfect_matchings):
     to_int = {'A':+1, 'U':-1, 'G':+2, 'C':-2}

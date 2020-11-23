@@ -19,9 +19,9 @@ import argparse
 import os
 import time
 from   helpers import read_strings
+from   combinatorics import catmotz,count_matchings
 
-def motz(s):
-    pass
+  
 
 if __name__=='__main__':
     start = time.time()
@@ -30,18 +30,20 @@ if __name__=='__main__':
     parser.add_argument('--rosalind', default=False, action='store_true', help='process Rosalind dataset')
     args = parser.parse_args()
     if args.sample:
-        print (motz('AUAU'))
+        #print (catmotz('AU',          counter=count_matchings))
+        #print (catmotz('UAU',         counter=count_matchings))
+        print (catmotz('AUAU',        counter=count_matchings))   # expect 7
+        print (catmotz('AUCG',        counter=count_matchings))   # expect 4
+        print (catmotz('AUGAUC',      counter=count_matchings))   # expect 11
+        print (catmotz('GCAUGCAUGCA', counter=count_matchings))   # expect 226
         
-    
-
     if args.rosalind:
         Input  = read_strings(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt')
  
-        Result = None
+        Result = catmotz(''.join(line for line in Input[1:]),counter=count_matchings)%1000000
         print (Result)
         with open(f'{os.path.basename(__file__).split(".")[0]}.txt','w') as f:
-            for line in Result:
-                f.write(f'{line}\n')
+            f.write(f'{Result}\n')
                 
     elapsed = time.time() - start
     minutes = int(elapsed/60)
