@@ -60,6 +60,10 @@ def valid_bonds(seq,indices):
         if seq[j] + seq[k]==0:
             yield(j,k)
 
+# count_partitioned
+#
+# Split indices onto two subsets, corresponding to a bond
+
 def count_partitioned(indices,i,j,count=lambda x:0):
     I1,I2  = partition(indices,i,j)
     return count(I1)*count(I2)  
