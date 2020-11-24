@@ -34,7 +34,8 @@ def smgb(s,t,match=+1,mismatch=-1,indel=-1):
                             scores[i][j-1]   + indel,
                             scores[i-1][j-1] + (match if s[i-1]==t[j-1] else mismatch)])
             if step==0:
-                x=0
+                print ('zero')
+                break
             elif step==1:
                 i-=1
                 s1.append(s[i])
@@ -85,7 +86,7 @@ if __name__=='__main__':
     if args.rosalind:
         Input       = read_strings(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt')
         fasta       = FastaContent(Input)
-        a,s         =  fasta[0]
+        a,s         = fasta[0]
         b,t         = fasta[1]
         score,s1,t1 = smgb(s,t)
 

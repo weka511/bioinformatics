@@ -1,8 +1,4 @@
-# $HeadURL: https://server/svn/sandbox/trunk/rosalind/fasta.py $
-# $LastChangedDate: 2015-12-01 11:43:40 +1300 (Tue, 01 Dec 2015) $
-# $LastChangedRevision: 668 $
-
-# Copyright (C) 2015 Greenweaves Software Pty Ltd
+# Copyright (C) 2020 Greenweaves Software Limited
 
 # This is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -20,18 +16,22 @@
 # This file contains a collection of functions to solve the problems
 # at rosalind.info.
 
+# FastaContent
+#
+# This class is used to parse FASTA format data from a text string
+
 class FastaContent(object):
     def __init__(self,file_text):
-        self.pairs=[]
-        nn=''
-        text=''    
+        self.pairs = []
+        nn         = ''
+        text       = ''    
         for line in file_text:
-            line=line.strip()
+            line = line.strip()
             if line.startswith('>'):
                 if len(nn)>0:
                     self.pairs.append((nn,text))
-                nn=line[1:]
-                text=''
+                nn   = line[1:]
+                text = ''
             else:
                 text=text+line
                 
@@ -43,7 +43,10 @@ class FastaContent(object):
     
     def __len__(self):
         return len(self.pairs)
-    
+
+# FastaFile
+#
+# This class is used to parse Fasta data from a file
 class FastaFile(FastaContent):
     def __init__(self,name):
         with open(name,'r') as file_text:
