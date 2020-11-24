@@ -59,32 +59,31 @@ def valid_bonds(seq,indices):
     for k in range(j+1,max(indices)+1):
         if seq[j] + seq[k]==0:
             yield(j,k)
-            
+
+def count_partitioned(indices,i,j,count=lambda x:0):
+    I1,I2  = partition(indices,i,j)
+    return count(I1)*count(I2)  
+
 #    count_perfect_matchings
 #
 #    Used by CAT Catalan Numbers and RNA Secondary Structures
 #    to count perfect matchings, i.e. every base must be linked to another
 
 def count_perfect_matchings(seq):
-    def count(indices):
-        key = str(indices)
-        if key in cache:
-            return cache[key]
-        
-        result = 0
-        if 0 != sum(seq[i] for i in indices if abs(seq[i])==1): return 0
-        if 0 != sum(seq[i] for i in indices if abs(seq[i])==2): return 0
-        if len(indices)==0: return 1
-        if len(indices)==2: return 1
-        for i,j in valid_bonds(seq,indices):
-            I1,I2  = partition(indices,i,j)
-            result += count(I1)*count(I2)
-            
-        cache[str(indices)]= result
-        return result
+    def wrapped_count(indices):
+        def count(indices):
+            if 0 != sum(seq[i] for i in indices if abs(seq[i])==1): return 0
+            if 0 != sum(seq[i] for i in indices if abs(seq[i])==2): return 0
+            if len(indices)==0: return 1
+            if len(indices)==2: return 1
+            return sum([count_partitioned(indices,i,j,count=count) for i,j in valid_bonds(seq,indices)])
     
+        key = str(indices)
+        if not key in cache:
+            cache[key] = count(indices)        
+        return cache[key]
     cache = {}
-    return count(list(range(len(seq))))
+    return wrapped_count(list(range(len(seq))))
 
 # count_matchings
 #
@@ -92,21 +91,20 @@ def count_perfect_matchings(seq):
 # count possible matches, which need not be perfect. Includes the
 # case where n nodes match
 
+
+            
 def count_matchings(seq):
     def wrapped_count(indices):                
-        def count():
+        def count(indices):
+            
             n      = len(indices)
-            if n<2: return 1
-            count1 = wrapped_count(indices[1:]) #  If first node is not involved in a matching            
-            count2 = 0                          #  If first node is involved in a matching
-            for j,k in valid_bonds(seq,indices):
-                I1,I2   = partition(indices,j,k)
-                count2 += (wrapped_count(I1)* wrapped_count(I2))                
-            return count1 + count2
+            if n<2: return 1          
+            return wrapped_count(indices[1:]) + \
+                   sum([count_partitioned(indices,i,j,count=count) for i,j in valid_bonds(seq,indices)])
         
         key = str(indices)
         if not key in cache:
-            cache[key] = count()        
+            cache[key] = count(indices)        
         return cache[key]
     cache = {}
     return wrapped_count(list(range(len(seq)))) 
@@ -114,14 +112,18 @@ def count_matchings(seq):
 # catmotz
 #
 # Count entries in bonding graph (probleme CAT, MOTZ, and RNAS).
-# Function starts be translating sting to list of ints. Fow CAT and MOTZ,
-# a bond it possible iff to tho end of the bond sum to zero. RNAS allows
-# CG also - both potitive.
+# Function starts be translating sting to list of ints. For CAT and MOTZ,
+# a bond is possible iff the two endx of the bond sum to zero. RNAS allows
+# UG also - both negative.
 #
 # Parameters:  s        The string
 #              counter   Function that performs counting
 
-def catmotz(s,counter=count_perfect_matchings):
-    to_int = {'A':+1, 'U':-1, 'G':-2, 'C':+2}
+def catmotz(s,
+            counter=count_perfect_matchings,
+            to_int = {'A': +1,
+                      'U': -1, 
+                      'G': -2,
+                      'C': +2}):
     return counter([to_int[c] for c in s])
     
