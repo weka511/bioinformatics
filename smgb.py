@@ -19,8 +19,56 @@ import argparse
 import os
 import time
 from   helpers import read_strings
+from   numpy import argmax
+from   fasta import FastaContent
 
-  
+def smgb(s,t,match=+1,mismatch=-1,indel=-1):
+    def backtrack(index,n):
+        s1 = []
+        t1 = []
+        i  = index
+        j  = n
+        while i>0 and j>0:
+            step = argmax([0,
+                            scores[i-1][j]   + indel,
+                            scores[i][j-1]   + indel,
+                            scores[i-1][j-1] + (match if s[i-1]==t[j-1] else mismatch)])
+            if step==0:
+                x=0
+            elif step==1:
+                i-=1
+                s1.append(s[i])
+                t1.append('-')
+            elif step==2:
+                j-=1
+                s1.append('-')
+                t1.append(t[j])
+            else:
+                i-=1
+                j-=1
+                s1.append(s[i])
+                t1.append(t[j])
+        return s1,t1
+    def reverse(chars):
+        return ''.join(c for c in chars[::-1])
+    m      = len(s)
+    n      = len(t)
+    if m<n: # assume t shorter than s
+        return smgb(t,s,match=match,mismatch=mismatch,indel=indel)
+    scores = [[0 for j in range(n+1)] for i in range(m+1)]
+    for i in range(1,m+1):
+        for j in range(1,n+1):
+            scores[i][j] = max(0,
+                               scores[i-1][j]   + indel,
+                               scores[i][j-1]   + indel,
+                               scores[i-1][j-1] + (match if s[i-1]==t[j-1] else mismatch))
+        #print (''.join([f'{score:3d}' for score in scores[i]]) )
+    last_column = [row[-1] for row in scores]
+    index       = argmax(last_column)
+    s1,t1       = backtrack(index,n)
+    return last_column[index],reverse(s1),reverse(t1)
+    
+
 if __name__=='__main__':
     start = time.time()
     parser = argparse.ArgumentParser('SMGB Semiglobal Alignment')
@@ -28,18 +76,26 @@ if __name__=='__main__':
     parser.add_argument('--rosalind', default=False, action='store_true', help='process Rosalind dataset')
     args = parser.parse_args()
     if args.sample:
-        pass
+        score,s1,t1 = smgb('CAGCACTTGGATTCTCGG','CAGCGTGG')
+        print (score)
+        print (s1)
+        print (t1)
         
-    
-
+        
     if args.rosalind:
-        Input  = read_strings(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt')
- 
-        Result = None
-        print (Result)
+        Input       = read_strings(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt')
+        fasta       = FastaContent(Input)
+        a,s         =  fasta[0]
+        b,t         = fasta[1]
+        score,s1,t1 = smgb(s,t)
+
         with open(f'{os.path.basename(__file__).split(".")[0]}.txt','w') as f:
-            for line in Result:
-                f.write(f'{line}\n')
+            print (score)
+            print (s1)
+            print (t1)                
+            f.write(f'{score}\n')
+            f.write(f'{s1}\n')
+            f.write(f'{t1}\n')
                 
     elapsed = time.time() - start
     minutes = int(elapsed/60)
