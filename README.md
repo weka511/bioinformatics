@@ -156,13 +156,13 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 |BA11C|BA11C.py spectrum.py| [Convert a Peptide into a Peptide Vector ](http://rosalind.info/problems/ba11c/) |
 |BA11D|BA11D.py spectrum.py| [Convert a Peptide Vector into a Peptide ](http://rosalind.info/problems/ba11d/) |
 
-##[Alignment](http://rosalind.info/problems/topics/alignment/)
+## [Alignment](http://rosalind.info/problems/topics/alignment/)
 
 | # | Location | Description |
 | ---- | --------------- | ------------------------------------------------|
 |laff|laff.py |[Local Alignment with Affine Gap Penalty](http://rosalind.info/problems/laff/) [WIP](https://github.com/weka511/bioinformatics/issues/63)|
 |mult|mult.py |[Multipls Alignment](http://rosalind.info/problems/mult/) [WIP](https://github.com/weka511/bioinformatics/issues/58)|
-|smgb|smgb.py |[Multipls Alignment](http://rosalind.info/problems/smgb/) |
+|smgb|smgb.py |[Semiglobal Alignment](http://rosalind.info/problems/smgb/) |
 
 ## [Combinatorics](http://rosalind.info/problems/topics/combinatorics/)
 
@@ -322,7 +322,7 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 |lcsm|rosalind.py|[Finding a Shared Motif](http://rosalind.info/problems/lcsm/) |
 |lcsq|lcsq.py|[Finding a Shared Spliced Motif](http://rosalind.info/problems/lcsq/) |
 |ling|ling.py|[Linguistic Complexity of a Genome](http://rosalind.info/problems/ling/)|
-||ukkonen.py|[µTuX's implementation of Ukkonen's algorithm](https://github.com/mutux/Ukkonen-s-Suffix-Tree-Algorithm/blob/master/suffixtree.py)|
+||ukkonen.py|[ÂµTuX's implementation of Ukkonen's algorithm](https://github.com/mutux/Ukkonen-s-Suffix-Tree-Algorithm/blob/master/suffixtree.py)|
 |mmch|mmch.py|[Maximum Matchings and RNA Secondary Structures](http://rosalind.info/problems/mmch/) |
 |revc|rosalind.py| [Complementing a Strand of DNA](http://rosalind.info/problems/revc/)|
 |prot|rosalind.py|[Translating RNA into Protein](http://rosalind.info/problems/prot/) |
