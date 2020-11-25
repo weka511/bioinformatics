@@ -21,11 +21,7 @@ import time
 from   helpers import read_strings
 from   numpy import argmax
 from   fasta import FastaContent
-
-def reverse(chars):
-    return ''.join(c for c in chars[::-1])
-
-
+from   align import reverse
 
 def smgb(s,t,match=+1,mismatch=-1,indel=-1):
  
