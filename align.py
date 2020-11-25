@@ -17,9 +17,13 @@
 
 from numpy import argmax,argmin
 from sys import float_info
-from Bio.SubsMat.MatrixInfo import blosum62,pam250
+#from Bio.Align.substitution_matrices import blosum62,pam250
+from Bio.Align import substitution_matrices
 from reference_tables import createSimpleDNASubst
 from helpers import zeroes,sign
+
+def reverse(chars):
+    return ''.join(c for c in chars[::-1])
 
 # BA5A 	Find the Minimum Number of Coins Needed to Make Change 	
 #
@@ -259,7 +263,7 @@ def create_alignment(string1, string2,s_predecessors,i_start=-1,j_start=-1):
 
 # BA5E 	Find a Highest-Scoring Alignment of Two Strings
 # Find the highest-scoring alignment between two strings using a scoring matrix.
-#
+#blo
 # Input: Two amino acid strings.
 #
 # Return: The maximum alignment score of these strings followed by an
@@ -267,7 +271,7 @@ def create_alignment(string1, string2,s_predecessors,i_start=-1,j_start=-1):
 #         and indel penalty σ = 5. (If multiple alignments achieving the maximum 
 #         score exist, you may return any one.)
 
-def highest_scoring_global_alignment(string1,string2,weights=blosum62,sigma=5):
+def highest_scoring_global_alignment(string1,string2,weights=substitution_matrices.load("BLOSUM62"),sigma=5):
     return create_alignment(string1,
                             string2,
                             calculate_scores_for_alignment(
@@ -287,7 +291,7 @@ def highest_scoring_global_alignment(string1,string2,weights=blosum62,sigma=5):
 # PAM250 scoring matrix and indel penalty  5. (If multiple local alignments
 # achieving the maximum score exist, you may return any one.)
 
-def highest_scoring_local_alignment(string1,string2,weights=pam250,sigma=5):
+def highest_scoring_local_alignment(string1,string2,weights=substitution_matrices.load("PAM250"),sigma=5):
     def find_best_substring(s):
         s_right=0    
         i_best=-1
@@ -337,7 +341,7 @@ def create_distance_matrix(nrows,ncolumns):
 def get_indel_cost(sigma,delta,i,j,di,dj,moves):
     return di,dj,sigma
 
-def score(pair,replace_score=blosum62):
+def score(pair,replace_score=substitution_matrices.load("BLOSUM62")):
     def reverse(pair):
         a,b=pair
         return (b,a)
@@ -549,7 +553,7 @@ def unwind_moves(moves,score,i,j):
         ts.append(t0)
     return score,ss[::-1],ts[::-1]
     
-def san_kai(s,t, replace_score=blosum62,sigma=11,epsilon=1,backtrack=unwind_moves):
+def san_kai(s,t, replace_score=substitution_matrices.load("BLOSUM62"),sigma=11,epsilon=1,backtrack=unwind_moves):
     
     def match(pair,replace_score=replace_score):
         def reverse(pair):
@@ -595,7 +599,7 @@ def san_kai(s,t, replace_score=blosum62,sigma=11,epsilon=1,backtrack=unwind_move
                     
     return backtrack(moves,middle[len(s)][len(t)],len(s),len(t))
 
-def FindMiddleEdge(s,t,replace_score=blosum62,indel_cost=5):
+def FindMiddleEdge(s,t,replace_score=substitution_matrices.load("BLOSUM62"),indel_cost=5):
  
     def update(j,col1,col2,s,t):
         col2[0] = - (j * indel_cost)
@@ -730,13 +734,13 @@ def FindHighestScoringMultipleSequenceAlignment (u,
  
          
 if __name__=='__main__':
-    from Bio.SubsMat.MatrixInfo import blosum62
+   
     import unittest
 
     class Test_5_Alignment(unittest.TestCase):
         
         def test_simple(self): # Simple test
-            score,s1,s2=align('PLEASANTLY','MEANLY',replace_score=blosum62,indel_cost=5)
+            score,s1,s2=align('PLEASANTLY','MEANLY',replace_score=substitution_matrices.load("BLOSUM62"),indel_cost=5)
             self.assertEqual(8,score)
             self.assertEqual('LEASANTLY',''.join(s1))
             self.assertEqual('MEA--N-LY',''.join(s2))
