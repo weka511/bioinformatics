@@ -17,7 +17,6 @@
 
 from numpy import argmax,argmin
 from sys import float_info
-#from Bio.Align.substitution_matrices import blosum62,pam250
 from Bio.Align import substitution_matrices
 from reference_tables import createSimpleDNASubst
 from helpers import zeroes,sign
