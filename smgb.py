@@ -22,25 +22,36 @@ from   helpers import read_strings
 from   numpy import argmax
 from   fasta import FastaContent
 
+def reverse(chars):
+    return ''.join(c for c in chars[::-1])
+
+
+
 def smgb(s,t,match=+1,mismatch=-1,indel=-1):
-    def backtrack(index,n):
+ 
+    def score_pair(a,b):
+        return match if a==b else mismatch
+
+    def backtrack():
         s1 = []
         t1 = []
-        i  = index
+        i  = m
         j  = n
+        
+        while i>index:
+            i-=1
+            s1.append(s[i])
+            t1.append('-')
+            
         while i>0 and j>0:
-            step = argmax([0,
-                            scores[i-1][j]   + indel,
-                            scores[i][j-1]   + indel,
-                            scores[i-1][j-1] + (match if s[i-1]==t[j-1] else mismatch)])
+            step = argmax([scores[i-1][j]   + indel,
+                           scores[i][j-1]   + indel,
+                           scores[i-1][j-1] + score_pair(s[i-1],t[j-1])])
             if step==0:
-                print ('zero')
-                break
-            elif step==1:
                 i-=1
                 s1.append(s[i])
                 t1.append('-')
-            elif step==2:
+            elif step==1:
                 j-=1
                 s1.append('-')
                 t1.append(t[j])
@@ -49,24 +60,27 @@ def smgb(s,t,match=+1,mismatch=-1,indel=-1):
                 j-=1
                 s1.append(s[i])
                 t1.append(t[j])
+                
+        while i>0:
+            i-=1
+            s1.append(s[i])
+            t1.append('-')        
         return s1,t1
-    def reverse(chars):
-        return ''.join(c for c in chars[::-1])
+     
     m      = len(s)
     n      = len(t)
-    if m<n: # assume t shorter than s
-        return smgb(t,s,match=match,mismatch=mismatch,indel=indel)
+    assert m>n, 't should be shorter than s'
+
     scores = [[0 for j in range(n+1)] for i in range(m+1)]
     for i in range(1,m+1):
         for j in range(1,n+1):
-            scores[i][j] = max(0,
-                               scores[i-1][j]   + indel,
+            scores[i][j] = max(scores[i-1][j]   + indel,
                                scores[i][j-1]   + indel,
-                               scores[i-1][j-1] + (match if s[i-1]==t[j-1] else mismatch))
-        #print (''.join([f'{score:3d}' for score in scores[i]]) )
+                               scores[i-1][j-1] + score_pair(s[i-1],t[j-1]))
+        
     last_column = [row[-1] for row in scores]
     index       = argmax(last_column)
-    s1,t1       = backtrack(index,n)
+    s1,t1       = backtrack()
     return last_column[index],reverse(s1),reverse(t1)
     
 
@@ -80,8 +94,7 @@ if __name__=='__main__':
         score,s1,t1 = smgb('CAGCACTTGGATTCTCGG','CAGCGTGG')
         print (score)
         print (s1)
-        print (t1)
-        
+        print (t1)      
         
     if args.rosalind:
         Input       = read_strings(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt')

@@ -162,7 +162,7 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 | ---- | --------------- | ------------------------------------------------|
 |laff|laff.py |[Local Alignment with Affine Gap Penalty](http://rosalind.info/problems/laff/) [WIP](https://github.com/weka511/bioinformatics/issues/63)|
 |mult|mult.py |[Multipls Alignment](http://rosalind.info/problems/mult/) [WIP](https://github.com/weka511/bioinformatics/issues/58)|
-|smgb|smgb.py |[Multipls Alignment](http://rosalind.info/problems/smgb/) [WIP](https://github.com/weka511/bioinformatics/issues/61)|
+|smgb|smgb.py |[Multipls Alignment](http://rosalind.info/problems/smgb/) |
 
 ## [Combinatorics](http://rosalind.info/problems/topics/combinatorics/)
 
