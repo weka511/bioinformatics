@@ -71,41 +71,15 @@ def extract_quartets(species,edges,adj):
 
 
 def qrtd(species,newick1,newick2):
-    
-    #def q(n):
-        #return (n*(n-1)*(n-2)*(n-3))/(4*3*2*1)  
-    
-    #def replace_leaves(adj):
-        #return {parent:sorted([seiceps[child] if child in seiceps else child for child in children]) for parent,children in adj.items() }
- 
-    #def dq(T1,T2):
-        #return q(count_leaves(T1)) +  q(count_leaves(T2)) -2 * shared_quartets(T1,T2)
-    
-    #def count_leaves(adj):
-        #return sum([1 for children in adj.values() for child in children if child<n])
-    
-    #def shared_quartets(T1,T2):
-        #return 0
-    
-
-    
-    n       = len(species)
-    #seiceps = {species[i]:i for i in range(n)}
-    #tree1   = replace_leaves(create_adj(parse(newick1,start=n)))
-    #tree2   = replace_leaves(create_adj(parse(newick2,start=n)))
-    #return dq(tree1,tree2)
-    tree1  = parse(newick1,start=n)
-    edges1 = create_edges(tree1)
-    adj1   = create_adj(tree1)
-    q1     = set(extract_quartets(species,edges1,adj1))
-    tree2  = parse(newick2,start=n)
-    edges2 = create_edges(tree2)
-    adj2   = create_adj(tree2)
-    q2     = list(set(extract_quartets(species,edges2,adj2)))
-    count_shared = 0
-    for q in q2:
-        if q in(q1): count_shared+=1
-    return 2*(n - count_shared)
+    n        = len(species)
+    tree1     = parse(newick1,start=n)
+    edges1    = create_edges(tree1)
+    adj1      = create_adj(tree1)
+    quartets1 = set(extract_quartets(species,edges1,adj1))
+    tree2     = parse(newick2,start=n)
+    edges2    = create_edges(tree2)
+    adj2      = create_adj(tree2)
+    return 2*(n - sum([1 for q in set(extract_quartets(species,edges2,adj2)) if q in quartets1]))
 
 if __name__=='__main__':
     start = time.time()
