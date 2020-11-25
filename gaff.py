@@ -1,4 +1,4 @@
-#    Copyright (C) 2019 Greenweaves Software Limited
+#    Copyright (C) 2019-2020 Greenweaves Software Limited
 #
 #    This is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -11,18 +11,18 @@
 #    GNU General Public License for more details.
 #
 #    You should have received a copy of the GNU General Public License
-#    along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>
 
 # gaff.py Global Alignment with Scoring Matrix and Affine Gap Penalty
 
 from align import san_kai
-from Bio.SubsMat.MatrixInfo import blosum62
+from   Bio.Align import substitution_matrices
 
 def gaff(s,t):
     score,s1,t1 = san_kai([s0 for s0 in s],[t0 for t0 in t])
     return score,''.join(s1),''.join(t1)
 
-def get_score(s,t,replace_score=blosum62,sigma=11,epsilon=1):
+def get_score(s,t,replace_score=substitution_matrices.load("BLOSUM62"),sigma=11,epsilon=1):
     score = 0
     gap   = 0
     match_s=False
