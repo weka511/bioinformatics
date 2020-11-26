@@ -19,9 +19,25 @@ import argparse
 import os
 import time
 from   helpers   import read_strings
-from   phylogeny import create_adj, parse
+from   phylogeny import  parse
 
-def create_edges(tree):
+def create_adj(tree,indices=None):
+    adj = {}
+    def dfs(tree):
+        id       = tree['id']
+        name     = tree['name']
+        children = tree['children']
+        parentid = tree['parentid']
+        if len(name)==0:
+            adj[id]=[]
+        if parentid>-1:
+            adj[parentid].append(id if len(name)==0 else indices[name])     
+        for child in children:
+            dfs(child)
+    dfs(tree)
+    return adj
+
+def create_edges(tree,indices=None):
     edges = []
     def dfs(tree):
         id       = tree['id']
@@ -30,15 +46,16 @@ def create_edges(tree):
         parentid = tree['parentid']
 
         for child in children:
-            edges.append((id,child['id'] if len(child['name'])==0 else child['name']))
+            if len(child['name'])==0:
+                edges.append((id,child['id']))
             dfs(child)
     dfs(tree)
     return edges
 
-def extract_quartets(species,edges,adj):
+def extract_quartets(edges,adj,n=None):
     def get_leaves(x):
         def dfs(u):
-            if type(u)==int:
+            if u>=n:
                 for v in adj[u]:
                     dfs(v)                
             else:
@@ -49,37 +66,31 @@ def extract_quartets(species,edges,adj):
         return leaves
     
     def split(a,b):
-        s_b = get_leaves(b)
-        s_a = [s for s in species if s not in s_b]
-        return [(s_a[i],s_a[j],s_b[k],s_b[l]) for i in range(len(s_a))
+        s_b = leaves[b]
+        s_a = [s for s in leaves[a] if s not in s_b]
+        return [(s_a[j],s_a[i],s_b[l],s_b[k]) for i in range(len(s_a))
                 for j in range(i) 
                 for k in range(len(s_b)) 
                 for l in range(k)]
-   
-    def order(a,b,c,d):
-        if b<a:
-            b,a = a,b
-        if d<c:
-            c,d = d,c
-        if c<a:
-            a,c = c,a
-            b,d = d,b
-        return (a,b,c,d)
-        
-    quartets= [q  for a,b in edges if type(b)==int for q in split(a,b)]
-    return [order(a,b,c,d) for a,b,c,d in quartets]
+    
+    leaves         = {x:sorted(get_leaves(x)) for x in adj.keys()}
+    internal_edges = [(a,b) for a,b in edges if b>=n]
+    return [q  for a,b in internal_edges for q in split(a,b)]
+
 
 
 def qrtd(species,newick1,newick2):
-    n        = len(species)
+    n         = len(species)
+    indices   = {species[i]:i for i in range(n)}
     tree1     = parse(newick1,start=n)
-    edges1    = create_edges(tree1)
-    adj1      = create_adj(tree1)
-    quartets1 = set(extract_quartets(species,edges1,adj1))
+    edges1    = create_edges(tree1,indices=indices)
+    adj1      = create_adj(tree1,indices=indices)
+    q1        = extract_quartets(edges1,adj1,n=n)
+    quartets1 = set(q1)
     tree2     = parse(newick2,start=n)
-    edges2    = create_edges(tree2)
-    adj2      = create_adj(tree2)
-    return 2*(n - sum([1 for q in set(extract_quartets(species,edges2,adj2)) if q in quartets1]))
+    edges2    = create_edges(tree2,indices=indices)
+    adj2      = create_adj(tree2,indices=indices)
+    return 2*(n - sum([1 for q in set(extract_quartets(edges2,adj2,n=n)) if q in quartets1]))
 
 if __name__=='__main__':
     start = time.time()
