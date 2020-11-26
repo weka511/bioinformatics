@@ -152,7 +152,7 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 |BA9O|BA9O.py| [Find All Approximate Occurrences of a Collection of Patterns in a String](http://rosalind.info/problems/ba9o/) [WIP](https://github.com/weka511/bioinformatics/issues/40)|
 |BA9P|BA9P.py| [Implement TreeColoring](http://rosalind.info/problems/ba9p/) [WIP](https://github.com/weka511/bioinformatics/issues/40) [WIP](https://github.com/weka511/bioinformatics/issues/40)|
 |BA9Q|BA9Q.py| [Construct the Partial Suffix Array of a String](http://rosalind.info/problems/ba9q/) [WIP](https://github.com/weka511/bioinformatics/issues/40)|
-|BA9R|BA9W.py| [Construct a Suffix Tree from a Suffix Array](http://rosalind.info/problems/ba9r/) [WIP](https://github.com/weka511/bioinformatics/issues/40)|
+|BA9R|BA9R.py| [Construct a Suffix Tree from a Suffix Array](http://rosalind.info/problems/ba9r/) [WIP](https://github.com/weka511/bioinformatics/issues/40)|
 
 ### 10. Why have biologists still not developed an HIV vaccine?
 | # | Location | Description |
