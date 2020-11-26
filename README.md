@@ -134,13 +134,14 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 
 | # | Location | Description |
 | ---- | --------------- | ------------------------------------------------|
+||snp.py|Code for: How do we locate disease causing mutations?|
 |BA9A|BA9A.py snp.py| [Construct a Trie from a Collection of Patterns](http://rosalind.info/problems/ba9a/) |
 |BA9B|BA9B.py snp.py| [Implement TrieMatching](http://rosalind.info/problems/ba9b/) |
 |BA9C|BA9C.py snp.py| [Construct the Suffix Tree of a String](http://rosalind.info/problems/ba9c/)|
 |BA9D|BA9D.py| [Find the Longest Repeat in a String](http://rosalind.info/problems/ba9d/)|
 |BA9E|BA9E.py| [Find the Longest Substring Shared by Two Strings](http://rosalind.info/problems/ba9e/) (WIP)|
 |BA9F|BA9F.py| [Find the Shortest Non-Shared Substring of Two Strings](http://rosalind.info/problems/ba9f/) (WIP)|
-|BA9G|BA9G.py| [Construct the Suffix Array of a String](http://rosalind.info/problems/ba9g/) |
+|BA9G|BA9G.py snp.py| [Construct the Suffix Array of a String](http://rosalind.info/problems/ba9g/) |
 |BA9H|BA9H.py| [Pattern Matching with the Suffix Array ](http://rosalind.info/problems/ba9h/) [WIP](https://github.com/weka511/bioinformatics/issues/40)|
 |BA9I|BA9I.py snp.py| [Construct the Burrows-Wheeler Transform of a String](http://rosalind.info/problems/ba9i/) |
 |BA9J|BA9J.py snp.py| [Reconstruct a String from its Burrows-Wheeler Transform](http://rosalind.info/problems/ba9j/) |

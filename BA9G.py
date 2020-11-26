@@ -19,19 +19,7 @@ import argparse
 import os
 import time
 from   helpers import read_strings
-
-# Suffix Array
-#
-# In 1993, Udi Manber and Gene Myers introduced suffix arrays as a memory-efficient alternative to suffix trees. 
-# To construct SuffixArray(Text), we first sort all suffixes of Text lexicographically, assuming that "$" 
-# $ comes first in the alphabet. The suffix array is the list of starting positions of these sorted suffixes.
-#
-# I have used a naive algorithm, as it appears to be adequate for the test data
-
-def SuffixArray(s):
-    suffixes = [(s[i:],i) for i in range(len(s))]
-    suffixes.sort()
-    return [i for (_,i) in suffixes]
+from   snp import SuffixArray
 
 if __name__=='__main__':
     start = time.time()

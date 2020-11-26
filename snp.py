@@ -11,8 +11,9 @@
 # GNU General Public License for more details.
 
 # You should have received a copy of the GNU General Public License
-# along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>
+# along with this program.  If not, see <http://www.gnu.org/licenses/>
 
+# Code for: Chapter 9, how do we locate disease causing mutations?
 # BA9A Construct a Trie from a Collection of Patterns 
 
 # Trie - a trie, represented as a collection of Nodes and Edges
@@ -245,6 +246,21 @@ def FindLongestRepeat(string1,string2=None):
             j+=1
 
         return string[index1-i:index1+j]
+
+# BA9G Construct the Suffix Array of a String
+
+# Suffix Array
+#
+# In 1993, Udi Manber and Gene Myers introduced suffix arrays as a memory-efficient alternative to suffix trees. 
+# To construct SuffixArray(Text), we first sort all suffixes of Text lexicographically, assuming that "$" 
+# $ comes first in the alphabet. The suffix array is the list of starting positions of these sorted suffixes.
+#
+# I have used a naive algorithm, as it appears to be adequate for the test data
+
+def SuffixArray(s):
+    suffixes = [(s[i:],i) for i in range(len(s))]
+    suffixes.sort()
+    return [i for (_,i) in suffixes]
     
 # BA9I Construct the Burrows-Wheeler Transform of a String
 #
