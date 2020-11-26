@@ -21,8 +21,7 @@ import time
 from   helpers import read_strings
 from   numpy import argmax
 from   fasta import FastaContent
-#from   Bio.SubsMat.MatrixInfo import blosum62
-from Bio.Align import substitution_matrices
+from   Bio.Align import substitution_matrices
 from   align import reverse
 
 def laff(s,t,replace_score=substitution_matrices.load("BLOSUM62"),sigma=11,epsilon=1):
@@ -33,6 +32,7 @@ def laff(s,t,replace_score=substitution_matrices.load("BLOSUM62"),sigma=11,epsil
         ts = []
     
         while i>0 and j > 0:
+            print (f'{i}-{j}')
             i,j,s0,t0=moves[(i,j)]
             ss.append(s0)
             ts.append(t0)
@@ -50,6 +50,7 @@ def laff(s,t,replace_score=substitution_matrices.load("BLOSUM62"),sigma=11,epsil
     jmax      = -1
     
     for i in range(1,m+1):
+        print (f'{i}')
         for j in range(1,n+1):
             lower[i][j]  = max(lower[i-1][j]-epsilon,
                                middle[i-1][j]-sigma)
@@ -64,7 +65,7 @@ def laff(s,t,replace_score=substitution_matrices.load("BLOSUM62"),sigma=11,epsil
                             (i-1, j-1, s[i-1], t[j-1]),  # Comes from middle
                             (i,   j-1, '-',    t[j-1]    # Comes from upper
                              )][index]
-        j = argmax(middle[i])
+        j     = argmax(middle[i])
         score = middle[i][j]
         if score>max_score:
             imax      = i
@@ -85,13 +86,11 @@ if __name__=='__main__':
         print (s1)
         print (t1)    
         
-    
-
     if args.rosalind:
         Input       = read_strings(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt')
         fasta       = FastaContent(Input)
-        a,s         = fasta[0]
-        b,t         = fasta[1]
+        _,s         = fasta[0]
+        _,t         = fasta[1]
         score,s1,t1 = laff(s,t)
 
         with open(f'{os.path.basename(__file__).split(".")[0]}.txt','w') as f:               
