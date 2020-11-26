@@ -250,7 +250,7 @@ def parse(newick,start=0):
 
 def create_adj(tree):
     adj = {}
-    def bfs(tree):
+    def dfs(tree):
         id       = tree['id']
         name     = tree['name']
         children = tree['children']
@@ -260,8 +260,8 @@ def create_adj(tree):
         if parentid>-1:
             adj[parentid].append(id if len(name)==0 else name)     
         for child in children:
-            bfs(child)
-    bfs(tree)
+            dfs(child)
+    dfs(tree)
     return adj
 
 #  SPTD Phylogeny Comparison with Split Distance
