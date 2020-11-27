@@ -1,0 +1,139 @@
+Input
+0 -> 1,2,3
+1 -> 4,5
+2 -> 22,23
+3 -> 6,7
+4 -> {}
+5 -> {}
+6 -> 20,21
+7 -> 8,9,10
+8 -> 11,12,13
+9 -> 29,30
+10 -> 14,15,16
+11 -> {}
+12 -> 17,18,19
+13 -> 27,28
+14 -> 33,34,35
+15 -> {}
+16 -> 39,40
+17 -> {}
+18 -> {}
+19 -> {}
+20 -> {}
+21 -> 24,25,26
+22 -> {}
+23 -> {}
+24 -> {}
+25 -> {}
+26 -> {}
+27 -> {}
+28 -> {}
+29 -> 31,32
+30 -> {}
+31 -> {}
+32 -> {}
+33 -> {}
+34 -> 36,37,38
+35 -> {}
+36 -> {}
+37 -> {}
+38 -> 41,42,43
+39 -> {}
+40 -> {}
+41 -> 44,45,46
+42 -> 47,48
+43 -> {}
+44 -> {}
+45 -> {}
+46 -> {}
+47 -> {}
+48 -> 49,50,51
+49 -> {}
+50 -> {}
+51 -> {}
+-
+4: blue
+5: blue
+11: red
+15: red
+17: blue
+18: blue
+19: blue
+20: red
+22: blue
+23: red
+24: blue
+25: blue
+26: blue
+27: blue
+28: blue
+30: blue
+31: red
+32: blue
+33: blue
+35: red
+36: blue
+37: red
+39: blue
+40: red
+43: blue
+44: red
+45: blue
+46: red
+47: blue
+49: blue
+50: blue
+51: blue
+Output
+51: blue
+50: blue
+49: blue
+41: purple
+24: blue
+25: blue
+26: blue
+27: blue
+20: red
+21: blue
+22: blue
+23: red
+46: red
+47: blue
+44: red
+45: blue
+28: blue
+43: blue
+40: red
+42: blue
+1: blue
+0: purple
+3: purple
+2: purple
+5: blue
+4: blue
+7: purple
+6: purple
+9: purple
+8: purple
+13: blue
+38: purple
+29: purple
+14: purple
+11: red
+10: purple
+39: blue
+12: blue
+15: red
+48: blue
+17: blue
+16: purple
+19: blue
+18: blue
+31: red
+30: blue
+37: red
+36: blue
+35: red
+34: purple
+33: blue
+32: blue
