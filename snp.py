@@ -335,16 +335,25 @@ def LastToFirst(Transform,i):
     return pos
 
 #  BA9P 	Implement TreeColoring 
+#
+#  Colour the internal nodes of a suffix tree given colours of the leaves.
+#
+#  Given: An adjacency list, followed by colour labels for leaf nodes.
+#
+#  Return: Colour labels for all nodes.
 
 def ColourTree(adj,colours):
-    Coloured = {node:colour for node,colour in colours.items()}
+    Coloured   = {node:colour for node,colour in colours.items()}
     Discovered = [node for node in adj.keys() if node not in Coloured]
     while True:
         Ripe       = [node for node in Discovered if all(child in Coloured for child in adj[node])]
+        Discovered = [node for node in Discovered if node not in Ripe]
         if len(Ripe)==0:
             assert len(Discovered)==0,'There are unprocessed elements'
             return Coloured
-        Discovered = [node for node in Discovered if node not in Ripe]
+
         for node in Ripe:
-            Coloured[node] = 'red' if all([Coloured[child]=='red' for child in adj[node]]) else\
-            ('blue' if all([Coloured[child]=='blue' for child in adj[node]]) else 'purple')   
+            Coloured[node] =                                                            \
+                'red'    if all([Coloured[child]=='red' for child in adj[node]])   else \
+                'blue'   if all([Coloured[child]=='blue' for child in adj[node]])  else \
+                'purple' 
