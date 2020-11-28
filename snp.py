@@ -333,3 +333,18 @@ def LastToFirst(Transform,i):
     n         = getN(ch,i,last)
     pos,count = get_char(ch,first,n)
     return pos
+
+#  BA9P 	Implement TreeColoring 
+
+def ColourTree(adj,colours):
+    Coloured = {node:colour for node,colour in colours.items()}
+    Discovered = [node for node in adj.keys() if node not in Coloured]
+    while True:
+        Ripe       = [node for node in Discovered if all(child in Coloured for child in adj[node])]
+        if len(Ripe)==0:
+            assert len(Discovered)==0,'There are unprocessed elements'
+            return Coloured
+        Discovered = [node for node in Discovered if node not in Ripe]
+        for node in Ripe:
+            Coloured[node] = 'red' if all([Coloured[child]=='red' for child in adj[node]]) else\
+            ('blue' if all([Coloured[child]=='blue' for child in adj[node]]) else 'purple')   
