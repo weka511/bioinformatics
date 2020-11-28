@@ -16,6 +16,8 @@
 # Code for: Chapter 9, how do we locate disease causing mutations?
 # BA9A Construct a Trie from a Collection of Patterns 
 
+from rosalind import RosalindException
+
 # Trie - a trie, represented as a collection of Nodes and Edges
 # 
 #    The trie has a single root node with indegree 0, denoted root.
@@ -346,6 +348,11 @@ def LastToFirst(Transform,i):
 #                 as this makes it easy to generalize to n primary colours
 
 def ColourTree(adj,colours):
+    # Make sure that all leaves have been coloured
+    for node,children in adj.items():
+        if len(children)==0 and node not in colours:
+            raise RosalindException(f'Leaf {node} has not been coloured')
+        
     n          = len(next(iter(colours.values())))   # Number of primary colours
     Coloured   = {node:colour for node,colour in colours.items()}
     Discovered = [node for node in adj.keys() if node not in Coloured]
@@ -353,7 +360,7 @@ def ColourTree(adj,colours):
         Ripe       = [node for node in Discovered if all(child in Coloured for child in adj[node])]
         Discovered = [node for node in Discovered if node not in Ripe]
         if len(Ripe)==0:
-            assert len(Discovered)==0,'There are unprocessed elements: inconsitent data?'
+            assert len(Discovered)==0,'There are unprocessed elements: inconsistent data?'
             return Coloured
 
         for node in Ripe:
