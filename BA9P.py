@@ -21,7 +21,16 @@ import time
 from   helpers import read_strings
 from   snp     import ColourTree
 
-            
+def colour2list(colour):
+    if colour=='red': return [True,False]
+    if colour=='blue': return [False,True]
+
+def list2colour(l):
+    return 'red'  if l[0] and not l[1] else \
+           'blue' if l[1] and not l[0] else \
+           'purple'
+    
+    
 if __name__=='__main__':
     start = time.time()
     parser = argparse.ArgumentParser('BA9P 	Implement TreeColoring ')
@@ -29,6 +38,12 @@ if __name__=='__main__':
     parser.add_argument('--rosalind', default=False, action='store_true', help='process Rosalind dataset')
     args = parser.parse_args()
     if args.sample:
+        Colours = {node: colour2list(c) for (node),c in  {
+                              0: 'red',
+                              1: 'red',
+                              3: 'blue',
+                              4: 'blue',
+                              6: 'red'}.items()}
         Coloured = ColourTree({
                               0 : [],
                               1 : [],
@@ -37,16 +52,10 @@ if __name__=='__main__':
                               4 : [],
                               5 : [3,2],
                               6 : [],
-                              7 : [4,5,6]},
-                             {
-                              0: 'red',
-                              1: 'red',
-                              3: 'blue',
-                              4: 'blue',
-                              6: 'red'})
+                              7 : [4,5,6]},Colours)
         
         for node in sorted(Coloured.keys()):
-            print (f'{node}: {Coloured[node]}')
+            print (f'{node}: {list2colour(Coloured[node])}')
     
 
     if args.rosalind:
@@ -63,13 +72,14 @@ if __name__=='__main__':
                 adj[int(parts[0])] = [] if parts[1].strip()=='{}' else  [int(c) for c in parts[1].split(',')]               
             else:
                 parts = line.split(':')
-                colours[int(parts[0])] = parts[1].strip()               
+                colours[int(parts[0])] = colour2list(parts[1].strip())               
             
         Result = ColourTree(adj,colours)
         with open(f'{os.path.basename(__file__).split(".")[0]}.txt','w') as f:
             for key in sorted(Result.keys()):
-                print (f'{key}: {Result[key]}')
-                f.write(f'{key}: {Result[key]}\n')
+                colour = list2colour(Result[key])
+                print (f'{key}: {colour}')
+                f.write(f'{key}: {colour}\n')
                 
     elapsed = time.time() - start
     minutes = int(elapsed/60)

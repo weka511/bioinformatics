@@ -341,19 +341,23 @@ def LastToFirst(Transform,i):
 #  Given: An adjacency list, followed by colour labels for leaf nodes.
 #
 #  Return: Colour labels for all nodes.
+#
+# Implementation: I have coded pure red [True,False], blue [False,True], purple [True,True],
+#                 as this makes it easy to generalize to n primary colours
 
 def ColourTree(adj,colours):
+    n          = len(next(iter(colours.values())))   # Number of primary colours
     Coloured   = {node:colour for node,colour in colours.items()}
     Discovered = [node for node in adj.keys() if node not in Coloured]
     while True:
         Ripe       = [node for node in Discovered if all(child in Coloured for child in adj[node])]
         Discovered = [node for node in Discovered if node not in Ripe]
         if len(Ripe)==0:
-            assert len(Discovered)==0,'There are unprocessed elements'
+            assert len(Discovered)==0,'There are unprocessed elements: inconsitent data?'
             return Coloured
 
         for node in Ripe:
-            Coloured[node] =                                                            \
-                'red'    if all([Coloured[child]=='red' for child in adj[node]])   else \
-                'blue'   if all([Coloured[child]=='blue' for child in adj[node]])  else \
-                'purple' 
+            Coloured [node] = []
+            for i in range(n):
+                Coloured [node].append(any([Coloured[child][i] for child in adj [node]]))
+ 
