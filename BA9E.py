@@ -17,18 +17,24 @@
 
 import argparse
 from   helpers import read_strings
-from   snp     import SuffixTree
+from   snp     import SuffixTree,ColourTree
 import sys
 import time
 
 # See https://en.wikipedia.org/wiki/Longest_common_substring_problem
 
 def LongestSharedSubstring(s,t):
-    tree = SuffixTree()
-    Leaves = tree.build(s + '$' + t + '#')
-    tree.print()
-
-    
+    def get_colour(label):
+        return [1,0] if label<=len(s) else [0,1]
+    tree    = SuffixTree()
+    Leaves,Internal  = tree.build(s + '$' + t + '#')
+    #tree.print()
+    Adj     = {leaf.seq: [] for leaf in Leaves}
+    for node in Internal:
+        adj[node.seq] = [edge.node.seq for _,edge in self.edges.items()]
+    Colours = {node.seq: get_colour(node.label) for node in Leaves}
+    Coloured = ColourTree(Adj,Colours)
+    x=0
 if __name__=='__main__':
     start = time.time()
     parser = argparse.ArgumentParser('BA9E Find the Longest Substring Shared by Two Strings')

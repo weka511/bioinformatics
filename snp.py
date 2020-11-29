@@ -156,19 +156,24 @@ def MatchTries(s,t):
 
 
 class SuffixTree:
-    
+    next_seq = 0
     class Node:
-      
         def __init__(self):
-            self.symbol = None
-            self.edges  = {}
-            self.label  = None
+            self.symbol         = None
+            self.edges          = {}
+            self.label          = None
+            self.seq            = SuffixTree.next_seq
+            SuffixTree.next_seq += 1
+ 
         def hasLabelledEdge(self,symbol):
             return symbol in self.edges
+        
         def endEdge(self,symbol):
             return self.edges[symbol] 
+        
         def isLeaf(self):
             return len(self.edges)==0
+        
         def setLabel(self,j):
             self.label=j
 
@@ -178,6 +183,14 @@ class SuffixTree:
             else:
                 for symbol,edge in self.edges.items():
                     edge.node.print(path=path+[symbol])
+                    
+        def create_adj(self,adj={}):
+            if len(self.edges)==0:
+                adj[self.seq] = {}
+            else:
+                adj[self.seq] = [edge.node.seq for edge in self.edges.values()]
+                for edge in self.edges.values():
+                    edge.node.create_adj(adj)
  
         def collectEdges(self,path=[],accumulator=[]):
             if len(self.edges)==0:
@@ -201,6 +214,8 @@ class SuffixTree:
         self.root = self.Node()
         
     def build(self,text):
+        Leaves   = []
+        Internal = []
         for i in range(len(text)):
             currentNode = self.root
             for j in range(i,len(text)):
@@ -213,10 +228,19 @@ class SuffixTree:
                     currentNode                      = newNode
             if currentNode.isLeaf():
                 currentNode.setLabel(i)
+                Leaves.append(currentNode)
+            else:
+                Internal.append(currentNode)
+                
+        return Leaves,Internal
     
     def print(self):
         self.root.print()
-        x=0
+        
+    def create_adj(self):
+        adj = {}
+        self.root.create_adj(adj)
+        return adj
     
     def collectEdges(self):
         return [ ''.join(run[:-1]) for run in self.root.collectEdges(accumulator=[])]
