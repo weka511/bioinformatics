@@ -382,9 +382,21 @@ def ColourTree(adj,colours):
     n          = len(next(iter(colours.values())))   # Number of primary colours
     Coloured   = {node:colour for node,colour in colours.items()}
     Discovered = [node for node in adj.keys() if node not in Coloured]
+    iteration  = 0
     while True:
-        Ripe       = [node for node in Discovered if all(child in Coloured for child in adj[node])]
-        Discovered = [node for node in Discovered if node not in Ripe]
+        Ripe = []
+        Rest = []
+        for node in Discovered:
+            if all(child in Coloured for child in adj[node]):
+                Ripe.append(node)
+            else:
+                Rest.append(node)
+        Discovered = Rest
+        #Ripe       = [node for node in Discovered if all(child in Coloured for child in adj[node])]
+        if iteration%1==0:
+            print (f'{iteration}: Discovered={len(Discovered)}, Ripe={len(Ripe)}')
+        iteration += 1
+        #Discovered = [node for node in Discovered if node not in Ripe]
         if len(Ripe)==0:
             assert len(Discovered)==0,'There are unprocessed elements: inconsistent data?'
             return Coloured
