@@ -25,16 +25,39 @@ import time
 
 def LongestSharedSubstring(s,t):
     def get_colour(label):
-        return [1,0] if label<=len(s) else [0,1]
-    tree    = SuffixTree()
-    Leaves,Internal  = tree.build(s + '$' + t + '#')
-    #tree.print()
-    Adj     = {leaf.seq: [] for leaf in Leaves}
+        return [1,0] if label<=len(s)+1 else [0,1]
+    def purple(colour):
+        return colour[0] and colour[1]    
+    def search(node,candidate,path=[]):
+ 
+        #print (path)
+        if purple( Coloured[node.seq]):
+            if len(path)>len(candidate):
+                candidate = [p for p in path]
+                #print (candidate)
+            for symbol,edge in node.edges.items():
+                cc = search(edge.node,candidate,path=path+[symbol])
+                if len(cc)>len(candidate):
+                    candidate = [p for p in cc]
+        return candidate
+    t0 = time.time()
+    print ( f'About to build tree {time.time()-t0}')
+    tree             = SuffixTree()
+    print ( f'Built tree {time.time()-t0}')
+    Leaves,Internal,Nodes  = tree.build(s + '$' + t + '#')
+    Internal.append(tree.root)
+    Adj              = {leaf.seq: [] for leaf in Leaves}
     for node in Internal:
-        adj[node.seq] = [edge.node.seq for _,edge in self.edges.items()]
-    Colours = {node.seq: get_colour(node.label) for node in Leaves}
-    Coloured = ColourTree(Adj,Colours)
-    x=0
+        Adj[node.seq] = [edge.node.seq for _,edge in node.edges.items()]
+    Colours          = {node.seq: get_colour(node.label) for node in Leaves}
+    print ( f'About to colour tree {time.time()-t0}')
+    Coloured         = ColourTree(Adj,Colours)
+    print ( f'About to search tree {time.time()-t0}')
+    candidate        = []
+    candidate        = search(tree.root,candidate) 
+    print ( f'Done {time.time()-t0}')
+    return ''.join(candidate)
+
 if __name__=='__main__':
     start = time.time()
     parser = argparse.ArgumentParser('BA9E Find the Longest Substring Shared by Two Strings')
@@ -43,17 +66,19 @@ if __name__=='__main__':
     parser.add_argument('--rosalind', default=False, action='store_true', help='process Rosalind dataset')
     args = parser.parse_args()
     if args.sample:
+        print (LongestSharedSubstring('panama',
+                                 'bananas'))
         print (LongestSharedSubstring('TCGGTAGATTGCGCCCACTC',
-                                 'AGGGGCTCGCAGTGTAAGAA'))
+                                 'AGGGGCTCGCAGTGTAAGAA'))        
         
     if args.extra:
-        #sys.setrecursionlimit(4000)
+        sys.setrecursionlimit(4000)
         Input,Expected  = read_strings('data/LongestSharedSubstring.txt',init=0)
         #print (Input[0])       
         Actual = LongestSharedSubstring(Input[0],Input[1])
-        #print (len(Expected[0]),len(Actual))
-        #print (Expected[0])
-        #print (Actual)        
+        print (len(Expected[0]),len(Actual))
+        print (Expected[0])
+        print (Actual)        
  
     if args.rosalind:
         pass

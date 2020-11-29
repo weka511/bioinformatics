@@ -216,6 +216,7 @@ class SuffixTree:
     def build(self,text):
         Leaves   = []
         Internal = []
+        Nodes    = {}
         for i in range(len(text)):
             currentNode = self.root
             for j in range(i,len(text)):
@@ -224,15 +225,16 @@ class SuffixTree:
                     currentNode = currentNode.endEdge(currentSymbol).node
                 else:
                     newNode                          = self.Node()
+                    Nodes[newNode.seq]               = newNode
                     currentNode.edges[currentSymbol] = self.Edge(newNode,j)
                     currentNode                      = newNode
+                    Internal.append(newNode)                    
             if currentNode.isLeaf():
                 currentNode.setLabel(i)
                 Leaves.append(currentNode)
-            else:
-                Internal.append(currentNode)
+  
                 
-        return Leaves,Internal
+        return Leaves,Internal,Nodes
     
     def print(self):
         self.root.print()
