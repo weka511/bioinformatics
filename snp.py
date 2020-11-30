@@ -59,44 +59,32 @@ def create_trie(Patterns,root=1):
 # BA9B Implement TrieMatching
 
 
-
-def PrefixTreeMatching(Text,Tree):
-    
-    def isLeaf(v):
-        found = False
-        for a,b,c in Tree:
-            if a==v:
-                return False
-            if b==v:
-                found = True
-        return found
-    
-    def edge(v,symbol):
-        for a,b,c in Tree:
-            if a==v and c ==symbol:
-                return b
-        return -1
-    def pattern(v):
-        result=[]
-        return result
-            
-    i = 0
-    v = 0
+def MatchPrefix(Text,Trie):
+    i      = iter(Text)
+    symbol = next(i)
+    v      = min(Trie.keys())
+    path   = [v]
     while True:
-        if isLeaf(v):
-            #print (i,v)
-            return True
-            #pattern(v)
+        if len(Trie[v])==0:
+            return path
+        elif symbol in Trie[v]:
+            w      = Trie[v][symbol]
+            try:
+                symbol = next(i)
+                v      = w
+                path.append(v)
+            except StopIteration:
+                if len(Trie[w])==0:
+                    return path
+                else:
+                    return []
         else:
-            w=edge(v,Text[i])
-            if w>-1:
-                i+=1
-                v=w
-            else:
-                return False
-            
-def MatchTries(s,t):
-    return [i for i in range(len(s)-1) if PrefixTreeMatching(s[i:],t) ]
+            return []
+
+def MatchAll(Text,Trie):
+    return [i for i in range(len(Text)) if MatchPrefix(Text[i:],Trie)]
+
+
 
 
 # BA9C Construct the Suffix Tree of a String
@@ -362,10 +350,8 @@ def ColourTree(adj,colours):
  
 ### Deprecated code ###
                 
-@deprecated(reason="Use snp.create_tree instead")
-
 # BA9A Construct a Trie from a Collection of Patterns 
-
+@deprecated(reason="Use snp.create_tree instead")
 class Trie:
     class Node:
         def __init__(self,id):
@@ -439,4 +425,43 @@ class Trie:
                 except StopIteration:
                     return path
             else:
-                return []                
+                return [] 
+            
+@deprecated(reason='Use snp.MatchPrefix')
+def PrefixTreeMatching(Text,Tree):
+    
+    def isLeaf(v):
+        found = False
+        for a,b,c in Tree:
+            if a==v:
+                return False
+            if b==v:
+                found = True
+        return found
+    
+    def edge(v,symbol):
+        for a,b,c in Tree:
+            if a==v and c ==symbol:
+                return b
+        return -1
+    def pattern(v):
+        result=[]
+        return result
+            
+    i = 0
+    v = 0
+    while True:
+        if isLeaf(v):
+            #print (i,v)
+            return True
+            #pattern(v)
+        else:
+            w=edge(v,Text[i])
+            if w>-1:
+                i+=1
+                v=w
+            else:
+                return False
+@deprecated(reason='Use snp.MatchAll')            
+def MatchTries(s,t):
+    return [i for i in range(len(s)-1) if PrefixTreeMatching(s[i:],t) ]

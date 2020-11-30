@@ -20,33 +20,7 @@ import argparse
 import os
 import time
 from helpers import read_strings
-from snp import Trie,create_trie
-
-
-def MatchPrefix(Text,Trie):
-    i      = iter(Text)
-    symbol = next(i)
-    v      = min(Trie.keys())
-    path   = [v]
-    while True:
-        if len(Trie[v])==0:
-            return path
-        elif symbol in Trie[v]:
-            w      = Trie[v][symbol]
-            try:
-                symbol = next(i)
-                v      = w
-                path.append(v)
-            except StopIteration:
-                if len(Trie[w])==0:
-                    return path
-                else:
-                    return []
-        else:
-            return []
-
-def MatchAll(Text,Trie):
-    return [i for i in range(len(Text)) if MatchPrefix(Text[i:],Trie)]
+from snp import create_trie, MatchAll
 
 
 if __name__=='__main__':
