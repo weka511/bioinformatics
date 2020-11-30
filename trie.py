@@ -19,8 +19,14 @@ import argparse
 import os
 import time
 from   helpers  import read_strings
-from   graphs import trie
-  
+from   snp import create_trie
+
+def convert_trie(Trie):
+    return [(key,node,symbol)for key,Edge in Trie.items() for symbol,node in Edge.items()]
+
+def format(key,node,symbol):
+    return f'{key} {node} {symbol}'
+    
 if __name__=='__main__':
     start = time.time()
     parser = argparse.ArgumentParser('....')
@@ -28,21 +34,20 @@ if __name__=='__main__':
     parser.add_argument('--rosalind', default=False, action='store_true', help='process Rosalind dataset')
     args = parser.parse_args()
     if args.sample:
-        for element in trie(['ATAGA',
-                             'ATC',
-                             'GAT']):
-            print (element)
+        Trie = create_trie(['ATAGA', 'ATC', 'GAT'])
+        for key,node,symbol in convert_trie(Trie):
+            print (format(key,node,symbol))
         
     
 
     if args.rosalind:
         Input  = read_strings(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt')
  
-        Result = trie(Input)
+        Trie = create_trie(Input)
         with open(f'{os.path.basename(__file__).split(".")[0]}.txt','w') as f:
-            for line in Result:
-                print (line)
-                f.write(f'{line}\n')
+            for key,node,symbol in convert_trie(Trie):
+                print (format(key,node,symbol))
+                f.write(f'{format(key,node,symbol)}\n')
                 
     elapsed = time.time() - start
     minutes = int(elapsed/60)

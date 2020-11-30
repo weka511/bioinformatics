@@ -14,9 +14,12 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>
 
 # Code for: Chapter 9, how do we locate disease causing mutations?
-# BA9A Construct a Trie from a Collection of Patterns 
 
-from rosalind import RosalindException
+
+from rosalind   import RosalindException
+from deprecated import deprecated
+
+# BA9A Construct a Trie from a Collection of Patterns 
 
 # Trie - a trie, represented as a collection of Nodes and Edges
 # 
@@ -26,80 +29,24 @@ from rosalind import RosalindException
 #    Every string in Patterns is spelled out by concatenating the letters along some path from the root downward.
 #    Every path from the root to a leaf, or node with outdegree 0, spells a string from Patterns.
 
-class Trie:
-    class Node:
-        def __init__(self,id):
-            self.edges = {}
-            self.id    = id
-            
-        def add(self,edge):
-            self.edges[edge.symbol] = edge
-            
-        def hasEdge(self,symbol):
-            return symbol in self.edges
-        
-        def getEdge(self,symbol):
-            return self.edges[symbol]        
-        
-        def Edges(self):
-            for symbol,edge in self.edges.items():
-                yield self.id, edge.end.id, edge.symbol
-                yield from edge.end.Edges()
-                
-        def isLeaf(self):        
-            return len(self.edges)==0
-        
-    class Edge:
-        def __init__(self,end=None,symbol=None):
-            self.end    = end
-            self.symbol = symbol
-            
-    def __init__(self,Patterns):
-        self.nodeCounter = 0
-        self.root        = self.Node(self.nodeCounter)
-        self.nodeCounter +=1
-        
-        for Pattern in Patterns: # Build Trie - http://rosalind.info/problems/ba9a/
-            currentNode = self.root
-            for currentSymbol in Pattern:
-                if currentNode.hasEdge(currentSymbol):
-                    currentNode = currentNode.getEdge(currentSymbol).end
-                else:
-                    newNode = self.Node(self.nodeCounter)
-                    self.nodeCounter+=1
-                    currentNode.add(self.Edge(end=newNode,symbol=currentSymbol))
-                    currentNode = newNode
-
-    def Edges(self):
-        return self.root.Edges()
-    
-    def MatchAll(self,text,minimum_length=1):
-        return [i for i in range(len(text)) if self.Match(text[i:]) and len(text[i:])>minimum_length]
-    
-    def Match(self,text):
-        def characters():
-            i = 0
-            while i<len(text):
-                yield text[i]
-                i += 1
-                
-        symbols = characters()
-        symbol = next(symbols)
-        v      = self.root
-        path   = []
-        while True:
-            if v.isLeaf():
-                return path
-            elif v.hasEdge(symbol):
-                edge   = v.getEdge(symbol)
-                path.append(edge.symbol)
-                v      = edge.end
-                try:
-                    symbol = next(symbols)
-                except StopIteration:
-                    return path
+def create_trie(Patterns,root=1):
+    next_node = root + 1
+    Trie = {root:{}}
+    for Pattern in Patterns:
+        node = root
+        for symbol in Pattern:
+            if symbol in Trie[node]:
+                node = Trie[node][symbol]
             else:
-                return []
+                new_node           = next_node
+                Trie[new_node]     = {}
+                Trie[node][symbol] = new_node
+                node               = new_node
+                next_node          += 1
+
+    return Trie
+
+
                 
             
 # BA9B Implement TrieMatching
@@ -406,3 +353,83 @@ def ColourTree(adj,colours):
             for i in range(n):
                 Coloured [node].append(any([Coloured[child][i] for child in adj [node]]))
  
+### Deprecated code ###
+                
+@deprecated(reason="Use snp.create_tree instead")
+
+# BA9A Construct a Trie from a Collection of Patterns 
+
+class Trie:
+    class Node:
+        def __init__(self,id):
+            self.edges = {}
+            self.id    = id
+            
+        def add(self,edge):
+            self.edges[edge.symbol] = edge
+            
+        def hasEdge(self,symbol):
+            return symbol in self.edges
+        
+        def getEdge(self,symbol):
+            return self.edges[symbol]        
+        
+        def Edges(self):
+            for symbol,edge in self.edges.items():
+                yield self.id, edge.end.id, edge.symbol
+                yield from edge.end.Edges()
+                
+        def isLeaf(self):        
+            return len(self.edges)==0
+        
+    class Edge:
+        def __init__(self,end=None,symbol=None):
+            self.end    = end
+            self.symbol = symbol
+            
+    def __init__(self,Patterns):
+        self.nodeCounter = 0
+        self.root        = self.Node(self.nodeCounter)
+        self.nodeCounter +=1
+        
+        for Pattern in Patterns: # Build Trie - http://rosalind.info/problems/ba9a/
+            currentNode = self.root
+            for currentSymbol in Pattern:
+                if currentNode.hasEdge(currentSymbol):
+                    currentNode = currentNode.getEdge(currentSymbol).end
+                else:
+                    newNode = self.Node(self.nodeCounter)
+                    self.nodeCounter+=1
+                    currentNode.add(self.Edge(end=newNode,symbol=currentSymbol))
+                    currentNode = newNode
+
+    def Edges(self):
+        return self.root.Edges()
+    
+    def MatchAll(self,text,minimum_length=1):
+        return [i for i in range(len(text)) if self.Match(text[i:]) and len(text[i:])>minimum_length]
+    
+    def Match(self,text):
+        def characters():
+            i = 0
+            while i<len(text):
+                yield text[i]
+                i += 1
+                
+        symbols = characters()
+        symbol = next(symbols)
+        v      = self.root
+        path   = []
+        while True:
+            if v.isLeaf():
+                return path
+            elif v.hasEdge(symbol):
+                edge   = v.getEdge(symbol)
+                path.append(edge.symbol)
+                v      = edge.end
+                try:
+                    symbol = next(symbols)
+                except StopIteration:
+                    return path
+            else:
+                return []                

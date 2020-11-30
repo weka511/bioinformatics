@@ -241,7 +241,7 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 |sq|sq.py graphs.py|[Square in a Graph](http://rosalind.info/problems/sq/)|
 |suff|suff.py  graphs.py|[Creating a Suffix Tree](http://rosalind.info/problems/suff/) |
 |tree|tree.py phylogeny.py|[Completing a Tree ](http://rosalind.info/problems/tree/) |
-|trie|trie.py graphs.py|[Introduction to Pattern Matching](http://rosalind.info/problems/trie/) |
+|trie|trie.py snp.py|[Introduction to Pattern Matching](http://rosalind.info/problems/trie/) |
 |ts|ts.py align.py|[Topological sort](http://rosalind.info/problems/ts/)|
 
 ## [Heredity](http://rosalind.info/problems/topics/heredity/)

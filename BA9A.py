@@ -18,38 +18,35 @@
 import argparse
 import os
 import time
-from helpers import read_strings
-from snp import Trie
-                  
+from   helpers import read_strings
+from   snp import create_trie,Trie
+ 
+def convert_trie(Trie):
+    return [(key,node,symbol)for key,Edge in Trie.items() for symbol,node in Edge.items()]
+
+def format(key,node,symbol):
+    return f'{key}->{node}:{symbol}'
+
 if __name__=='__main__':
     start = time.time()
     parser = argparse.ArgumentParser('BA9A Construct a Trie from a Collection of Patterns')
     parser.add_argument('--sample',   default=False, action='store_true', help='process sample dataset')
-    parser.add_argument('--extra',    default=False, action='store_true', help='process extra dataset')
     parser.add_argument('--rosalind', default=False, action='store_true', help='process Rosalind dataset')
     args = parser.parse_args()
     if args.sample:
-        trie = Trie(['ATAGA','ATC','GAT'])
-        for a,b,c in trie.Edges():
-            print (f'{a}->{b}:{c}') 
+        Trie = create_trie(['ATAGA','ATC','GAT'],root=0)
+        for key,node,symbol in convert_trie(Trie):
+            print (format(key,node,symbol)) 
     
-    if args.extra:
-        Input,Expected  = read_strings('data/TrieConstruction.txt',init=0)
-        trie = Trie(Input)
-        Actual = sorted([f'{a}->{b}:{c}' for a,b,c in trie.Edges()])
-        Expected.sort()
-        print (len(Expected),len(Actual))
-        diffs = [(e,a) for e,a in zip(Expected,Actual) if e!=a]
-        print (diffs)
   
     if args.rosalind:
         Input  = read_strings(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt')
-        trie   = Trie(Input)
-        Result = sorted([f'{a}->{b}:{c}' for a,b,c in trie.Edges()])
-        print (Result)
+        Trie = create_trie(Input,root=0)
+
         with open(f'{os.path.basename(__file__).split(".")[0]}.txt','w') as f:
-            for line in Result:
-                f.write(f'{line}\n')
+            for key,node,symbol in convert_trie(Trie):
+                print (format(key,node,symbol))            
+                f.write(f'{format(key,node,symbol)}\n')
                 
     elapsed = time.time()-start
     minutes = int(elapsed/60)
