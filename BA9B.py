@@ -20,7 +20,34 @@ import argparse
 import os
 import time
 from helpers import read_strings
-from snp import Trie
+from snp import Trie,create_trie
+
+
+def MatchPrefix(Text,Trie):
+    i      = iter(Text)
+    symbol = next(i)
+    v      = min(Trie.keys())
+    path   = [v]
+    while True:
+        if len(Trie[v])==0:
+            return path
+        elif symbol in Trie[v]:
+            w      = Trie[v][symbol]
+            try:
+                symbol = next(i)
+                v      = w
+                path.append(v)
+            except StopIteration:
+                if len(Trie[w])==0:
+                    return path
+                else:
+                    return []
+        else:
+            return []
+
+def MatchAll(Text,Trie):
+    return [i for i in range(len(Text)) if MatchPrefix(Text[i:],Trie)]
+
 
 if __name__=='__main__':
     start = time.time()
@@ -30,18 +57,27 @@ if __name__=='__main__':
     parser.add_argument('--rosalind', default=False, action='store_true', help='process Rosalind dataset')
     args = parser.parse_args()
     if args.sample:    
-        trie = Trie(['ATCG','GGGT'])
-        print (trie.MatchAll('AATCGGGTTCAATCGGGGT'))
+        Trie = create_trie(['ATCG','GGGT'])
+        print (MatchAll('AATCGGGTTCAATCGGGGT',Trie))
     
     if args.extra:
         Input,Expected  = read_strings('data/TrieMatching.txt',init=0)
-        trie            = Trie(Input[1:])
-        Actual          = trie.MatchAll(Input[0])
+        Trie            = create_trie(Input[1:])
+        Actual          = MatchAll(Input[0],Trie)
         Expected        = [int(e) for e in Expected[0].split()]
         print (len(Expected),len(Actual))
         diffs = [(e,a) for e,a in zip(Expected,Actual) if e!=a]
         print (diffs)
- 
+        
+    if args.rosalind:
+        Input  = read_strings(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt')
+        Trie   = create_trie(Input[1:])
+        Result = MatchAll(Input[0],Trie)
+        with open(f'{os.path.basename(__file__).split(".")[0]}.txt','w') as f:
+            Output = ' '.join(str(n) for n in Result)
+            print (Output)
+            f.write(f'{Output}\n')
+                    
     elapsed = time.time()-start
     minutes = int(elapsed/60)
     seconds = elapsed-60*minutes
