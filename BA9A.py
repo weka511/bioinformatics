@@ -19,7 +19,7 @@ import argparse
 import os
 import time
 from   helpers import read_strings
-from   snp import create_trie,Trie
+from   snp import create_trie
  
 def convert_trie(Trie):
     return [(key,node,symbol)for key,Edge in Trie.items() for symbol,node in Edge.items()]

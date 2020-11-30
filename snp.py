@@ -20,29 +20,36 @@ from rosalind   import RosalindException
 from deprecated import deprecated
 
 # BA9A Construct a Trie from a Collection of Patterns 
-
 # Trie - a trie, represented as a collection of Nodes and Edges
 # 
+# create_trie
 #    The trie has a single root node with indegree 0, denoted root.
 #    Each edge of Trie(Patterns) is labeled with a letter of the alphabet.
 #    Edges leading out of a given node have distinct labels.
 #    Every string in Patterns is spelled out by concatenating the letters along some path from the root downward.
 #    Every path from the root to a leaf, or node with outdegree 0, spells a string from Patterns.
-
+#
+# Parameters:
+#    Patterns   List of patterns
+#    root       Controls whther root is 0, 1, or some other value
+#
+# Representation:
+#      Trie is represented as a dict or dicts
+#      {node: {symbol:node}}
 def create_trie(Patterns,root=1):
     next_node = root + 1
-    Trie = {root:{}}
+    Trie      = {root:{}}
     for Pattern in Patterns:
-        node = root
-        for symbol in Pattern:
-            if symbol in Trie[node]:
-                node = Trie[node][symbol]
+        currentNode = root
+        for currentSymbol in Pattern:
+            if currentSymbol in Trie[currentNode]:
+                currentNode = Trie[currentNode][currentSymbol]
             else:
-                new_node           = next_node
-                Trie[new_node]     = {}
-                Trie[node][symbol] = new_node
-                node               = new_node
-                next_node          += 1
+                new_node                         = next_node
+                Trie[new_node]                   = {}
+                Trie[currentNode][currentSymbol] = new_node
+                currentNode                      = new_node
+                next_node                       += 1
 
     return Trie
 
