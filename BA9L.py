@@ -37,7 +37,7 @@ def BW_Match(LastColumn,Patterns):
             
         return topIndex,bottomIndex
     
-    def Match(FirstColumn, LastColumn, Pattern):
+    def Match(LastColumn, Pattern):
         top    = 0
         bottom = len(LastColumn)-1
         while top <= bottom:
@@ -45,7 +45,7 @@ def BW_Match(LastColumn,Patterns):
                 symbol  = Pattern[-1]
                 Pattern = Pattern[:-1]
                 topIndex,bottomIndex = contains(LastColumn,symbol,top,bottom)
-                if topIndex != None:
+                if topIndex != None and bottomIndex!=None:
                     top    = LastToFirst(LastColumn,bottomIndex)#topIndex)
                     bottom = LastToFirst(LastColumn,topIndex)#bottomIndex)
                     x=0
@@ -55,14 +55,13 @@ def BW_Match(LastColumn,Patterns):
                 return bottom - top + 1
         return 0
     
-    FirstColumn = sorted(LastColumn)
-    #print ([LastToFirst(LastColumn,i) for i in range(len(LastColumn))])
-    return [Match(FirstColumn, LastColumn, Pattern) for Pattern in Patterns]
+    return [Match(LastColumn, Pattern) for Pattern in Patterns]
 
 if __name__=='__main__':
     start = time.time()
     parser = argparse.ArgumentParser('BA9L 	Implement BWMatching ')
     parser.add_argument('--sample',   default=False, action='store_true', help='process sample dataset')
+    parser.add_argument('--extra',   default=False, action='store_true', help='process extra dataset')
     parser.add_argument('--rosalind', default=False, action='store_true', help='process Rosalind dataset')
     args = parser.parse_args()
     if args.sample:
@@ -72,15 +71,20 @@ if __name__=='__main__':
                         ['CCT', 'CAC', 'GAG', 'CAG', 'ATC']))
         
     
-
+    if args.extra:
+        Input  = read_strings(f'data/BWMatching.txt')
+        Result = BW_Match(Input[1],Input[2].split())
+        print (Result)
+        
     if args.rosalind:
         Input  = read_strings(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt')
  
-        Result = None
+        Result = BW_Match(Input[0],Input[1].split())
         print (Result)
+        line = ' '.join(str(i) for i in Result)
+        print (line)
         with open(f'{os.path.basename(__file__).split(".")[0]}.txt','w') as f:
-            for line in Result:
-                f.write(f'{line}\n')
+            f.write(f'{line}\n')
                 
     elapsed = time.time() - start
     minutes = int(elapsed/60)
