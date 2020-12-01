@@ -146,7 +146,7 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 |BA9I|BA9I.py snp.py| [Construct the Burrows-Wheeler Transform of a String](http://rosalind.info/problems/ba9i/) |
 |BA9J|BA9J.py snp.py| [Reconstruct a String from its Burrows-Wheeler Transform](http://rosalind.info/problems/ba9j/) |
 |BA9K|BA9K.py snp.py| [Generate the Last-to-First Mapping of a String](http://rosalind.info/problems/ba9k/) |
-|BA9L|BA9L.py| [Implement BWMatching ](http://rosalind.info/problems/ba9l/) [WIP](https://github.com/weka511/bioinformatics/issues/76)|
+|BA9L|BA9L.py| [Implement BWMatching ](http://rosalind.info/problems/ba9l/)|
 |BA9M|BA9M.py| [Implement BetterBWMatching ](http://rosalind.info/problems/ba9m/) [WIP](https://github.com/weka511/bioinformatics/issues/77)|
 |BA9N|BA9N.py| [Find All Occurrences of a Collection of Patterns in a String ](http://rosalind.info/problems/ba9n/) [WIP](https://github.com/weka511/bioinformatics/issues/78)|
 |BA9O|BA9O.py| [Find All Approximate Occurrences of a Collection of Patterns in a String](http://rosalind.info/problems/ba9o/) [WIP](https://github.com/weka511/bioinformatics/issues/79)|

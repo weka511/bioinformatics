@@ -345,6 +345,45 @@ def LastToFirst(Transform,i):
     pos,count = get_char(ch,first,n)
     return pos
 
+#  BA9L 	Implement BWMatching  
+def BW_Match(LastColumn,Patterns):
+    def contains(LastColumn,symbol,top,bottom):
+        topIndex    = None
+        bottomIndex = None
+        N           = len(LastColumn)
+        for i in range(top,N):
+            if LastColumn[i]==symbol:
+                bottomIndex = i
+                break
+        for i in range(bottom,-1,-1):
+            if LastColumn[i]==symbol:
+                topIndex = i
+                break
+            
+        return topIndex,bottomIndex
+    
+    def Match(LastColumn, Pattern):
+        top    = 0
+        bottom = len(LastColumn)-1
+        while top <= bottom:
+            if len(Pattern) > 0:
+                symbol  = Pattern[-1]
+                Pattern = Pattern[:-1]
+                topIndex,bottomIndex = contains(LastColumn,symbol,top,bottom)
+                if topIndex != None and bottomIndex!=None:
+                    top    = LastToFirst(LastColumn,bottomIndex)#topIndex)
+                    bottom = LastToFirst(LastColumn,topIndex)#bottomIndex)
+                    x=0
+                else:
+                    return 0
+            else:
+                return bottom - top + 1
+        return 0
+    
+    return [Match(LastColumn, Pattern) for Pattern in Patterns]
+
+
+
 #  BA9P 	Implement TreeColoring 
 #
 #  Colour the internal nodes of a suffix tree given colours of the leaves.

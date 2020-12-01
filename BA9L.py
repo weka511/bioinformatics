@@ -19,43 +19,8 @@ import argparse
 import os
 import time
 from   helpers import read_strings
-from   snp     import LastToFirst
+from   snp     import BW_Match
 
-def BW_Match(LastColumn,Patterns):
-    def contains(LastColumn,symbol,top,bottom):
-        topIndex    = None
-        bottomIndex = None
-        N           = len(LastColumn)
-        for i in range(top,N):
-            if LastColumn[i]==symbol:
-                bottomIndex = i
-                break
-        for i in range(bottom,-1,-1):
-            if LastColumn[i]==symbol:
-                topIndex = i
-                break
-            
-        return topIndex,bottomIndex
-    
-    def Match(LastColumn, Pattern):
-        top    = 0
-        bottom = len(LastColumn)-1
-        while top <= bottom:
-            if len(Pattern) > 0:
-                symbol  = Pattern[-1]
-                Pattern = Pattern[:-1]
-                topIndex,bottomIndex = contains(LastColumn,symbol,top,bottom)
-                if topIndex != None and bottomIndex!=None:
-                    top    = LastToFirst(LastColumn,bottomIndex)#topIndex)
-                    bottom = LastToFirst(LastColumn,topIndex)#bottomIndex)
-                    x=0
-                else:
-                    return 0
-            else:
-                return bottom - top + 1
-        return 0
-    
-    return [Match(LastColumn, Pattern) for Pattern in Patterns]
 
 if __name__=='__main__':
     start = time.time()
@@ -64,9 +29,7 @@ if __name__=='__main__':
     parser.add_argument('--extra',   default=False, action='store_true', help='process extra dataset')
     parser.add_argument('--rosalind', default=False, action='store_true', help='process Rosalind dataset')
     args = parser.parse_args()
-    if args.sample:
-        #print (BW_Match('smnpbnnaaaaa$a',
-                        #['ana']))        
+    if args.sample:    
         print (BW_Match('TCCTCTATGAGATCCTATTCTATGAAACCTTCA$GACCAAAATTCTCCGGC',
                         ['CCT', 'CAC', 'GAG', 'CAG', 'ATC']))
         
