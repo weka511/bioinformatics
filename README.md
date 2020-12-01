@@ -142,7 +142,7 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 |BA9E|BA9E.py| [Find the Longest Substring Shared by Two Strings](http://rosalind.info/problems/ba9e/) [WIP](https://github.com/weka511/bioinformatics/issues/40)|
 |BA9F|BA9F.py| [Find the Shortest Non-Shared Substring of Two Strings](http://rosalind.info/problems/ba9f/) [WIP](https://github.com/weka511/bioinformatics/issues/40)|
 |BA9G|BA9G.py snp.py| [Construct the Suffix Array of a String](http://rosalind.info/problems/ba9g/) |
-|BA9H|BA9H.py| [Pattern Matching with the Suffix Array ](http://rosalind.info/problems/ba9h/) [WIP](https://github.com/weka511/bioinformatics/issues/40)|
+|BA9H|BA9H.py| [Pattern Matching with the Suffix Array ](http://rosalind.info/problems/ba9h/) |
 |BA9I|BA9I.py snp.py| [Construct the Burrows-Wheeler Transform of a String](http://rosalind.info/problems/ba9i/) |
 |BA9J|BA9J.py snp.py| [Reconstruct a String from its Burrows-Wheeler Transform](http://rosalind.info/problems/ba9j/) |
 |BA9K|BA9K.py snp.py| [Generate the Last-to-First Mapping of a String](http://rosalind.info/problems/ba9k/) [WIP](https://github.com/weka511/bioinformatics/issues/40)|

@@ -229,7 +229,50 @@ def FindLongestRepeat(string1,string2=None):
 
 def SuffixArray(s):
     return [i for (_,i) in sorted([(s[i:],i) for i in range(len(s))],key=lambda x:x[0])]
-    
+
+#  BA9H 	Pattern Matching with the Suffix Array
+
+# MatchOnePatternUsingSuffixArray
+#
+# Used by MatchPatternsUsingSuffixArray to match one pattern
+#
+def MatchOnePatternUsingSuffixArray(Text,Pattern,SuffixArray):
+    minIndex = 0
+    maxIndex = len(Text)
+    while minIndex < maxIndex:
+        midIndex = (minIndex + maxIndex)//2
+        if Pattern>Text[SuffixArray[midIndex]:]:
+            minIndex = midIndex + 1
+        else:
+            maxIndex = midIndex
+            
+    first    = minIndex
+    maxIndex = len(Text)
+    while minIndex<maxIndex:
+        midIndex = (minIndex + maxIndex)//2
+        if Text[SuffixArray[midIndex]:].startswith(Pattern):
+            minIndex = midIndex + 1
+        else:
+            maxIndex = midIndex
+            
+    last = maxIndex
+    return (first,last)
+
+# MatchPatternsUsingSuffixArray
+#
+# Given: A string Text and a collection of strings Patterns.
+#
+# Return: All starting positions in Text where a string from Patterns appears as a substring.
+
+def MatchPatternsUsingSuffixArray(Text,Patterns):
+    sfa = SuffixArray(Text)
+    Matches = []
+    for Pattern in Patterns:
+        first,last = MatchOnePatternUsingSuffixArray(Text,Pattern,sfa)
+        for i in range(first,last):
+            Matches.append(sfa[i])
+    return sorted(Matches)
+
 # BA9I Construct the Burrows-Wheeler Transform of a String
 #
 # Given a string Text, form all possible cyclic rotations of Text; a cyclic
