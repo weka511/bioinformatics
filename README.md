@@ -139,20 +139,20 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 |BA9B|BA9B.py snp.py| [Implement TrieMatching](http://rosalind.info/problems/ba9b/) |
 |BA9C|BA9C.py snp.py| [Construct the Suffix Tree of a String](http://rosalind.info/problems/ba9c/)|
 |BA9D|BA9D.py| [Find the Longest Repeat in a String](http://rosalind.info/problems/ba9d/)|
-|BA9E|BA9E.py| [Find the Longest Substring Shared by Two Strings](http://rosalind.info/problems/ba9e/) [WIP](https://github.com/weka511/bioinformatics/issues/40)|
-|BA9F|BA9F.py| [Find the Shortest Non-Shared Substring of Two Strings](http://rosalind.info/problems/ba9f/) [WIP](https://github.com/weka511/bioinformatics/issues/40)|
+|BA9E|BA9E.py| [Find the Longest Substring Shared by Two Strings](http://rosalind.info/problems/ba9e/) [WIP](https://github.com/weka511/bioinformatics/issues/72)|
+|BA9F|BA9F.py| [Find the Shortest Non-Shared Substring of Two Strings](http://rosalind.info/problems/ba9f/) [WIP](https://github.com/weka511/bioinformatics/issues/73)|
 |BA9G|BA9G.py snp.py| [Construct the Suffix Array of a String](http://rosalind.info/problems/ba9g/) |
 |BA9H|BA9H.py| [Pattern Matching with the Suffix Array ](http://rosalind.info/problems/ba9h/) |
 |BA9I|BA9I.py snp.py| [Construct the Burrows-Wheeler Transform of a String](http://rosalind.info/problems/ba9i/) |
 |BA9J|BA9J.py snp.py| [Reconstruct a String from its Burrows-Wheeler Transform](http://rosalind.info/problems/ba9j/) |
-|BA9K|BA9K.py snp.py| [Generate the Last-to-First Mapping of a String](http://rosalind.info/problems/ba9k/) [WIP](https://github.com/weka511/bioinformatics/issues/40)|
-|BA9L|BA9L.py| [Implement BWMatching ](http://rosalind.info/problems/ba9l/) [WIP](https://github.com/weka511/bioinformatics/issues/40)|
-|BA9M|BA9M.py| [Implement BetterBWMatching ](http://rosalind.info/problems/ba9m/) [WIP](https://github.com/weka511/bioinformatics/issues/40)|
-|BA9N|BA9N.py| [Find All Occurrences of a Collection of Patterns in a String ](http://rosalind.info/problems/ba9n/) [WIP](https://github.com/weka511/bioinformatics/issues/40)|
-|BA9O|BA9O.py| [Find All Approximate Occurrences of a Collection of Patterns in a String](http://rosalind.info/problems/ba9o/) [WIP](https://github.com/weka511/bioinformatics/issues/40)|
+|BA9K|BA9K.py snp.py| [Generate the Last-to-First Mapping of a String](http://rosalind.info/problems/ba9k/) [WIP](https://github.com/weka511/bioinformatics/issues/75)|
+|BA9L|BA9L.py| [Implement BWMatching ](http://rosalind.info/problems/ba9l/) [WIP](https://github.com/weka511/bioinformatics/issues/76)|
+|BA9M|BA9M.py| [Implement BetterBWMatching ](http://rosalind.info/problems/ba9m/) [WIP](https://github.com/weka511/bioinformatics/issues/77)|
+|BA9N|BA9N.py| [Find All Occurrences of a Collection of Patterns in a String ](http://rosalind.info/problems/ba9n/) [WIP](https://github.com/weka511/bioinformatics/issues/78)|
+|BA9O|BA9O.py| [Find All Approximate Occurrences of a Collection of Patterns in a String](http://rosalind.info/problems/ba9o/) [WIP](https://github.com/weka511/bioinformatics/issues/79)|
 |BA9P|BA9P.py| [Implement Tree Colouring](http://rosalind.info/problems/ba9p/)|
-|BA9Q|BA9Q.py| [Construct the Partial Suffix Array of a String](http://rosalind.info/problems/ba9q/) [WIP](https://github.com/weka511/bioinformatics/issues/40)|
-|BA9R|BA9R.py| [Construct a Suffix Tree from a Suffix Array](http://rosalind.info/problems/ba9r/) [WIP](https://github.com/weka511/bioinformatics/issues/40)|
+|BA9Q|BA9Q.py| [Construct the Partial Suffix Array of a String](http://rosalind.info/problems/ba9q/) [WIP](https://github.com/weka511/bioinformatics/issues/80)|
+|BA9R|BA9R.py| [Construct a Suffix Tree from a Suffix Array](http://rosalind.info/problems/ba9r/) [WIP](https://github.com/weka511/bioinformatics/issues/81)|
 
 ### 10. Why have biologists still not developed an HIV vaccine?
 | # | Location | Description |
