@@ -228,9 +228,7 @@ def FindLongestRepeat(string1,string2=None):
 # I have used a naive algorithm, as it appears to be adequate for the test data
 
 def SuffixArray(s):
-    suffixes = [(s[i:],i) for i in range(len(s))]
-    suffixes.sort()
-    return [i for (_,i) in suffixes]
+    return [i for (_,i) in sorted([(s[i:],i) for i in range(len(s))],key=lambda x:x[0])]
     
 # BA9I Construct the Burrows-Wheeler Transform of a String
 #
