@@ -19,27 +19,33 @@ import argparse
 import os
 import time
 from   helpers import read_strings
-
-  
+from   snp import PartialSuffixArray
+ 
 if __name__=='__main__':
     start = time.time()
     parser = argparse.ArgumentParser('BA9Q 	Construct the Partial Suffix Array of a String ')
     parser.add_argument('--sample',   default=False, action='store_true', help='process sample dataset')
+    parser.add_argument('--extra',   default=False, action='store_true', help='process extra dataset')
     parser.add_argument('--rosalind', default=False, action='store_true', help='process Rosalind dataset')
     args = parser.parse_args()
     if args.sample:
-        pass
+        print (PartialSuffixArray('PANAMABANANAS$',5))
         
-    
+    if args.extra:
+        Input,Expected  = read_strings('data/PartialSuffixArray.txt',init=0)
+        Result          = PartialSuffixArray(Input[0],int(Input[1]))
+        for a,b in Result:
+            print (a,b)        
+ 
 
     if args.rosalind:
         Input  = read_strings(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt')
  
-        Result = None
-        print (Result)
+        Result  = PartialSuffixArray(Input[0],int(Input[1]))
         with open(f'{os.path.basename(__file__).split(".")[0]}.txt','w') as f:
-            for line in Result:
-                f.write(f'{line}\n')
+            for a,b in Result:
+                print (a,b)
+                f.write(f'{a},{b}\n')
                 
     elapsed = time.time() - start
     minutes = int(elapsed/60)

@@ -151,7 +151,7 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 |BA9N|BA9N.py| [Find All Occurrences of a Collection of Patterns in a String ](http://rosalind.info/problems/ba9n/) [WIP](https://github.com/weka511/bioinformatics/issues/78)|
 |BA9O|BA9O.py| [Find All Approximate Occurrences of a Collection of Patterns in a String](http://rosalind.info/problems/ba9o/) [WIP](https://github.com/weka511/bioinformatics/issues/79)|
 |BA9P|BA9P.py| [Implement Tree Colouring](http://rosalind.info/problems/ba9p/)|
-|BA9Q|BA9Q.py| [Construct the Partial Suffix Array of a String](http://rosalind.info/problems/ba9q/) [WIP](https://github.com/weka511/bioinformatics/issues/80)|
+|BA9Q|BA9Q.py| [Construct the Partial Suffix Array of a String](http://rosalind.info/problems/ba9q/)|
 |BA9R|BA9R.py| [Construct a Suffix Tree from a Suffix Array](http://rosalind.info/problems/ba9r/) [WIP](https://github.com/weka511/bioinformatics/issues/81)|
 
 ### 10. Why have biologists still not developed an HIV vaccine?

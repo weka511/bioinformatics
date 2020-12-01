@@ -388,7 +388,18 @@ def ColourTree(adj,colours):
             Coloured [node] = []
             for i in range(n):
                 Coloured [node].append(any([Coloured[child][i] for child in adj [node]]))
- 
+
+#  BA9Q 	Construct the Partial Suffix Array of a String 
+#
+# Given: A string Text and a positive integer K.
+#
+# Return: SuffixArrayK(Text), in the form of a list of ordered pairs (i, SuffixArray(i)) 
+#                             for all nonempty entries in the partial suffix array.
+
+def PartialSuffixArray(String,K) :
+    Suffixes = SuffixArray(String)
+    return [(i,Suffixes[i]) for i in range(len(Suffixes)) if Suffixes[i]%K ==0]
+
 ### Deprecated code ###
                 
 # BA9A Construct a Trie from a Collection of Patterns 
