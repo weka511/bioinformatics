@@ -340,7 +340,7 @@ def InverseBWT(string):
 def LastToFirst(Transform,i):
     last      = Transform
     first     = sorted(Transform)
-    ch        = last[i-1]
+    ch        = last[i]              # 0 based
     n         = getN(ch,i,last)
     pos,count = get_char(ch,first,n)
     return pos
