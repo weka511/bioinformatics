@@ -19,8 +19,58 @@ import argparse
 import os
 import time
 from   helpers import read_strings
+#from   snp     import BW_Match
 
-  
+
+def BetterBWMatching(LastColumn,Patterns):
+    
+    def Count(symbol,i):
+        return sum([1 for ch in LastColumn[:i] if ch==symbol]) 
+
+    def FirstOccurence(ch):
+        for i in range(len(FirstColumn)):
+            if FirstColumn[i]==ch:
+                return i
+     
+    def LastColumnContains(symbol,top,bottom):
+        topIndex    = None
+        bottomIndex = None
+        N           = len(LastColumn)
+        
+        for i in range(top,N):
+            if LastColumn[i]==symbol:
+                bottomIndex = i
+                break
+            
+        for i in range(bottom,-1,-1):
+            if LastColumn[i]==symbol:
+                topIndex = i
+                break
+            
+        return topIndex,bottomIndex
+    
+    def Match(Pattern):
+        top    = 0
+        bottom = len(LastColumn) - 1
+        while top <= bottom:
+            if len(Pattern) > 0:
+                symbol  = Pattern[-1]
+                Pattern = Pattern[:-1]
+                topIndex,bottomIndex = LastColumnContains(symbol,top,bottom)
+                if type(topIndex)==int and type(bottomIndex)==int:
+                    top    = FirstOccurences[symbol] + Count(symbol,top)
+                    bottom = FirstOccurences[symbol] + Count(symbol,bottom+1) - 1
+                else:
+                    return 0
+            else:
+                return bottom - top + 1
+        return 0    
+    
+ 
+    FirstColumn = sorted(LastColumn)
+    FirstOccurences = {ch:FirstOccurence(ch) for ch in FirstColumn}
+    return [Match(Pattern) for Pattern in Patterns]
+
 if __name__=='__main__':
     start = time.time()
     parser = argparse.ArgumentParser('BA9M 	Implement BetterBWMatching ')
@@ -28,7 +78,8 @@ if __name__=='__main__':
     parser.add_argument('--rosalind', default=False, action='store_true', help='process Rosalind dataset')
     args = parser.parse_args()
     if args.sample:
-        pass
+        print (BetterBWMatching('GGCGCCGC$TAGTCACACACGCCGTA',
+                                ['ACC', 'CCG', 'CAG']))
         
     
 
