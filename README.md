@@ -160,7 +160,18 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 |BA10A|BA10A.py hmm.py| [Compute the Probability of a Hidden Path](http://rosalind.info/problems/ba10a/) |
 |BA10B|BA10B.py hmm.py| [Compute the Probability of an Outcome Given a Hidden Path](http://rosalind.info/problems/ba10b/) |
 |BA10C|BA10C.py hmm.py| [Implement the Viterbi Algorithm](http://rosalind.info/problems/ba10c/) |
-|11|spectrum.py|Was T.rex just a big chicken?|
+|BA10D|BA10D.py hmm.py| [Compute the Probability of a String Emitted by an HMM ](http://rosalind.info/problems/ba10d/) [WIP](https://github.com/weka511/bioinformatics/issues/41)|
+|BA10E|BA10E.py hmm.py| [Construct a Profile HMM](http://rosalind.info/problems/ba10e/) [WIP](https://github.com/weka511/bioinformatics/issues/41)|
+|BA10F|BA10F.py hmm.py| [Construct a Profile HMM with Pseudocounts](http://rosalind.info/problems/ba10f/) [WIP](https://github.com/weka511/bioinformatics/issues/41)|
+|BA10G|BA10G.py hmm.py| [Perform a Multiple Sequence Alignment with a Profile HMM ](http://rosalind.info/problems/ba10g/) [WIP](https://github.com/weka511/bioinformatics/issues/41)|
+|BA10H|BA10H.py hmm.py| [Estimate the Parameters of an HMM ](http://rosalind.info/problems/ba10h/) [WIP](https://github.com/weka511/bioinformatics/issues/41)|
+|BA10I|BA10I.py hmm.py| [Implement Viterbi Learning ](http://rosalind.info/problems/ba10i/) [WIP](https://github.com/weka511/bioinformatics/issues/41)|
+|BA10J|BA10J.py hmm.py| [Solve the Soft Decoding Problem ](http://rosalind.info/problems/ba10j/) [WIP](https://github.com/weka511/bioinformatics/issues/41)|
+|BA10K|BA10K.py hmm.py| [Implement Baum-Welch Learning](http://rosalind.info/problems/ba10k/) [WIP](https://github.com/weka511/bioinformatics/issues/41)|
+
+### 11.  Was T.rex just a big chicken?
+| # | Location | Description |
+| ---- | --------------- | ------------------------------------------------|
 |BA11A|BA11A.py spectrum.py| [Spectrum Graph Construction](http://rosalind.info/problems/ba11a/) |
 |BA11B|BA11B.py spectrum.py| [Implement DecodingIdealSpectrum](http://rosalind.info/problems/ba11b/) |
 |BA11C|BA11C.py spectrum.py| [Convert a Peptide into a Peptide Vector ](http://rosalind.info/problems/ba11c/) |
