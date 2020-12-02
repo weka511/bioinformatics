@@ -26,14 +26,13 @@ if __name__=='__main__':
     start = time.time()
     parser = argparse.ArgumentParser('BA9L 	Implement BWMatching ')
     parser.add_argument('--sample',   default=False, action='store_true', help='process sample dataset')
-    parser.add_argument('--extra',   default=False, action='store_true', help='process extra dataset')
+    parser.add_argument('--extra',    default=False, action='store_true', help='process extra dataset')
     parser.add_argument('--rosalind', default=False, action='store_true', help='process Rosalind dataset')
     args = parser.parse_args()
     if args.sample:    
         print (BW_Match('TCCTCTATGAGATCCTATTCTATGAAACCTTCA$GACCAAAATTCTCCGGC',
                         ['CCT', 'CAC', 'GAG', 'CAG', 'ATC']))
-        
-    
+           
     if args.extra:
         Input  = read_strings(f'data/BWMatching.txt')
         Result = BW_Match(Input[1],Input[2].split())

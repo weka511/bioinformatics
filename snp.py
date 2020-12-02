@@ -345,16 +345,24 @@ def LastToFirst(Transform,i):
     pos,count = get_char(ch,first,n)
     return pos
 
-#  BA9L 	Implement BWMatching  
+# BA9L 	Implement BWMatching
+#
+# Given: A string BWT(Text), followed by a collection of strings Patterns.
+#
+# Return: A list of integers, where the i-th integer corresponds to the number
+#          of substring matches of the i-th member of Patterns in Text.
+
 def BW_Match(LastColumn,Patterns):
-    def contains(LastColumn,symbol,top,bottom):
+    def LastColumnContains(symbol,top,bottom):
         topIndex    = None
         bottomIndex = None
         N           = len(LastColumn)
+        
         for i in range(top,N):
             if LastColumn[i]==symbol:
                 bottomIndex = i
                 break
+            
         for i in range(bottom,-1,-1):
             if LastColumn[i]==symbol:
                 topIndex = i
@@ -362,17 +370,17 @@ def BW_Match(LastColumn,Patterns):
             
         return topIndex,bottomIndex
     
-    def Match(LastColumn, Pattern):
+    def Match(Pattern):
         top    = 0
         bottom = len(LastColumn)-1
         while top <= bottom:
             if len(Pattern) > 0:
                 symbol  = Pattern[-1]
                 Pattern = Pattern[:-1]
-                topIndex,bottomIndex = contains(LastColumn,symbol,top,bottom)
-                if topIndex != None and bottomIndex!=None:
-                    top    = LastToFirst(LastColumn,bottomIndex)#topIndex)
-                    bottom = LastToFirst(LastColumn,topIndex)#bottomIndex)
+                topIndex,bottomIndex = LastColumnContains(symbol,top,bottom)
+                if type(topIndex)==int and type(bottomIndex)==int:
+                    top    = LastToFirst(LastColumn,bottomIndex)
+                    bottom = LastToFirst(LastColumn,topIndex)
                     x=0
                 else:
                     return 0
@@ -380,7 +388,7 @@ def BW_Match(LastColumn,Patterns):
                 return bottom - top + 1
         return 0
     
-    return [Match(LastColumn, Pattern) for Pattern in Patterns]
+    return [Match(Pattern) for Pattern in Patterns]
 
 
 
