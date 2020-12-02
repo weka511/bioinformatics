@@ -155,6 +155,7 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 |BA9R|BA9R.py| [Construct a Suffix Tree from a Suffix Array](http://rosalind.info/problems/ba9r/) [WIP](https://github.com/weka511/bioinformatics/issues/81)|
 
 ### 10. Why have biologists still not developed an HIV vaccine?
+
 | # | Location | Description |
 | ---- | --------------- | ------------------------------------------------|
 |BA10A|BA10A.py hmm.py| [Compute the Probability of a Hidden Path](http://rosalind.info/problems/ba10a/) |
@@ -170,12 +171,19 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 |BA10K|BA10K.py hmm.py| [Implement Baum-Welch Learning](http://rosalind.info/problems/ba10k/) [WIP](https://github.com/weka511/bioinformatics/issues/41)|
 
 ### 11.  Was T.rex just a big chicken?
+
 | # | Location | Description |
 | ---- | --------------- | ------------------------------------------------|
-|BA11A|BA11A.py spectrum.py| [Spectrum Graph Construction](http://rosalind.info/problems/ba11a/) |
-|BA11B|BA11B.py spectrum.py| [Implement DecodingIdealSpectrum](http://rosalind.info/problems/ba11b/) |
-|BA11C|BA11C.py spectrum.py| [Convert a Peptide into a Peptide Vector ](http://rosalind.info/problems/ba11c/) |
-|BA11D|BA11D.py spectrum.py| [Convert a Peptide Vector into a Peptide ](http://rosalind.info/problems/ba11d/) |
+|BA11A|BA11A.py spectrum.py| [Spectrum Graph Construction](http://rosalind.info/problems/ba11a/) [WIP](https://github.com/weka511/bioinformatics/issues/42)|
+|BA11B|BA11B.py spectrum.py| [Implement DecodingIdealSpectrum](http://rosalind.info/problems/ba11b/) [WIP](https://github.com/weka511/bioinformatics/issues/42)|
+|BA11C|BA11C.py spectrum.py| [Convert a Peptide into a Peptide Vector ](http://rosalind.info/problems/ba11c/) [WIP](https://github.com/weka511/bioinformatics/issues/42)|
+|BA11D|BA11D.py spectrum.py| [Convert a Peptide Vector into a Peptide ](http://rosalind.info/problems/ba11d/) [WIP](https://github.com/weka511/bioinformatics/issues/42)|
+|BA11E|BA11E.py spectrum.py| [Sequence a Peptide](http://rosalind.info/problems/ba11e/) [WIP](https://github.com/weka511/bioinformatics/issues/42)|
+|BA11F|BA11F.py spectrum.py| [Find a Highest-Scoring Peptide in a Proteome against a Spectrum](http://rosalind.info/problems/ba11f/) [WIP](https://github.com/weka511/bioinformatics/issues/42)|
+|BA11G|BA11G.py spectrum.py| [Implement PSMSearch](http://rosalind.info/problems/ba11g/) [WIP](https://github.com/weka511/bioinformatics/issues/42)|
+|BA11H|BA11H.py spectrum.py| [Compute the Size of a Spectral Dictionary](http://rosalind.info/problems/ba11h/) [WIP](https://github.com/weka511/bioinformatics/issues/42)|
+|BA11I|BA11I.py spectrum.py| [Compute the Probability of a Spectral Dictionary](http://rosalind.info/problems/ba11i/) [WIP](https://github.com/weka511/bioinformatics/issues/42)|
+|BA11J|BA11J.py spectrum.py| [Find a Highest-Scoring Modified Peptide against a Spectrum](http://rosalind.info/problems/ba11j/) [WIP](https://github.com/weka511/bioinformatics/issues/42)|
 
 ## [Alignment](http://rosalind.info/problems/topics/alignment/)
 
