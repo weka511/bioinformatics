@@ -11,19 +11,19 @@
 # GNU General Public License for more details.
 
 # You should have received a copy of the GNU General Public License
-# along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>
+# along with this pogram.  If not, see <http://www.gnu.org/licenses/>
 
 # BA10B Compute the Probability of an Outcome Given a Hidden Path 
 
 from hmm import ProbabilityOutcomeGivenHiddenPath 
 
 if __name__=='__main__':
-    Emission = {
-        ('A','x'): 0.419, ('A','y'):   0.321, ('A','z') : 0.26,
-        ('B','x'): 0.185, ('B','y'):   0.551, ('B','z') : 0.263,
-    }
+
     print (ProbabilityOutcomeGivenHiddenPath('xzyyxyzyxzyzxxzyzzxxzyxyxyxzxzyyzyzxzxzyxyzyyyzzxz',
                                              'BBBAABAAABBABABBABBAAAAAABAAABAABABBBABBAABABAABAB',
-                                             Emission))
+                                             {
+                                                 ('A','x'): 0.419, ('A','y'):   0.321, ('A','z') : 0.26,
+                                                 ('B','x'): 0.185, ('B','y'):   0.551, ('B','z') : 0.263,
+                                             }))
     
   

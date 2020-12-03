@@ -1,4 +1,4 @@
-#    Copyright (C) 2019 Greenweaves Software Limited
+#    Copyright (C) 2019-2020 Greenweaves Software Limited
 #
 #    This is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -11,16 +11,18 @@
 #    GNU General Public License for more details.
 #
 #    You should have received a copy of the GNU General Public License
-#    along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>
 #
 #    Hidden Markov Models
 
+from numpy import argmax
+from math  import isqrt
+
 # BA10A Compute the Probability of a Hidden Path
 
-from numpy import argmax
-
 def ProbabilityHiddenPath(path,Transition):
-    result = 0.5
+    n = isqrt(len(Transition.keys()))
+    result = 1/n
     for i in range(1,len(path)):
         result *= Transition[(path[i-1],path[i])]
     return result
