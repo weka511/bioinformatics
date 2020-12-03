@@ -19,20 +19,7 @@ import argparse
 import os
 import time
 from   helpers import read_strings,create_hmm_from_strings
-
-def Likelihood(xs,Alphabet,States,Transition,Emission):
-    def calculateproduct_weights(s_source = 1):
-        def product_weight(k,x):
-            return sum([s[-1][l] * Transition[(States[l],k)] * Emission[(k,x)] for l in range(len(States))])
-        
-        s = []  # first index is position, 2nd state
-    
-        s.append([s_source * (1/len(States)) * Emission[(k,xs[0])] for k in States])
-        for x in xs[1:]:
-            s.append([product_weight(k,x) for k in States])
-        return s 
-    return sum(calculateproduct_weights()[-1])
-
+from   hmm     import Likelihood
 
 if __name__=='__main__':
     start = time.time()
@@ -58,12 +45,11 @@ if __name__=='__main__':
         
     if args.rosalind:
         Input  = read_strings(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt')
- 
-        Result = None
+        xs,alphabet,States,Transition,Emission = create_hmm_from_strings(Input) 
+        Result = Likelihood(xs,alphabet,States,Transition,Emission)
         print (Result)
         with open(f'{os.path.basename(__file__).split(".")[0]}.txt','w') as f:
-            for line in Result:
-                f.write(f'{line}\n')
+            f.write(f'{Result}\n')
                 
     elapsed = time.time() - start
     minutes = int(elapsed/60)

@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2019 Greenweaves Software Limited
+# Copyright (C) 2015-2020 Greenweaves Software Limited
 
 # This is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -44,10 +44,10 @@ def read_strings(test_data,
         for line in f:
             content=line.strip()
             if state==0:
-                if content=='Input':
+                if content.startswith('Input'):
                     state=1
             elif state==1:
-                if content=='Output':
+                if content.startswith('Output'):
                     state=2
                 else:
                     inputs.append(content)
@@ -724,7 +724,9 @@ def create_hmm(problem=os.path.basename(sys.argv[0]).split('.')[0],
                path=os.path.join(os.path.expanduser('~'),'Downloads'),
                ext=None,
                name=None):
-    strings    = create_strings(problem=problem,path=path,ext=ext,name=name)
+    return create_hmm_from_strings(create_strings(problem=problem,path=path,ext=ext,name=name))
+    
+def create_hmm_from_strings(strings):    
     xs         = strings[0]
     alphabet   = strings[2].split()
     States     = strings[4].split()
