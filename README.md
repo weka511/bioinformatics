@@ -162,13 +162,13 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 |BA10B|BA10B.py hmm.py| [Compute the Probability of an Outcome Given a Hidden Path](http://rosalind.info/problems/ba10b/) |
 |BA10C|BA10C.py hmm.py| [Implement the Viterbi Algorithm](http://rosalind.info/problems/ba10c/) |
 |BA10D|BA10D.py hmm.py| [Compute the Probability of a String Emitted by an HMM ](http://rosalind.info/problems/ba10d/)|
-|BA10E|BA10E.py hmm.py| [Construct a Profile HMM](http://rosalind.info/problems/ba10e/) [WIP](https://github.com/weka511/bioinformatics/issues/41)|
-|BA10F|BA10F.py hmm.py| [Construct a Profile HMM with Pseudocounts](http://rosalind.info/problems/ba10f/) [WIP](https://github.com/weka511/bioinformatics/issues/41)|
-|BA10G|BA10G.py hmm.py| [Perform a Multiple Sequence Alignment with a Profile HMM ](http://rosalind.info/problems/ba10g/) [WIP](https://github.com/weka511/bioinformatics/issues/41)|
-|BA10H|BA10H.py hmm.py| [Estimate the Parameters of an HMM ](http://rosalind.info/problems/ba10h/) [WIP](https://github.com/weka511/bioinformatics/issues/41)|
-|BA10I|BA10I.py hmm.py| [Implement Viterbi Learning ](http://rosalind.info/problems/ba10i/) [WIP](https://github.com/weka511/bioinformatics/issues/41)|
-|BA10J|BA10J.py hmm.py| [Solve the Soft Decoding Problem ](http://rosalind.info/problems/ba10j/) [WIP](https://github.com/weka511/bioinformatics/issues/41)|
-|BA10K|BA10K.py hmm.py| [Implement Baum-Welch Learning](http://rosalind.info/problems/ba10k/) [WIP](https://github.com/weka511/bioinformatics/issues/41)|
+|BA10E|BA10E.py hmm.py| [Construct a Profile HMM](http://rosalind.info/problems/ba10e/) [WIP](https://github.com/weka511/bioinformatics/issues/83)|
+|BA10F|BA10F.py hmm.py| [Construct a Profile HMM with Pseudocounts](http://rosalind.info/problems/ba10f/) [WIP](https://github.com/weka511/bioinformatics/issues/84)|
+|BA10G|BA10G.py hmm.py| [Perform a Multiple Sequence Alignment with a Profile HMM ](http://rosalind.info/problems/ba10g/) [WIP](https://github.com/weka511/bioinformatics/issues/85)|
+|BA10H|BA10H.py hmm.py| [Estimate the Parameters of an HMM ](http://rosalind.info/problems/ba10h/) [WIP](https://github.com/weka511/bioinformatics/issues/86)|
+|BA10I|BA10I.py hmm.py| [Implement Viterbi Learning ](http://rosalind.info/problems/ba10i/) [WIP](https://github.com/weka511/bioinformatics/issues/87)|
+|BA10J|BA10J.py hmm.py| [Solve the Soft Decoding Problem ](http://rosalind.info/problems/ba10j/) [WIP](https://github.com/weka511/bioinformatics/issues/88)|
+|BA10K|BA10K.py hmm.py| [Implement Baum-Welch Learning](http://rosalind.info/problems/ba10k/) [WIP](https://github.com/weka511/bioinformatics/issues/89)|
 
 ### 11.  Was T.rex just a big chicken?
 
