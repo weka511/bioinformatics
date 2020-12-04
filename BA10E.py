@@ -18,37 +18,85 @@
 import argparse
 import os
 import time
-from   helpers import read_strings, flatten
+from   helpers import read_strings
 
 def ConstructProfileHMM(theta,Alphabet,Alignment):
-    def CreateState(i):
-        return [f'{c}{i+1}' for c in 'MDI']
-    
-    def CreateProfile():
-        Profile = [[0]*m for k in range(K)]
-        for i in range(n):
-            for j in range(m):
-                ch    = Alignment[i][j]
-                index = [k for k in range(len(Alphabet)) if Alphabet[k]==ch]
-                if len(index)==1:
-                    k = index[0]
-                    Profile[k][j]+=1
-                    
+    def CreateStates(m):
+        Product = [('S',0),('I',0)]
         for i in range(m):
-            total = sum([Profile[k][i] for k in range(K)])
-            for k in range(K):
-                Profile[k][i] /= total
-                 
-        return Profile
-    m          = len(Alignment[0])
-    n          = len(Alignment)
-    K          = len(Alphabet)
-    Profile    = CreateProfile()
-    States     = ['S','I0'] + flatten([CreateState(i) for i in range(m)]) + ['E']
-    Transition = []
-    Emission   = [[0]*m]
-    return Transition, Emission
+            Product.append(('M',i+1))
+            Product.append(('D',i+1))
+            Product.append(('I',i+1))
+        Product.append(('E',m+1))
+        return Product
 
+    def get_index(operation,pos):
+        for i in range(len(States)):
+            if (operation,pos)==States[i]:
+                return i
+    
+    def normalize(Row):
+        total = sum(Row)
+        if total>0:
+            for i in range(len(Row)):
+                Row[i]/=total
+            
+    def CreateCounts(States,n=0,L=0,m=0,K=0):
+        StateCounts = [] # row--state HMM is in, column = P(move to)
+        AlphaCounts = [] # row--state HMM is in, column = P emit this symbol
+        for i in range(L): # iterate through states
+            StateCounts.append([0]*L)
+            AlphaCounts.append([0]*K)
+            operation,pos = States[i]
+            for j in range(n):
+                operation,pos = States[i]
+                if operation == 'S':
+                    ch = Alignment[j][pos]
+                    k  = get_index('M',pos+1) if ch in Alphabet else get_index('I',pos)
+                    StateCounts[-1][k]+=1
+                elif operation =='M':
+                    ch = Alignment[j][pos-1]
+                    if ch in Alphabet:
+                        k  = Alphabet.index(ch)
+                        AlphaCounts[-1][k]+=1
+                    x=0
+                elif operation =='D':
+                    pass
+                elif operation =='I':
+                    pass
+                else:      #E
+                    pass
+            normalize(StateCounts[-1])
+            normalize(AlphaCounts[-1])
+            x=0
+ 
+        return StateCounts,AlphaCounts
+   
+    m                       = len(Alignment[0])
+    n                       = len(Alignment)
+    K                       = len(Alphabet)
+    States                  = CreateStates(m)
+    L                       = len(States)
+    StateCounts,AlphaCounts = CreateCounts(States,n=n,L=L,m=m,K=K)
+    return States,StateCounts,AlphaCounts
+
+def formatState(state):
+    operation,pos = state
+    if operation in ['S','E']:
+        return operation
+    else:
+        return f'{operation}{pos}'
+    
+def formatEmission(Emission,States,Alphabet):  
+    yield '\t' + '\t'.join(Alphabet)
+    for row,state in zip(Emission,States):
+        yield formatState(state) + '\t' + '\t'.join(f'{r:.2f}' for r in row)
+
+def formatTransition(Transition,States):
+    yield '\t' + '\t'.join(formatState(s) for s in States)
+    for row,state in zip(Transition,States):
+        yield formatState(state) + '\t' + '\t'.join(f'{r:.2f}' for r in row)
+        
 if __name__=='__main__':
     start = time.time()
     parser = argparse.ArgumentParser('BA10E 	Construct a Profile HMM')
@@ -57,27 +105,31 @@ if __name__=='__main__':
     parser.add_argument('--rosalind', default=False, action='store_true', help='process Rosalind dataset')
     args = parser.parse_args()
     if args.sample:
-        Transition,Emission = ConstructProfileHMM(
-                                   0.289,
-                                   ['A',   'B',   'C',   'D',   'E'],
-                                   ['EBA', 'EBD', 'EB-', 'EED', 'EBD', 'EBE','E-D','EBD'])
+        States,Transition,Emission = ConstructProfileHMM(0.289,
+                                                         ['A',   'B',   'C',   'D',   'E'],
+                                                         ['EBA', 'EBD', 'EB-', 'EED', 'EBD', 'EBE','E-D','EBD'])
         
-        print (Transition)
-        print (Emission)
+        for row in formatTransition(Transition,States):
+            print (row)
+        print ('--------')
+        for row in formatEmission(Emission,States,['A',   'B',   'C',   'D',   'E']):
+            print (row)
                
     if args.extra:
-        Input,Expected                         = read_strings(f'data/ProfileHMM.txt',init=0)
-        Transition,Emission = ConstructProfileHMM(
-                                   float(Input[0]),
-                                   Input[2].split(),
-                                   Input[4:-1]) 
-        print (Transition)
-        print (Emission)
+        Input,Expected             = read_strings(f'data/ProfileHMM.txt',init=0)
+        States,Transition,Emission = ConstructProfileHMM(float(Input[0]),
+                                                         Input[2].split(),
+                                                         Input[4:-1]) 
+        for row in formatTransition(Transition,States):
+            print (row)
+        print ('--------')
+        for row in formatEmission(Emission,States,Input[2].split()):
+            print (row)
                
     if args.rosalind:
         Input  = read_strings(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt')
  
-        Transition,Emission = ConstructProfileHMM(
+        States,Transition,Emission = ConstructProfileHMM(
                                    float(Input[0]),
                                    Input[2].split(),
                                    Input[4:-1]) 
