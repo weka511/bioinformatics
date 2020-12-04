@@ -21,6 +21,31 @@ import time
 from   helpers import read_strings
 
 def ConstructProfileHMM(theta,Alphabet,Alignment):
+    def CountChars(m,j,K):
+        RowCounts = [0]*K
+        for i in range(m):
+            if Alignment[i][j] in Alphabet:
+                RowCounts[Alphabet.index(Alignment[i][j])]+=1
+        return RowCounts
+    
+    def CreateStates(m):
+        Product = [('S',0),('I',0)]
+        for i in range(m):
+            Product.append(('M',i+1))
+            Product.append(('D',i+1))
+            Product.append(('I',i+1))
+        Product.append(('E',m+1))
+        return Product
+    
+    n       = len(Alignment[0])
+    m       = len(Alignment)
+    K       = len(Alphabet)
+    Counts  = [CountChars(m,j,K) for j in range(n)]
+    Profile = [[c/sum(Count) for c in Count] for Count in Counts if  sum(Count) > (1-theta)*K]
+    States  = CreateStates(len(Profile))
+    x=0
+    
+def old():    
     def CreateStates(m):
         Product = [('S',0),('I',0)]
         for i in range(m):
@@ -127,16 +152,20 @@ if __name__=='__main__':
             print (row)
                
     if args.rosalind:
-        Input  = read_strings(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt')
+        Input                      = read_strings(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt')
  
-        States,Transition,Emission = ConstructProfileHMM(
-                                   float(Input[0]),
-                                   Input[2].split(),
-                                   Input[4:-1]) 
-        print (Transition)
-        print (Emission)
+        States,Transition,Emission = ConstructProfileHMM(float(Input[0]),
+                                                         Input[2].split(),
+                                                         Input[4:-1]) 
+
         with open(f'{os.path.basename(__file__).split(".")[0]}.txt','w') as f:
-            for line in Result:
+            for row in formatTransition(Transition,States):
+                print (row)
+                f.write(f'{row}\n')
+                print ('--------')
+                f.write('--------\n')
+            for row in formatEmission(Emission,States,Input[2].split()):
+                print (row)            
                 f.write(f'{line}\n')
                 
     elapsed = time.time() - start
