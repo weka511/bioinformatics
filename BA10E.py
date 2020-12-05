@@ -50,18 +50,78 @@ def ConstructProfileHMM(theta,Alphabet,Alignment):
         for i in range(len(States)):
             if (operation,pos)==States[i]:
                 return i
-            
+  
+    def create_actions(Conserved,Incomplete):
+        Product = ['S']
+        for conserved,incomplete in zip(Conserved,Incomplete):
+            if conserved:
+                Product.append('M')
+                if incomplete:
+                    Product.append('D')
+            else:
+                Product.append('I')
+        Product.append('E')
+        return Product
+    
+        
     n              = len(Alignment[0])
     m              = len(Alignment)
     K              = len(Alphabet)
     Counts         = [CountChars(m,j,K) for j in range(n)]
     Conserved      = [sum(Count) > (1-theta)*K for Count in Counts]
+    Incomplete     = [sum(Count) < K for Count in Counts]
+    Actions        = create_actions(Conserved,Incomplete)
+    
     LinkBack       = [j for j in range(n) if Conserved[j]]
     Profile        = [[c/sum(Counts[i]) for c in Counts[i]] for i in range(len(Counts)) if  Conserved[i]]
     States,max_pos = CreateStates(len(Profile))
     L              = len(States)
     Transition     = [] # row--state HMM is in, column = P(move to)
     Emission       = [] # row--state HMM is in, column = P emit this symbol
+    action         = Actions.pop(0)
+    next_action    = Actions[0]
+    state_seq      = -1
+    row_seq        = -1
+    for operation,pos in StateGenerator(States):
+        Transition.append([0]*L)
+        Emission.append([0]*K)
+        if operation!=action: continue     
+        if operation == 'S':
+            state_seq +=1
+            row_seq   += 1
+            if next_action=='I':
+                Transition[-1][state_seq+2] =sum(Counts[row_seq])/K
+                Transition[-1][state_seq+1] =1.0-Transition[-1][state_seq+1]
+            else:
+                Transition[-1][state_seq+2] =1.0
+        elif operation == 'M':
+            state_seq +=1
+            normalizerEmission = sum(Counts[row_seq])
+            for k in range(K):
+                Emission[-1][k] = Counts[row_seq][k]/normalizerEmission
+            row_seq   += 1
+            if next_action=='I':
+                pass
+            else:
+                Transition[-1][state_seq+3] = sum(Counts[row_seq])/len(Counts[row_seq])
+                Transition[-1][state_seq+4] = (len(Counts[row_seq])-sum(Counts[row_seq]))/len(Counts[row_seq])
+        elif operation == 'D':
+            state_seq +=1
+            row_seq   += 1
+            if next_action=='I':
+                pass
+            else:
+                Transition[-1][state_seq+3] = sum(Counts[row_seq])/len(Counts[row_seq])
+                Transition[-1][state_seq+4] = (len(Counts[row_seq])-sum(Counts[row_seq]))/len(Counts[row_seq])            
+        elif operation == 'I':
+            state_seq +=1
+            row_seq   += 1            
+        else:
+            state_seq +=1
+            row_seq   += 1
+        action = Actions.pop(0)
+        next_action = Actions[0]
+        
     seq            = 0
     previous_del   = False
     for operation,pos in StateGenerator(States):
