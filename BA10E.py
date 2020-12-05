@@ -20,6 +20,8 @@ import os
 import time
 from   helpers import read_strings
 
+# ConstructProfileHMM
+
 def ConstructProfileHMM(theta,Alphabet,Alignment):
     def CountChars(m,j,K):
         RowCounts = [0]*K
@@ -30,80 +32,70 @@ def ConstructProfileHMM(theta,Alphabet,Alignment):
     
     def CreateStates(m):
         Product = [('S',0),('I',0)]
+        max_pos = -1
         for i in range(m):
             Product.append(('M',i+1))
             Product.append(('D',i+1))
             Product.append(('I',i+1))
-        Product.append(('E',m+1))
-        return Product
+            max_pos = i+1
+        Product.append(('E',None))
+        return Product,max_pos
     
-    n       = len(Alignment[0])
-    m       = len(Alignment)
-    K       = len(Alphabet)
-    Counts  = [CountChars(m,j,K) for j in range(n)]
-    Profile = [[c/sum(Count) for c in Count] for Count in Counts if  sum(Count) > (1-theta)*K]
-    States  = CreateStates(len(Profile))
-    x=0
-    
-def old():    
-    def CreateStates(m):
-        Product = [('S',0),('I',0)]
-        for i in range(m):
-            Product.append(('M',i+1))
-            Product.append(('D',i+1))
-            Product.append(('I',i+1))
-        Product.append(('E',m+1))
-        return Product
-
-    def get_index(operation,pos):
+    def StateGenerator(States):
+        for l in range(L): # iterate through states
+            operation,pos = States[l]
+            yield operation,pos
+   
+    def get_index_of_state(operation,pos):
         for i in range(len(States)):
             if (operation,pos)==States[i]:
                 return i
-    
-    def normalize(Row):
-        total = sum(Row)
-        if total>0:
-            for i in range(len(Row)):
-                Row[i]/=total
             
-    def CreateCounts(States,n=0,L=0,m=0,K=0):
-        StateCounts = [] # row--state HMM is in, column = P(move to)
-        AlphaCounts = [] # row--state HMM is in, column = P emit this symbol
-        for i in range(L): # iterate through states
-            StateCounts.append([0]*L)
-            AlphaCounts.append([0]*K)
-            operation,pos = States[i]
-            for j in range(n):
-                operation,pos = States[i]
-                if operation == 'S':
-                    ch = Alignment[j][pos]
-                    k  = get_index('M',pos+1) if ch in Alphabet else get_index('I',pos)
-                    StateCounts[-1][k]+=1
-                elif operation =='M':
-                    ch = Alignment[j][pos-1]
-                    if ch in Alphabet:
-                        k  = Alphabet.index(ch)
-                        AlphaCounts[-1][k]+=1
-                    x=0
-                elif operation =='D':
-                    pass
-                elif operation =='I':
-                    pass
-                else:      #E
-                    pass
-            normalize(StateCounts[-1])
-            normalize(AlphaCounts[-1])
-            x=0
- 
-        return StateCounts,AlphaCounts
-   
-    m                       = len(Alignment[0])
-    n                       = len(Alignment)
-    K                       = len(Alphabet)
-    States                  = CreateStates(m)
-    L                       = len(States)
-    StateCounts,AlphaCounts = CreateCounts(States,n=n,L=L,m=m,K=K)
-    return States,StateCounts,AlphaCounts
+    n              = len(Alignment[0])
+    m              = len(Alignment)
+    K              = len(Alphabet)
+    Counts         = [CountChars(m,j,K) for j in range(n)]
+    Conserved      = [sum(Count) > (1-theta)*K for Count in Counts]
+    LinkBack       = [j for j in range(n) if Conserved[j]]
+    Profile        = [[c/sum(Counts[i]) for c in Counts[i]] for i in range(len(Counts)) if  Conserved[i]]
+    States,max_pos = CreateStates(len(Profile))
+    L              = len(States)
+    Transition     = [] # row--state HMM is in, column = P(move to)
+    Emission       = [] # row--state HMM is in, column = P emit this symbol
+    seq            = 0
+    previous_del   = False
+    for operation,pos in StateGenerator(States):
+        if operation == 'S':
+            Transition.append([1 if op=='M' and pos2==1 else 0 for op,pos2 in StateGenerator(States)] ) # FIXME - I0
+            Emission.append([0]*K)   
+        elif operation == 'M':
+            next_row = [0]*L
+            if pos<len(LinkBack):   #FIXME
+                emission_count = sum(Counts[LinkBack[pos]])
+                if emission_count>0:
+                    next_row[seq+3] = emission_count/K
+                skip_count     = K - emission_count
+                if skip_count>0:
+                    next_row[seq+4] = skip_count/K
+                    previous_del   = True
+            Transition.append(next_row) 
+            Emission.append(Profile[pos-1])
+        elif operation == 'D':
+            next_row = [0]*L
+            if previous_del:
+                next_row[seq+2] = 1
+                previous_del   = False
+            Transition.append(next_row)
+            Emission.append([0]*K)
+        elif operation == 'I':
+            print (pos,seq,Conserved[seq])
+            Transition.append([0]*L)       # TODO
+            Emission.append([0]*K)       # TODO        
+        else:
+            Transition.append([0]*L)
+            Emission.append([0]*K)
+        seq += 1
+    return States,Transition,Emission
 
 def formatState(state):
     operation,pos = state
