@@ -50,7 +50,7 @@ def ConstructProfileHMM(theta,Alphabet,Alignment):
                 if ch in Alphabet:
                     next_state,offset =  self.insert(ch)
                 else:
-                    next_state,offset = State.INSERT,0
+                    next_state,offset = State.MATCH,1
             self.next_state_counts[next_state] += 1
             return next_state,self.index+offset
         
@@ -84,7 +84,7 @@ def ConstructProfileHMM(theta,Alphabet,Alignment):
                 for i in range(K):
                     if Alphabet[i] in self.emissions:
                         Frequencies[i] = self.emissions[Alphabet[i]]/count_chars
-                assert (sum(Frequencies)==1.0)
+                #assert (sum(Frequencies)==1.0)
             return Frequencies
         
     class Start(State):
@@ -148,7 +148,7 @@ def ConstructProfileHMM(theta,Alphabet,Alignment):
         
     class End(State):
         def __init__(self):
-            super().__init__()
+            super().__init__(0)
             
         def __str__(self):
             return 'E'   
@@ -231,12 +231,12 @@ def ConstructProfileHMM(theta,Alphabet,Alignment):
 def formatEmission(Emission,States,Alphabet):  
     yield '\t' + '\t'.join(Alphabet)
     for row,state in zip(Emission,States):
-        yield str(state) + '\t' + '\t'.join(f'{r:.2f}' for r in row)
+        yield str(state) + '\t' + '\t'.join(f'{r:.3f}' for r in row)
 
 def formatTransition(Transition,States):
     yield '\t' + '\t'.join(str(s) for s in States)
     for row,state in zip(Transition,States):
-        yield str(state) + '\t' + '\t'.join(f'{r:.2f}' for r in row)
+        yield str(state) + '\t' + '\t'.join(f'{r:.3f}' for r in row)
         
 if __name__=='__main__':
     start = time.time()
@@ -278,11 +278,11 @@ if __name__=='__main__':
             for row in formatTransition(Transition,States):
                 print (row)
                 f.write(f'{row}\n')
-                print ('--------')
-                f.write('--------\n')
+            print ('--------')
+            f.write('--------\n')
             for row in formatEmission(Emission,States,Input[2].split()):
                 print (row)            
-                f.write(f'{line}\n')
+                f.write(f'{row}\n')
                 
     elapsed = time.time() - start
     minutes = int(elapsed/60)
