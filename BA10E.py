@@ -249,8 +249,7 @@ def ConstructProfileHMM(theta,Alphabet,Alignment):
 #   construct list of states
 
     States = create_states(Conserved)
-    for s in States:
-        print (s)
+
     L      = len(States)
     
     accumulate_statistics(States,Alignment,n)    
@@ -263,34 +262,39 @@ def ConstructProfileHMM(theta,Alphabet,Alignment):
         Emission.append(States[i].get_emission(Alphabet))
         
     return States,Transition,Emission
-    
-def formatEmission(Emission,States,Alphabet):  
+
+def convert(r,precision=2):
+    format_str = '{:.' + str(precision) + 'f}'
+    return format_str.format(r)
+
+def formatEmission(Emission,States,Alphabet,precision=2):  
     yield '\t' + '\t'.join(Alphabet)
     for row,state in zip(Emission,States):
-        yield str(state) + '\t' + '\t'.join(f'{r:.3f}' for r in row)
+        yield str(state) + '\t' + '\t'.join(convert(r,precision) for r in row)
 
-def formatTransition(Transition,States):
+def formatTransition(Transition,States,precision=2):
     yield '\t' + '\t'.join(str(s) for s in States)
     for row,state in zip(Transition,States):
-        yield str(state) + '\t' + '\t'.join(f'{r:.3f}' for r in row)
+        yield str(state) + '\t' + '\t'.join(convert(r,precision) for r in row)
         
 if __name__=='__main__':
     start = time.time()
     parser = argparse.ArgumentParser('BA10E 	Construct a Profile HMM')
-    parser.add_argument('--sample',   default=False, action='store_true', help='process sample dataset')
-    parser.add_argument('--extra',   default=False, action='store_true', help='process sample dataset')
-    parser.add_argument('--rosalind', default=False, action='store_true', help='process Rosalind dataset')
-    parser.add_argument('--text',   default=False, action='store_true', help='process sample dataset')
+    parser.add_argument('--sample',    default=False, action='store_true', help='process sample dataset')
+    parser.add_argument('--extra',     default=False, action='store_true', help='process sample dataset')
+    parser.add_argument('--rosalind',  default=False, action='store_true', help='process Rosalind dataset')
+    parser.add_argument('--text',      default=False, action='store_true', help='process sample dataset')
+    parser.add_argument('--precision', default=2,                          help='Controls display of probabilities')
     args = parser.parse_args()
     if args.sample:
         States,Transition,Emission = ConstructProfileHMM(0.289,
                                                          ['A',   'B',   'C',   'D',   'E'],
                                                          ['EBA', 'EBD', 'EB-', 'EED', 'EBD', 'EBE','E-D','EBD'])
         
-        for row in formatTransition(Transition,States):
+        for row in formatTransition(Transition,States,precision=args.precision):
             print (row)
         print ('--------')
-        for row in formatEmission(Emission,States,['A',   'B',   'C',   'D',   'E']):
+        for row in formatEmission(Emission,States,['A',   'B',   'C',   'D',   'E'],precision=args.precision):
             print (row)
             
     if args.text:
@@ -303,10 +307,10 @@ if __name__=='__main__':
                                                           'ACAEF--A-C',
                                                           'ADDEFAAADF'])
         
-        for row in formatTransition(Transition,States):
+        for row in formatTransition(Transition,States,precision=args.precision):
             print (row)
         print ('--------')
-        for row in formatEmission(Emission,States,Alphabet):
+        for row in formatEmission(Emission,States,Alphabet,precision=args.precision):
             print (row)
             
             
@@ -315,10 +319,10 @@ if __name__=='__main__':
         States,Transition,Emission = ConstructProfileHMM(float(Input[0]),
                                                          Input[2].split(),
                                                          Input[4:-1]) 
-        for row in formatTransition(Transition,States):
+        for row in formatTransition(Transition,States,precision=args.precision):
             print (row)
         print ('--------')
-        for row in formatEmission(Emission,States,Input[2].split()):
+        for row in formatEmission(Emission,States,Input[2].split(),precision=args.precision):
             print (row)
                
     if args.rosalind:
@@ -329,12 +333,12 @@ if __name__=='__main__':
                                                          Input[4:-1]) 
 
         with open(f'{os.path.basename(__file__).split(".")[0]}.txt','w') as f:
-            for row in formatTransition(Transition,States):
+            for row in formatTransition(Transition,States,precision=args.precision):
                 print (row)
                 f.write(f'{row}\n')
             print ('--------')
             f.write('--------\n')
-            for row in formatEmission(Emission,States,Input[2].split()):
+            for row in formatEmission(Emission,States,Input[2].split(),precision=args.precision):
                 print (row)            
                 f.write(f'{row}\n')
                 
