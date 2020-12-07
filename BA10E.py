@@ -38,30 +38,35 @@ def ConstructProfileHMM(theta,Alphabet,Alignment):
             self.index              = index
             self.emissions         = {}
             self.next_state_counts = [0]*State.N_TYPES
-            
-        def record_transition(self,conserved,ch):
+
+#       record_transition
+#
+#       Used to record the transition resulting from each character
+#       Parameters:
+#            ch         The character
+#            conserved  Whether or not this is a conserved position
+        def record_transition(self,ch,conserved):
             next_state = None
             if conserved:
                 if ch in Alphabet:
-                    next_state,offset =  self.match(ch)
+                    next_state,offset =  self.get_match_plus_offset(ch)
                 else:
-                    next_state,offset =  self.delete()
+                    next_state,offset =  self.get_delete_plus_offset()
             else:
                 if ch in Alphabet:
-                    next_state,offset =  self.insert(ch)
+                    next_state,offset =  self.get_insert_plus_offset(ch)
                 else:
                     next_state,offset = State.MATCH,1
             self.next_state_counts[next_state] += 1
             return next_state,self.index+offset
         
-        def match(self,ch):
+        def get_match_plus_offset(self,ch):
             return State.MATCH,1
         
-        def insert(self,ch):
-            self.match(ch)
+        def get_insert_plus_offset(self,ch):
             return State.INSERT,0
         
-        def delete(self):
+        def get_delete_plus_offset(self):
             return State.DELETE,1
         
         def record_emission(self,ch,Alphabet):
@@ -158,39 +163,62 @@ def ConstructProfileHMM(theta,Alphabet,Alignment):
             return Result 
         
 #   CountChars
+#
+#   Used to count alphabetical characters in specified column of alignment
+#
+#   Parameters: 
+#       m     Number of sequences
+#       j     The column to be counted
+#       K     Number of symbols in Alphabet
+#
+#  Returns:
+#       Number of symbols from alphabet in column i
 
     def CountChars(m,j,K):
-        RowCounts = [0]*K
+        Counts = [0]*K
         for i in range(m):
             if Alignment[i][j] in Alphabet:
-                RowCounts[Alphabet.index(Alignment[i][j])]+=1
-        return RowCounts 
+                Counts[Alphabet.index(Alignment[i][j])]+=1
+        return Counts 
     
 # create_states
 #
-#   construct list of states
+# Construct list of states.
+# Parameters:
+#    Conserved         List indicating whether or not count of symbols in each position exceeds threshold.
+#
+# Returns: list of states [S, I0, M1,D1,I1, ..., E], with one MDI group for each conserved position
 
     def create_states(Conserved):
-        index  = 0
-        Product = [Start(),Insert(index)]
+        conserved_index  = 0
+        Product = [Start(),Insert(conserved_index)]
         for conserved in Conserved:
             if conserved:
-                index += 1
-                Product.append(Match(index))
-                Product.append(Delete(index))
-                Product.append(Insert(index))
+                conserved_index += 1
+                Product.append(Match(conserved_index))
+                Product.append(Delete(conserved_index))
+                Product.append(Insert(conserved_index))
+                   
         Product.append(End())
         return Product
 
 #   get_state_index
+#
+#   Used to locate states in State array.
+#
+#   Parameters:
+#       state_type           M, D or I
+#       conserved_index      Indicates which group MDI belongs to 
+#
+#   Returns:   index in States array
 
-    def get_state_index(state_type,index):
+    def get_state_index(state_type,conserved_index):
         if State.MATCH == state_type:
-            return 3*index -1
+            return 3*conserved_index -1
         elif State.INSERT == state_type:
-            return 3*index + 1 
-        else:  # STATE.DELETE
-            return 3*index
+            return 3*conserved_index + 1 
+        elif State.DELETE == state_type:
+            return 3*conserved_index
 
 #   Accumulate statistics
 
@@ -200,21 +228,29 @@ def ConstructProfileHMM(theta,Alphabet,Alignment):
             for str_index in range(n):
                 # next_state_type is State.MATCH(1), State.INSERT(0), State.DELETE (2), or State.END (3)
                 # index tells is whether we are dealing with I0, I1/M1/D1, etc
-                next_state_type,index = States[state_index].record_transition(Conserved[str_index],Sequence[str_index])
-                state_index           = get_state_index(next_state_type,index)
+                next_state_type,index = States[state_index].record_transition(Sequence[str_index],Conserved[str_index])
+                state_index           = min(get_state_index(next_state_type,index),len(States)-1) # FIXME
                 States[state_index].record_emission(Sequence[str_index],Alphabet)
-                
-    n              = len(Alignment[0])
-    m              = len(Alignment)
+
+#   Useful constants - lengths of arrays
+
     K              = len(Alphabet)
+    m              = len(Alignment)
+    n              = len(Alignment[0])   
+    for Sequence in Alignment[1:]:      # All sequences should be the same length
+        assert(n == len(Sequence))
     
 #   construct profile
     Counts         = [CountChars(m,j,K) for j in range(n)]
+    
+#   Indicate whether or not symbols in column are over threshold
     Conserved      = [sum(Count) > (1-theta)*K for Count in Counts]
     
 #   construct list of states
 
     States = create_states(Conserved)
+    for s in States:
+        print (s)
     L      = len(States)
     
     accumulate_statistics(States,Alignment,n)    
@@ -244,6 +280,7 @@ if __name__=='__main__':
     parser.add_argument('--sample',   default=False, action='store_true', help='process sample dataset')
     parser.add_argument('--extra',   default=False, action='store_true', help='process sample dataset')
     parser.add_argument('--rosalind', default=False, action='store_true', help='process Rosalind dataset')
+    parser.add_argument('--text',   default=False, action='store_true', help='process sample dataset')
     args = parser.parse_args()
     if args.sample:
         States,Transition,Emission = ConstructProfileHMM(0.289,
@@ -255,7 +292,24 @@ if __name__=='__main__':
         print ('--------')
         for row in formatEmission(Emission,States,['A',   'B',   'C',   'D',   'E']):
             print (row)
-               
+            
+    if args.text:
+        Alphabet = ['A',   'C',   'D',   'E', 'F']
+        States,Transition,Emission = ConstructProfileHMM(0.35,
+                                                         Alphabet,
+                                                         ['ACDEFACADF',
+                                                          'AFDA---CCF',
+                                                          'A--EFD-FDC',
+                                                          'ACAEF--A-C',
+                                                          'ADDEFAAADF'])
+        
+        for row in formatTransition(Transition,States):
+            print (row)
+        print ('--------')
+        for row in formatEmission(Emission,States,Alphabet):
+            print (row)
+            
+            
     if args.extra:
         Input,Expected             = read_strings(f'data/ProfileHMM.txt',init=0)
         States,Transition,Emission = ConstructProfileHMM(float(Input[0]),
