@@ -22,7 +22,7 @@ from   helpers import read_strings
 
 # ConstructProfileHMM
 
-def ConstructProfileHMM(theta,Alphabet,Alignment):
+def ConstructProfileHMM(theta,Alphabet,Alignment,trace=True):
     # State
     #
     # This class and its children represent the states of the HMM
@@ -220,10 +220,15 @@ def ConstructProfileHMM(theta,Alphabet,Alignment):
         elif State.DELETE == state_type:
             return 3*conserved_index
 
+    def format_trace(trace_record):
+        name = ['S', 'I', 'M', 'D', 'E'][trace_record[0]+1]
+        return f'{name}{trace_record[1]}({trace_record[2]})'
 #   Accumulate statistics
 
-    def accumulate_statistics(States,Alignment,n):
-        for Sequence in Alignment:
+    def accumulate_statistics(States,Alignment,n,trace=False):
+        StateTrace = [[(-1,0,0)] for _ in range(m)] if trace else None
+        for i in range(m):
+            Sequence = Alignment[i]
             state_index = 0   # Index in states array
             for str_index in range(n):
                 # next_state_type is State.MATCH(1), State.INSERT(0), State.DELETE (2), or State.END (3)
@@ -231,6 +236,12 @@ def ConstructProfileHMM(theta,Alphabet,Alignment):
                 next_state_type,index = States[state_index].record_transition(Sequence[str_index],Conserved[str_index])
                 state_index           = min(get_state_index(next_state_type,index),len(States)-1) # FIXME
                 States[state_index].record_emission(Sequence[str_index],Alphabet)
+                if trace:
+                    StateTrace[i].append((next_state_type,index,state_index))
+        if trace:
+            for i in range(m):
+                print ('-'.join(format_trace(rec) for rec in StateTrace[i]))
+ 
 
 #   Useful constants - lengths of arrays
 
@@ -252,7 +263,7 @@ def ConstructProfileHMM(theta,Alphabet,Alignment):
 
     L      = len(States)
     
-    accumulate_statistics(States,Alignment,n)    
+    accumulate_statistics(States,Alignment,n,trace=trace)    
  
     Transition = []
     Emission   = []
@@ -263,19 +274,27 @@ def ConstructProfileHMM(theta,Alphabet,Alignment):
         
     return States,Transition,Emission
 
-def convert(r,precision=2):
-    format_str = '{:.' + str(precision) + 'f}'
-    return format_str.format(r)
+# float2str
+#
+# Format a floatinmg point number for display
+#
+# Parameters:
+#     x         Value to be displayed
+#     procision Number of digits (after decimal point)
+
+def float2str(x,precision=2):
+    format_str = f'{{:.{precision}f}}'
+    return format_str.format(x)
 
 def formatEmission(Emission,States,Alphabet,precision=2):  
     yield '\t' + '\t'.join(Alphabet)
     for row,state in zip(Emission,States):
-        yield str(state) + '\t' + '\t'.join(convert(r,precision) for r in row)
+        yield str(state) + '\t' + '\t'.join(float2str(r,precision) for r in row)
 
 def formatTransition(Transition,States,precision=2):
     yield '\t' + '\t'.join(str(s) for s in States)
     for row,state in zip(Transition,States):
-        yield str(state) + '\t' + '\t'.join(convert(r,precision) for r in row)
+        yield str(state) + '\t' + '\t'.join(float2str(r,precision) for r in row)
         
 if __name__=='__main__':
     start = time.time()
@@ -285,11 +304,13 @@ if __name__=='__main__':
     parser.add_argument('--rosalind',  default=False, action='store_true', help='process Rosalind dataset')
     parser.add_argument('--text',      default=False, action='store_true', help='process sample dataset')
     parser.add_argument('--precision', default=2,                          help='Controls display of probabilities')
+    parser.add_argument('--trace',     default=False, action='store_true', help='Trace progression through states')
     args = parser.parse_args()
     if args.sample:
         States,Transition,Emission = ConstructProfileHMM(0.289,
                                                          ['A',   'B',   'C',   'D',   'E'],
-                                                         ['EBA', 'EBD', 'EB-', 'EED', 'EBD', 'EBE','E-D','EBD'])
+                                                         ['EBA', 'EBD', 'EB-', 'EED', 'EBD', 'EBE','E-D','EBD'],
+                                                         trace=args.trace)
         
         for row in formatTransition(Transition,States,precision=args.precision):
             print (row)
@@ -305,7 +326,8 @@ if __name__=='__main__':
                                                           'AFDA---CCF',
                                                           'A--EFD-FDC',
                                                           'ACAEF--A-C',
-                                                          'ADDEFAAADF'])
+                                                          'ADDEFAAADF'],
+                                                         trace=args.trace)
         
         for row in formatTransition(Transition,States,precision=args.precision):
             print (row)
@@ -318,7 +340,8 @@ if __name__=='__main__':
         Input,Expected             = read_strings(f'data/ProfileHMM.txt',init=0)
         States,Transition,Emission = ConstructProfileHMM(float(Input[0]),
                                                          Input[2].split(),
-                                                         Input[4:-1]) 
+                                                         Input[4:-1],
+                                                         trace=args.trace) 
         for row in formatTransition(Transition,States,precision=args.precision):
             print (row)
         print ('--------')
@@ -330,7 +353,8 @@ if __name__=='__main__':
  
         States,Transition,Emission = ConstructProfileHMM(float(Input[0]),
                                                          Input[2].split(),
-                                                         Input[4:-1]) 
+                                                         Input[4:-1],
+                                                         trace=args.trace) 
 
         with open(f'{os.path.basename(__file__).split(".")[0]}.txt','w') as f:
             for row in formatTransition(Transition,States,precision=args.precision):
