@@ -220,13 +220,18 @@ def ConstructProfileHMM(theta,Alphabet,Alignment,trace=True):
         elif State.DELETE == state_type:
             return 3*conserved_index
 
-    def format_trace(trace_record):
-        name = ['S', 'I', 'M', 'D', 'E'][trace_record[0]+1]
-        return f'{name}{trace_record[1]}({trace_record[2]})'
+    
 #   Accumulate statistics
 
     def accumulate_statistics(States,Alignment,n,trace=False):
-        StateTrace = [[(-1,0,0)] for _ in range(m)] if trace else None
+        
+        def format_trace(trace_record):
+            name = ['S', 'I', 'M', 'D', 'E'][trace_record[0]+1]
+            return f'{name}{trace_record[1]}({trace_record[2]},{trace_record[3]})' 
+        
+        StateTrace = [[(-1,0,0,'^')] for _ in range(m)] if trace else None
+        if trace:
+            print (f'There are {len(States)} States')
         for i in range(m):
             Sequence = Alignment[i]
             state_index = 0   # Index in states array
@@ -237,7 +242,7 @@ def ConstructProfileHMM(theta,Alphabet,Alignment,trace=True):
                 state_index           = min(get_state_index(next_state_type,index),len(States)-1) # FIXME
                 States[state_index].record_emission(Sequence[str_index],Alphabet)
                 if trace:
-                    StateTrace[i].append((next_state_type,index,state_index))
+                    StateTrace[i].append((next_state_type,index,state_index,Sequence[str_index]))
         if trace:
             for i in range(m):
                 print ('-'.join(format_trace(rec) for rec in StateTrace[i]))
@@ -300,9 +305,9 @@ if __name__=='__main__':
     start = time.time()
     parser = argparse.ArgumentParser('BA10E 	Construct a Profile HMM')
     parser.add_argument('--sample',    default=False, action='store_true', help='process sample dataset')
-    parser.add_argument('--extra',     default=False, action='store_true', help='process sample dataset')
+    parser.add_argument('--extra',     default=False, action='store_true', help='process extra dataset')
     parser.add_argument('--rosalind',  default=False, action='store_true', help='process Rosalind dataset')
-    parser.add_argument('--text',      default=False, action='store_true', help='process sample dataset')
+    parser.add_argument('--text',      default=False, action='store_true', help='process dataset from textbook')
     parser.add_argument('--precision', default=2,                          help='Controls display of probabilities')
     parser.add_argument('--trace',     default=False, action='store_true', help='Trace progression through states')
     args = parser.parse_args()
