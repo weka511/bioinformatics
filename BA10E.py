@@ -128,6 +128,10 @@ def ConstructProfileHMM(theta,Alphabet,Alignment,trace=True):
         
         def record_transition(self,ch,conserved):
             next_state = None
+            if ch=='$':
+                next_state,offset = State.MATCH,1
+                self.next_state_counts[next_state] += 1
+                return next_state,self.index+offset
             if conserved:
                 if ch in Alphabet:
                     next_state,offset = self.get_match_plus_offset(ch)
@@ -150,6 +154,10 @@ def ConstructProfileHMM(theta,Alphabet,Alignment,trace=True):
             return f'I{self.index}' 
  
         def record_transition(self,ch,conserved):
+            if ch=='$':
+                next_state,offset = State.MATCH,1
+                self.next_state_counts[next_state] += 1
+                return next_state,self.index+offset            
             next_state = None
             if ch=='-':
                 next_state = State.INSERT
@@ -187,6 +195,10 @@ def ConstructProfileHMM(theta,Alphabet,Alignment,trace=True):
             return Result 
         
         def record_transition(self,ch,conserved):
+            if ch=='$':
+                next_state,offset = State.MATCH,1
+                self.next_state_counts[next_state] += 1
+                return next_state,self.index+offset            
             next_state = None
             if ch=='-':
                 next_state = State.DELETE
@@ -310,7 +322,7 @@ def ConstructProfileHMM(theta,Alphabet,Alignment,trace=True):
         tracer = Tracer(trace,m)
         
         for i in range(m):
-            Sequence = Alignment[i]
+            Sequence    = Alignment[i]
             state_index = 0   # Index in states array
             for str_index in range(n):
                 # next_state_type is State.MATCH(1), State.INSERT(0), State.DELETE (2), or State.END (3)
@@ -319,7 +331,7 @@ def ConstructProfileHMM(theta,Alphabet,Alignment,trace=True):
                 state_index           = min(get_state_index(next_state_type,index),len(States)-1) # FIXME
                 States[state_index].record_emission(Sequence[str_index],Alphabet)
                 tracer.trace_state(next_state_type,index,state_index,Sequence[str_index],i)
-                
+            States[state_index].record_transition('$',None)   
         tracer.display()
         tracer.trace_boxen(States)
  
