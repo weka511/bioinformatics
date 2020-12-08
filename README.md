@@ -88,7 +88,7 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 |BA5I|BA5I.py align.py|[Find a Highest-Scoring Overlap Alignment of Two Strings](http://rosalind.info/problems/ba5i/)|    
 |BA5J|BA5J.py align.py|[Align Two Strings Using Affine Gap Penalties](http://rosalind.info/problems/ba5j/)|    
 |BA5K|BA5K.py align.py|[Find a Middle Edge in an Alignment Graph in Linear Space](http://rosalind.info/problems/ba5k/) |
-|BA5L|BA5L.py align.py|[Align Two Strings Using Linear Space](http://rosalind.info/problems/ba5l/) (WIP)|    
+|BA5L|BA5L.py align.py|[Align Two Strings Using Linear Space](http://rosalind.info/problems/ba5l/) [WIP](https://github.com/weka511/bioinformatics/issues/29)|    
 |BA5M|BA5M.py align.py|[Find a Highest-Scoring Multiple Sequence Alignment](http://rosalind.info/problems/ba5m/) | 
 |BA5N |align.py|[Find a Topological Ordering of a DAG](http://rosalind.info/problems/ba5n/) | 
 
@@ -99,7 +99,7 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 |BA6A|BA6A.py fragile.py|[Implement GreedySorting to Sort a Permutation by Reversals ](http://rosalind.info/problems/ba6a/)|
 |BA6B|BA6B.py fragile.py|[Compute the Number of Breakpoints in a Permutation](http://rosalind.info/problems/ba6b/)|
 |BA6C|BA6C.py fragile.py|[Compute the 2-Break Distance Between a Pair of Genomes](http://rosalind.info/problems/ba6c/)|
-|BA6D|BA6D.py|[Find a Shortest Transformation of One Genome into Another by 2-Breaks](http://rosalind.info/problems/ba6d/) (wip)|
+|BA6D|BA6D.py|[Find a Shortest Transformation of One Genome into Another by 2-Breaks](http://rosalind.info/problems/ba6d/) [WIP](https://github.com/weka511/bioinformatics/issues/13)|
 |BA6E|fragile.py| [Find All Shared k-mers of a Pair of Strings ](http://rosalind.info/problems/ba6e/)|
 |BA6F|BA6F.py fragile.py|[Implement Chromosome to Cycle](http://rosalind.info/problems/ba6f/)|
 |BA6G|BA6G.py fragile.py|[Implement Cycle to Chromosome](http://rosalind.info/problems/ba6g/)|
@@ -114,7 +114,7 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 | ---- | --------------- | ------------------------------------------------|
 |BA7A|BA7A.py|[Compute Distances Between Leaves](http://rosalind.info/problems/ba7a/)|
 |BA7B|BA7B.py|[Limb Length Problem](http://rosalind.info/problems/ba7b/)|
-|BA7C|BA7C.py|[Implement Additive Phylogeny](http://rosalind.info/problems/ba7c/)|
+|BA7C|BA7C.py|[Implement Additive Phylogeny](http://rosalind.info/problems/ba7c/) [See also](https://github.com/weka511/bioinformatics/issues/19)|
 |BA7D|BA7D.py|[Implement UPGMA](http://rosalind.info/problems/ba7d/)|
 |BA7E|BA7E.py|[Implement the Neighbor Joining Algorithm](http://rosalind.info/problems/ba7e/)|
 |BA7F|BA7F.py|[Implement SmallParsimony](http://rosalind.info/problems/ba7f/)|
