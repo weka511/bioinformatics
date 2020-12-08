@@ -13,7 +13,7 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-#  BA10E 	Construct a Profile HMM
+#  BA10E Construct a Profile HMM
 
 import abc
 import argparse
@@ -231,12 +231,12 @@ def ConstructProfileHMM(theta,Alphabet,Alignment,trace=True):
 #   Used to map flow through states
 
     class Tracer:
-        def __init__(self,trace,m):
+        def __init__(self,trace,m,theta):
             self.StateTrace = [[(-1,0,0,'^')] for _ in range(m)] if trace else None
             self.trace      = trace
             self.m          = m
             if trace:
-                print (f'There are {len(States)} States')
+                print (f'Theta = {theta}. There are {len(States)} States')
                 
         def trace_state(self,next_state_type,index,state_index,ch,i):
             if self.trace:
@@ -255,6 +255,11 @@ def ConstructProfileHMM(theta,Alphabet,Alignment,trace=True):
             if not trace: return
             for state in States:
                 print (state, ' '.join(str(c) for c in state.next_state_counts))
+                
+        def trace_exception(self,e,i,Sequence,str_index,State):
+            print (f'Exception {e} row {i} position {str_index}')
+            print (Sequence)
+            print (State)
                 
 #   CountChars
 #
@@ -319,7 +324,7 @@ def ConstructProfileHMM(theta,Alphabet,Alignment,trace=True):
 
     def accumulate_statistics(States,Alignment,n,trace=False):
     
-        tracer = Tracer(trace,m)
+        tracer = Tracer(trace,m,theta)
         
         for i in range(m):
             Sequence    = Alignment[i]
@@ -327,11 +332,17 @@ def ConstructProfileHMM(theta,Alphabet,Alignment,trace=True):
             for str_index in range(n):
                 # next_state_type is State.MATCH(1), State.INSERT(0), State.DELETE (2), or State.END (3)
                 # index tells is whether we are dealing with I0, I1/M1/D1, etc
-                next_state_type,index = States[state_index].record_transition(Sequence[str_index],Conserved[str_index])
+                try:
+                    next_state_type,index = States[state_index].record_transition(Sequence[str_index],Conserved[str_index])
+                except RosalindException as e:
+                    tracer.trace_exception(e,i,Sequence,str_index,States[state_index])
                 state_index           = min(get_state_index(next_state_type,index),len(States)-1) # FIXME
                 States[state_index].record_emission(Sequence[str_index],Alphabet)
                 tracer.trace_state(next_state_type,index,state_index,Sequence[str_index],i)
-            States[state_index].record_transition('$',None)   
+            try:
+                States[state_index].record_transition('$',None)
+            except RosalindException as e:
+                tracer.trace_exception(e,i,Sequence,str_index,States[state_index])
         tracer.display()
         tracer.trace_boxen(States)
  
@@ -391,12 +402,12 @@ def formatTransition(Transition,States,precision=2):
         
 if __name__=='__main__':
     start = time.time()
-    parser = argparse.ArgumentParser('BA10E 	Construct a Profile HMM')
+    parser = argparse.ArgumentParser('BA10E Construct a Profile HMM')
     parser.add_argument('--sample',    default=False, action='store_true', help='process sample dataset')
     parser.add_argument('--extra',     default=False, action='store_true', help='process extra dataset')
     parser.add_argument('--rosalind',  default=False, action='store_true', help='process Rosalind dataset')
     parser.add_argument('--text',      default=False, action='store_true', help='process dataset from textbook')
-    parser.add_argument('--precision', default=2,                          help='Controls display of probabilities')
+    parser.add_argument('--precision', default=3,                          help='Controls display of probabilities')
     parser.add_argument('--trace',     default=False, action='store_true', help='Trace progression through states')
     args = parser.parse_args()
     if args.sample:
