@@ -15,10 +15,12 @@
 
 #  BA10E 	Construct a Profile HMM
 
+import abc
 import argparse
 import os
 import time
 from   helpers import read_strings
+from   rosalind import RosalindException
 
 # ConstructProfileHMM
 
@@ -31,9 +33,9 @@ def ConstructProfileHMM(theta,Alphabet,Alignment,trace=True):
         INSERT  = 0
         MATCH   = 1 
         DELETE  = 2
+        N_TYPES = 3
         END     = 3
-        N_TYPES = 4
-            
+
         def __init__(self,index=None):
             self.index              = index
             self.emissions         = {}
@@ -45,20 +47,9 @@ def ConstructProfileHMM(theta,Alphabet,Alignment,trace=True):
 #       Parameters:
 #            ch         The character
 #            conserved  Whether or not this is a conserved position
+        @abc.abstractmethod
         def record_transition(self,ch,conserved):
-            next_state = None
-            if conserved:
-                if ch in Alphabet:
-                    next_state,offset = self.get_match_plus_offset(ch)
-                else:
-                    next_state,offset = self.get_delete_plus_offset()
-            else:
-                if ch in Alphabet:
-                    next_state,offset = self.get_insert_plus_offset(ch)
-                else:
-                    next_state,offset = self.get_match_plus_offset(ch)
-            self.next_state_counts[next_state] += 1
-            return next_state,self.index+offset
+            pass 
         
         def get_match_plus_offset(self,ch):
             return State.MATCH,1
@@ -75,8 +66,7 @@ def ConstructProfileHMM(theta,Alphabet,Alignment,trace=True):
                 self.emissions[ch] += 1
             else:
                 self.emissions[ch] = 1 
-                  
-        
+                         
         def get_normalized_state_counts(self):
             total = sum(self.next_state_counts)
             return [c/total for c in self.next_state_counts] if total>0 else self.next_state_counts
@@ -98,6 +88,21 @@ def ConstructProfileHMM(theta,Alphabet,Alignment,trace=True):
             
         def __str__(self):
             return 'S'
+        
+        def record_transition(self,ch,conserved):
+            next_state = None
+            if conserved:
+                if ch in Alphabet:
+                    next_state,offset = self.get_match_plus_offset(ch)
+                else:
+                    next_state,offset = self.get_delete_plus_offset()
+            else:
+                if ch in Alphabet:
+                    next_state,offset = self.get_insert_plus_offset(ch)
+                else:
+                    next_state,offset = self.get_match_plus_offset(ch)
+            self.next_state_counts[next_state] += 1
+            return next_state,self.index+offset
         
         def get_transition(self,L,pos):
             Result                 = [0]*L
@@ -133,7 +138,8 @@ def ConstructProfileHMM(theta,Alphabet,Alignment,trace=True):
                     next_state,offset = self.get_insert_plus_offset(ch)
                 else:
                     next_state,offset = State.MATCH,0
-            self.next_state_counts[next_state] += 1
+            if next_state!=State.MATCH or offset!=0:
+                self.next_state_counts[next_state] += 1
             return next_state,self.index+offset        
         
     class Insert(State):
@@ -144,23 +150,17 @@ def ConstructProfileHMM(theta,Alphabet,Alignment,trace=True):
             return f'I{self.index}' 
  
         def record_transition(self,ch,conserved):
+            next_state = None
             if ch=='-':
                 next_state = State.INSERT
-                offset     = 1 if conserved else 0
-                self.next_state_counts[next_state] += 1
-                return next_state,self.index+offset            
-            next_state = None
-            if conserved:
-                if ch in Alphabet:
-                    next_state,offset = self.get_match_plus_offset(ch)
-                else:
-                    next_state,offset = self.get_delete_plus_offset()
+                offset     = 1 if conserved else 0         
             else:
-                if ch in Alphabet:
-                    next_state,offset = self.get_insert_plus_offset(ch)
-                else:
+                if conserved:
                     next_state,offset = self.get_match_plus_offset(ch)
-            self.next_state_counts[next_state] += 1
+                else:
+                    next_state,offset = self.get_insert_plus_offset(ch)
+            if ch!='-':#next_state!=State.INSERT or offset!=0:
+                self.next_state_counts[next_state] += 1
             return next_state,self.index+offset 
         
         def get_transition(self,L,pos):
@@ -187,27 +187,19 @@ def ConstructProfileHMM(theta,Alphabet,Alignment,trace=True):
             return Result 
         
         def record_transition(self,ch,conserved):
+            next_state = None
             if ch=='-':
                 next_state = State.DELETE
-                offset     = 1 if conserved else 0
-                self.next_state_counts[next_state] += 1
-                return next_state,self.index+offset                    
-            next_state = None
-            if conserved:
-                if ch in Alphabet:
-                    next_state,offset = self.get_match_plus_offset(ch)
-                else:
-                    next_state,offset = self.get_delete_plus_offset()
+                offset     = 1 if conserved else 0                   
             else:
-                if ch in Alphabet:
-                    next_state,offset = self.get_insert_plus_offset(ch)
-                else:
+                if conserved:
                     next_state,offset = self.get_match_plus_offset(ch)
-            self.next_state_counts[next_state] += 1
+                else:
+                    next_state,offset = self.get_insert_plus_offset(ch)
+            if next_state!=State.DELETE or offset!=0:
+                self.next_state_counts[next_state] += 1
             return next_state,self.index+offset        
-        
-        #def get_delete_plus_offset(self):
-            #return State.DELETE,0        
+            
     class End(State):
         def __init__(self):
             super().__init__(0)
@@ -219,6 +211,39 @@ def ConstructProfileHMM(theta,Alphabet,Alignment,trace=True):
             Result                 = [0.0]*L
             return Result 
         
+        def record_transition(self,ch,conserved):
+            raise RosalindException('Should never get here')
+        
+#   Tracer
+#
+#   Used to map flow through states
+
+    class Tracer:
+        def __init__(self,trace,m):
+            self.StateTrace = [[(-1,0,0,'^')] for _ in range(m)] if trace else None
+            self.trace      = trace
+            self.m          = m
+            if trace:
+                print (f'There are {len(States)} States')
+                
+        def trace_state(self,next_state_type,index,state_index,ch,i):
+            if self.trace:
+                self.StateTrace[i].append((next_state_type,index,state_index,ch)) 
+        
+        def display(self):
+            if not trace: return
+            for i in range(self.m):
+                print ('-'.join(self.format_trace(rec) for rec in self.StateTrace[i]))
+                    
+        def format_trace(self,trace_record):
+            name = ['S', 'I', 'M', 'D', 'E'][trace_record[0]+1]
+            return f'{name}{trace_record[1]}({trace_record[2]},{trace_record[3]})' 
+        
+        def trace_boxen(self,States):
+            if not trace: return
+            for state in States:
+                print (state, ' '.join(str(c) for c in state.next_state_counts))
+                
 #   CountChars
 #
 #   Used to count alphabetical characters in specified column of alignment
@@ -281,14 +306,9 @@ def ConstructProfileHMM(theta,Alphabet,Alignment,trace=True):
 #   Accumulate statistics
 
     def accumulate_statistics(States,Alignment,n,trace=False):
+    
+        tracer = Tracer(trace,m)
         
-        def format_trace(trace_record):
-            name = ['S', 'I', 'M', 'D', 'E'][trace_record[0]+1]
-            return f'{name}{trace_record[1]}({trace_record[2]},{trace_record[3]})' 
-        
-        StateTrace = [[(-1,0,0,'^')] for _ in range(m)] if trace else None
-        if trace:
-            print (f'There are {len(States)} States')
         for i in range(m):
             Sequence = Alignment[i]
             state_index = 0   # Index in states array
@@ -298,11 +318,10 @@ def ConstructProfileHMM(theta,Alphabet,Alignment,trace=True):
                 next_state_type,index = States[state_index].record_transition(Sequence[str_index],Conserved[str_index])
                 state_index           = min(get_state_index(next_state_type,index),len(States)-1) # FIXME
                 States[state_index].record_emission(Sequence[str_index],Alphabet)
-                if trace:
-                    StateTrace[i].append((next_state_type,index,state_index,Sequence[str_index]))
-        if trace:
-            for i in range(m):
-                print ('-'.join(format_trace(rec) for rec in StateTrace[i]))
+                tracer.trace_state(next_state_type,index,state_index,Sequence[str_index],i)
+                
+        tracer.display()
+        tracer.trace_boxen(States)
  
 
 #   Useful constants - lengths of arrays
