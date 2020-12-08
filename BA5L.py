@@ -13,7 +13,7 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>
 
-# BA5L.py Align Two Strings Using Linear Space
+#    BA5L Align Two Strings Using Linear Space
 
 import argparse
 import os
@@ -75,37 +75,31 @@ def alignUsingLinearSpace(v,w,replace_score=substitution_matrices.load("BLOSUM62
     DOWN      = 1
     DOWNRIGHT = 2
     LinearSpaceAlignment(0,len(v),0,len(w))
-
-    if __name__=='__main__':
-        start = time.time()
-        parser = argparse.ArgumentParser('....')
-        parser.add_argument('--sample',   default=False, action='store_true', help='process sample dataset')
-        parser.add_argument('--rosalind', default=False, action='store_true', help='process Rosalind dataset')
-        args = parser.parse_args()
-        if args.sample:
-            score,s1,t1 = alignUsingLinearSpace('PLEASANTLY','MEANLY')   
-            print (score)
-            print (s1)
-            print (t1) 
-            
-        if args.rosalind:
-            Input       = read_strings(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt')
-            fasta       = FastaContent(Input)
-            _,s         = fasta[0]
-            _,t         = fasta[1]
-            score,s1,t1 = alignUsingLinearSpace(s,t)
-
-        with open(f'{os.path.basename(__file__).split(".")[0]}.txt','w') as f:               
-            f.write(f'{score}\n')
-            f.write(f'{s1}\n')
-            f.write(f'{t1}\n')
-                    
-        elapsed = time.time() - start
-        minutes = int(elapsed/60)
-        seconds = elapsed - 60*minutes
-        print (f'Elapsed Time {minutes} m {seconds:.2f} s')  
         
+    
 if __name__=='__main__':
-    from helpers import create_strings    
-    print (alignUsingLinearSpace('PLEASANTLY','MEANLY'))
+    start = time.time()
+    parser = argparse.ArgumentParser('BA5L.py Align Two Strings Using Linear Space')
+    parser.add_argument('--sample',   default=False, action='store_true', help='process sample dataset')
+    parser.add_argument('--extra',     default=False, action='store_true', help='process extra dataset')
+    parser.add_argument('--rosalind', default=False, action='store_true', help='process Rosalind dataset')
+    args = parser.parse_args()
+    if args.sample:
+        print (alignUsingLinearSpace('PLEASANTLY','MEANLY'))
+     
+    if args.extra:
+        Input,Expected             = read_strings(f'data/linear_space_alignment.txt',init=0)
+        print (alignUsingLinearSpace(Input[0],Input[1]))
+        
+    if args.rosalind:
+        Input  = read_strings(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt')
  
+        Result = None
+        print (Result)
+        with open(f'{os.path.basename(__file__).split(".")[0]}.txt','w') as f:
+            for line in Result:
+                f.write(f'{line}\n')
+                
+    elapsed = time.time() - start
+    minutes = int(elapsed/60)
+    seconds = elapsed - 60*minutes    
