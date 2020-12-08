@@ -49,14 +49,14 @@ def ConstructProfileHMM(theta,Alphabet,Alignment,trace=True):
             next_state = None
             if conserved:
                 if ch in Alphabet:
-                    next_state,offset =  self.get_match_plus_offset(ch)
+                    next_state,offset = self.get_match_plus_offset(ch)
                 else:
-                    next_state,offset =  self.get_delete_plus_offset()
+                    next_state,offset = self.get_delete_plus_offset()
             else:
                 if ch in Alphabet:
-                    next_state,offset =  self.get_insert_plus_offset(ch)
+                    next_state,offset = self.get_insert_plus_offset(ch)
                 else:
-                    next_state,offset = State.MATCH,1
+                    next_state,offset = self.get_match_plus_offset(ch)
             self.next_state_counts[next_state] += 1
             return next_state,self.index+offset
         
@@ -119,7 +119,22 @@ def ConstructProfileHMM(theta,Alphabet,Alignment,trace=True):
             for i in range(3):
                 if pos+i+2<L:
                     Result[pos+i+2]    = transition_frequencies[i]
-            return Result        
+            return Result
+        
+        def record_transition(self,ch,conserved):
+            next_state = None
+            if conserved:
+                if ch in Alphabet:
+                    next_state,offset = self.get_match_plus_offset(ch)
+                else:
+                    next_state,offset = self.get_delete_plus_offset()
+            else:
+                if ch in Alphabet:
+                    next_state,offset = self.get_insert_plus_offset(ch)
+                else:
+                    next_state,offset = State.MATCH,0
+            self.next_state_counts[next_state] += 1
+            return next_state,self.index+offset        
         
     class Insert(State):
         def __init__(self,index):
@@ -127,6 +142,26 @@ def ConstructProfileHMM(theta,Alphabet,Alignment,trace=True):
             
         def __str__(self):
             return f'I{self.index}' 
+ 
+        def record_transition(self,ch,conserved):
+            if ch=='-':
+                next_state = State.INSERT
+                offset     = 1 if conserved else 0
+                self.next_state_counts[next_state] += 1
+                return next_state,self.index+offset            
+            next_state = None
+            if conserved:
+                if ch in Alphabet:
+                    next_state,offset = self.get_match_plus_offset(ch)
+                else:
+                    next_state,offset = self.get_delete_plus_offset()
+            else:
+                if ch in Alphabet:
+                    next_state,offset = self.get_insert_plus_offset(ch)
+                else:
+                    next_state,offset = self.get_match_plus_offset(ch)
+            self.next_state_counts[next_state] += 1
+            return next_state,self.index+offset 
         
         def get_transition(self,L,pos):
             Result                 = [0]*L
@@ -151,6 +186,28 @@ def ConstructProfileHMM(theta,Alphabet,Alignment,trace=True):
                     Result[pos+i+1] = transition_frequencies[i]
             return Result 
         
+        def record_transition(self,ch,conserved):
+            if ch=='-':
+                next_state = State.DELETE
+                offset     = 1 if conserved else 0
+                self.next_state_counts[next_state] += 1
+                return next_state,self.index+offset                    
+            next_state = None
+            if conserved:
+                if ch in Alphabet:
+                    next_state,offset = self.get_match_plus_offset(ch)
+                else:
+                    next_state,offset = self.get_delete_plus_offset()
+            else:
+                if ch in Alphabet:
+                    next_state,offset = self.get_insert_plus_offset(ch)
+                else:
+                    next_state,offset = self.get_match_plus_offset(ch)
+            self.next_state_counts[next_state] += 1
+            return next_state,self.index+offset        
+        
+        #def get_delete_plus_offset(self):
+            #return State.DELETE,0        
     class End(State):
         def __init__(self):
             super().__init__(0)
