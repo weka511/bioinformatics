@@ -598,6 +598,8 @@ def san_kai(s,t, replace_score=substitution_matrices.load("BLOSUM62"),sigma=11,e
                     
     return backtrack(moves,middle[len(s)][len(t)],len(s),len(t))
 
+# BA5K Find a Middle Edge in an Alignment Graph in Linear Space
+
 def FindMiddleEdge(s,t,replace_score=substitution_matrices.load("BLOSUM62"),indel_cost=5):
  
     def update(j,col1,col2,s,t):
