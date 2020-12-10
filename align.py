@@ -598,42 +598,77 @@ def san_kai(s,t, replace_score=substitution_matrices.load("BLOSUM62"),sigma=11,e
                     
     return backtrack(moves,middle[len(s)][len(t)],len(s),len(t))
 
+# FindMiddleEdge
+#
 # BA5K Find a Middle Edge in an Alignment Graph in Linear Space
+#
+# Inputs: 
+#     s               an amino acid string
+#     t               an amino acid string
+#     replace_score   scoring matrix
+#     indel_cost      linear indel penalty
+# Returns: A middle edge in the alignment graph for s and t, in the form ((i, j) (k, l)),
+#          where (i, j) connects to (k, l).
 
-def FindMiddleEdge(s,t,replace_score=substitution_matrices.load("BLOSUM62"),indel_cost=5):
+def FindMiddleEdge(s,t,
+                   replace_score = substitution_matrices.load("BLOSUM62"),
+                   indel_cost    = 5):
  
-    def update(j,col1,col2,s,t):
-        col2[0] = - (j * indel_cost)
-        for i in range(1,len(col2)):
-            scores = [col1[i-1] + score((s[i-1],t[j-1]),replace_score=replace_score),
-                      col2[i-1] - indel_cost,
-                      col1[i]   - indel_cost
-            ]
- 
-            best        = argmax(scores)
-            col2[i]     = scores[best]
-        return col2,col1
+    # update
+    #
+    # Calculate scores in current column using values from previous column
+    #
+    # parameters:
+    #     j           Index of column that is being updated
+    #     previous    Data from previous coulumn
+    #     current     Data in current column
+    #     s           First protein string.
+    #     t           Second protein string.
     
-    def explore(s,t,middle):
+    def update(j,previous,current,s,t):
+        current[0] = - j * indel_cost
+        for i in range(1,len(current)):
+            scores     = [previous[i-1] + score((s[i-1],t[j-1]),
+                                                replace_score=replace_score),
+                          current[i-1]  - indel_cost,
+                          previous[i]   - indel_cost]
+ 
+            best       = argmax(scores)
+            current[i] = scores[best]
+            
+        return current,previous
+    
+    # explore
+    #
+    # Find lengths of all paths from source that end at specified column
+    #
+    #       s           First protein string. This is an explicit parameter 
+    #                   because FindMiddleEdge reverse the string during the second call
+    #                   to calculate lengths from sink
+    #       t           Second protein string.
+    #       limit       Last column to be explored
+    
+    def explore(s,t,limit):
         column_A = [-(i * indel_cost) for i in range(len(s)+1)]
         column_B = [0 for i in range(len(s)+1)]
-        for j in range(1,middle+1):
+        for j in range(1,limit+1):
             scores,previous = update(j,column_A,column_B,s,t) if j%2 ==1 else update(j,column_B,column_A,s,t)
         return scores,previous
     
-    middle        = len(t)//2  
-    from_source,_ = explore(s,t,middle)
-    to_sink,pre   = explore(s[::-1],t[::-1],middle)
+    middle_column = len(t)//2  
+    from_source,_ = explore(s,t,middle_column)
+    to_sink,pre   = explore(s[::-1],t[::-1],middle_column)
     length        = [a+b for (a,b) in zip(from_source,to_sink[::-1])]
     aux           = [0 for i in range(len(s)+1)]
-    post,_        = update(middle+1,from_source,aux,s,t)
+    post,_        = update(middle_column+1,from_source,aux,s,t)
     next_steps    = [a+b for (a,b) in zip(post,pre[::-1])]
     
-    return ((argmax(length), middle), ( argmax(next_steps), middle+1))
+    return ((argmax(length), middle_column),
+            (argmax(next_steps), middle_column+1))
 
 # FindHighestScoringMultipleSequenceAlignment
 #
-# BA5M.py Find a Highest-Scoring Multiple Sequence Alignment 
+# BA5M Find a Highest-Scoring Multiple Sequence Alignment 
 
 def FindHighestScoringMultipleSequenceAlignment (u,
                                                  v,
