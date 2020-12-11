@@ -657,14 +657,11 @@ def FindMiddleEdge(s,t,
     
     middle_column = len(t)//2  
     from_source,_ = explore(s,t,middle_column)
-    to_sink,pre   = explore(s[::-1],t[::-1],middle_column)
+    to_sink,_   = explore(s[::-1],t[::-1],len(t) - middle_column)
     length        = [a+b for (a,b) in zip(from_source,to_sink[::-1])]
-    aux           = [0 for i in range(len(s)+1)]
-    post,_        = update(middle_column+1,from_source,aux,s,t)
-    next_steps    = [a+b for (a,b) in zip(post,pre[::-1])]
     
     return ((argmax(length), middle_column),
-            (argmax(next_steps), middle_column+1))
+            (argmax(length)+1, middle_column+1))
 
 # FindHighestScoringMultipleSequenceAlignment
 #

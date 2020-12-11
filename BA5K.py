@@ -39,12 +39,13 @@ if __name__=='__main__':
         print (f'Calculated: (({i},{j}),({k},{l}))')
         print (f'Expected {Expected[0]}')
         # Expect (512,510)(513,511)
+        
     if args.rosalind:
         Input  = read_strings(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt')
         ((i,j),(k,l))  = FindMiddleEdge(Input[0],Input[1])
-        print (f'(({i},{j}),({k},{l}))')
+        print (f'({i},{j}) ({k},{l})')
         with open(f'{os.path.basename(__file__).split(".")[0]}.txt','w') as f:
-            f.write(f'(({i},{j}),({k},{l}))\n')
+            f.write(f'({i},{j}) ({k},{l})\n')
                 
     elapsed = time.time() - start
     minutes = int(elapsed/60)
