@@ -1,4 +1,4 @@
-# Copyright (C) 2019 Greenweaves Software Limited
+# Copyright (C) 2019-2020 Greenweaves Software Limited
 
 # This is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -11,9 +11,14 @@
 # GNU General Public License for more details.
 
 # You should have received a copy of the GNU General Public License
-# along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>
+# along with this program.  If not, see <http://www.gnu.org/licenses/>
 
 # BA6D Find a Shortest Transformation of One Genome into Another by 2-Breaks 
+
+import argparse
+import os
+import time
+from   helpers import read_strings
 
 from fragile import ChromosomeToCycle,ColouredEdges,BlackEdges,get2BreakOnGenomeGraph,CycleToChromosome
 
@@ -66,11 +71,33 @@ def CycleToChromosome1(Blacks,Coloured):
                Chromosome.append(-a//2)
 
      return Chromosome
-     
+
 if __name__=='__main__':
-     paths,Blacks = FindShortestTransformation([+1, -2, -3, +4],[+1, +2, -4, -3])
-     #print (len(paths))
-     for Coloured in paths:
-          #print (Coloured)
-          print (CycleToChromosome1(Blacks,Coloured))
+     start = time.time()
+     parser = argparse.ArgumentParser('Find a Shortest Transformation of One Genome into Another by 2-Breaks')
+     parser.add_argument('--sample',   default=False, action='store_true', help='process sample dataset')
+     parser.add_argument('--rosalind', default=False, action='store_true', help='process Rosalind dataset')
+     args = parser.parse_args()
+     if args.sample:
+          paths,Blacks = FindShortestTransformation([+1, -2, -3, +4],[+1, +2, -4, -3])
+          #print (len(paths))
+          for Coloured in paths:
+               #print (Coloured)
+               print (CycleToChromosome1(Blacks,Coloured))          
+
+
+
+     if args.rosalind:
+          Input  = read_strings(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt')
+
+          Result = None
+          print (Result)
+          with open(f'{os.path.basename(__file__).split(".")[0]}.txt','w') as f:
+               for line in Result:
+                    f.write(f'{line}\n')
+
+     elapsed = time.time() - start
+     minutes = int(elapsed/60)
+     seconds = elapsed - 60*minutes
+     print (f'Elapsed Time {minutes} m {seconds:.2f} s')  
   
