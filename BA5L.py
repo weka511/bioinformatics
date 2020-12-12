@@ -28,17 +28,12 @@ from   Bio.Align import substitution_matrices
 #
 # Inputs: v
 #         w
+#         replace_score
+#         indel_cost
 
-def alignUsingLinearSpace(v,w,replace_score=substitution_matrices.load("BLOSUM62"),indel_cost=5):
-    # LinearSpaceAlignment
-    #
-    # Find longest path between a substring of v[top] v[bottom-1]
-    # and w[left] and w[right-1]
-    #
-    # Inputs: top
-    #         bottom
-    #         left
-    #         right
+def alignUsingLinearSpace(v,w,
+                          replace_score = substitution_matrices.load("BLOSUM62"),
+                          indel_cost    = 5):
     
     def isRightOrDownRight(midEdge):
         return midEdge==RIGHT or midEdge==DOWNRIGHT
@@ -54,6 +49,15 @@ def alignUsingLinearSpace(v,w,replace_score=substitution_matrices.load("BLOSUM62
         direction         = RIGHT if i1==i2 else DOWN if j1==j2 else DOWNRIGHT
         return j1,direction
     
+    # LinearSpaceAlignment
+    #
+    # Find longest path between a substring of v[top] v[bottom-1]
+    # and w[left] and w[right-1]
+    #
+    # Inputs: top
+    #         bottom
+    #         left
+    #         right
     
     def  LinearSpaceAlignment(top, bottom, left, right):
         if left==right:
@@ -74,7 +78,7 @@ def alignUsingLinearSpace(v,w,replace_score=substitution_matrices.load("BLOSUM62
     RIGHT     = 0
     DOWN      = 1
     DOWNRIGHT = 2
-    LinearSpaceAlignment(0,len(v),0,len(w))
+    LinearSpaceAlignment(0,len(v)+1,0,len(w)+1)
         
     
 if __name__=='__main__':
