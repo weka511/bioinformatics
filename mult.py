@@ -20,7 +20,14 @@ import os
 import time
 from   helpers import read_strings
 
-  
+def MultipleAlignment(Strings,
+                      match=0, 
+                      mismatch=-1,
+                      indel=0):
+    score = 0
+    Alignment = [s for s in Strings]
+    return score, Alignment
+
 if __name__=='__main__':
     start = time.time()
     parser = argparse.ArgumentParser('MULT Multiple Alignment')
@@ -28,17 +35,23 @@ if __name__=='__main__':
     parser.add_argument('--rosalind', default=False, action='store_true', help='process Rosalind dataset')
     args = parser.parse_args()
     if args.sample:
-        pass
+        print (MultipleAlignment(['ATATCCG',
+                                  'TCCG',
+                                  'ATGTACTG',
+                                  'ATGTCTG']))
         
     
 
     if args.rosalind:
         Input  = read_strings(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt')
  
-        Result = None
+        score, Alignment = MultipleAlignment(Input[1], Input[3], Input[5], Input[7])
         print (Result)
         with open(f'{os.path.basename(__file__).split(".")[0]}.txt','w') as f:
-            for line in Result:
+            print (score)
+            f.write(f'{score}\n')
+            for line in Alignment:
+                print (line)
                 f.write(f'{line}\n')
                 
     elapsed = time.time() - start
