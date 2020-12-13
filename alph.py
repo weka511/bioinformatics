@@ -13,37 +13,52 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-#  ALPH  	Alignment-Based Phylogeny 
+#  ALPH  Alignment-Based Phylogeny 
 
 import argparse
 import os
 import time
 from helpers import read_strings
 
-  
+def alph(T,Alignment):
+    d = 0
+    Assignment = [('foo','bar'),('baz','quux')]
+
 if __name__=='__main__':
     start = time.time()
-    parser = argparse.ArgumentParser('....')
+    parser = argparse.ArgumentParser('ALPH  Alignment-Based Phylogeny')
     parser.add_argument('--sample',   default=False, action='store_true', help='process sample dataset')
-    parser.add_argument('--extra',    default=False, action='store_true', help='process extra dataset')
     parser.add_argument('--rosalind', default=False, action='store_true', help='process Rosalind dataset')
     args = parser.parse_args()
     if args.sample:
-        pass
+        print (alph('(((ostrich,cat)rat,(duck,fly)mouse)dog,(elephant,pikachu)hamster)robot;',
+                    ['>ostrich',
+                     'AC',
+                     '>cat',
+                     'CA',
+                     '>duck',
+                     'T-',
+                     '>fly',
+                     'GC',
+                     '>elephant',
+                     '-T',
+                     '>pikachu',
+                     'AA'
+                     ]))
         
-    
-    if args.extra:
-        Input,Expected  = read_strings('data/....txt',init=0)
-        ...
   
     if args.rosalind:
         Input  = read_strings(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt')
  
-        Result = None
-        print (Result)
+        d,Assignment = alph(Input[0],Input[1])
         with open(f'{os.path.basename(__file__).split(".")[0]}.txt','w') as f:
-            for line in Result:
-                f.write(f'{line}\n')
+            print (d)
+            f.write(f'{line}\n')
+            for label,String in Assignment:
+                print (label)
+                f.write(f'{label}\n')
+                print (String)
+                f.write(f'{Sringt}\n')                
                 
     elapsed = time.time() - start
     minutes = int(elapsed/60)
