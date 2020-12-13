@@ -19,7 +19,6 @@ import argparse
 import os
 import time
 from   helpers import read_strings
-
 from   align   import FindMultipleSequenceAlignment
  
 if __name__=='__main__':
