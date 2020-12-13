@@ -24,12 +24,13 @@ from   numpy   import argmax,ravel,zeros
 def score(chars, match    = 0, mismatch = -1):    
     return sum(match if chars[i]==chars[j] else  mismatch for i in range(len(chars)) for j in range(i+1,len(chars)))
 
+        
 def FindHighestScoringMultipleSequenceAlignment(Strings,score = score):
     def indices(ns=[len(S)+1 for S in Strings]):
-        ii = [0]*len(ns)
         N  = 1
         for n in ns:
-            N*=n
+            N *= n
+        ii = [0]*len(ns)
         for _ in range(N-1):          
             for j in range(len(ns)-1,-1,-1):
                 ii[j] += 1
@@ -50,123 +51,140 @@ def FindHighestScoringMultipleSequenceAlignment(Strings,score = score):
     def add(u,v):
         return tuple([a + b for (a,b) in zip(list(u),list(v))])
     
+    def subtract(u,v):
+        return tuple([a - b for (a,b) in zip(list(u),list(v))])    
+    
     def build_matrix():
         def calculate_scores(i):
             def get_score(move):
                 previous = add(i,move)
+                if len([p for p in previous if p<0]):
+                    return None
                 scorable = []
                 for j in range(len(move)):
                     scorable.append(Strings[j][previous[j]]  if move[j]<0 else '-')
                 return s[previous] + score(scorable)
-            return [get_score(move) for move in moves]  # filter out -ve coordinates
+            raw_scores = [(get_score(move),move) for move in available_moves]  # filter out -ve coordinates
+            return [(r,m) for r,m in raw_scores if r != None]
         
         s     = zeros([len(S)+1 for S in Strings],dtype=int)
         path  = {}
         m     = len(Strings)
-        moves = create_moves(m)
+        available_moves = create_moves(m)
         for index_set in indices():
-            scores           = calculate_scores(index_set)
+            scores_moves     = calculate_scores(index_set)
+            scores           = [score for score,_ in scores_moves]
+            moves            = [move  for _,move  in scores_moves]
             index_best_score = argmax(scores)
             s[index_set]     = scores[index_best_score]
             path[index_set]  = moves[index_best_score]
         return s,path,moves
     
-    def backtrack(history):    
-        s,path,moves  = history
-        last_position = tuple([len(S) for S in Strings])
-        myscore       = s[last_position]
-        x=0
-        Alignments   = [[] for S in Strings]
-        return myscore,Alignments
+    def backtrack(history):
+        def reverse(S):
+            return ''.join([s for s in S[::-1]])
+        s,path,moves    = history
+        position        = tuple([len(S) for S in Strings])
+        alignment_score = s[position]
+        Alignments      = [[] for S in Strings]
+        while (len([p for p in position if p!=0]) >0):
+            move = path[position]
+            for j in range(len(move)):
+                if move[j]==0:
+                    Alignments[j].append('-')
+                else:
+                    Alignments[j].append(Strings[j][position[j]-1])
+            position = add(position,move)
+        return alignment_score,[reverse(s) for s in Alignments]
     return backtrack(build_matrix())
 
 
 
-def score_strings(s,t,u,v):
-    return sum(score([s[i],t[i],u[i],v[i]]) for i in range(len(s)))
+#def score_strings(s,t,u,v):
+    #return sum(score([s[i],t[i],u[i],v[i]]) for i in range(len(s)))
     
-def MultipleAlignment(Strings,
-                      match       = 0,
-                      mismatch    = -1):
+#def MultipleAlignment(Strings,
+                      #match       = 0,
+                      #mismatch    = -1):
  
-    s = [[[[0 for l in range(len(Strings[3])+1)]     \
-              for k in range(len(Strings[2])+1)]     \
-              for j in range(len(Strings[1])+1)]     \
-              for i in range(len(Strings[0])+1)]
+    #s = [[[[0 for l in range(len(Strings[3])+1)]     \
+              #for k in range(len(Strings[2])+1)]     \
+              #for j in range(len(Strings[1])+1)]     \
+              #for i in range(len(Strings[0])+1)]
     
-    moves = [
-        [-1, -1, -1, -1],
+    #moves = [
+        #[-1, -1, -1, -1],
         
-        [-1, -1, -1,  0],
-        [-1, -1,  0, -1],
-        [-1,  0, -1, -1],
-        [ 0, -1, -1, -1],
+        #[-1, -1, -1,  0],
+        #[-1, -1,  0, -1],
+        #[-1,  0, -1, -1],
+        #[ 0, -1, -1, -1],
         
-        [-1, -1,  0,  0],
-        [-1,  0, -1,  0],
-        [ 0, -1, -1,  0],
-        [ -1,  0,  0, -1],
-        [ 0, -1,  0, -1],
-        [ 0,  0, -1, -1],    
+        #[-1, -1,  0,  0],
+        #[-1,  0, -1,  0],
+        #[ 0, -1, -1,  0],
+        #[ -1,  0,  0, -1],
+        #[ 0, -1,  0, -1],
+        #[ 0,  0, -1, -1],    
         
-        [-1,  0,  0,  0],
-        [0,  -1,  0,  0],
-        [0,   0,  -1, 0],
-        [0,   0,   0,  -1]
-    ]
+        #[-1,  0,  0,  0],
+        #[0,  -1,  0,  0],
+        #[0,   0,  -1, 0],
+        #[0,   0,   0,  -1]
+    #]
     
-    path = {}
+    #path = {}
     
-    for i in range(1,len(Strings[0])+1):
-        for j in range(1,len(Strings[1])+1):
-            for k in range(1,len(Strings[2])+1): 
-                for l in range(1,len(Strings[3])+1):
+    #for i in range(1,len(Strings[0])+1):
+        #for j in range(1,len(Strings[1])+1):
+            #for k in range(1,len(Strings[2])+1): 
+                #for l in range(1,len(Strings[3])+1):
  
-                    scores = [ 
-                        s[i-1][j-1][k-1][l-1] + score([Strings[0][i-1], Strings[1][j-1], Strings[2][k-1], Strings[3][l-1]]),
+                    #scores = [ 
+                        #s[i-1][j-1][k-1][l-1] + score([Strings[0][i-1], Strings[1][j-1], Strings[2][k-1], Strings[3][l-1]]),
                         
-                        s[i-1][j-1][k-1][l]   + score([Strings[0][i-1], Strings[1][j-1], Strings[2][k-1], '-']),
-                        s[i-1][j-1][k][l-1]   + score([Strings[0][i-1], Strings[1][j-1], '-',             Strings[3][l-1]]),
-                        s[i-1][j][k-1][l-1]   + score([Strings[0][i-1], '-',             Strings[2][k-1], Strings[3][l-1]]),
-                        s[i][j-1][k-1][l-1]   + score(['-',             Strings[1][j-1], Strings[2][k-1], Strings[3][l-1]]),
+                        #s[i-1][j-1][k-1][l]   + score([Strings[0][i-1], Strings[1][j-1], Strings[2][k-1], '-']),
+                        #s[i-1][j-1][k][l-1]   + score([Strings[0][i-1], Strings[1][j-1], '-',             Strings[3][l-1]]),
+                        #s[i-1][j][k-1][l-1]   + score([Strings[0][i-1], '-',             Strings[2][k-1], Strings[3][l-1]]),
+                        #s[i][j-1][k-1][l-1]   + score(['-',             Strings[1][j-1], Strings[2][k-1], Strings[3][l-1]]),
                         
-                        s[i-1][j-1][k][l]   + score([Strings[0][i-1], Strings[1][j-1], '-', '-']),
-                        s[i-1][j][k-1][l]   + score([Strings[0][i-1], '-',             Strings[2][k-1], '-']),
-                        s[i][j-1][k-1][l]   + score(['-',             Strings[1][j-1], Strings[2][k-1], '-']),
-                        s[i-1][j][k][l-1]   + score([Strings[0][i-1], '-',             '-',             Strings[3][l-1]]),
-                        s[i][j-1][k][l-1]   + score(['-',             Strings[1][j-1], '-',             Strings[3][l-1]]),                      
-                        s[i][j][k-1][l-1]   + score(['-',             '-',             Strings[2][k-1], Strings[3][l-1]]),
+                        #s[i-1][j-1][k][l]   + score([Strings[0][i-1], Strings[1][j-1], '-', '-']),
+                        #s[i-1][j][k-1][l]   + score([Strings[0][i-1], '-',             Strings[2][k-1], '-']),
+                        #s[i][j-1][k-1][l]   + score(['-',             Strings[1][j-1], Strings[2][k-1], '-']),
+                        #s[i-1][j][k][l-1]   + score([Strings[0][i-1], '-',             '-',             Strings[3][l-1]]),
+                        #s[i][j-1][k][l-1]   + score(['-',             Strings[1][j-1], '-',             Strings[3][l-1]]),                      
+                        #s[i][j][k-1][l-1]   + score(['-',             '-',             Strings[2][k-1], Strings[3][l-1]]),
                     
                                                 
-                        s[i-1][j][k][l]       + score([Strings[0][i-1], '-',             '-',             '-']),
-                        s[i][j-1][k][l]       + score(['-',             Strings[1][j-1], '-',             '-']),
-                        s[i][j][k-1][l]       + score(['-',             '-',             Strings[2][k-1], '-']),
-                        s[i][j][k][l-1]       + score(['-',             '-',             '-',             Strings[3][l-1]]),                        
+                        #s[i-1][j][k][l]       + score([Strings[0][i-1], '-',             '-',             '-']),
+                        #s[i][j-1][k][l]       + score(['-',             Strings[1][j-1], '-',             '-']),
+                        #s[i][j][k-1][l]       + score(['-',             '-',             Strings[2][k-1], '-']),
+                        #s[i][j][k][l-1]       + score(['-',             '-',             '-',             Strings[3][l-1]]),                        
                         
-                    ]
-                    index           = argmax(scores)
-                    s[i][j][k][l]   = scores[index]
-                    path[(i,j,k,l)] = moves[index]
-            #print (i,j,k,l,path[(i,j,k,l)])        
-    i  = len(Strings[0])
-    j  = len(Strings[1])
-    k  = len(Strings[2])
-    l  = len(Strings[3])
-    Alignment = [[] for s in Strings]
-    while i>0 and j>0 and k>0 and l>0:
-        d_indices = path[(i,j,k,l)]
-        i += d_indices[0]
-        j += d_indices[1]
-        k += d_indices[2]
-        l += d_indices[3]
-        for m in range(len(d_indices)):
-            if d_indices[m]==0:
-                Alignment[m].append('-')
-            else:
-                index = [i,j,k,j][m]
-                Alignment[m].append(Strings[m][index])
+                    #]
+                    #index           = argmax(scores)
+                    #s[i][j][k][l]   = scores[index]
+                    #path[(i,j,k,l)] = moves[index]
+            ##print (i,j,k,l,path[(i,j,k,l)])        
+    #i  = len(Strings[0])
+    #j  = len(Strings[1])
+    #k  = len(Strings[2])
+    #l  = len(Strings[3])
+    #Alignment = [[] for s in Strings]
+    #while i>0 and j>0 and k>0 and l>0:
+        #d_indices = path[(i,j,k,l)]
+        #i += d_indices[0]
+        #j += d_indices[1]
+        #k += d_indices[2]
+        #l += d_indices[3]
+        #for m in range(len(d_indices)):
+            #if d_indices[m]==0:
+                #Alignment[m].append('-')
+            #else:
+                #index = [i,j,k,j][m]
+                #Alignment[m].append(Strings[m][index])
  
-    return s[len(Strings[0])][len(Strings[1])][len(Strings[2])][len(Strings[3])], Alignment
+    #return s[len(Strings[0])][len(Strings[1])][len(Strings[2])][len(Strings[3])], Alignment
 
 if __name__=='__main__':
     start = time.time()
@@ -175,8 +193,8 @@ if __name__=='__main__':
     parser.add_argument('--rosalind', default=False, action='store_true', help='process Rosalind dataset')
     args = parser.parse_args()
     if args.sample:
-        FindHighestScoringMultipleSequenceAlignment(['ATATCCG','TCCGA','ATGTACTG'],
-                                                    score=lambda X: 1 if X[0]==X[1] and X[1]==X[2] and X[0]!='-' else 0)
+        print(FindHighestScoringMultipleSequenceAlignment(['ATATCCG','TCCGA','ATGTACTG'],
+                                                    score=lambda X: 1 if X[0]==X[1] and X[1]==X[2] and X[0]!='-' else 0))
         print (FindHighestScoringMultipleSequenceAlignment(['ATATCCG',
                              'TCCG',
                              'ATGTACTG',
@@ -195,8 +213,8 @@ if __name__=='__main__':
     if args.rosalind:
         Input  = read_strings(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt')
  
-        score, Alignment = MultipleAlignment(Input[1], Input[3], Input[5], Input[7])
-        print (Result)
+        score, Alignment = FindHighestScoringMultipleSequenceAlignment([Input[1], Input[3], Input[5], Input[7]])
+        #print (Result)
         with open(f'{os.path.basename(__file__).split(".")[0]}.txt','w') as f:
             print (score)
             f.write(f'{score}\n')
