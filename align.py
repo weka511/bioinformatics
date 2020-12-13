@@ -15,7 +15,7 @@
 
 # Common code for alignment problems
 
-from numpy import argmax,argmin
+from numpy import argmax,argmin,zeros
 from sys import float_info
 from Bio.Align import substitution_matrices
 from reference_tables import createSimpleDNASubst
@@ -764,8 +764,127 @@ def FindHighestScoringMultipleSequenceAlignment (u,
     u1,v1,w1 = backtrack(path)
     
     return s[len(u)][len(v)][len(w)],''.join(u1[::-1]),''.join(v1[::-1]),''.join(w1[::-1])             
- 
-         
+
+# FindMultipleSequenceAlignment
+#
+#   mult Multiple Alignment
+#
+# A multiple alignment of a collection of three or more strings is formed by adding gap symbols
+# to the strings to produce a collection of augmented strings all having the same length.
+#
+# A multiple alignment score is obtained by taking the sum of an alignment score
+# over all possible pairs of augmented strings. The only difference in scoring the alignment
+# of two strings is that two gap symbols may be aligned for a given pair (requiring us to 
+# specify a score for matched gap symbols).
+
+# Given: A collection of  DNA strings of length at most 10 bp in FASTA format.
+
+# Return: A multiple alignment of the strings having maximum score, where we score matched symbols 0 
+#         (including matched gap symbols) and all mismatched symbols -1 (thus incorporating a linear gap penalty of 1).
+#
+#  This function is a straightforward extension of the dynamic programming algorithm of Pevzner and Compeau, with
+#  the rectangle replaced by a N-cube.
+
+def FindMultipleSequenceAlignment(
+          Strings,
+          score = lambda ch:sum(0 if ch[i]==ch[j] else  -1 for i in range(len(ch)) for j in range(i+1,len(ch)))):
+    # indices
+    #
+    # A generator for iterating through positions in hypercube. Iterate along last axis,
+    # then wrap around to zero an incrment next axis, etc
+    #
+    # Parameters:
+    #      ns Dimesnion of space (number of strings to be aligned)
+    
+    def indices(ns=[len(S)+1 for S in Strings]):
+        N  = 1
+        for n in ns:
+            N *= n
+        index_set = [0]*len(ns)
+        for _ in range(N-1):          
+            for j in range(len(ns)-1,-1,-1):
+                index_set[j] += 1
+                if index_set[j]==ns[j]:
+                    index_set[j] = 0
+                else:
+                    break
+            yield tuple(index_set)
+    
+    # create_moves
+    #
+    # Create list of possible moves from current cells to its predecessors, for use in backtracking.
+    # Used as we update current cell to record the best past from a predecessor. It will be used later
+    # to reconstruct path for backtracking.
+    #
+    #   Parameters:
+    #       m         Number of dimensions
+    #       options   Predecssor is either one less along current axis, or the same
+    #
+    #   Returns:   List of combinations of options, except for all zeroes (which is filtered out).
+    #              Each combination is a tuple, so it can be used as an array index
+    
+    def create_moves(m,options=[0,-1]):
+        # create_raw_moves
+        #
+        # Create list of moves: each move is a list (not yet a tuple), and the trivial move,
+        #  all zeroes, has not yet been filtered
+        def create_raw_moves(m):
+            return [[o] for o in options] if m==1 else [[o] + c for o in options for c in create_raw_moves(m-1)]
+        return [move for move in tuple(create_raw_moves(m)) if len([x for x in move if x!=0])>0]
+    
+    # add
+    #
+    # Used to add a move to a tuple for backtracking
+    def add(u,v):
+        return tuple([a + b for (a,b) in zip(list(u),list(v))])
+    
+    # build_matrix
+    #
+    # Create hypercube of scors
+    def build_matrix():
+        def calculate_scores(i):
+            def get_score(move):
+                previous = add(i,move)
+                if len([p for p in previous if p<0]):
+                    return None
+                scorable = []
+                for j in range(len(move)):
+                    scorable.append(Strings[j][previous[j]]  if move[j]<0 else '-')
+                return s[previous] + score(scorable)
+            raw_scores = [(get_score(move),move) for move in available_moves]  # filter out -ve coordinates
+            return [(r,m) for r,m in raw_scores if r != None]
+        
+        s     = zeros([len(S)+1 for S in Strings],dtype=int)
+        path  = {}
+        m     = len(Strings)
+        available_moves = create_moves(m)
+        for index_set in indices():
+            scores_moves     = calculate_scores(index_set)
+            scores           = [score for score,_ in scores_moves]
+            moves            = [move  for _,move  in scores_moves]
+            index_best_score = argmax(scores)
+            s[index_set]     = scores[index_best_score]
+            path[index_set]  = moves[index_best_score]
+        return s,path
+    
+    def backtrack(history):
+        def reverse(S):
+            return ''.join([s for s in S[::-1]])
+        s,path    = history
+        position        = tuple([len(S) for S in Strings])
+        alignment_score = s[position]
+        Alignments      = [[] for S in Strings]
+        while (len([p for p in position if p!=0]) >0):
+            move = path[position]
+            for j in range(len(move)):
+                if move[j]==0:
+                    Alignments[j].append('-')
+                else:
+                    Alignments[j].append(Strings[j][position[j]-1])
+            position = add(position,move)
+        return alignment_score,[reverse(s) for s in Alignments]
+    return backtrack(build_matrix())
+    
 if __name__=='__main__':
    
     import unittest

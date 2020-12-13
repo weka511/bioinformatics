@@ -190,7 +190,7 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 | # | Location | Description |
 | ---- | --------------- | ------------------------------------------------|
 |laff|laff.py |[Local Alignment with Affine Gap Penalty](http://rosalind.info/problems/laff/) [WIP](https://github.com/weka511/bioinformatics/issues/63)|
-|mult|mult.py |[Multiple Alignment](http://rosalind.info/problems/mult/)|
+|mult|mult.py align.py|[Multiple Alignment](http://rosalind.info/problems/mult/)|
 |smgb|smgb.py |[Semiglobal Alignment](http://rosalind.info/problems/smgb/) |
 
 ## [Combinatorics](http://rosalind.info/problems/topics/combinatorics/)
