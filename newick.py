@@ -176,7 +176,6 @@ def newick_to_adjacency_list(T):
     top       = []
     tokenizer = Tokenizer()
     for token,start,pos,value in tokenizer.tokenize(T):
-        print (token,start,pos,value)
         if token==Tokenizer.OPEN_PARENTHESIS:
             Stack.append([])
         elif token==Tokenizer.NAME:
