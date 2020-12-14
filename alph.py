@@ -19,10 +19,23 @@ import argparse
 import os
 import time
 from helpers import read_strings
+from newick  import newick_to_adjacency_list
 
 def alph(T,Alignment):
+    def create_fixed_alignments():
+        Leaves = {}
+        for i in range(0,len(Alignment),2):
+            Leaves[Alignment[i][1:]] = Alignment[i+1]
+        return Leaves
+
+    Adj   = newick_to_adjacency_list(T)   
+    Fixed = create_fixed_alignments()
+    assert len([node for node,value in Adj.items() if len(value)==0 and node not in Fixed])==0
+    Assignment = {a:[] for a in Adj.keys()}
+    
     d = 0
-    Assignment = [('foo','bar'),('baz','quux')]
+    return d,[(a,b) for a,b in Assignment.items() if len(Adj[a])==0]
+    
 
 if __name__=='__main__':
     start = time.time()
