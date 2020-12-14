@@ -1,30 +1,27 @@
-'''
-Copyright (C) 2017 Greenweaves Software Pty Ltd
+#  Copyright (C) 2017-2020 Greenweaves Software Limited
 
-This is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+#  This is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
 
-This software is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+#  This software is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with this software.  If not, see <http://www.gnu.org/licenses/>
+#  You should have received a copy of the GNU General Public License
+#  along with this software.  If not, see <http://www.gnu.org/licenses/>
 
-Grammar from https://en.wikipedia.org/wiki/Newick_format
-   Tree -> Subtree ";" | Branch ";"
-   Subtree -> Leaf | Internal
-   Leaf -> Name
-   Internal -> "(" BranchSet ")" Name
-   BranchSet-> Branch | Branch "," BranchSet
-   Branch -> Subtree Length
-   Name -> empty | string
-   Length -> empty | ":" number
-'''
- 
+#   Grammar from https://en.wikipedia.org/wiki/Newick_format
+#      Tree -> Subtree ";" | Branch ";"
+#      Subtree -> Leaf | Internal
+#      Leaf -> Name
+#      Internal -> "(" BranchSet ")" Name
+#      BranchSet-> Branch | Branch "," BranchSet
+#      Branch -> Subtree Length
+#      Name -> empty | string
+#      Length -> empty | ":" number
 
 import string
 
@@ -171,7 +168,28 @@ class Parser():
                 lookup[value]=current
         return (tree,lookup)
 
+# newick_to_adjacency_list
 
+def newick_to_adjacency_list(T):
+    Adj       = {}
+    Stack     = [[]]
+    top       = []
+    tokenizer = Tokenizer()
+    for token,start,pos,value in tokenizer.tokenize(T):
+        print (token,start,pos,value)
+        if token==Tokenizer.OPEN_PARENTHESIS:
+            Stack.append([])
+        elif token==Tokenizer.NAME:
+            Stack[-1].append(value)
+            Adj[value] = top
+            top        = []
+        elif token==Tokenizer.CLOSE_PARENTHESIS:
+            top = Stack.pop()
+        elif token==Tokenizer.SEMICOLON:
+            pass
+    
+    return Adj
+    
 if __name__=='__main__':
     def display(p):
         for (node,path) in p.iterate():
