@@ -66,7 +66,13 @@ class FastaFile(FastaContent):
   
 # fasta_out
 #
-# Used to output one key value pair to a file in FASTA format
+# Generator, used to output one key value pair to a file in FASTA format
+#
+# Parameters:
+#      key           Omit '>', as this will be added
+#      value         Value string
+#      max_length    Used to split lines so none exceeds this length
+
 def fasta_out(key,value,max_length=80):
     yield f'>{key}'
     remainder = value
