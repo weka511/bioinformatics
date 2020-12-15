@@ -21,6 +21,7 @@ import time
 from helpers import read_strings
 from newick  import newick_to_adjacency_list
 from numpy   import argmin
+from fasta   import FastaContent
 
 def alph(T,Alignment,Alphabet=['A','T','C','G','-']):
     
@@ -28,7 +29,7 @@ def alph(T,Alignment,Alphabet=['A','T','C','G','-']):
         Leaves = {}
         k      = None
         for i in range(0,len(Alignment),2):
-            Leaves[Alignment[i][1:]] = Alignment[i+1]
+            Leaves[Alignment[i]] = Alignment[i+1]
             if k==None:
                 k=len(Alignment[i+1])
             else:
@@ -92,12 +93,12 @@ def alph(T,Alignment,Alphabet=['A','T','C','G','-']):
             Ripe,Open = find_ripe(Open)
         assert len(Open)==0
         return backtrack(v,s)
-    
- 
-        
+           
     Adj     = newick_to_adjacency_list(T)   
     L,Leaves = create_fixed_alignments()
-    assert len([node for node,value in Adj.items() if len(value)==0 and node not in Leaves])==0
+    assert len([node for node,value in Adj.items() if len(value)==0 and node not in Leaves])==0,\
+           f'Some nodes have no children, but are not in Newick tree'
+    
     Assignment = {a:[] for a in Adj.keys()}
     
     d = 0
@@ -106,8 +107,8 @@ def alph(T,Alignment,Alphabet=['A','T','C','G','-']):
         d       += score
         for v,index in ks.items():
             Assignment[v].append(Alphabet[index])
-            
-    return d,[(f'>{a}',''.join(b)) for a,b in Assignment.items() if len(Adj[a])==0]
+              
+    return d,[(f'>{a}',''.join(b)) for a,b in Assignment.items() if len(Adj[a])!=0]
     
 
 if __name__=='__main__':
@@ -117,20 +118,21 @@ if __name__=='__main__':
     parser.add_argument('--rosalind', default=False, action='store_true', help='process Rosalind dataset')
     args = parser.parse_args()
     if args.sample:
-        d,Assignment = alph('(((ostrich,cat)rat,(duck,fly)mouse)dog,(elephant,pikachu)hamster)robot;',
-                    ['>ostrich',
-                     'AC',
-                     '>cat',
-                     'CA',
-                     '>duck',
-                     'T-',
-                     '>fly',
-                     'GC',
-                     '>elephant',
-                     '-T',
-                     '>pikachu',
-                     'AA'
-                     ])
+        fc = FastaContent(['>ostrich',
+                           'AC',
+                           '>cat',
+                           'CA',
+                           '>duck',
+                           'T-',
+                           '>fly',
+                           'GC',
+                           '>elephant',
+                           '-T',
+                           '>pikachu',
+                           'AA'
+                           ])
+        
+        d,Assignment = alph('(((ostrich,cat)rat,(duck,fly)mouse)dog,(elephant,pikachu)hamster)robot;',fc.to_list())
         print (d)
         for label,String in Assignment:
             print (label)
@@ -139,16 +141,16 @@ if __name__=='__main__':
   
     if args.rosalind:
         Input  = read_strings(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt')
- 
-        d,Assignment = alph(Input[0],Input[1])
+        fc     = FastaContent(Input[1:])         
+        d,Assignment = alph(Input[0],fc.to_list())
         with open(f'{os.path.basename(__file__).split(".")[0]}.txt','w') as f:
             print (d)
-            f.write(f'{line}\n')
+            f.write(f'{d}\n')
             for label,String in Assignment:
                 print (label)
                 f.write(f'{label}\n')
                 print (String)
-                f.write(f'{Sringt}\n')                
+                f.write(f'{String}\n')                
                 
     elapsed = time.time() - start
     minutes = int(elapsed/60)
