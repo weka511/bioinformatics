@@ -63,4 +63,14 @@ class FastaFile(FastaContent):
     def __init__(self,name):
         with open(name,'r') as file_text:
             FastaContent.__init__(self,file_text)
+  
+# fasta_out
+#
+# Used to output one key value pair to a file in FASTA format
+def fasta_out(key,value,max_length=80):
+    yield f'>{key}'
+    remainder = value
+    while len(remainder)>0:
+        yield remainder[0:max_length]
+        remainder = remainder[max_length:]
             
