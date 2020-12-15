@@ -13,8 +13,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>
 
-# This file contains a collection of functions to solve the problems
-# at rosalind.info.
+# This file contains a collection of functions to parse FASTA format data
 
 # FastaContent
 #
@@ -46,6 +45,15 @@ class FastaContent(object):
     # Number of entries
     def __len__(self):
         return len(self.pairs)
+    
+    # Used if caller wants a simple list seq,value, seq,value,...
+    
+    def to_list(self):
+        List = []
+        for a,b in self.pairs:
+            List.append(a)
+            List.append(b)
+        return List
 
 # FastaFile
 #
