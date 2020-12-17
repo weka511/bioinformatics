@@ -17,6 +17,8 @@
 
 import re
 import numpy as np
+from   rosalind  import LabelledTree
+from   random import randrange
 
 #  tree -- Completing a Tree 
 #
@@ -372,3 +374,122 @@ def mend(node):
     parent_freqs = [mend(parent) for parent in node.nodes]
     parent_freqs = [pp for pp in parent_freqs if len(pp)==n]
     return combine(parent_freqs[0],parent_freqs[1])
+
+# SmallParsimony
+#
+# Find the most parsimonious labeling of the internal nodes of a rooted tree.
+#
+# Given: An integer n followed by an adjacency list for a rooted binary tree with n leaves labeled by DNA strings.
+#
+# Return: The minimum parsimony score of this tree, followed by the adjacency list of the tree 
+#         corresponding to labeling internal nodes by DNA strings in order to minimize the parsimony score of the tree.
+
+def SmallParsimony(T,alphabet='ATGC'):
+    
+    # SmallParsimonyC Solve small parsimony for one character
+    
+    def SmallParsimonyC(Character):
+        
+        # get_ripe
+        #
+        # Returns: a node that is ready fpr preocssing
+        
+        def get_ripe():
+            for v in T.get_nodes():
+                if not processed[v] and v in T.edges:
+                    for e,_ in T.edges[v]:
+                        if e>v: continue
+                        if not processed[e]: break
+      
+                    return v
+            return None
+
+        #  calculate_s
+        #     Calculate score if node v is set to a specified symbol
+        #     Parameters:
+        #        symbol The symbol, e.g. 'A', not the index in alphabet
+        #        v      The node
+ 
+        def calculate_s(symbol,v):
+            # delta
+            #
+            # Complement of Kronecker delta
+            def delta(i):
+                return 0 if symbol==alphabet[i] else 1 
+             
+            def get_min(e):
+                return min(s[e][i]+delta(i) for i in range(len(alphabet)))
+            
+            return sum([get_min(e) for e,_ in T.edges[v]])
+        
+        # update_assignments
+        #
+        # Parameters:
+        #     v
+        #     s
+        def update_assignments(v,s):
+            if not v in assignments.labels:
+                assignments.labels[v]=''
+            index = 0
+            min_s = float('inf')
+            for i in range(len(s)):
+                if s[i] < min_s:
+                    min_s = s[i]
+                    index = i
+            assignments.set_label(v,assignments.labels[v]+alphabet[index])
+            return alphabet[index]
+        
+        # backtrack
+        #
+        # Process tree top down, starting from root
+        
+        def backtrack(v, current_assignment):
+            for v_next,_ in T.edges[v]:
+                if T.is_leaf(v_next): continue
+                if not v_next in assignments.labels:
+                    assignments.labels[v_next]=''
+                min_score = min([s[v_next][i] for i in range(len(alphabet))])
+                indices   = [i for i in range(len(alphabet)) if s[v_next][i]==min_score ]
+                matched   = False
+                for i in indices:
+                    if alphabet[i]==current_assignment:
+                       
+                        matched = True
+                        assignments.set_label(v_next,assignments.labels[v_next]+current_assignment)
+                        backtrack(v_next,current_assignment)
+                if not matched:
+                    # Black magic alert: I am not clear why the introduction of random numbers
+                    # helps here. Maybe it stops the tree being biased towatds the first strings
+                    # in the alphabet.
+                    next_assignment = alphabet[indices[randrange(0,(len(indices)))]]               
+                    assignments.set_label(v_next,assignments.labels[v_next]+next_assignment)
+                    backtrack(v_next,next_assignment)        
+            
+        processed = {}
+        s         = {}
+        
+        # Compute scores for a leaves, and mark internal notes unprocessed
+        for v in T.get_nodes():      
+            if T.is_leaf(v):
+                processed[v]=True
+                s[v]        = [0 if symbol==Character[v] else float('inf') for symbol in alphabet]
+            else:
+                processed[v]=False
+        
+        # Process ripe (unprocessed, but whose children have been processed)
+        # until there are none left
+        # Keep track of last node as we will use it to start backtracking
+        v = get_ripe()
+        while not v == None:
+            processed[v] = True
+            s[v]         = [calculate_s(symbol,v) for symbol in alphabet ]
+            v_last       = v          
+            v            = get_ripe()
+
+        backtrack(v_last,update_assignments(v_last,s[v_last]))
+        return min([s[v_last][c] for c in range(len(alphabet))])
+       
+    assignments = LabelledTree(T.N)
+    assignments.initialize_from(T)
+    
+    return sum([SmallParsimonyC([v[i] for l,v in T.labels.items()]) for i in range(len(T.labels[0]))]),assignments

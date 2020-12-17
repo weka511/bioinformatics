@@ -17,7 +17,8 @@
 
 
 from rosalind import LabelledTree
-from BA7F import SmallParsimony,print_assignments
+from phylogeny import SmallParsimony
+from BA7F import print_assignments
 
 def AdaptSmallParsimonyToUnrootedTrees(N,T):
     '''
