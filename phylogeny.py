@@ -686,3 +686,90 @@ def alph(T,Alignment,Alphabet=['A','T','C','G','-']):
             Assignment[v].append(Alphabet[index])
               
     return d,[(f'{a}',''.join(b)) for a,b in Assignment.items() if len(Adj[a])!=0]
+
+#  chbp Character-Based Phylogeny
+#
+#  Strategy: sort character table on entropy, then use each character to divide clades into two.
+
+def chbp(species,character_table):
+    # Clade
+    #
+    # This class represents one clade or taxon
+    
+    class Clade:
+        def __init__(self,taxa):
+            self.taxa = [s for s in taxa]
+
+        def is_trivial(self):
+            return len(self.taxa)==0
+
+        def is_singleton(self):
+            return len(self.taxa)==1
+
+        # newick
+        #
+        # Convert to string in Newick format
+        
+        def newick(self):
+            def conv(taxon):
+                if type(taxon)==int:
+                    return species[taxon]
+                else:
+                    return taxon.newick()
+            if self.is_singleton():
+                return conv(self.taxa[0])
+            else:
+                return '(' + ','.join(conv(taxon) for taxon in self.taxa) +')'
+
+        # split
+        #
+        # Split clade in two using character: list of taxa is replaced by two clades
+        #
+        # Returns True if clade has been split into two non-trivial clades
+        #         False if at least one clade would be trivial--in which case clade is unchanged
+        #         
+        def split(self,character):
+            left  = []
+            right = []
+            for i in self.taxa:
+                if character[i]==0:
+                    left.append(i)
+                else:
+                    right.append(i)
+            leftTaxon  = Clade(left)
+            rightTaxon = Clade(right)
+            if leftTaxon.is_trivial(): return False
+            if rightTaxon.is_trivial(): return False
+            self.taxa = [leftTaxon,rightTaxon]
+            return True
+
+        # splitAll
+        #
+        # Split clade using character table
+        def splitAll(self,characters,depth=0):
+            if depth<len(characters):
+                if self.split(characters[depth]):
+                    for taxon in self.taxa:
+                        taxon.splitAll(characters,depth+1)
+                else:
+                    self.splitAll(characters,depth+1) 
+
+
+    # Calculate entropy of a single character
+    
+    def get_entropy(freq):
+        if freq==0 or freq==n: return 0
+        p1 = freq/n
+        p2 = 1-p1
+        return - p1 *np.log(p1) - p2 * np.log(p2)
+
+
+
+    n               = len(species)
+    entropies       = [get_entropy(sum(char)) for char in character_table]
+    entropy_indices = np.argsort(entropies)
+    characters      = [character_table[i] for i in entropy_indices[::-1]]
+    indices         = list(range(len(species)))
+    root            = Clade(indices)
+    root.splitAll(characters)
+    return f'{root.newick()};'
