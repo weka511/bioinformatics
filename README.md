@@ -276,7 +276,7 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 ## [Phylogeny](http://rosalind.info/problems/topics/phylogeny/)
 | # | Location | Description |
 | ---- | --------------- | ------------------------------------------------|
-|alph|alph.py|[Alignment-Based Phylogeny](http://rosalind.info/problems/alph/) WIP|
+|alph|alph.py|[Alignment-Based Phylogeny](http://rosalind.info/problems/alph/)|
 |chbp|chbp.py phylogeny.py|[Character-Based Phylogeny](http://rosalind.info/problems/chbp/) WIP|
 |cntq|cntq.py |[Counting Quartets](http://rosalind.info/problems/cntq/)|
 |cset|cset.py|[Fixing an Inconsistent Character Set](http://rosalind.info/problems/cset/) WIP|

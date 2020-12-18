@@ -73,7 +73,7 @@ class FastaFile(FastaContent):
 #      value         Value string
 #      max_length    Used to split lines so none exceeds this length
 
-def fasta_out(key,value,max_length=80):
+def fasta_out(key,value,max_length=800000000000):
     yield f'>{key}'
     remainder = value
     while len(remainder)>0:
