@@ -276,10 +276,10 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 ## [Phylogeny](http://rosalind.info/problems/topics/phylogeny/)
 | # | Location | Description |
 | ---- | --------------- | ------------------------------------------------|
-|alph|alph.py|[Alignment-Based Phylogeny](http://rosalind.info/problems/alph/)|
-|chbp|chbp.py phylogeny.py|[Character-Based Phylogeny](http://rosalind.info/problems/chbp/) WIP|
+|alph|alph.py phylogeny.py|[Alignment-Based Phylogeny](http://rosalind.info/problems/alph/)|
+|chbp|chbp.py phylogeny.py|[Character-Based Phylogeny](http://rosalind.info/problems/chbp/) [WIP](https://github.com/weka511/bioinformatics/issues/45)|
 |cntq|cntq.py |[Counting Quartets](http://rosalind.info/problems/cntq/)|
-|cset|cset.py|[Fixing an Inconsistent Character Set](http://rosalind.info/problems/cset/) WIP|
+|cset|cset.py|[Fixing an Inconsistent Character Set](http://rosalind.info/problems/cset/) [WIP](https://github.com/weka511/bioinformatics/issues/48)|
 |cstr|cstr.py phylogeny.py|[Creating a Character Table from Genetic Strings](http://rosalind.info/problems/cstr/)|
 |ctbl|ctbl.py phylogeny.py|[Creating a Character Table](http://rosalind.info/problems/ctbl/) |
 |cunr|phylogeny.py|[Counting Unrooted Binary Trees](http://rosalind.info/problems/cunr/) |
@@ -290,9 +290,9 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 |nwck|nwck.py|[Distances in Trees](http://rosalind.info/problems/nwck/) |
 |pdst|rosalind.py|[Creating a Distance Matrix ](http://rosalind.info/problems/pdst/) |
 |qrt|qrt.py phylogeny.py|[Quartets](http://rosalind.info/problems/qrt/)|
-|qrtd|qrtd.py|[Quartet Distance](http://rosalind.info/problems/qrtd/) WIP|
+|qrtd|qrtd.py|[Quartet Distance](http://rosalind.info/problems/qrtd/) [WIP](https://github.com/weka511/bioinformatics/issues/46)|
 |root|phylogeny.py|[Counting Rooted Binary Trees ](http://rosalind.info/problems/root/) |
-|rsub|rsub.py|[Identifying Reversing Substitutions](http://rosalind.info/problems/rsub/) WIP|
+|rsub|rsub.py|[Identifying Reversing Substitutions](http://rosalind.info/problems/rsub/) [WIP](https://github.com/weka511/bioinformatics/issues/49)|
 |sptd|sptb.py phylogeny.py|[Phylogeny Comparison with Split Distance](http://rosalind.info/problems/sptd/) |
 |tree|tree.py phylogeny.py|[Completing a Tree ](http://rosalind.info/problems/tree/) |
 
