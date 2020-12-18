@@ -277,7 +277,7 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 | # | Location | Description |
 | ---- | --------------- | ------------------------------------------------|
 |alph|alph.py phylogeny.py|[Alignment-Based Phylogeny](http://rosalind.info/problems/alph/)|
-|chbp|chbp.py phylogeny.py|[Character-Based Phylogeny](http://rosalind.info/problems/chbp/) [WIP](https://github.com/weka511/bioinformatics/issues/45)|
+|chbp|chbp.py phylogeny.py|[Character-Based Phylogeny](http://rosalind.info/problems/chbp/)|
 |cntq|cntq.py |[Counting Quartets](http://rosalind.info/problems/cntq/)|
 |cset|cset.py|[Fixing an Inconsistent Character Set](http://rosalind.info/problems/cset/) [WIP](https://github.com/weka511/bioinformatics/issues/48)|
 |cstr|cstr.py phylogeny.py|[Creating a Character Table from Genetic Strings](http://rosalind.info/problems/cstr/)|

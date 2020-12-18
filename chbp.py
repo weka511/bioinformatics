@@ -27,8 +27,11 @@ def chbp(species,character_table):
           def __init__(self,taxa):
                self.taxa = [s for s in taxa]
           
-          #def __str__(self):
-               #return '(' + ','.join(str(taxon) for taxon in self.taxa) +')'
+          def is_trivial(self):
+               return len(self.taxa)==0
+          
+          def is_singleton(self):
+               return len(self.taxa)==1
           
           def newick(self):
                def conv(taxon):
@@ -36,7 +39,10 @@ def chbp(species,character_table):
                          return species[taxon]
                     else:
                          return taxon.newick()
-               return '(' + ','.join(conv(taxon) for taxon in self.taxa) +')'
+               if self.is_singleton():
+                    return conv(self.taxa[0])
+               else:
+                    return '(' + ','.join(conv(taxon) for taxon in self.taxa) +')'
           
           def split(self,character):
                left  = []
@@ -46,16 +52,22 @@ def chbp(species,character_table):
                          left.append(i)
                     else:
                          right.append(i)
-                         
-               self.taxa = [Clade(left),Clade(right)]
-         
+               leftTaxon  = Clade(left)
+               rightTaxon = Clade(right)
+               if leftTaxon.is_trivial(): return False
+               if rightTaxon.is_trivial(): return False
+               self.taxa = [leftTaxon,rightTaxon]
+               return True
+          
           def splitAll(self,characters,depth=0):
                if depth<len(characters):
-                    self.split(characters[depth])
-                    for taxon in self.taxa:
-                         taxon.splitAll(characters,depth+1)
+                    if self.split(characters[depth]):
+                         for taxon in self.taxa:
+                              taxon.splitAll(characters,depth+1)
+                    else:
+                         self.splitAll(characters,depth+1) 
                          
-          #__repr__ = __str__     # https://stackoverflow.com/questions/12448175/confused-about-str-on-list-in-python
+ 
           
      def entropy(freq):
           if freq==0 or freq==n: return 0
@@ -72,9 +84,7 @@ def chbp(species,character_table):
      indices         = list(range(len(species)))
      root            = Clade(indices)
      root.splitAll(characters)
-     print (root.newick())
-     #left,right      = split(species,characters[0])
-     x=0
+     return f'{root.newick()};'
 
 
  
