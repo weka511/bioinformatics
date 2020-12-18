@@ -189,9 +189,22 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 
 | # | Location | Description |
 | ---- | --------------- | ------------------------------------------------|
-|laff|laff.py |[Local Alignment with Affine Gap Penalty](http://rosalind.info/problems/laff/) [WIP](https://github.com/weka511/bioinformatics/issues/63)|
-|mult|mult.py align.py|[Multiple Alignment](http://rosalind.info/problems/mult/)|
 |smgb|smgb.py |[Semiglobal Alignment](http://rosalind.info/problems/smgb/) |
+|ctea|ctea.py|[Counting Optimal Alignments](http://rosalind.info/problems/ctea/) [WIP](https://github.com/weka511/bioinformatics/issues/67)|
+|edit|edit.py|[Edit Distance](http://rosalind.info/problems/edit/) |
+|edta|edta.py|[Edit Distance Alignment](http://rosalind.info/problems/edta/)|
+|gaff|gaff.py|[Global Alignment with Scoring Matrix and Affine Gap Penalty](http://rosalind.info/problems/gaff/)|
+|gcon|gcon.py|[Global Alignment with Constant Gap Penalty](http://rosalind.info/problems/gcon/)|
+|glob|GLOB.py|[Global Alignment with Scoring Matrix](http://rosalind.info/problems/glob/) -- test harness only|
+|hamm|rosalind.py|[Counting Point Mutations](http://rosalind.info/problems/hamm/) |
+|laff|laff.py |[Local Alignment with Affine Gap Penalty](http://rosalind.info/problems/laff/) [WIP](https://github.com/weka511/bioinformatics/issues/63)|
+|loca|loca.py|[Local Alignment with Scoring Matrix ](http://rosalind.info/problems/loca/) |
+|mgap|mmgap.py|[Maximizing the Gap Symbols of an Optimal Alignment](http://rosalind.info/problems/mgap/) [WIP](https://github.com/weka511/bioinformatics/issues/98)|
+|mult|mult.py align.py|[Multiple Alignment](http://rosalind.info/problems/mult/)|
+|oap|oap.py|[Overlap Alignment](http://rosalind.info/problems/oap/) [wip](https://github.com/weka511/bioinformatics/issues/24)|
+|osym|osym.py|[Isolating Symbols in Alignments](http://rosalind.info/problems/osym/) [WIP](https://github.com/weka511/bioinformatics/issues/97)|
+|pdst|rosalind.py|[Creating a Distance Matrix ](http://rosalind.info/problems/pdst/) |
+|tran|rosalind.py|[Transitions and Transversions](http://rosalind.info/problems/tran/) |
 
 ## [Combinatorics](http://rosalind.info/problems/topics/combinatorics/)
 
@@ -380,21 +393,7 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 |seto|-|[Set operations](http://rosalind.info/problems/seto/) Solved using Python shell|
 |sset|-|[Counting Subsets](http://rosalind.info/problems/sset/) Solved with a single line in Python shell: 2**n%1000000|
 
-## [Alignment](http://rosalind.info/problems/topics/alignment/)
 
-| # | Location | Description |
-| ---- | --------------- | ------------------------------------------------|
-|ctea|ctea.py|[Counting Optimal Alignments](http://rosalind.info/problems/ctea/) [WIP](https://github.com/weka511/bioinformatics/issues/67)|
-|edit|edit.py|[Edit Distance](http://rosalind.info/problems/edit/) |
-|edta|edta.py|[Edit Distance Alignment](http://rosalind.info/problems/edta/)|
-|gaff|gaff.py|[Global Alignment with Scoring Matrix and Affine Gap Penalty](http://rosalind.info/problems/gaff/)|
-|gcon|gcon.py|[Global Alignment with Constant Gap Penalty](http://rosalind.info/problems/gcon/)|
-|glob|GLOB.py|[Global Alignment with Scoring Matrix](http://rosalind.info/problems/glob/) -- test harness only|
-|loca|loca.py|[Local Alignment with Scoring Matrix ](http://rosalind.info/problems/loca/) |
-|hamm|rosalind.py|[Counting Point Mutations](http://rosalind.info/problems/hamm/) |
-|oap|oap.py|[Overlap Alignment](http://rosalind.info/problems/oap/) (wip)|
-|pdst|rosalind.py|[Creating a Distance Matrix ](http://rosalind.info/problems/pdst/) |
-|tran|rosalind.py|[Transitions and Transversions](http://rosalind.info/problems/tran/) |
 
 ## Other Problems
 
