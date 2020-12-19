@@ -18,32 +18,61 @@
 import argparse
 import os
 import time
-from helpers import read_strings
+from helpers import read_strings,expand
 
-  
+def cset(matrix):
+    def find_inconsistencies(i,j,skip=-1):
+        values = [[],[],[],[]]
+        for k in range(n):
+            if k==skip: continue
+            values[2*matrix[k][i] + matrix[k][j]].append(k)
+        if all([len(values[l])>0 for l in range(4)]):
+            return values
+        else:
+            return []
+        
+    m = len(matrix[0])
+    n = len(matrix)
+    inconsistencies = [find_inconsistencies(i,j) for i in range(m) for j in range(i)]
+    candidates = set()
+    #for i in range(4):
+    for values in inconsistencies:
+        if len(values)>0:
+            for value in values:
+                if len(value)==1:
+                    candidates.add(value[0])
+    
+    for skip in candidates:
+        inconsistencies = [find_inconsistencies(i,j,skip=skip) for i in range(m) for j in range(i)]
+        for values in inconsistencies:
+            if len(values)==0:
+                return [matrix[row] for row in range(n) if row!=skip] 
+            for value in values:
+                if len(value)==0:
+                    return [matrix[row] for row in range(n) if row!=skip] 
+        #x=0
+    #return [matrix[row] for row in range(n) if row!=candidate]        
+
 if __name__=='__main__':
     start = time.time()
     parser = argparse.ArgumentParser('....')
     parser.add_argument('--sample',   default=False, action='store_true', help='process sample dataset')
-    parser.add_argument('--extra',    default=False, action='store_true', help='process extra dataset')
     parser.add_argument('--rosalind', default=False, action='store_true', help='process Rosalind dataset')
     args = parser.parse_args()
     if args.sample:
-        pass
-        
-    
-    if args.extra:
-        Input,Expected  = read_strings('data/....txt',init=0)
-        ...
+        print (cset([expand('100001'),
+                     expand('000110'),
+                     expand('111000'),
+                     expand('100111')]))
   
     if args.rosalind:
-        Input  = read_strings(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt')
- 
-        Result = None
+        Input           = read_strings(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt')
+        character_table = [expand(row) for row in Input]
+        Result          = cset(character_table)
         print (Result)
         with open(f'{os.path.basename(__file__).split(".")[0]}.txt','w') as f:
-            for line in Result:
-                f.write(f'{line}\n')
+            for row in Result:
+                f.write(f'{"".join(str(i) for i in row)}\n')
                 
     elapsed = time.time() - start
     minutes = int(elapsed/60)
