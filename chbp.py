@@ -18,12 +18,8 @@
 import argparse
 import os
 import time
-from   helpers import read_strings
-from phylogeny import chbp
-
-
-def expand(s):
-     return [int(c) for c in s]
+from   helpers import read_strings,expand
+from   phylogeny import chbp
 
 if __name__=='__main__':
      start = time.time()

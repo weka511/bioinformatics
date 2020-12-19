@@ -746,3 +746,10 @@ def create_hmm_from_strings(strings):
             Emission[(items[0],alphabet[j-1])] = float(items[j])
         i+=1
     return (xs,alphabet,States,Transition,Emission)
+
+# expand
+#
+# Convert a string of digits to an integer list
+
+def expand(s):
+    return [int(c) for c in s]
