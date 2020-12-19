@@ -35,7 +35,6 @@ def cset(matrix):
     n = len(matrix)
     inconsistencies = [find_inconsistencies(i,j) for i in range(m) for j in range(i)]
     candidates = set()
-    #for i in range(4):
     for values in inconsistencies:
         if len(values)>0:
             for value in values:
