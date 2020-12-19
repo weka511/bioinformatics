@@ -19,27 +19,43 @@ import argparse
 import os
 import time
 from helpers import read_strings
+from newick  import newick_to_adjacency_list
+from   fasta import FastaContent
 
-  
+def rsub(T,Assignments):
+    Adj =newick_to_adjacency_list(T)
+    fc  = FastaContent(Assignments)
+    x=0
+    
 if __name__=='__main__':
     start = time.time()
-    parser = argparse.ArgumentParser('....')
+    parser = argparse.ArgumentParser('RSUB  	Identifying Reversing Substitutions')
     parser.add_argument('--sample',   default=False, action='store_true', help='process sample dataset')
-    parser.add_argument('--extra',    default=False, action='store_true', help='process extra dataset')
     parser.add_argument('--rosalind', default=False, action='store_true', help='process Rosalind dataset')
     args = parser.parse_args()
     if args.sample:
-        pass
+        print(rsub('(((ostrich,cat)rat,mouse)dog,elephant)robot;',
+                   ['>robot',
+                   'AATTG',
+                   '>dog',
+                   'GGGCA',
+                   '>mouse',
+                   'AAGAC',
+                   '>rat',
+                   'GTTGT',
+                   '>cat',
+                   'GAGGC',
+                   '>ostrich',
+                   'GTGTC',
+                   '>elephant',
+                   'AATTC']))
         
-    
-    if args.extra:
-        Input,Expected  = read_strings('data/....txt',init=0)
-        ...
-  
+     
     if args.rosalind:
         Input  = read_strings(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt')
  
-        Result = None
+        Result = rsub(Input[0],Input[1:])
+        
         print (Result)
         with open(f'{os.path.basename(__file__).split(".")[0]}.txt','w') as f:
             for line in Result:
