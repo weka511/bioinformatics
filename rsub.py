@@ -18,15 +18,56 @@
 import argparse
 import os
 import time
-from helpers import read_strings
-from newick  import newick_to_adjacency_list
-from   fasta import FastaContent
+from   helpers import read_strings, flatten
+from   newick  import newick_to_adjacency_list
+from   fasta   import FastaContent
 
 def rsub(T,Assignments):
-    Adj =newick_to_adjacency_list(T)
-    fc  = FastaContent(Assignments)
-    x=0
     
+    def find_path(node):
+        Path   = [node]
+        parent = Parents[node]
+        while len(parent)>0:
+            Path.append(parent)
+            if parent in Parents:
+                parent = Parents[parent]
+            else:
+                break
+        return Path[::-1]
+    
+    def FindReversingSubstitutions(Path,pos):
+        History   = [Characters[Path[0]][pos]]
+        Names     = Path[0:1]
+        Reverses  = []
+        for taxon in Path[1:]:
+            current = Characters[taxon][pos]
+            if current==History[-1]: continue
+            History.append(current)
+            Names.append(taxon)
+            if len(History)>2 and History[0]==History[2]:
+                Reverses.append((Names[-2],Names[-1],pos+1,History[-3],History[-2],History[-1]))
+        return Reverses
+    
+    def create_parents(Adj):
+        Product = {node:[] for node in flatten(Adj.values())}
+        for parent,children in Adj.items():
+            for child in children:
+                Product[child] = parent
+        return Product
+                
+    Adj,root = newick_to_adjacency_list(T,return_root=True)
+    fc       = FastaContent(Assignments)
+    Characters = fc.to_dict()
+    _,string = fc[0]
+    m        = len(string)
+    Parents  = create_parents(Adj)
+    Paths    = [find_path(node) for node in flatten(Adj.values()) if len(Adj[node])==0]
+    return [subst for subst in [FindReversingSubstitutions(path,pos) for path in Paths for pos in range(m)] if len(subst)>0]
+    
+def format(reverse):
+    for species1,species2,pos,symbol1,symbol2,symbol3 in reverse:
+        return f'{species1} {species2} {pos} {symbol1}->{symbol2}->{symbol3}'
+
 if __name__=='__main__':
     start = time.time()
     parser = argparse.ArgumentParser('RSUB  	Identifying Reversing Substitutions')
@@ -34,21 +75,22 @@ if __name__=='__main__':
     parser.add_argument('--rosalind', default=False, action='store_true', help='process Rosalind dataset')
     args = parser.parse_args()
     if args.sample:
-        print(rsub('(((ostrich,cat)rat,mouse)dog,elephant)robot;',
-                   ['>robot',
-                   'AATTG',
-                   '>dog',
-                   'GGGCA',
-                   '>mouse',
-                   'AAGAC',
-                   '>rat',
-                   'GTTGT',
-                   '>cat',
-                   'GAGGC',
-                   '>ostrich',
-                   'GTGTC',
-                   '>elephant',
-                   'AATTC']))
+        for reverse in rsub('(((ostrich,cat)rat,mouse)dog,elephant)robot;',
+                            ['>robot',
+                             'AATTG',
+                             '>dog',
+                             'GGGCA',
+                             '>mouse',
+                             'AAGAC',
+                             '>rat',
+                             'GTTGT',
+                             '>cat',
+                             'GAGGC',
+                             '>ostrich',
+                             'GTGTC',
+                             '>elephant',
+                             'AATTC']):
+            print(format(reverse))
         
      
     if args.rosalind:
