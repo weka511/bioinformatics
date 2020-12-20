@@ -18,9 +18,11 @@
 import re
 import numpy as np
 from   rosalind  import LabelledTree
-from   random import randrange
+from   random  import randrange
 from   newick  import newick_to_adjacency_list
-from numpy   import argmin
+from   numpy   import argmin
+from   fasta   import FastaContent
+from   helpers import  flatten
 
 #  tree -- Completing a Tree 
 #
@@ -773,3 +775,47 @@ def chbp(species,character_table):
     root            = Clade(indices)
     root.splitAll(characters)
     return f'{root.newick()};'
+
+#  RSUB  	Identifying Reversing Substitutions 
+
+def rsub(T,Assignments):
+    
+    def find_path(node):
+        Path   = [node]
+        parent = Parents[node]
+        while len(parent)>0:
+            Path.append(parent)
+            if parent in Parents:
+                parent = Parents[parent]
+            else:
+                break
+        return Path[::-1]
+    
+    def FindReversingSubstitutions(Path,pos):
+        History   = [Characters[Path[0]][pos]]
+        Names     = Path[0:1]
+        Reverses  = []
+        for taxon in Path[1:]:
+            current = Characters[taxon][pos]
+            if current==History[-1]: continue
+            History.append(current)
+            Names.append(taxon)
+            if len(History)>2 and History[-3]==History[-1]:
+                Reverses.append((Names[-2],Names[-1],pos+1,History[-3],History[-2],History[-1]))
+        return Reverses
+    
+    def create_parents(Adj):
+        Product = {node:[] for node in flatten(Adj.values())}
+        for parent,children in Adj.items():
+            for child in children:
+                Product[child] = parent
+        return Product
+                
+    Adj,root = newick_to_adjacency_list(T,return_root=True)
+    fc       = FastaContent(Assignments)
+    Characters = fc.to_dict()
+    _,string = fc[0]
+    m        = len(string)
+    Parents  = create_parents(Adj)
+    Paths    = [find_path(node) for node in flatten(Adj.values()) if len(Adj[node])==0]
+    return list(set(flatten([subst for subst in [FindReversingSubstitutions(path,pos) for path in Paths for pos in range(m)] if len(subst)>0])))

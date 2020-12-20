@@ -305,7 +305,7 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 |qrt|qrt.py phylogeny.py|[Quartets](http://rosalind.info/problems/qrt/)|
 |qrtd|qrtd.py|[Quartet Distance](http://rosalind.info/problems/qrtd/) [WIP](https://github.com/weka511/bioinformatics/issues/46)|
 |root|phylogeny.py|[Counting Rooted Binary Trees ](http://rosalind.info/problems/root/) |
-|rsub|rsub.py|[Identifying Reversing Substitutions](http://rosalind.info/problems/rsub/) [WIP](https://github.com/weka511/bioinformatics/issues/49)|
+|rsub|rsub.py phylogeny.py|[Identifying Reversing Substitutions](http://rosalind.info/problems/rsub/)|
 |sptd|sptb.py phylogeny.py|[Phylogeny Comparison with Split Distance](http://rosalind.info/problems/sptd/) |
 |tree|tree.py phylogeny.py|[Completing a Tree ](http://rosalind.info/problems/tree/) |
 
