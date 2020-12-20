@@ -39,7 +39,7 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 |BA2G |rosalind.py|[Implement GibbsSampler](http://rosalind.info/problems/ba2g/)
 |BA2H |rosalind.py|[Implement DistanceBetweenPatternAndStrings](http://rosalind.info/problems/ba2h/) 
 
-### 3. How Do We Assemble Genomes?
+### 3. How Do We Assemble Genomes?  See also  [Genome Assembly](http://rosalind.info/problems/topics/genome-assembly/)
 
 | # | Location | Description |
 | ---- | --------------- | ------------------------------------------------|
@@ -53,8 +53,14 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 |BA3H |rosalind.py|[Reconstruct a String from its k-mer Composition](http://rosalind.info/problems/ba3a/)
 |BA3I |rosalind.py|[Find a k-Universal Circular String](http://rosalind.info/problems/ba3a/)
 |BA3J |rosalind.py|[Reconstruct a String from its Paired Composition](http://rosalind.info/problems/ba3a/)
+|asmq|ASMQ.py|[Assessing Assembly Quality with N50 and N75](http://rosalind.info/problems/asmq/) |
+|corr|CORR.py|[Error Correction in Reads](http://rosalind.info/problems/corr/) |
+|gasm|GASM.py|[Genome Assembly Using Reads](http://rosalind.info/problems/gasm/) |
+|grep|GREP.py|[Genome Assembly with Perfect Coverage and Repeats](http://rosalind.info/problems/grep/)|
+|long|LONG.py|[Genome Assembly as Shortest Superstring](http://rosalind.info/problems/long/) |
+|pcov|PCOV.py|[Genome Assembly with Perfect Coverage](http://rosalind.info/problems/pcov/) |
 
-### 4. How Do We Sequence Antibiotics?
+### 4. How Do We Sequence Antibiotics? See also [Computational Mass Spectrometry](http://rosalind.info/problems/topics/computational-mass-spectrometry/)
 
 | # | Location | Description |
 | ---- | --------------- | ------------------------------------------------|
@@ -72,8 +78,14 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 |BA4L|rosalind.py|[Trim a Peptide Leaderboard](http://rosalind.info/problems/ba4l/) |
 |BA4M|ba4m.py spectrum.py| [Solve the Turnpike Problem](http://rosalind.info/problems/ba4m/) |
 |-|tyrocidine.py| Challenge Problems from [Bioinformatics Algorithms](http://bioinformaticsalgorithms.com/): sequence Tyrocidine from supplied spectrum (WIP)|
+|conv|conv.py+spectrum.py|[Comparing Spectra with the Spectral Convolution](http://rosalind.info/problems/conv/)|
+|full|full.py+spectrum.py|[Inferring Peptide from Full Spectrum](http://rosalind.info/problems/full/)|
+|prtm|rosalind.py|[Calculating Protein Mass](http://rosalind.info/problems/prtm/) - get_weight(...)|
+|prsm|prsm.py+spectrum.py|[Matching a Spectrum to a Protein](http://rosalind.info/problems/prsm/)|
+|spec|spec.py+spectrum.py|[Inferring Protein from Spectrum](http://rosalind.info/problems/spec/)|
+|sgra|sgra.py+spectrum.py|[Using the Spectrum Graph to Infer Peptides](http://rosalind.info/problems/sgra/)|
 
-### 5. How do we compare Biological Sequences?
+### 5. How do we compare Biological Sequences?  See also [Alignment](http://rosalind.info/problems/topics/alignment/)
  
 | # | Location | Description |
 | ---- | --------------- | ------------------------------------------------|
@@ -91,6 +103,23 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 |BA5L|BA5L.py align.py|[Align Two Strings Using Linear Space](http://rosalind.info/problems/ba5l/) [WIP](https://github.com/weka511/bioinformatics/issues/29)|    
 |BA5M|BA5M.py align.py|[Find a Highest-Scoring Multiple Sequence Alignment](http://rosalind.info/problems/ba5m/) | 
 |BA5N |align.py|[Find a Topological Ordering of a DAG](http://rosalind.info/problems/ba5n/) | 
+|ctea|ctea.py|[Counting Optimal Alignments](http://rosalind.info/problems/ctea/) [WIP](https://github.com/weka511/bioinformatics/issues/67)|
+|edit|edit.py|[Edit Distance](http://rosalind.info/problems/edit/) |
+|edta|edta.py|[Edit Distance Alignment](http://rosalind.info/problems/edta/)|
+|gaff|gaff.py|[Global Alignment with Scoring Matrix and Affine Gap Penalty](http://rosalind.info/problems/gaff/)|
+|gcon|gcon.py|[Global Alignment with Constant Gap Penalty](http://rosalind.info/problems/gcon/)|
+|glob|GLOB.py|[Global Alignment with Scoring Matrix](http://rosalind.info/problems/glob/) -- test harness only|
+|hamm|rosalind.py|[Counting Point Mutations](http://rosalind.info/problems/hamm/) |
+|laff|laff.py |[Local Alignment with Affine Gap Penalty](http://rosalind.info/problems/laff/) [WIP](https://github.com/weka511/bioinformatics/issues/63)|
+|loca|loca.py|[Local Alignment with Scoring Matrix ](http://rosalind.info/problems/loca/) |
+|mgap|mmgap.py|[Maximizing the Gap Symbols of an Optimal Alignment](http://rosalind.info/problems/mgap/) [WIP](https://github.com/weka511/bioinformatics/issues/98)|
+|mult|mult.py align.py|[Multiple Alignment](http://rosalind.info/problems/mult/)|
+|oap|oap.py|[Overlap Alignment](http://rosalind.info/problems/oap/) [wip](https://github.com/weka511/bioinformatics/issues/24)|
+|osym|osym.py|[Isolating Symbols in Alignments](http://rosalind.info/problems/osym/) [WIP](https://github.com/weka511/bioinformatics/issues/97)|
+|pdst|rosalind.py|[Creating a Distance Matrix ](http://rosalind.info/problems/pdst/) |
+|smgb|smgb.py |[Semiglobal Alignment](http://rosalind.info/problems/smgb/) |
+|tran|rosalind.py|[Transitions and Transversions](http://rosalind.info/problems/tran/) |
+
 
 ### 6. Are there fragile regions in the human genome?
 
@@ -108,7 +137,7 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 |BA6J|BA6J.py fragile.py|[Implement 2-BreakOnGenomeGraph ](http://rosalind.info/problems/ba6j/)|
 |BA6K|BA6K.py fragile.py|[Implement 2-BreakOnGenome ](http://rosalind.info/problems/ba6k/)|
 
-### 7. Which animal gave us SARS?
+### 7. Which animal gave us SARS? See also [Phylogeny](http://rosalind.info/problems/topics/phylogeny/)
 
 | # | Location | Description |
 | ---- | --------------- | ------------------------------------------------|
@@ -119,6 +148,25 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 |BA7E|BA7E.py|[Implement the Neighbor Joining Algorithm](http://rosalind.info/problems/ba7e/)|
 |BA7F|BA7F.py|[Implement SmallParsimony](http://rosalind.info/problems/ba7f/)|
 |BA7G|BA7G.py|[Adapt SmallParsimony to Unrooted Trees](http://rosalind.info/problems/ba7g/)|
+|alph|alph.py phylogeny.py|[Alignment-Based Phylogeny](http://rosalind.info/problems/alph/)|
+|chbp|chbp.py phylogeny.py|[Character-Based Phylogeny](http://rosalind.info/problems/chbp/)|
+|cntq|cntq.py |[Counting Quartets](http://rosalind.info/problems/cntq/)|
+|cset|cset.py|[Fixing an Inconsistent Character Set](http://rosalind.info/problems/cset/) [WIP](https://github.com/weka511/bioinformatics/issues/48)|
+|cstr|cstr.py phylogeny.py|[Creating a Character Table from Genetic Strings](http://rosalind.info/problems/cstr/)|
+|ctbl|ctbl.py phylogeny.py|[Creating a Character Table](http://rosalind.info/problems/ctbl/) |
+|cunr|phylogeny.py|[Counting Unrooted Binary Trees](http://rosalind.info/problems/cunr/) |
+|eubt|eubt.py phylogeny.py|[Enumerating Unrooted Binary Trees](http://rosalind.info/problems/eubt/)|
+|inod|-|[Counting Phylogenetic Ancestors](http://rosalind.info/problems/inod/) No code needed|
+|mend|mend.py phylogeny.py|[Inferring a Genotype from a Pedigree](http://rosalind.info/problems/mend/) |
+|nkew|nwck.py|[Weighting the Tree](http://rosalind.info/problems/nkew/) |
+|nwck|nwck.py|[Distances in Trees](http://rosalind.info/problems/nwck/) |
+|pdst|rosalind.py|[Creating a Distance Matrix ](http://rosalind.info/problems/pdst/) |
+|qrt|qrt.py phylogeny.py|[Quartets](http://rosalind.info/problems/qrt/)|
+|qrtd|qrtd.py|[Quartet Distance](http://rosalind.info/problems/qrtd/) [WIP](https://github.com/weka511/bioinformatics/issues/46)|
+|root|phylogeny.py|[Counting Rooted Binary Trees ](http://rosalind.info/problems/root/) |
+|rsub|rsub.py phylogeny.py|[Identifying Reversing Substitutions](http://rosalind.info/problems/rsub/)|
+|sptd|sptb.py phylogeny.py|[Phylogeny Comparison with Split Distance](http://rosalind.info/problems/sptd/) |
+|tree|tree.py phylogeny.py|[Completing a Tree ](http://rosalind.info/problems/tree/) |
 
 ### 8. How did Yeast become a Winemaker?
 
@@ -185,26 +233,7 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 |BA11I|BA11I.py spectrum.py| [Compute the Probability of a Spectral Dictionary](http://rosalind.info/problems/ba11i/) [WIP](https://github.com/weka511/bioinformatics/issues/95)|
 |BA11J|BA11J.py spectrum.py| [Find a Highest-Scoring Modified Peptide against a Spectrum](http://rosalind.info/problems/ba11j/) [WIP](https://github.com/weka511/bioinformatics/issues/96)|
 
-## [Alignment](http://rosalind.info/problems/topics/alignment/)
 
-| # | Location | Description |
-| ---- | --------------- | ------------------------------------------------|
-|ctea|ctea.py|[Counting Optimal Alignments](http://rosalind.info/problems/ctea/) [WIP](https://github.com/weka511/bioinformatics/issues/67)|
-|edit|edit.py|[Edit Distance](http://rosalind.info/problems/edit/) |
-|edta|edta.py|[Edit Distance Alignment](http://rosalind.info/problems/edta/)|
-|gaff|gaff.py|[Global Alignment with Scoring Matrix and Affine Gap Penalty](http://rosalind.info/problems/gaff/)|
-|gcon|gcon.py|[Global Alignment with Constant Gap Penalty](http://rosalind.info/problems/gcon/)|
-|glob|GLOB.py|[Global Alignment with Scoring Matrix](http://rosalind.info/problems/glob/) -- test harness only|
-|hamm|rosalind.py|[Counting Point Mutations](http://rosalind.info/problems/hamm/) |
-|laff|laff.py |[Local Alignment with Affine Gap Penalty](http://rosalind.info/problems/laff/) [WIP](https://github.com/weka511/bioinformatics/issues/63)|
-|loca|loca.py|[Local Alignment with Scoring Matrix ](http://rosalind.info/problems/loca/) |
-|mgap|mmgap.py|[Maximizing the Gap Symbols of an Optimal Alignment](http://rosalind.info/problems/mgap/) [WIP](https://github.com/weka511/bioinformatics/issues/98)|
-|mult|mult.py align.py|[Multiple Alignment](http://rosalind.info/problems/mult/)|
-|oap|oap.py|[Overlap Alignment](http://rosalind.info/problems/oap/) [wip](https://github.com/weka511/bioinformatics/issues/24)|
-|osym|osym.py|[Isolating Symbols in Alignments](http://rosalind.info/problems/osym/) [WIP](https://github.com/weka511/bioinformatics/issues/97)|
-|pdst|rosalind.py|[Creating a Distance Matrix ](http://rosalind.info/problems/pdst/) |
-|smgb|smgb.py |[Semiglobal Alignment](http://rosalind.info/problems/smgb/) |
-|tran|rosalind.py|[Transitions and Transversions](http://rosalind.info/problems/tran/) |
 
 ## [Combinatorics](http://rosalind.info/problems/topics/combinatorics/)
 
@@ -227,16 +256,7 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 |rnas|rnas.py|[Wobble Bonding and RNA Secondary Structures](http://rosalind.info/problems/rnas/) [WIP](https://github.com/weka511/bioinformatics/issues/70)|
 |root|phylogeny.py|[Counting Rooted Binary Trees ](http://rosalind.info/problems/root/) |
 
-## [Genome Assembly](http://rosalind.info/problems/topics/genome-assembly/)
 
-| # | Location | Description |
-| ---- | --------------- | ------------------------------------------------|
-|asmq|ASMQ.py|[Assessing Assembly Quality with N50 and N75](http://rosalind.info/problems/asmq/) |
-|corr|CORR.py|[Error Correction in Reads](http://rosalind.info/problems/corr/) |
-|gasm|GASM.py|[Genome Assembly Using Reads](http://rosalind.info/problems/gasm/) |
-|grep|GREP.py|[Genome Assembly with Perfect Coverage and Repeats](http://rosalind.info/problems/grep/)|
-|long|LONG.py|[Genome Assembly as Shortest Superstring](http://rosalind.info/problems/long/) |
-|pcov|PCOV.py|[Genome Assembly with Perfect Coverage](http://rosalind.info/problems/pcov/) |
 
 ## [Genome Rearrangements](http://rosalind.info/problems/topics/genome-rearrangements/)
 
@@ -286,28 +306,7 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 |mend|mend.py phylogeny.py|[Inferring a Genotype from a Pedigree](http://rosalind.info/problems/mend/) |
 |sexl|rosalind.py|[Sex-Linked Inheritance ](http://rosalind.info/problems/sexl/) |
 
-## [Phylogeny](http://rosalind.info/problems/topics/phylogeny/)
-| # | Location | Description |
-| ---- | --------------- | ------------------------------------------------|
-|alph|alph.py phylogeny.py|[Alignment-Based Phylogeny](http://rosalind.info/problems/alph/)|
-|chbp|chbp.py phylogeny.py|[Character-Based Phylogeny](http://rosalind.info/problems/chbp/)|
-|cntq|cntq.py |[Counting Quartets](http://rosalind.info/problems/cntq/)|
-|cset|cset.py|[Fixing an Inconsistent Character Set](http://rosalind.info/problems/cset/) [WIP](https://github.com/weka511/bioinformatics/issues/48)|
-|cstr|cstr.py phylogeny.py|[Creating a Character Table from Genetic Strings](http://rosalind.info/problems/cstr/)|
-|ctbl|ctbl.py phylogeny.py|[Creating a Character Table](http://rosalind.info/problems/ctbl/) |
-|cunr|phylogeny.py|[Counting Unrooted Binary Trees](http://rosalind.info/problems/cunr/) |
-|eubt|eubt.py phylogeny.py|[Enumerating Unrooted Binary Trees](http://rosalind.info/problems/eubt/)|
-|inod|-|[Counting Phylogenetic Ancestors](http://rosalind.info/problems/inod/) No code needed|
-|mend|mend.py phylogeny.py|[Inferring a Genotype from a Pedigree](http://rosalind.info/problems/mend/) |
-|nkew|nwck.py|[Weighting the Tree](http://rosalind.info/problems/nkew/) |
-|nwck|nwck.py|[Distances in Trees](http://rosalind.info/problems/nwck/) |
-|pdst|rosalind.py|[Creating a Distance Matrix ](http://rosalind.info/problems/pdst/) |
-|qrt|qrt.py phylogeny.py|[Quartets](http://rosalind.info/problems/qrt/)|
-|qrtd|qrtd.py|[Quartet Distance](http://rosalind.info/problems/qrtd/) [WIP](https://github.com/weka511/bioinformatics/issues/46)|
-|root|phylogeny.py|[Counting Rooted Binary Trees ](http://rosalind.info/problems/root/) |
-|rsub|rsub.py phylogeny.py|[Identifying Reversing Substitutions](http://rosalind.info/problems/rsub/)|
-|sptd|sptb.py phylogeny.py|[Phylogeny Comparison with Split Distance](http://rosalind.info/problems/sptd/) |
-|tree|tree.py phylogeny.py|[Completing a Tree ](http://rosalind.info/problems/tree/) |
+
 
 ## [Population Dynamics](http://rosalind.info/problems/topics/population-dynamics/)
 
@@ -375,16 +374,7 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 |sseq|rosalind.py|[Finding a Spliced Motif](http://rosalind.info/problems/sseq/) |
 |subs|rosalind.py|[Finding a Motif in DNA](http://rosalind.info/problems/subs/) |
 
-## [Computational Mass Spectrometry](http://rosalind.info/problems/topics/computational-mass-spectrometry/)
 
-| # | Location | Description |
-| ---- | --------------- | ------------------------------------------------|
-|conv|conv.py+spectrum.py|[Comparing Spectra with the Spectral Convolution](http://rosalind.info/problems/conv/)|
-|full|full.py+spectrum.py|[Inferring Peptide from Full Spectrum](http://rosalind.info/problems/full/)|
-|prtm|rosalind.py|[Calculating Protein Mass](http://rosalind.info/problems/prtm/) - get_weight(...)|
-|prsm|prsm.py+spectrum.py|[Matching a Spectrum to a Protein](http://rosalind.info/problems/prsm/)|
-|spec|spec.py+spectrum.py|[Inferring Protein from Spectrum](http://rosalind.info/problems/spec/)|
-|sgra|sgra.py+spectrum.py|[Using the Spectrum Graph to Infer Peptides](http://rosalind.info/problems/sgra/)|
 
 ## [Set Theory](http://rosalind.info/problems/topics/set-theory/)
 | # | Location | Description |
