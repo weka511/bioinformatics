@@ -38,14 +38,20 @@ class FastaContent(object):
         if len(nn)>0:
             self.pairs.append((nn,text))
     
+    # __getitem__
+    #
     # Retrieve items (pairs) by index       
     def __getitem__(self,index):
         return self.pairs[index]
     
+    # __len__
+    #
     # Number of entries
     def __len__(self):
         return len(self.pairs)
     
+    # to_list
+    #
     # Used if caller wants a simple list seq,value, seq,value,...
     
     def to_list(self):
@@ -54,7 +60,17 @@ class FastaContent(object):
             List.append(a)
             List.append(b)
         return List
-
+    
+    #to_dict
+    #
+    # Used if caller wants a dictionary
+    
+    def to_dict(self):
+        Dict = {}
+        for a,b in self.pairs:
+            Dict[a]=b
+        return Dict
+    
 # FastaFile
 #
 # This class is used to parse Fasta data from a file
