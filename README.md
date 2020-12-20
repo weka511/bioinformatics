@@ -189,7 +189,6 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 
 | # | Location | Description |
 | ---- | --------------- | ------------------------------------------------|
-|smgb|smgb.py |[Semiglobal Alignment](http://rosalind.info/problems/smgb/) |
 |ctea|ctea.py|[Counting Optimal Alignments](http://rosalind.info/problems/ctea/) [WIP](https://github.com/weka511/bioinformatics/issues/67)|
 |edit|edit.py|[Edit Distance](http://rosalind.info/problems/edit/) |
 |edta|edta.py|[Edit Distance Alignment](http://rosalind.info/problems/edta/)|
@@ -204,6 +203,7 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 |oap|oap.py|[Overlap Alignment](http://rosalind.info/problems/oap/) [wip](https://github.com/weka511/bioinformatics/issues/24)|
 |osym|osym.py|[Isolating Symbols in Alignments](http://rosalind.info/problems/osym/) [WIP](https://github.com/weka511/bioinformatics/issues/97)|
 |pdst|rosalind.py|[Creating a Distance Matrix ](http://rosalind.info/problems/pdst/) |
+|smgb|smgb.py |[Semiglobal Alignment](http://rosalind.info/problems/smgb/) |
 |tran|rosalind.py|[Transitions and Transversions](http://rosalind.info/problems/tran/) |
 
 ## [Combinatorics](http://rosalind.info/problems/topics/combinatorics/)
@@ -231,8 +231,8 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 
 | # | Location | Description |
 | ---- | --------------- | ------------------------------------------------|
-|corr|CORR.py|[Error Correction in Reads](http://rosalind.info/problems/corr/) |
 |asmq|ASMQ.py|[Assessing Assembly Quality with N50 and N75](http://rosalind.info/problems/asmq/) |
+|corr|CORR.py|[Error Correction in Reads](http://rosalind.info/problems/corr/) |
 |gasm|GASM.py|[Genome Assembly Using Reads](http://rosalind.info/problems/gasm/) |
 |grep|GREP.py|[Genome Assembly with Perfect Coverage and Repeats](http://rosalind.info/problems/grep/)|
 |long|LONG.py|[Genome Assembly as Shortest Superstring](http://rosalind.info/problems/long/) |
