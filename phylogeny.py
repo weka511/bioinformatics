@@ -777,12 +777,27 @@ def chbp(species,character_table):
     return f'{root.newick()};'
 
 #  RSUB  	Identifying Reversing Substitutions 
+#
+# Given: A rooted binary tree T with labeled nodes in Newick format, followed by a collection of at most
+#        100 DNA strings in FASTA format whose labels correspond to the labels of T.
+#
+#        We will assume that the DNA strings have the same length, which does not exceed 400 bp).
+#
+# Return: A list of all reversing substitutions in T (in any order), with each substitution encoded by the following three items:
+#
+#    the name of the species in which the symbol is first changed, followed by the name of the species in which it changes back to its original state
+#    the position in the string at which the reversing substitution occurs; and
+#    the reversing substitution in the form original_symbol->substituted_symbol->reverted_symbol.
 
 def rsub(T,Assignments):
     
-    def find_path(node):
-        Path   = [node]
-        parent = Parents[node]
+    # find_path
+    #
+    # Find path from the root down to a specified leaf
+    
+    def find_path(leaf):
+        Path   = [leaf]
+        parent = Parents[leaf]
         while len(parent)>0:
             Path.append(parent)
             if parent in Parents:
@@ -791,6 +806,14 @@ def rsub(T,Assignments):
                 break
         return Path[::-1]
     
+    # FindReversingSubstitutions
+    #
+    # Find reversion substitutions in one specified path trhough tree, 
+    # affecting a specified position in the strings
+    #
+    # Parameters: Path    Path to be searched
+    #             pos     position in tree
+    # Strategy:  build up history of changes, and search back whenever a change is detected. 
     def FindReversingSubstitutions(Path,pos):
         History   = [Characters[Path[0]][pos]]
         Names     = Path[0:1]
@@ -800,9 +823,14 @@ def rsub(T,Assignments):
             if current==History[-1]: continue
             History.append(current)
             Names.append(taxon)
-            if len(History)>2 and History[-3]==History[-1]:
+            if len(History)>2 and History[-3]==History[-1]: # we have a reverse
                 Reverses.append((Names[-2],Names[-1],pos+1,History[-3],History[-2],History[-1]))
+                
         return Reverses
+    
+    # create_parents
+    
+    # Invert Ajacency list to we have the parent of each child
     
     def create_parents(Adj):
         Product = {node:[] for node in flatten(Adj.values())}
@@ -810,12 +838,21 @@ def rsub(T,Assignments):
             for child in children:
                 Product[child] = parent
         return Product
-                
+    
+    # get_unique
+    #
+    # Convert list of lists into a single list and remove duplicate elements
+    
+    def get_unique(list_of_lists):
+        return list(set(flatten(list_of_lists)))
+    
     Adj,root = newick_to_adjacency_list(T,return_root=True)
     fc       = FastaContent(Assignments)
-    Characters = fc.to_dict()
+    Characters = fc.to_dict()            # So we can find character for each species
     _,string = fc[0]
     m        = len(string)
     Parents  = create_parents(Adj)
     Paths    = [find_path(node) for node in flatten(Adj.values()) if len(Adj[node])==0]
-    return list(set(flatten([subst for subst in [FindReversingSubstitutions(path,pos) for path in Paths for pos in range(m)] if len(subst)>0])))
+    
+    # Build list of unique reversals. 
+    return get_unique([subst for subst in [FindReversingSubstitutions(path,pos) for path in Paths for pos in range(m)] if len(subst)>0])

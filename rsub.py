@@ -21,6 +21,10 @@ import time
 from   helpers import read_strings
 from   phylogeny import rsub
 
+# format
+#
+# Format reverse for display
+
 def format(reverse):
     species1,species2,pos,symbol1,symbol2,symbol3 = reverse
     return f'{species1} {species2} {pos} {symbol1}->{symbol2}->{symbol3}'
@@ -29,7 +33,7 @@ if __name__=='__main__':
     start = time.time()
     parser = argparse.ArgumentParser('RSUB  	Identifying Reversing Substitutions')
     parser.add_argument('--sample',   default=False, action='store_true', help='process sample dataset')
-    parser.add_argument('--extra',   default=False, action='store_true', help='process extra dataset')
+    parser.add_argument('--extra',    default=False, action='store_true', help='process extra dataset')
     parser.add_argument('--rosalind', default=False, action='store_true', help='process Rosalind dataset')
     args = parser.parse_args()
     if args.sample:
