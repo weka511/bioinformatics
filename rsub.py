@@ -62,11 +62,11 @@ def rsub(T,Assignments):
     m        = len(string)
     Parents  = create_parents(Adj)
     Paths    = [find_path(node) for node in flatten(Adj.values()) if len(Adj[node])==0]
-    return [subst for subst in [FindReversingSubstitutions(path,pos) for path in Paths for pos in range(m)] if len(subst)>0]
+    return list(set(flatten([subst for subst in [FindReversingSubstitutions(path,pos) for path in Paths for pos in range(m)] if len(subst)>0])))
     
 def format(reverse):
-    for species1,species2,pos,symbol1,symbol2,symbol3 in reverse:
-        return f'{species1} {species2} {pos} {symbol1}->{symbol2}->{symbol3}'
+    species1,species2,pos,symbol1,symbol2,symbol3 = reverse
+    return f'{species1} {species2} {pos} {symbol1}->{symbol2}->{symbol3}'
 
 if __name__=='__main__':
     start = time.time()
@@ -98,10 +98,10 @@ if __name__=='__main__':
  
         Result = rsub(Input[0],Input[1:])
         
-        print (Result)
         with open(f'{os.path.basename(__file__).split(".")[0]}.txt','w') as f:
-            for line in Result:
-                f.write(f'{line}\n')
+            for reverse in Result:
+                print (format(reverse))
+                f.write(f'{format(reverse)}\n')
                 
     elapsed = time.time() - start
     minutes = int(elapsed/60)
