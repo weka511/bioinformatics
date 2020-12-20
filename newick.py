@@ -170,11 +170,12 @@ class Parser():
 
 # newick_to_adjacency_list
 
-def newick_to_adjacency_list(T):
+def newick_to_adjacency_list(T,return_root=False):
     Adj       = {}
     Stack     = [[]]
     top       = []
     tokenizer = Tokenizer()
+    root      = None
     for token,start,pos,value in tokenizer.tokenize(T):
         if token==Tokenizer.OPEN_PARENTHESIS:
             Stack.append([])
@@ -182,12 +183,16 @@ def newick_to_adjacency_list(T):
             Stack[-1].append(value)
             Adj[value] = top
             top        = []
+            root       = value
         elif token==Tokenizer.CLOSE_PARENTHESIS:
             top = Stack.pop()
         elif token==Tokenizer.SEMICOLON:
             pass
     
-    return Adj
+    if return_root:
+        return Adj,root
+    else:
+        return Adj
     
 if __name__=='__main__':
     def display(p):
