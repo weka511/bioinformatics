@@ -44,7 +44,7 @@ def rsub(T,Assignments):
             if current==History[-1]: continue
             History.append(current)
             Names.append(taxon)
-            if len(History)>2 and History[0]==History[2]:
+            if len(History)>2 and History[-3]==History[-1]:
                 Reverses.append((Names[-2],Names[-1],pos+1,History[-3],History[-2],History[-1]))
         return Reverses
     
