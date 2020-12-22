@@ -13,37 +13,54 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-#  XXXX ................................
-
+#  SUBO suboptimal local alignment
 import argparse
 import os
 import time
 from   helpers import read_strings
+import subprocess
+from fasta import FastaContent
 
-  
+def subo(s,t,expthr=0.1):
+
+    print(
+        subprocess.run(['python',
+                      'lalign.py',
+                      '--email',
+                      'simon@greenweaves.nz',
+                      '--stype',
+                      'dna',
+                      '--expthr',
+                      str(expthr),
+                      '--asequence',
+                      s,
+                      '--bsequence',
+                      t],
+                     capture_output=True))
+     
 if __name__=='__main__':
     start = time.time()
-    parser = argparse.ArgumentParser('....')
+    parser = argparse.ArgumentParser('SUBO suboptimal local alignment')
     parser.add_argument('--sample',   default=False, action='store_true', help='process sample dataset')
     parser.add_argument('--rosalind', default=False, action='store_true', help='process Rosalind dataset')
     args = parser.parse_args()
     if args.sample:
-        Input = ['>Rosalind_12',
+        Input = [
+                 '>Rosalind_12',
                  'GACTCCTTTGTTTGCCTTAAATAGATACATATTTACTCTTGACTCTTTTGTTGGCCTTAAATAGATACATATTTGTGCGACTCCACGAGTGATTCGTA',
                  '>Rosalind_37',
                  'ATGGACTCCTTTGTTTGCCTTAAATAGATACATATTCAACAAGTGTGCACTTAGCCTTGCCGACTCCTTTGTTTGCCTTAAATAGATACATATTTG']
-        subo(Input[1],Input[3])
         
     
 
     if args.rosalind:
-        Input  = read_strings(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt')
- 
-        Result = None
-        print (Result)
-        with open(f'{os.path.basename(__file__).split(".")[0]}.txt','w') as f:
-            for line in Result:
-                f.write(f'{line}\n')
+        Input  = FastaContent(read_strings(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt'))
+        print(subo(Input[0][1],Input[1][1]))
+        #Result = None
+        #print (Result)
+        #with open(f'{os.path.basename(__file__).split(".")[0]}.txt','w') as f:
+            #for line in Result:
+                #f.write(f'{line}\n')
                 
     elapsed = time.time() - start
     minutes = int(elapsed/60)
