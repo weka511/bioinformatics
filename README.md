@@ -118,6 +118,7 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 |osym|osym.py|[Isolating Symbols in Alignments](http://rosalind.info/problems/osym/) [WIP](https://github.com/weka511/bioinformatics/issues/97)|
 |pdst|rosalind.py|[Creating a Distance Matrix ](http://rosalind.info/problems/pdst/) |
 |smgb|smgb.py |[Semiglobal Alignment](http://rosalind.info/problems/smgb/) |
+|subo|subo.py lalign.py|[Suboptimal Local Alignment](http://rosalind.info/problems/subo/) [WIP](https://github.com/weka511/bioinformatics/issues/99)|
 |tran|rosalind.py|[Transitions and Transversions](http://rosalind.info/problems/tran/) |
 
 
