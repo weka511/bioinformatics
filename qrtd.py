@@ -104,15 +104,23 @@ def qrtd(species,T1,T2):
     tree1     = parse(T1,start=n)
     adj1      = create_adj(tree1,indices=indices)
     edges1    = create_edges(adj1,n=n)
-    quartets1 = sorted(set(extract_quartets(edges1,adj1,n=n)))
+    quartets1 = extract_quartets(edges1,adj1,n=n)
     print (len(quartets1), quartets1)
     
     tree2     = parse(T2,start=n)
     adj2      = create_adj(tree2,indices=indices)
     edges2    = create_edges(adj2,n=n)
-    quartets2 = sorted(set(extract_quartets(edges2,adj2,n=n)))
-    print (len(quartets2),quartets2)           
-    return len(quartets1) + len(quartets2) - 2*get_matches(quartets1,quartets2)
+    quartets2 = extract_quartets(edges2,adj2,n=n)
+    print (len(quartets2),quartets2)
+    mismatches = 0
+    for q in quartets1:
+        if not q in quartets2:
+            mismatches+=1
+    for q in quartets2:
+        if not q in quartets1:
+            mismatches+=1   
+    return mismatches        
+    #return len(quartets1) + len(quartets2) - 2*get_matches(quartets1,quartets2)
 
 if __name__=='__main__':
     start = time.time()
