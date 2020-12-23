@@ -32,7 +32,7 @@ import itertools
 def itwv(s,patterns):
 
     def can_match(p,q,l):
-        ss = s_list[l:l+len(p)+len(q)]
+        ss      = s_list[l:l+len(p)+len(q)]
         indices = set()
         matched = False
         for index in itertools.permutations([0]*len(p) + [1]*len(q)):
