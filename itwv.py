@@ -20,32 +20,58 @@ import os
 import time
 from   helpers import read_strings,format_list
 from   graphs   import trie
+import itertools
+
+# itwv
+#
+# Given: A text DNA string s of length at most 10 kbp, followed by a collection of n DNA strings of
+#        length at most 10 bp acting as patterns.
+#
+# Return: An nxn matrix M for which M[j,k]==1 if the jth and kth pattern strings can be interwoven into s and Mj,k=0 otherwise.
 
 def itwv(s,patterns):
-    def can_interweave(s,t):
-        J = len(s)
-        K = len(t)
-        for i in range(n-J-K):
-            j = 0
-            k = 0
+
+    def can_match(p,q,l):
+        ss = s_list[l:l+len(p)+len(q)]
+        indices = set()
+        matched = False
+        for index in itertools.permutations([0]*len(p) + [1]*len(q)):
+            if index in indices: continue
+            indices.add(index)
+            matched = True # assumption
+            i  = 0
+            j  = 0
+            for k in range(len(p)+len(q)):
+                if index[k]==0: # sample p
+                    if ss[k]==p[i]:
+                        i += 1
+                    else:
+                        matched = False
+                        break    # from k
+                else:           #sample q
+                    if ss[k]==q[j]:
+                        j+= 1
+                    else:
+                        matched = False
+                        break  # from k
+            if matched: return 1
         return 0
-    def interweave(j,k):
-        if can_interweave(patterns[j],patterns[k]):
-            return 1
-        else:
-            return can_interweave(patterns[k],patterns[j])
-    n = len(patterns)
-    M = [[float('nan') for k in range(n)] for j in range(n)]
-    for j in range(n):
-        for k in range(j,n):
-            M[j][k] = interweave(j,k)
-            if k>j:
-                M[k][j] = M[j][k]
-    return M
+    
+    def can_interweave(p,q):
+        L = m - len(p) -len(q)
+        for l in range(L+1):
+            if can_match(p,q,l): return 1
+        return 0
+    
+    s_list = list(s)
+    p_list = [list(p) for p in patterns]
+    n      = len(p_list)
+    m      = len(s_list)
+    return [[can_interweave(p_list[i],p_list[j]) for j in range(n)] for i in range(n)]
 
 if __name__=='__main__':
     start = time.time()
-    parser = argparse.ArgumentParser('....')
+    parser = argparse.ArgumentParser('ITWV Finding Disjoint Motifs in a Gene ')
     parser.add_argument('--sample',   default=False, action='store_true', help='process sample dataset')
     parser.add_argument('--rosalind', default=False, action='store_true', help='process Rosalind dataset')
     args = parser.parse_args()
