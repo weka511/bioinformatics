@@ -20,15 +20,34 @@ import os
 import time
 from   helpers import read_strings
 
-  
+# ksim
+#
+# Finding All Similar Motifs
+#
+# Given: A positive integer k,
+#        a DNA string s of length at most 5 kbp representing a motif,
+#        and a DNA string t of length at most 50 kbp representing a genome.
+#
+#       Return: All substrings t' of t such that the edit distance dE(s,t') is less than or equal to k.
+#       Each substring should be encoded by a pair containing its location in t followed by its length.
+
+def ksim(k,s,t,alphabet='ATGC'):
+    def FindAllSimilarMotifs(s,t):
+        for a,b in [(1, 4), (1, 5), (1, 6)]:
+            yield a,b
+        
+    for a,b in FindAllSimilarMotifs([alphabet.find(x)  for x in s],[alphabet.find(x)  for x in t]):
+        yield a,b
+
 if __name__=='__main__':
     start = time.time()
-    parser = argparse.ArgumentParser('....')
+    parser = argparse.ArgumentParser('KSIM Finding All Similar Motifs')
     parser.add_argument('--sample',   default=False, action='store_true', help='process sample dataset')
     parser.add_argument('--rosalind', default=False, action='store_true', help='process Rosalind dataset')
     args = parser.parse_args()
     if args.sample:
-        pass
+        for a,b in ksim(2,'ACGTAG','ACGGATCGGCATCGT'):
+            print (a,b)
         
     
 
