@@ -117,6 +117,7 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 |oap|oap.py|[Overlap Alignment](http://rosalind.info/problems/oap/) [WIP](https://github.com/weka511/bioinformatics/issues/24)|
 |osym|osym.py|[Isolating Symbols in Alignments](http://rosalind.info/problems/osym/) [WIP](https://github.com/weka511/bioinformatics/issues/97)|
 |pdst|rosalind.py|[Creating a Distance Matrix ](http://rosalind.info/problems/pdst/) |
+|sims|sims.py align.py|[Finding Mutated Motifs](http://rosalind.info/problems/sims/)|
 |smgb|smgb.py |[Semiglobal Alignment](http://rosalind.info/problems/smgb/) |
 |tran|rosalind.py|[Transitions and Transversions](http://rosalind.info/problems/tran/) |
 
@@ -359,7 +360,7 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 |itwv|itwv.py|[Finding Disjoint Motifs in a Gene ](http://rosalind.info/problems/itwv/) [WIP](https://github.com/weka511/bioinformatics/issues/56)|
 |kmer|rosalind.py|[Generalizing GC-Content](http://rosalind.info/problems/kmer/) |
 |kmp|kmp.py|[Speeding Up Motif Finding](http://rosalind.info/problems/kmp/) |
-|ksim|ksim.py|[Finding All Similar Motifs ](http://rosalind.info/problems/ksim/) [WIP](https://github.com/weka511/bioinformatics/issues/62)|
+|ksim|ksim.py|[Finding All Similar Motifs](http://rosalind.info/problems/ksim/) [WIP](https://github.com/weka511/bioinformatics/issues/62)|
 |lcsm|rosalind.py|[Finding a Shared Motif](http://rosalind.info/problems/lcsm/) |
 |lcsq|lcsq.py|[Finding a Shared Spliced Motif](http://rosalind.info/problems/lcsq/) |
 |ling|ling.py|[Linguistic Complexity of a Genome](http://rosalind.info/problems/ling/)|
@@ -390,7 +391,7 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 | # | Location | Description |
 | ---- | --------------- | ------------------------------------------------|
 |fibo|fibo.py|[Fibonacci numbers](http://rosalind.info/problems/fibo/) |
-|sims|sims.py| [Finding Mutated Motifs](http://rosalind.info/problems/sims/)|
+
 
 
 ## Support
