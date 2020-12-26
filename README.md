@@ -366,9 +366,9 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 |ling|ling.py|[Linguistic Complexity of a Genome](http://rosalind.info/problems/ling/)|
 ||ukkonen.py|[µTuX's implementation of Ukkonen's algorithm](https://github.com/mutux/Ukkonen-s-Suffix-Tree-Algorithm/blob/master/suffixtree.py)|
 |mmch|mmch.py|[Maximum Matchings and RNA Secondary Structures](http://rosalind.info/problems/mmch/) |
-|revc|rosalind.py| [Complementing a Strand of DNA](http://rosalind.info/problems/revc/)|
 |prot|rosalind.py|[Translating RNA into Protein](http://rosalind.info/problems/prot/) |
-|revp|rosalind.py| [Locating Restriction Sites](http://rosalind.info/problems/revp/)|
+|revc|rosalind.py| [Complementing a Strand of DNA](http://rosalind.info/problems/revc/)|
+|revp|revp.py rosalind.py| [Locating Restriction Sites](http://rosalind.info/problems/revp/)|
 |rna|rna.py rosalind.py|[Transcribing DNA into RNA](http://rosalind.info/problems/rna/) |
 |scsp|scsp.py|[Interleaving Two Motifs](http://rosalind.info/problems/scsp/)|
 |splc|rosalind.py|[RNA Splicing](http://rosalind.info/problems/splc/) |

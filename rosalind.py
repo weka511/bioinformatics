@@ -310,6 +310,8 @@ def verify_counts_complete_graph(string):
 #       Return: The reverse complement sc of s.
 
 def revc(dna):
+    def translate(seq,table):
+        return ''.join([table[x] for x in seq])
     return translate(dna,{'A': 'T', 'C': 'G', 'G':'C', 'T': 'A'})[::-1]
 
 #SUBS	Finding a Motif in DNA
@@ -949,16 +951,17 @@ def revp(fasta,len1=4,len2=12):
         return [(i-1,2*half_length) for (i,_) in palindromes\
                 if is_palindrome(dna,i-2,half_length)]
      
-    (_,dna)=fasta[0]
-    palindromes=find_palindrome(dna,len1//2)
-    extension=palindromes
+    (_,dna)     = fasta[0]
+    palindromes = find_palindrome(dna,len1//2)
+    extension   = palindromes
     for half_length in range(len1//2,len2//2):
-        extension=extend(extension,half_length+1)
+        extension = extend(extension,half_length+1)
         if len(extension)==0:
             return palindromes
         else:
-            palindromes=palindromes + extension
-            latest=extension
+            palindromes = palindromes + extension
+            latest      = extension
+            
     return palindromes
 
     
