@@ -22,9 +22,9 @@
 class FastaContent(object):
     # parse text and build data structures
     def __init__(self,file_text):
-        self.pairs = []             # Description + data
-        nn         = ''             # Description
-        text       = ''             # data
+        self.pairs = []             # Description + data -- all text so fae
+        nn         = ''             # Description        -- current
+        text       = ''             # data               -- current
         for line in file_text:
             line = line.strip()
             if line.startswith('>'):     # Description
@@ -33,7 +33,7 @@ class FastaContent(object):
                 nn   = line[1:]
                 text = ''
             else:                         # Data
-                text=text+line
+                text = text+line
                 
         if len(nn)>0:
             self.pairs.append((nn,text))
