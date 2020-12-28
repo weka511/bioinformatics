@@ -19,22 +19,24 @@ import argparse
 import os
 import time
 from   helpers import read_strings
-
+from   snp     import SuffixArray
   
     
 def mrep(s,minimum_length=20):
-    def create_sorted_suffixes(s):
-        return sorted([(s[i:],i) for i in range(len(s))])
+
     def create_candidates(k):
         Candidates = []
-        for i in range(len(Suffixes)):
-            s1,_    = Suffixes[i]
-            if len(s1)<k: continue
+        for i in range(len(suffix_array)):
+            j = suffix_array[i]
+            if n-j<k: continue
+ 
+            s1      = s[j:]
             if len(Candidates)==0:
                 Candidates.append([i])
             else:
                 indices = Candidates[-1]
-                s2,_    = Suffixes[indices[0]]
+                j2      = suffix_array[indices[0]]
+                s2      = s[j2:]
                 if s1[0:k]== s2[0:k]:
                     Candidates[-1].append(i)
                 else:
@@ -42,29 +44,48 @@ def mrep(s,minimum_length=20):
         return [indices for indices in Candidates if len(indices)>1]
         
     def matches(k,index,target):
-        suffix,_ = Suffixes[index] 
+        j2       = suffix_array[index]
+        suffix   = s[j2:]
         return k<len(suffix) and k<len(target) and suffix[k]==target[k]
+ 
+    def try_right_extension(Candidates):
+        Strings = []
+        for k in range(minimum_length,len(s)-minimum_length):
+            Extended = []
+            for Indices in Candidates:
+                j2      = suffix_array[Indices[0]]
+                target  = s[j2:]
+                if all(matches(k,index,target) for index in Indices[1:]):
+                    Extended.append(Indices)
+                else:
+                    j2  = suffix_array[Indices[0]]
+                    s1  = s[j2:]
+                    Strings.append(s1[0:k])
+            Candidates = [indices for indices in Extended]
+        return Strings
     
-    Suffixes   = create_sorted_suffixes(s+'$')
-    Candidates = create_candidates(minimum_length)
-
-    for k in range(minimum_length,len(s)-minimum_length):
-        Extended = []
-        for Indices in Candidates:
-            target,_ = Suffixes[Indices[0]]
-            if all(matches(k,index,target) for index in Indices[1:]):
-                Extended.append(Indices)
-            else:
-                s1,_ = Suffixes[Indices[0]]
-                yield s1[0:k]
-        Candidates = [indices for indices in Extended]
+    n            = len(s+'$')
+    suffix_array = SuffixArray(s+'$')
+    Candidates   = create_candidates(minimum_length)
+    Candidates1  = try_right_extension(Candidates)
+    Candidates2 = []
+    for i in range(len(Candidates1)):
+        subsumed = False
+        for j in range(i+1,len(Candidates1)):
+            if len(Candidates1[i])==len(Candidates1[j]): continue
+            subsumed = Candidates1[j].find(Candidates1[i]) > -1
+            if subsumed: break
+        if not subsumed:
+            Candidates2.append(Candidates1[i])
+            
+    return Candidates2
 
 
 if __name__=='__main__':
     start = time.time()
     parser = argparse.ArgumentParser('MREP Identifying Maximal Repeats')
     parser.add_argument('--sample',   default=False, action='store_true', help='process sample dataset')
-    parser.add_argument('--extra',   default=False, action='store_true', help='process extra dataset')
+    parser.add_argument('--extra',    default=False, action='store_true', help='process extra dataset')
     parser.add_argument('--rosalind', default=False, action='store_true', help='process Rosalind dataset')
     args = parser.parse_args()
     
@@ -73,11 +94,11 @@ if __name__=='__main__':
             print (r)    
             
     if args.sample:
-        for r in mrep('TAGAGATAGAATGGGTCCAGAGTTTTGTAATTTCCATGGGTCCAGAGTTTTGTAATTTATTATATAGAGATAGAATGGGTCCAGAGTTTTGTAATTTCCATGGGTCCAGAGTTTTGTAATTTAT'):
-            print (r)
-        
-    
-
+        with open(f'{os.path.basename(__file__).split(".")[0]}.txt','w') as f:
+            for line in mrep('TAGAGATAGAATGGGTCCAGAGTTTTGTAATTTCCATGGGTCCAGAGTTTTGTAATTTATTATATAGAGATAGAATGGGTCCAGAGTTTTGTAATTTCCATGGGTCCAGAGTTTTGTAATTTAT'):
+                print (line)
+                f.write(f'{line}\n')        
+         
     if args.rosalind:
         Input  = read_strings(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt')
  
