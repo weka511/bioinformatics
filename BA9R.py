@@ -20,25 +20,28 @@ import os
 import time
 from   helpers import read_strings
 
-  
+def SuffixArray2Tree(Text, SuffixArray, LCP):
+    yield 'foo'
+
 if __name__=='__main__':
     start = time.time()
-    parser = argparse.ArgumentParser('BA9R 	Construct a Suffix Tree from a Suffix Array ')
+    parser = argparse.ArgumentParser('BA9R Construct a Suffix Tree from a Suffix Array ')
     parser.add_argument('--sample',   default=False, action='store_true', help='process sample dataset')
     parser.add_argument('--rosalind', default=False, action='store_true', help='process Rosalind dataset')
     args = parser.parse_args()
     if args.sample:
-        pass
+        for edge in SuffixArray2Tree('GTAGT$',
+                                     [5, 2, 3, 0, 4, 1],
+                                     [0, 0, 0, 2, 0, 1]):
+            print (edge)
         
     
 
     if args.rosalind:
         Input  = read_strings(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt')
- 
-        Result = None
-        print (Result)
         with open(f'{os.path.basename(__file__).split(".")[0]}.txt','w') as f:
-            for line in Result:
+            for edge in SuffixArray2Tree(Input[0],Input[1],Input[2]):
+                print (edge)
                 f.write(f'{line}\n')
                 
     elapsed = time.time() - start
