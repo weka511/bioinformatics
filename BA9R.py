@@ -169,6 +169,7 @@ if __name__=='__main__':
                                      [int(s) for s in Input[1].split(',')],
                                      [int(s) for s in Input[2].split(',')],
                                      Debug=args.debug)]
+        print (f'Expected {len(Expected)} Edges, actual = {len(Result)}')
         Result.sort()
         Expected.sort()
         i = 0
@@ -184,8 +185,14 @@ if __name__=='__main__':
                 print (f'Expected {Expected[i]}, Actual {Result[j]}')
                 j+=1
                 
-        print (f'Expected {len(Expected)} Edges, actual = {len(Result)}')
-       
+  
+        while i<len(Expected):
+            print (f'Expected {Expected[i]}, Actual ---')
+            i+=1            
+        
+        while j<len(Result):
+            print (f'Expected ---, Actual {Result[j]}')
+            j+=1        
         
     if args.rosalind:
         Input  = read_strings(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt')
