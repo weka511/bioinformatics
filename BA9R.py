@@ -24,7 +24,7 @@ def SuffixArray2Tree(Text, SuffixArray, LCP):
     class Node:
         def __init__(self):
             self.Edges  = []
-            self.entry = None
+            self.entry  = None
         def link(self,edge):
             self.Edges.append(edge)
             edge.destination.entry = edge
@@ -47,7 +47,12 @@ def SuffixArray2Tree(Text, SuffixArray, LCP):
             return Descents
         def pop_rightmost_edge(self):
             return self.Edges.pop(-1)
-            
+        
+        def gather_edges(self,Collection=[]):
+            for edge in self.Edges:
+                yield edge.label
+                yield from edge.destination.gather_edges()
+        
     class Edge():
         def __init__(self,label,destination):
             self.label       = label
@@ -70,17 +75,27 @@ def SuffixArray2Tree(Text, SuffixArray, LCP):
                             x))
                 last = x
             if descent < LCP[i]:
-                vw = v.pop_rightmost_edge()
-                label = vw.label
-                y     = Node()
-                new_label = []
-                for j in range(n):
-                    if SuffixArray[i]+j<n and SuffixArray[i-1]+j <n and Text[SuffixArray[i]+j]== Text[SuffixArray[i-1]+j]:
-                        new_label.append(Text[SuffixArray[i]+j])
-                x=0
-                break            
+                vw        = v.pop_rightmost_edge()
+                label_vw  = vw.label
+                y         = Node()
+                new_label = Text[SuffixArray[i]+descent:]
+                dd        = LCP[i]-descent
+                vy        = Edge(new_label[:dd],y)
+                v.link(vy)
+                sa1 = Text[SuffixArray[i]:]
+                sa0 = Text[SuffixArray[i-1]:]
+                
+                label_yw = Text[SuffixArray[i-1]+LCP[i]:]
+                yw       = Edge(label_yw,vw.destination)
+                y.link(yw)
+                label_yx = Text[SuffixArray[i]+LCP[i]:]
+                x        = Node()
+                yx       = Edge(label_yx,x)
+                y.link(yx)
+                last     = x        
     
-    yield 'foo'
+    for label in root.gather_edges():
+        yield label
 
 if __name__=='__main__':
     start = time.time()
