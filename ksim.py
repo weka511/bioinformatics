@@ -33,10 +33,14 @@ from   helpers import read_strings
 
 def ksim(k,s,t,alphabet='ATGC'):
     def FindAllSimilarMotifs(s,t):
-        for a,b in [(1, 4), (1, 5), (1, 6)]:
-            yield a,b
+        for j in len(t):            # FIXME
+            d = 0
+            for i in len(s):        # FIXME
+                pass
+
         
-    for a,b in FindAllSimilarMotifs([alphabet.find(x)  for x in s],[alphabet.find(x)  for x in t]):
+    for a,b in FindAllSimilarMotifs([alphabet.find(x) for x in s],
+                                    [alphabet.find(x) for x in t]):
         yield a,b
 
 if __name__=='__main__':
@@ -54,11 +58,10 @@ if __name__=='__main__':
     if args.rosalind:
         Input  = read_strings(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt')
  
-        Result = None
-        print (Result)
         with open(f'{os.path.basename(__file__).split(".")[0]}.txt','w') as f:
-            for line in Result:
-                f.write(f'{line}\n')
+            for a,b in ksim(int(Input[0]),Input[1],Input[2]):
+                print (f'{a} {b}')
+                f.write(f'{a} {b}\n')
                 
     elapsed = time.time() - start
     minutes = int(elapsed/60)
