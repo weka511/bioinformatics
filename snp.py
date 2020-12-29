@@ -227,6 +227,9 @@ def FindLongestRepeat(string1,string2=None):
 # $ comes first in the alphabet. The suffix array is the list of starting positions of these sorted suffixes.
 #
 # I have used a naive algorithm, as it appears to be adequate for the test data
+#
+# This can also create the auxiliary arrays used by Efficient repeat finding via suffix arrays
+# Verónica Becher, Alejandro Deymonnaz, and Pablo Ariel Heiber
 
 def SuffixArray(s,auxiliary=False):
     r = [i for (_,i) in sorted([(s[i:],i) for i in range(len(s))],
@@ -640,23 +643,31 @@ def MatchTries(s,t):
 #  MREP Identifying Maximal Repeats
 #
 # Based on Efficient repeat finding via suffix arrays
-# Verónica Becher Alejandro Deymonnaz Pablo Ariel Heiber
+# Verónica Becher, Alejandro Deymonnaz, and Pablo Ariel Heiber
 
 def mrep(w,ml=20):
+    # create_LCP_already_seen
+    #
+    # Create list of LCP values that have already been seen
+    
+    def create_LCP_already_seen():
+        Product = [u for u in range(len(LCP)) if LCP[u]<ml]
+        Product.append(-1)
+        Product.append(n-1)
+        return Product
+    
     n       = len(w)
     r,p,LCP = SuffixArray(w,auxiliary=True)
-    S       = [u for u in range(len(LCP)) if LCP[u]<ml]
-    S.append(-1)
-    S.append(n-1)
+    S       = create_LCP_already_seen()
     I       = argsort(LCP)
-    initial = min([t for t in range(len(I)) if LCP[I[t]]>=ml])
  
-    for t in range(initial,n-1):
+    for t in range(min([t for t in range(len(I)) if LCP[I[t]]>=ml]),
+                   n-1):
         i   = I[t]
-        p_i = max([j for j in S if j<i])+1
+        p_i = max([j for j in S if j<i]) + 1
         n_i = min([j for j in S if j>i])
         S.append(i)
-        if (p_i==0 or LCP[p_i-1]!=LCP[i]) and (n_i==n-1 or LCP[n_i]!=LCP[i]):
-            if r[p_i]==0 or r[n_i]==0 or w[r[p_i]-1]!=w[r[n_i]-1] or p[r[n_i]-1]-p[r[p_i]-1]!=n_i-p_i:
-                yield w[r[i]:r[i]+LCP[i]]
+        if (p_i==0 or LCP[p_i-1]!=LCP[i]) and (n_i==n-1 or LCP[n_i]!=LCP[i]):                          # Maximal on right?
+            if r[p_i]==0 or r[n_i]==0 or w[r[p_i]-1]!=w[r[n_i]-1] or p[r[n_i]-1]-p[r[p_i]-1]!=n_i-p_i: # Maximal on left?
+                yield w[r[i]:r[i]+LCP[i]]                                                              # banzai
                 
