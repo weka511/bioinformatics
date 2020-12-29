@@ -20,65 +20,25 @@ import os
 import time
 from   helpers import read_strings
 from   snp     import SuffixArray
-  
-    
-def mrep(s,minimum_length=20):
+from   numpy   import argsort
 
-    def create_candidates(k):
-        Candidates = []
-        for i in range(len(suffix_array)):
-            j = suffix_array[i]
-            if n-j<k: continue
+def mrep(w,ml=20):
+    n       = len(w)
+    r,p,LCP = SuffixArray(w,auxiliary=True) # 0..n-1, 0..n-1, 0..n-2
+    S       = [u for u in range(len(LCP)) if LCP[u]<ml]
+    S.append(-1)
+    S.append(n-1)
+    I       = argsort(LCP)
+    initial = min([t for t in range(len(I)) if LCP[I[t]]>=ml])
  
-            s1      = s[j:]
-            if len(Candidates)==0:
-                Candidates.append([i])
-            else:
-                indices = Candidates[-1]
-                j2      = suffix_array[indices[0]]
-                s2      = s[j2:]
-                if s1[0:k]== s2[0:k]:
-                    Candidates[-1].append(i)
-                else:
-                    Candidates.append([i])
-        return [indices for indices in Candidates if len(indices)>1]
-        
-    def matches(k,index,target):
-        j2       = suffix_array[index]
-        suffix   = s[j2:]
-        return k<len(suffix) and k<len(target) and suffix[k]==target[k]
- 
-    def try_right_extension(Candidates):
-        Strings = []
-        for k in range(minimum_length,len(s)-minimum_length):
-            Extended = []
-            for Indices in Candidates:
-                j2      = suffix_array[Indices[0]]
-                target  = s[j2:]
-                if all(matches(k,index,target) for index in Indices[1:]):
-                    Extended.append(Indices)
-                else:
-                    j2  = suffix_array[Indices[0]]
-                    s1  = s[j2:]
-                    Strings.append(s1[0:k])
-            Candidates = [indices for indices in Extended]
-        return Strings
-    
-    n            = len(s+'$')
-    suffix_array = SuffixArray(s+'$')
-    Candidates   = create_candidates(minimum_length)
-    Candidates1  = try_right_extension(Candidates)
-    Candidates2 = []
-    for i in range(len(Candidates1)):
-        subsumed = False
-        for j in range(i+1,len(Candidates1)):
-            if len(Candidates1[i])==len(Candidates1[j]): continue
-            subsumed = Candidates1[j].find(Candidates1[i]) > -1
-            if subsumed: break
-        if not subsumed:
-            Candidates2.append(Candidates1[i])
-            
-    return Candidates2
+    for t in range(initial,n-1):
+        i   = I[t]
+        p_i = max([j for j in S if j<i])+1
+        n_i = min([j for j in S if j>i])
+        S.append(i)
+        if (p_i==0 or LCP[p_i-1]!=LCP[i]) and (n_i==n-1 or LCP[n_i]!=LCP[i]):
+            if r[p_i]==0 or r[n_i]==0 or w[r[p_i]-1]!=w[r[n_i]-1] or p[r[n_i]-1]-p[r[p_i]-1]!=n_i-p_i:
+                yield w[r[i]:r[i]+LCP[i]]
 
 
 if __name__=='__main__':
@@ -90,7 +50,7 @@ if __name__=='__main__':
     args = parser.parse_args()
     
     if args.extra:
-        for r in mrep('TAGTTAGCGAGA',minimum_length=2):
+        for r in mrep('TAGTTAGCGAGA',ml=2):
             print (r)    
             
     if args.sample:
