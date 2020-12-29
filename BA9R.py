@@ -79,28 +79,19 @@ def SuffixArray2Tree(Text, SuffixArray, LCP):
                 label_vw  = vw.label
                 y         = Node()
                 new_label = Text[SuffixArray[i]+descent:]
-                dd        = LCP[i]-descent
-                vy        = Edge(new_label[:dd],y)
-                v.link(vy)
-                sa1 = Text[SuffixArray[i]:]
-                sa0 = Text[SuffixArray[i-1]:]
-                
-                label_yw = Text[SuffixArray[i-1]+LCP[i]:]
-                yw       = Edge(label_yw,vw.destination)
-                y.link(yw)
-                label_yx = Text[SuffixArray[i]+LCP[i]:]
+                v.link(Edge(new_label[:LCP[i]-descent],y))             
+                y.link(Edge(Text[SuffixArray[i-1]+LCP[i]:],vw.destination))
                 x        = Node()
-                yx       = Edge(label_yx,x)
-                y.link(yx)
+                y.link( Edge( Text[SuffixArray[i]+LCP[i]:],x))
                 last     = x        
     
-    for label in root.gather_edges():
-        yield label
+    yield from root.gather_edges()
 
 if __name__=='__main__':
     start = time.time()
     parser = argparse.ArgumentParser('BA9R Construct a Suffix Tree from a Suffix Array ')
     parser.add_argument('--sample',   default=False, action='store_true', help='process sample dataset')
+    parser.add_argument('--extra',    default=False, action='store_true', help='process extra dataset')
     parser.add_argument('--rosalind', default=False, action='store_true', help='process Rosalind dataset')
     args = parser.parse_args()
     if args.sample:
@@ -110,13 +101,24 @@ if __name__=='__main__':
             print (edge)
         
     
-
+    if args.extra:
+        Input,Expected  = read_strings('data/SuffixTreeFromSuffixArray.txt',init=0)
+        Expected.sort()
+        Result = [edge for edge in SuffixArray2Tree(Input[0],
+                                     [int(s) for s in Input[1].split(',')],
+                                     [int(s) for s in Input[2].split(',')])]
+        Result.sort()
+        print (f'Expected {len(Expected)} Edges, actual = {len(Result)}')
+       
+        
     if args.rosalind:
         Input  = read_strings(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt')
         with open(f'{os.path.basename(__file__).split(".")[0]}.txt','w') as f:
-            for edge in SuffixArray2Tree(Input[0],Input[1],Input[2]):
+            for edge in SuffixArray2Tree(Input[0],
+                                         [int(s) for s in Input[1].split(',')],
+                                         [int(s) for s in Input[2].split(',')]):
                 print (edge)
-                f.write(f'{line}\n')
+                f.write(f'{edge}\n')
                 
     elapsed = time.time() - start
     minutes = int(elapsed/60)
