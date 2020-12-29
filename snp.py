@@ -18,6 +18,7 @@
 
 from rosalind   import RosalindException
 from deprecated import deprecated
+from numpy      import empty_like,arange
 
 # BA9A Construct a Trie from a Collection of Patterns 
 # Trie - a trie, represented as a collection of Nodes and Edges
@@ -227,8 +228,28 @@ def FindLongestRepeat(string1,string2=None):
 #
 # I have used a naive algorithm, as it appears to be adequate for the test data
 
-def SuffixArray(s):
-    return [i for (_,i) in sorted([(s[i:],i) for i in range(len(s))],key=lambda x:x[0])]
+def SuffixArray(s,auxiliary=False):
+    r = [i for (_,i) in sorted([(s[i:],i) for i in range(len(s))],
+                               key=lambda x:x[0])]
+    if auxiliary:
+        n    = len(s)
+        p    = empty_like(r)
+        p[r] = arange(len(p), dtype=p.dtype)   # https://stackoverflow.com/questions/9185768/inverting-permutations-in-python
+        LCP  = []
+        for i in range(len(r)-1):
+            i0     = r[i]
+            i1     = r[i+1]
+            LCP.append(0)
+            for j in range(n-max(i0,i1)):
+                if s[i0+j] == s[i1+j]:
+                    LCP[-1] += 1
+                else:
+                    break
+        return (r,p,LCP)
+    else:
+        return r
+        
+        
 
 #  BA9H 	Pattern Matching with the Suffix Array
 
@@ -613,3 +634,6 @@ def PrefixTreeMatching(Text,Tree):
 @deprecated(reason='Use snp.MatchAll')            
 def MatchTries(s,t):
     return [i for i in range(len(s)-1) if PrefixTreeMatching(s[i:],t) ]
+
+if __name__=='__main__':
+    print (SuffixArray('banana$',auxiliary=True))
