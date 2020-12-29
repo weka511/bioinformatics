@@ -164,12 +164,26 @@ if __name__=='__main__':
     
     if args.extra:
         Input,Expected  = read_strings('data/SuffixTreeFromSuffixArray.txt',init=0)
-        Expected.sort()
+
         Result = [edge for edge in SuffixArray2Tree(Input[0],
                                      [int(s) for s in Input[1].split(',')],
                                      [int(s) for s in Input[2].split(',')],
                                      Debug=args.debug)]
         Result.sort()
+        Expected.sort()
+        i = 0
+        j = 0
+        while i<len(Expected) and j<len(Result):
+            if Expected[i]==Result[j]:
+                i+=1
+                j+=1
+            elif Expected[i]<=Result[j]:
+                print (f'Expected {Expected[i]}, Actual {Result[j]}')
+                i+=1
+            else:
+                print (f'Expected {Expected[i]}, Actual {Result[j]}')
+                j+=1
+                
         print (f'Expected {len(Expected)} Edges, actual = {len(Result)}')
        
         
