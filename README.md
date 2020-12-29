@@ -249,7 +249,7 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 |fibd|rosalind.py|[Mortal Fibonacci Rabbits](http://rosalind.info/problems/fibd/) |
 |fib|rosalind.py|[Rabbits and Recurrence Relations](http://rosalind.info/problems/fib/) |
 |motz|motz.py combinatorics.py|[Motzkin Numbers and RNA Secondary Structures](http://rosalind.info/problems/motz/) |
-|mrep|mrep.py|[Identifying Maximal Repeats ](http://rosalind.info/problems/mrep/) [WIP](https://github.com/weka511/bioinformatics/issues/69)|
+|mrep|mrep.py|[Identifying Maximal Repeats ](http://rosalind.info/problems/mrep/)|
 |mrna|rosalind.py|[Inferring mRNA from Protein](http://rosalind.info/problems/mrna/) |
 |orf|orf.py|[Open Reading Frames](http://rosalind.info/problems/orf/)|
 |pmch|pmch.py|[Perfect Matchings and RNA Secondary Structures](http://rosalind.info/problems/pmch/) |

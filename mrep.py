@@ -19,27 +19,7 @@ import argparse
 import os
 import time
 from   helpers import read_strings
-from   snp     import SuffixArray
-from   numpy   import argsort
-
-def mrep(w,ml=20):
-    n       = len(w)
-    r,p,LCP = SuffixArray(w,auxiliary=True) # 0..n-1, 0..n-1, 0..n-2
-    S       = [u for u in range(len(LCP)) if LCP[u]<ml]
-    S.append(-1)
-    S.append(n-1)
-    I       = argsort(LCP)
-    initial = min([t for t in range(len(I)) if LCP[I[t]]>=ml])
- 
-    for t in range(initial,n-1):
-        i   = I[t]
-        p_i = max([j for j in S if j<i])+1
-        n_i = min([j for j in S if j>i])
-        S.append(i)
-        if (p_i==0 or LCP[p_i-1]!=LCP[i]) and (n_i==n-1 or LCP[n_i]!=LCP[i]):
-            if r[p_i]==0 or r[n_i]==0 or w[r[p_i]-1]!=w[r[n_i]-1] or p[r[n_i]-1]-p[r[p_i]-1]!=n_i-p_i:
-                yield w[r[i]:r[i]+LCP[i]]
-
+from   snp     import SuffixArray,mrep
 
 if __name__=='__main__':
     start = time.time()

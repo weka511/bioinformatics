@@ -18,7 +18,7 @@
 
 from rosalind   import RosalindException
 from deprecated import deprecated
-from numpy      import empty_like,arange
+from numpy      import empty_like,arange,argsort
 
 # BA9A Construct a Trie from a Collection of Patterns 
 # Trie - a trie, represented as a collection of Nodes and Edges
@@ -635,5 +635,28 @@ def PrefixTreeMatching(Text,Tree):
 def MatchTries(s,t):
     return [i for i in range(len(s)-1) if PrefixTreeMatching(s[i:],t) ]
 
-if __name__=='__main__':
-    print (SuffixArray('banana$',auxiliary=True))
+# mrep
+
+#  MREP Identifying Maximal Repeats
+#
+# Based on Efficient repeat finding via suffix arrays
+# Verónica Becher Alejandro Deymonnaz Pablo Ariel Heiber
+
+def mrep(w,ml=20):
+    n       = len(w)
+    r,p,LCP = SuffixArray(w,auxiliary=True)
+    S       = [u for u in range(len(LCP)) if LCP[u]<ml]
+    S.append(-1)
+    S.append(n-1)
+    I       = argsort(LCP)
+    initial = min([t for t in range(len(I)) if LCP[I[t]]>=ml])
+ 
+    for t in range(initial,n-1):
+        i   = I[t]
+        p_i = max([j for j in S if j<i])+1
+        n_i = min([j for j in S if j>i])
+        S.append(i)
+        if (p_i==0 or LCP[p_i-1]!=LCP[i]) and (n_i==n-1 or LCP[n_i]!=LCP[i]):
+            if r[p_i]==0 or r[n_i]==0 or w[r[p_i]-1]!=w[r[n_i]-1] or p[r[n_i]-1]-p[r[p_i]-1]!=n_i-p_i:
+                yield w[r[i]:r[i]+LCP[i]]
+                
