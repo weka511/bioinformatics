@@ -21,6 +21,65 @@ import time
 from   helpers import read_strings
 
 def SuffixArray2Tree(Text, SuffixArray, LCP):
+    class Node:
+        def __init__(self):
+            self.Edges  = []
+            self.entry = None
+        def link(self,edge):
+            self.Edges.append(edge)
+            edge.destination.entry = edge
+            edge.entry             = self
+        def is_root(self):
+            return self.entry == None
+        def get_descent(self):
+            Path    = []
+            current = self
+            while not current.is_root():
+                edge = current.entry
+                Path.insert(0,(current,len(edge.label)))
+                current = edge.entry
+            Path.insert(0,(root,0))
+            Descents = []
+            descent  = 0
+            for node,contribution in Path:
+                descent += contribution
+                Descents.append((node,descent))
+            return Descents
+        def pop_rightmost_edge(self):
+            return self.Edges.pop(-1)
+            
+    class Edge():
+        def __init__(self,label,destination):
+            self.label       = label
+            self.destination = destination
+            self.entry       = None
+            
+    n    = len(Text)
+    root = Node()
+    for i in range(n):
+        if i==0:
+            last = Node()
+            root.link(Edge(Text[SuffixArray[i]:],last))
+        else:
+            for v,descent in last.get_descent():
+                if descent <= LCP[i]:
+                    break
+            if descent == LCP[i]:
+                x     = Node()
+                v.link(Edge(Text[SuffixArray[i] + LCP[i]:],
+                            x))
+                last = x
+            if descent < LCP[i]:
+                vw = v.pop_rightmost_edge()
+                label = vw.label
+                y     = Node()
+                new_label = []
+                for j in range(n):
+                    if SuffixArray[i]+j<n and SuffixArray[i-1]+j <n and Text[SuffixArray[i]+j]== Text[SuffixArray[i-1]+j]:
+                        new_label.append(Text[SuffixArray[i]+j])
+                x=0
+                break            
+    
     yield 'foo'
 
 if __name__=='__main__':
