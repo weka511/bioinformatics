@@ -90,50 +90,53 @@ def SuffixArray2Tree(Text, SuffixArray, LCP, Debug=False):
         def link(self,entry):
             self.entry = entry
     
-    def find_descent_le_LCP(last,lcp):
-        for v,descent in last.get_descent():
-            if descent <= lcp:
+    # find_descent_le_LCP
+    #
+    # Starting with last node added, search up until descent <= LCP
+    def find_descent_le_LCP(x,LCP):
+        for v,descent in x.get_descent():
+            if descent <= LCP:
                 return v,descent
                     
     n    = len(Text)
     root = Node(root=True)
-    last = root
+    x    = root   # x is always the last node added
     
     for i in range(n):
-        if i==-1:
-            last = Node()
-            root.link(Edge(Text[SuffixArray[i]:],last))
-        else:
-            v,descent = find_descent_le_LCP(last,LCP[i])   
-
-            if descent == LCP[i]:
-                x    = Node()
-                v.link(Edge(Text[SuffixArray[i] + LCP[i]:], x))
-                last = x         
-            elif descent < LCP[i]:
-                vw_edge_for_deletion = v.pop_rightmost_edge()
-                y                    = Node()
-                new_label            = Text[SuffixArray[i]+descent:]
-                vy                   = Edge(new_label[:LCP[i]-descent],y)
-                v.link(vy)
-                yw                   = Edge(Text[SuffixArray[i-1]+LCP[i]:],vw_edge_for_deletion.destination)
-                y.link(yw)
-                x                    = Node()
-                yx                   = Edge( Text[SuffixArray[i]+LCP[i]:],x)
-                y.link(yx)
-                last                 = x
-                if Debug:
-                    print (f'Deleted {vw_edge_for_deletion.label}. Split: {new_label}')
-                    print (f'vy:{vy.label}, yw:{yw.label}, yx:{yx.label}')
-            else:
-                raise RosalindException(f'Descent ({descent}) > LCP[{i}]({LCP[i]})')
-                
         if Debug:
             print ('----------------')
-            print (f'{i}')
-            for edge in root.gather_edges():
-                print (edge)
-    
+            print (f'i={i}')        
+        v,descent = find_descent_le_LCP(x,LCP[i])   
+
+        if descent == LCP[i]:
+            x  = Node()
+            vx = Edge(Text[SuffixArray[i] + LCP[i]:], x)
+            v.link(vx)
+            if Debug:
+                print (f'Added vx: {vx.label}')
+        elif descent < LCP[i]:
+            vw_edge_for_deletion = v.pop_rightmost_edge()
+            y                    = Node()
+            new_label            = Text[SuffixArray[i]+descent:]
+            vy                   = Edge(new_label[:LCP[i]-descent],y)
+            v.link(vy)
+            yw                   = Edge(Text[SuffixArray[i-1]+LCP[i]:],vw_edge_for_deletion.destination)
+            y.link(yw)
+            x                    = Node()
+            yx                   = Edge( Text[SuffixArray[i]+LCP[i]:],x)
+            y.link(yx)
+
+            if Debug:
+                print (f'Deleted {vw_edge_for_deletion.label}. Split: {new_label}')
+                print (f'vy: {vy.label}, yw: {yw.label}, yx: {yx.label}')
+        else:
+            raise RosalindException(f'Descent ({descent}) > LCP[{i}]({LCP[i]})')
+           
+        if Debug:
+            print ('Edges:')
+            for label in root.gather_edges():
+                print (f'\t{label}')
+
     yield from root.gather_edges()
 
 if __name__=='__main__':
