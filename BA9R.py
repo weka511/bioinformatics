@@ -32,22 +32,34 @@ from   snp      import SuffixArray
 
 def SuffixArray2Tree(Text, SuffixArray, LCP, Debug=False):
     
-
     # Node
+    #
+    # Represents a node in Suffix Tree
+    #
+    # Data Members:
+    #    Edges
+    #    entry       Will be set to the Edge that points into the Node
+    #                once linked into tree, except Root. which points to self 
+    #    count       Unique id for each Node FIXME do we really need this?
+    #    descent
+    #    label       Child nodes are labelled by position in suffix array   
+    #
     class Node:
-        count = 0
+        count = 0   # Used to assign a unique id to each Node FIXME do we really need this?
         # __init__
         #
-        # Paramters:
+        # Parameters:
         #     root      Used to mark node as root
         
-        def __init__(self,root=False):
+        def __init__(self,root=False,label=None):
             self.Edges   = []
             self.entry   = self if root else None
             self.count   = Node.count
             self.descent = 0 if root else None
+            self.label   = label
             Node.count += 1
-        # link
+            
+        # Attach an Edge to this Node
         
         def link(self,edge):
             self.Edges.append(edge)
@@ -59,8 +71,6 @@ def SuffixArray2Tree(Text, SuffixArray, LCP, Debug=False):
         def is_root(self):
             return self.entry == self
         
-   
-        
         # pop_rightmost_edge
         #
         # Delete rightmost edge from this node
@@ -70,64 +80,90 @@ def SuffixArray2Tree(Text, SuffixArray, LCP, Debug=False):
         def pop_rightmost_edge(self):
             return self.Edges.pop(-1)
         
-        # gather_edges
+        # gather_edge_labels
         #
-        # Used to collect all edges
-        def gather_edges(self,Collection=[]):
+        # Used to collect all edges of tree
+        # This is just a simple depth-first search
+        def gather_edge_labels(self,Debug=False):
             for edge in self.Edges:
+                if Debug and edge.destination.label!=None:
+                    print (f'Position={edge.destination.label}')
                 yield edge.label
-                yield from edge.destination.gather_edges()
+                yield from edge.destination.gather_edge_labels(Debug=Debug)
                 
-        # find_descent_LE_LCP
+        # find_attachment_point
         #
         # Starting with last node added, search up until descent <= limit. This will always 
         # return a value provided limit is from a legal LCP arrau, as DESCENT(root)==0
         
-        def find_descent_LE_LCP(self,limit):
+        def find_attachment_point(self,limit):
             v = self
             while v.descent>limit:
                 v = v.entry.entry
             return v,v.descent    
         
     # Edge
+    #
+    # Represents an Edge in Suffix Tree
+    #
+    # Data Members:
+    #      label         Text used to label edge
+    #      destination   Node that Edge points to
+    #      entry         Node that Edge comes from
     
     class Edge():
+        
+        # __init__
+        #
+        # Create Edge and set destination Node to point back to edge
+        
         def __init__(self,label,destination):
             self.label        = label
             self.destination  = destination
             self.entry        = None
             destination.entry = self
-            
+        
+        # link
+        #
+        # Used by Node link to attach this Edge, and update the descent of the Node
+        # that Edge points to
+        
         def link(self,entry):
             self.entry               = entry
             self.destination.descent = entry.descent + len(self.label)
     
-
+    # get_common_prefix
+    #
+    # Determine common prefix of two suffixes
+    # Currently used only in assertions
     
-    def get_common_prefix(sa0,sa1):
-        for i in range(min(len(sa0),len(sa1))):
-            if sa0[i]!=sa1[i]:
-                return sa0[:i]
-            
+    def get_common_prefix(suffix0,suffix1):
+        for i in range(min(len(suffix0),len(suffix1))):
+            if suffix0[i]!=suffix1[i]:
+                return suffix0[:i]
+           
     n    = len(Text)
     root = Node(root=True)
-    x    = root   # x is always the last node added
+    x    = root   # x is always the last node that has been added
     
-    for i in range(n): # cf Biometrics Algorithms 9R my 'i' represents their 'i+1'
+    # x, y, v, w are nodes
+    # two letter combinations of nodes, e.g. vx represent Edges
+    
+    for i in range(n): # cf Biometrics Algorithms 9R; my 'i' represents textbook's 'i+1'
         if Debug:
             print ('----------------')
             print (f'i={i}') 
             
-        v,descent = x.find_descent_LE_LCP(LCP[i])   
+        v,descent = x.find_attachment_point(LCP[i])   
 
-        if descent == LCP[i]:
-            x  = Node()
+        if descent == LCP[i]:    # Can insert suffix as a new leaf
+            x  = Node(label=SuffixArray[i])
             vx = Edge(Text[SuffixArray[i] + LCP[i]:], x)
             v.link(vx)
             if Debug:
                 print (f'Added vx: {vx.label}')
                 
-        elif descent < LCP[i]: 
+        elif descent < LCP[i]:    # In this case we need to split a Node
             # Delete (v,w)
             vw_for_deletion = v.pop_rightmost_edge()
             w               = vw_for_deletion.destination
@@ -151,7 +187,7 @@ def SuffixArray2Tree(Text, SuffixArray, LCP, Debug=False):
             assert yw.label==vw_for_deletion.label[len(vy.label):],f'i={i}, {yw.label}!={vw_for_deletion.label[len(vy.label):]}'
             
             # Add x
-            x               = Node()
+            x               = Node(label=SuffixArray[i])
             yx              = Edge( Text[SuffixArray[i]+LCP[i]:], x)
             y.link(yx)
             
@@ -163,10 +199,10 @@ def SuffixArray2Tree(Text, SuffixArray, LCP, Debug=False):
            
         if Debug:
             print ('Edges:')
-            for label in root.gather_edges():
+            for label in root.gather_edge_labels(Debug=Debug):
                 print (f'\t{label}')
 
-    yield from root.gather_edges()
+    yield from root.gather_edge_labels()
 
 if __name__=='__main__':
     start = time.time()
