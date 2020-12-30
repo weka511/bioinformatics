@@ -30,7 +30,7 @@ from   snp      import SuffixArray
 #
 # Return: The strings labeling the edges of SuffixTree(Text). (You may return these strings in any order.)
 
-def SuffixArray2Tree(Text, SuffixArray, LCP, Debug=False):
+def SuffixArray2Tree(Text, SuffixArray, LCP, trace=False):
     
     # Node
     #
@@ -71,25 +71,23 @@ def SuffixArray2Tree(Text, SuffixArray, LCP, Debug=False):
         def is_root(self):
             return self.entry == self
         
-        # pop_rightmost_edge
+        # unlink
         #
-        # Delete rightmost edge from this node
+        # Unlink rightmost edge from this node
         #
         # Returns: newly deleted node
         
-        def pop_rightmost_edge(self):
+        def unlink(self):
             return self.Edges.pop(-1)
         
         # gather_edge_labels
         #
         # Used to collect all edges of tree
         # This is just a simple depth-first search
-        def gather_edge_labels(self,Debug=False):
+        def gather_edge_labels(self):
             for edge in self.Edges:
-                if Debug and edge.destination.label!=None:
-                    print (f'Position={edge.destination.label}')
-                yield edge.label
-                yield from edge.destination.gather_edge_labels(Debug=Debug)
+                yield edge.label,edge.destination.label
+                yield from edge.destination.gather_edge_labels()
                 
         # find_attachment_point
         #
@@ -150,9 +148,9 @@ def SuffixArray2Tree(Text, SuffixArray, LCP, Debug=False):
     # two letter combinations of nodes, e.g. vx represent Edges
     
     for i in range(n): # cf Biometrics Algorithms 9R; my 'i' represents textbook's 'i+1'
-        if Debug:
+        if trace:
             print ('----------------')
-            print (f'i={i}') 
+            print (f'i={i}, SuffixArray[{i}]={SuffixArray[i]}--{Text[SuffixArray[i]:]} LCP[{i}]={LCP[i]}') 
             
         v,descent = x.find_attachment_point(LCP[i])   
 
@@ -160,47 +158,50 @@ def SuffixArray2Tree(Text, SuffixArray, LCP, Debug=False):
             x  = Node(label=SuffixArray[i])
             vx = Edge(Text[SuffixArray[i] + LCP[i]:], x)
             v.link(vx)
-            if Debug:
+            if trace:
                 print (f'Added vx: {vx.label}')
                 
         elif descent < LCP[i]:    # In this case we need to split a Node
             # Delete (v,w)
-            vw_for_deletion = v.pop_rightmost_edge()
-            w               = vw_for_deletion.destination
-            ll              = vw_for_deletion.label
-            
+            vw        = v.unlink()
+            w         = vw.destination
+ 
             # Add new node y and edge (v,y)
-            y               = Node()
-            new_label       = Text[SuffixArray[i]+descent:]
-            vy_label        = new_label[:LCP[i]-descent]
-            vy              = Edge(vy_label, y)
+            y         = Node()
+            new_label = Text[SuffixArray[i]+descent:]
+            vy_label  = new_label[:LCP[i]-descent]
+            vy        = Edge(vy_label, y)
             v.link(vy)
-            assert vy.label== get_common_prefix(Text[SuffixArray[i]:],Text[SuffixArray[i-1]:])
+            if trace:
+                print (f'descent={descent}. Deleting {vw.label}. Split: {new_label} vy: {vy.label}')  
+                print (f'Common prefix of {Text[SuffixArray[i]:]} and {Text[SuffixArray[i-1]:]} is {get_common_prefix(Text[SuffixArray[i]:],Text[SuffixArray[i-1]:])}')
+            #assert vy.label== get_common_prefix(Text[SuffixArray[i]:],Text[SuffixArray[i-1]:]), \
+                              #f'i={i}: {vy.label}!= {get_common_prefix(Text[SuffixArray[i]:],Text[SuffixArray[i-1]:])} {Text[SuffixArray[i]:]} {Text[SuffixArray[i-1]:]}'
             
             # Verify that descent of y has been calculated correctly
             assert y.descent==LCP[i],f'{y.descent} != {LCP[i]}'
             
-            # Connect w to y
+            # Connect w to y. This will set w to point back to edge
             
-            yw              = Edge(Text[SuffixArray[i-1]+LCP[i]:], w)
+            yw        = Edge(Text[SuffixArray[i-1]+LCP[i]:], w)
             y.link(yw)
-            assert yw.label==vw_for_deletion.label[len(vy.label):],f'i={i}, {yw.label}!={vw_for_deletion.label[len(vy.label):]}'
+            #assert yw.label==vw.label[len(vy.label):],f'i={i}, {yw.label}!={vw.label[len(vy.label):]}'
             
             # Add x
-            x               = Node(label=SuffixArray[i])
-            yx              = Edge( Text[SuffixArray[i]+LCP[i]:], x)
+            x         = Node(label=SuffixArray[i])
+            yx        = Edge( Text[SuffixArray[i]+LCP[i]:], x)
             y.link(yx)
             
-            if Debug:
-                print (f'Deleted {vw_for_deletion.label}. Split: {new_label}')
+            if trace:
+                print (f'Deleted {vw.label}. Split: {new_label}')
                 print (f'vy: {vy.label}, yw: {yw.label}, yx: {yx.label}')
         else:
             raise RosalindException(f'Descent ({descent}) > LCP[{i}]({LCP[i]})')
            
-        if Debug:
+        if trace:
             print ('Edges:')
-            for label in root.gather_edge_labels(Debug=Debug):
-                print (f'\t{label}')
+            for edge_label,node_label in root.gather_edge_labels():
+                print (f'\t{edge_label} {node_label if node_label != None else ""}')
 
     yield from root.gather_edge_labels()
 
@@ -211,29 +212,29 @@ if __name__=='__main__':
     parser.add_argument('--sample',   default=False, action='store_true', help='process sample dataset')
     parser.add_argument('--extra',    default=False, action='store_true', help='process extra dataset')
     parser.add_argument('--rosalind', default=False, action='store_true', help='process Rosalind dataset')
-    parser.add_argument('--debug',    default=False, action='store_true', help='Print debugging information')
+    parser.add_argument('--trace',    default=False, action='store_true', help='Print debugging information')
     args = parser.parse_args()
     
     if args.banana:
         r,p,LCP = SuffixArray('panamabananas$',auxiliary=True,padLCP=True)
-        for edge in SuffixArray2Tree('panamabananas$', r, LCP,Debug=args.debug):
+        for edge,_ in SuffixArray2Tree('panamabananas$', r, LCP,trace=args.trace):
             print (edge)
             
     if args.sample:
-        for edge in SuffixArray2Tree('GTAGT$',
+        for edge,_ in SuffixArray2Tree('GTAGT$',
                                      [5, 2, 3, 0, 4, 1],
                                      [0, 0, 0, 2, 0, 1],
-                                     Debug=args.debug):
+                                     trace=args.trace):
             print (edge)
         
     
     if args.extra:
         Input,Expected  = read_strings('data/SuffixTreeFromSuffixArray.txt',init=0)
 
-        Result = [edge for edge in SuffixArray2Tree(Input[0],
+        Result = [edge for edge,_ in SuffixArray2Tree(Input[0],
                                                     [int(s) for s in Input[1].split(',')],
                                                     [int(s) for s in Input[2].split(',')],
-                                                    Debug=args.debug)]
+                                                    trace=args.trace)]
         print (f'Expected {len(Expected)} Edges, actual = {len(Result)}')
         Result.sort(key=lambda x: f'{len(x):04}{x}')
         Expected.sort(key=lambda x: f'{len(x):04}{x}')
@@ -262,10 +263,10 @@ if __name__=='__main__':
     if args.rosalind:
         Input  = read_strings(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt')
         with open(f'{os.path.basename(__file__).split(".")[0]}.txt','w') as f:
-            for edge in SuffixArray2Tree(Input[0],
+            for edge,_ in SuffixArray2Tree(Input[0],
                                          [int(s) for s in Input[1].split(',')],
                                          [int(s) for s in Input[2].split(',')],
-                                         Debug=args.debug):
+                                         trace=args.trace):
                 print (edge)
                 f.write(f'{edge}\n')
                 
