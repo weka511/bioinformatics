@@ -42,9 +42,10 @@ def SuffixArray2Tree(Text, SuffixArray, LCP, Debug=False):
         #     root      Used to mark node as root
         
         def __init__(self,root=False):
-            self.Edges  = []
-            self.entry  = self if root else None
-            self.count  = Node.count
+            self.Edges   = []
+            self.entry   = self if root else None
+            self.count   = Node.count
+            self.descent = 0 if root else None
             Node.count += 1
         # link
         
@@ -58,35 +59,7 @@ def SuffixArray2Tree(Text, SuffixArray, LCP, Debug=False):
         def is_root(self):
             return self.entry == self
         
-        # create_path_from_root
-        #
-        # Build a path back to the root.
-        #
-        # Return [(root,0), (node1,len1), (node2,len2),... ], where len1 is length of edge label from root to node1
-        #         len2 is length of edge label from node1 to node2, etc.
-        
-        def create_path_from_root(self):
-            Product = []
-            node    = self
-            while not node.is_root():
-                back_edge = node.entry
-                Product.insert(0,(node,len(back_edge.label)))
-                node      = back_edge.entry
-            Product.insert(0,(root,0))
-            return Product
-        
-        # create_descents
-        #
-        # Return [(root,0), (node1,descent1), (node2,descent2),... ], where descent1 is length of edge label from root to node1
-        #         descent2 is toal length of edge labels from root to node2, etc.
-         
-        def create_descents(self):          
-            Product = []
-            descent = 0
-            for node,length in self.create_path_from_root():
-                descent += length
-                Product.append((node,descent))
-            return Product
+   
         
         # pop_rightmost_edge
         #
@@ -104,6 +77,18 @@ def SuffixArray2Tree(Text, SuffixArray, LCP, Debug=False):
             for edge in self.Edges:
                 yield edge.label
                 yield from edge.destination.gather_edges()
+                
+        # find_descent_LE_LCP
+        #
+        # Starting with last node added, search up until descent <= limit. This will always 
+        # return a value provided limit is from a legal LCP arrau, as DESCENT(root)==0
+        
+        def find_descent_LE_LCP(self,limit):
+            v = self
+            while v.descent>limit:
+                v = v.entry.entry
+            return v,v.descent    
+        
     # Edge
     
     class Edge():
@@ -114,16 +99,10 @@ def SuffixArray2Tree(Text, SuffixArray, LCP, Debug=False):
             destination.entry = self
             
         def link(self,entry):
-            self.entry = entry
+            self.entry               = entry
+            self.destination.descent = entry.descent + len(self.label)
     
-    # find_descent_le_LCP
-    #
-    # Starting with last node added, search up until descent <= LCP. This will always 
-    # return a value is PCP is from a legal LCP arrau, as DESCENT(root)==0
-    def find_descent_le_LCP(x,LCP):
-        for v,descent in x.create_descents():
-            if descent <= LCP:
-                return v,descent
+
     
     def get_common_prefix(sa0,sa1):
         for i in range(min(len(sa0),len(sa1))):
@@ -139,7 +118,7 @@ def SuffixArray2Tree(Text, SuffixArray, LCP, Debug=False):
             print ('----------------')
             print (f'i={i}') 
             
-        v,descent = find_descent_le_LCP(x,LCP[i])   
+        v,descent = x.find_descent_LE_LCP(LCP[i])   
 
         if descent == LCP[i]:
             x  = Node()
@@ -153,6 +132,7 @@ def SuffixArray2Tree(Text, SuffixArray, LCP, Debug=False):
             vw_for_deletion = v.pop_rightmost_edge()
             w               = vw_for_deletion.destination
             ll              = vw_for_deletion.label
+            
             # Add new node y and edge (v,y)
             y               = Node()
             new_label       = Text[SuffixArray[i]+descent:]
@@ -161,8 +141,8 @@ def SuffixArray2Tree(Text, SuffixArray, LCP, Debug=False):
             v.link(vy)
             assert vy.label== get_common_prefix(Text[SuffixArray[i]:],Text[SuffixArray[i-1]:])
             
-            # DESCENT?
-            descent_y = LCP[i] # what is this for?
+            # Verify that descent of y has been calculated correctly
+            assert y.descent==LCP[i],f'{y.descent} != {LCP[i]}'
             
             # Connect w to y
             
