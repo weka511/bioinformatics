@@ -19,8 +19,8 @@ import argparse
 import os
 import time
 from   helpers  import read_strings
-from   snp      import SuffixArray
 from   rosalind import RosalindException
+from   snp      import SuffixArray
 
 # SuffixArray2Tree
 #
@@ -32,9 +32,10 @@ from   rosalind import RosalindException
 
 def SuffixArray2Tree(Text, SuffixArray, LCP, Debug=False):
     
+
     # Node
     class Node:
-        
+        count = 0
         # __init__
         #
         # Paramters:
@@ -43,7 +44,8 @@ def SuffixArray2Tree(Text, SuffixArray, LCP, Debug=False):
         def __init__(self,root=False):
             self.Edges  = []
             self.entry  = self if root else None
-         
+            self.count  = Node.count
+            Node.count += 1
         # link
         
         def link(self,edge):
@@ -56,24 +58,48 @@ def SuffixArray2Tree(Text, SuffixArray, LCP, Debug=False):
         def is_root(self):
             return self.entry == self
         
-        def get_descent(self):
-            Path    = []
-            current = self
-            while not current.is_root():
-                edge = current.entry
-                Path.insert(0,(current,len(edge.label)))
-                current = edge.entry
-            Path.insert(0,(root,0))
-            Descents = []
-            descent  = 0
-            for node,contribution in Path:
-                descent += contribution
-                Descents.append((node,descent))
-            return Descents
+        # create_path_from_root
+        #
+        # Build a path back to the root.
+        #
+        # Return [(root,0), (node1,len1), (node2,len2),... ], where len1 is length of edge label from root to node1
+        #         len2 is length of edge label from node1 to node2, etc.
+        
+        def create_path_from_root(self):
+            Product = []
+            node    = self
+            while not node.is_root():
+                back_edge = node.entry
+                Product.insert(0,(node,len(back_edge.label)))
+                node      = back_edge.entry
+            Product.insert(0,(root,0))
+            return Product
+        
+        # create_descents
+        #
+        # Return [(root,0), (node1,descent1), (node2,descent2),... ], where descent1 is length of edge label from root to node1
+        #         descent2 is toal length of edge labels from root to node2, etc.
+         
+        def create_descents(self):          
+            Product = []
+            descent = 0
+            for node,length in self.create_path_from_root():
+                descent += length
+                Product.append((node,descent))
+            return Product
+        
+        # pop_rightmost_edge
+        #
+        # Delete rightmost edge from this node
+        #
+        # Returns: newly deleted node
         
         def pop_rightmost_edge(self):
             return self.Edges.pop(-1)
         
+        # gather_edges
+        #
+        # Used to collect all edges
         def gather_edges(self,Collection=[]):
             for edge in self.Edges:
                 yield edge.label
@@ -92,20 +118,27 @@ def SuffixArray2Tree(Text, SuffixArray, LCP, Debug=False):
     
     # find_descent_le_LCP
     #
-    # Starting with last node added, search up until descent <= LCP
+    # Starting with last node added, search up until descent <= LCP. This will always 
+    # return a value is PCP is from a legal LCP arrau, as DESCENT(root)==0
     def find_descent_le_LCP(x,LCP):
-        for v,descent in x.get_descent():
+        for v,descent in x.create_descents():
             if descent <= LCP:
                 return v,descent
-                    
+    
+    def get_common_prefix(sa0,sa1):
+        for i in range(min(len(sa0),len(sa1))):
+            if sa0[i]!=sa1[i]:
+                return sa0[:i]
+            
     n    = len(Text)
     root = Node(root=True)
     x    = root   # x is always the last node added
     
-    for i in range(n):
+    for i in range(n): # cf Biometrics Algorithms 9R my 'i' represents their 'i+1'
         if Debug:
             print ('----------------')
-            print (f'i={i}')        
+            print (f'i={i}') 
+            
         v,descent = find_descent_le_LCP(x,LCP[i])   
 
         if descent == LCP[i]:
@@ -114,20 +147,36 @@ def SuffixArray2Tree(Text, SuffixArray, LCP, Debug=False):
             v.link(vx)
             if Debug:
                 print (f'Added vx: {vx.label}')
-        elif descent < LCP[i]:
-            vw_edge_for_deletion = v.pop_rightmost_edge()
-            y                    = Node()
-            new_label            = Text[SuffixArray[i]+descent:]
-            vy                   = Edge(new_label[:LCP[i]-descent],y)
+                
+        elif descent < LCP[i]: 
+            # Delete (v,w)
+            vw_for_deletion = v.pop_rightmost_edge()
+            w               = vw_for_deletion.destination
+            ll              = vw_for_deletion.label
+            # Add new node y and edge (v,y)
+            y               = Node()
+            new_label       = Text[SuffixArray[i]+descent:]
+            vy_label        = new_label[:LCP[i]-descent]
+            vy              = Edge(vy_label, y)
             v.link(vy)
-            yw                   = Edge(Text[SuffixArray[i-1]+LCP[i]:],vw_edge_for_deletion.destination)
+            assert vy.label== get_common_prefix(Text[SuffixArray[i]:],Text[SuffixArray[i-1]:])
+            
+            # DESCENT?
+            descent_y = LCP[i] # what is this for?
+            
+            # Connect w to y
+            
+            yw              = Edge(Text[SuffixArray[i-1]+LCP[i]:], w)
             y.link(yw)
-            x                    = Node()
-            yx                   = Edge( Text[SuffixArray[i]+LCP[i]:],x)
+            assert yw.label==vw_for_deletion.label[len(vy.label):],f'i={i}, {yw.label}!={vw_for_deletion.label[len(vy.label):]}'
+            
+            # Add x
+            x               = Node()
+            yx              = Edge( Text[SuffixArray[i]+LCP[i]:], x)
             y.link(yx)
-
+            
             if Debug:
-                print (f'Deleted {vw_edge_for_deletion.label}. Split: {new_label}')
+                print (f'Deleted {vw_for_deletion.label}. Split: {new_label}')
                 print (f'vy: {vy.label}, yw: {yw.label}, yx: {yx.label}')
         else:
             raise RosalindException(f'Descent ({descent}) > LCP[{i}]({LCP[i]})')
@@ -150,8 +199,8 @@ if __name__=='__main__':
     args = parser.parse_args()
     
     if args.banana:
-        r,p,LCP = SuffixArray('panamabananas$',auxiliary=True)
-        for edge in SuffixArray2Tree('panamabananas$', r, [0]+LCP,Debug=args.debug):
+        r,p,LCP = SuffixArray('panamabananas$',auxiliary=True,padLCP=True)
+        for edge in SuffixArray2Tree('panamabananas$', r, LCP,Debug=args.debug):
             print (edge)
             
     if args.sample:
@@ -166,23 +215,23 @@ if __name__=='__main__':
         Input,Expected  = read_strings('data/SuffixTreeFromSuffixArray.txt',init=0)
 
         Result = [edge for edge in SuffixArray2Tree(Input[0],
-                                     [int(s) for s in Input[1].split(',')],
-                                     [int(s) for s in Input[2].split(',')],
-                                     Debug=args.debug)]
+                                                    [int(s) for s in Input[1].split(',')],
+                                                    [int(s) for s in Input[2].split(',')],
+                                                    Debug=args.debug)]
         print (f'Expected {len(Expected)} Edges, actual = {len(Result)}')
-        Result.sort()
-        Expected.sort()
+        Result.sort(key=lambda x: f'{len(x):04}{x}')
+        Expected.sort(key=lambda x: f'{len(x):04}{x}')
         i = 0
         j = 0
         while i<len(Expected) and j<len(Result):
             if Expected[i]==Result[j]:
                 i+=1
                 j+=1
-            elif Expected[i]<=Result[j]:
-                print (f'Expected {Expected[i]}, Actual {Result[j]}')
+            elif Expected[i]<Result[j]:
+                print (f'Expected {Expected[i]} < Actual {Result[j]}')
                 i+=1
-            else:
-                print (f'Expected {Expected[i]}, Actual {Result[j]}')
+            else: # Expected[i]>Result[j]
+                print (f'Expected {Expected[i]} > Actual {Result[j]}')
                 j+=1
                 
   

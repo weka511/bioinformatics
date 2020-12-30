@@ -231,7 +231,7 @@ def FindLongestRepeat(string1,string2=None):
 # This can also create the auxiliary arrays used by Efficient repeat finding via suffix arrays
 # Verónica Becher, Alejandro Deymonnaz, and Pablo Ariel Heiber
 
-def SuffixArray(s,auxiliary=False):
+def SuffixArray(s,auxiliary=False,padLCP=False):
     r = [i for (_,i) in sorted([(s[i:],i) for i in range(len(s))],
                                key=lambda x:x[0])]
     if auxiliary:
@@ -248,6 +248,8 @@ def SuffixArray(s,auxiliary=False):
                     LCP[-1] += 1
                 else:
                     break
+        if padLCP:
+            LCP.insert(0,0)
         return (r,p,LCP)
     else:
         return r
