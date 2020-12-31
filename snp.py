@@ -18,7 +18,7 @@
 
 from rosalind   import RosalindException
 from deprecated import deprecated
-from numpy      import empty_like,arange,argsort
+from numpy      import empty_like,arange,argsort,argmax
 
 # BA9A Construct a Trie from a Collection of Patterns 
 # Trie - a trie, represented as a collection of Nodes and Edges
@@ -672,4 +672,27 @@ def mrep(w,ml=20):
         if (p_i==0 or LCP[p_i-1]!=LCP[i]) and (n_i==n-1 or LCP[n_i]!=LCP[i]):                          # Maximal on right?
             if r[p_i]==0 or r[n_i]==0 or w[r[p_i]-1]!=w[r[n_i]-1] or p[r[n_i]-1]-p[r[p_i]-1]!=n_i-p_i: # Maximal on left?
                 yield w[r[i]:r[i]+LCP[i]]                                                              # banzai
-                
+# BA9E Find the Longest Substring Shared by Two Strings
+
+# LongestSharedSubstring
+#
+# Find the Longest Substring Shared by Two Strings
+#
+# See https://en.wikipedia.org/wiki/Longest_common_substring_problem
+
+def LongestSharedSubstring(s,t):
+    
+    text = s + '$' + t + '#'
+    r,p,lcp = SuffixArray(text,auxiliary=True,padLCP=True)
+    previous_from_s = False
+    Pairs = []
+    for i in range(len(lcp)):
+        from_s = r[i]<len(s)+2
+        #print (f'{i},{r[i]},{lcp[i]},{text[r[i]:r[i]+lcp[i]]},{from_s},{previous_from_s}')
+        if i>0 and previous_from_s != from_s:
+            Pairs.append(i)
+        previous_from_s = from_s
+    candidate_LCPs = [lcp[i] if i in Pairs else 0 for i in range(len(lcp))]
+    index = argmax(candidate_LCPs)
+    return text[r[index]:r[index]+candidate_LCPs[index]]
+                 

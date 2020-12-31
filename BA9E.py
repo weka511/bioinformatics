@@ -18,37 +18,11 @@
 import argparse
 import os
 from   helpers import read_strings
-from   snp     import SuffixArray
+from   snp     import LongestSharedSubstring
 import sys
 import time
-from   numpy   import argmax
 
-# LongestSharedSubstring
-#
-# Find the Longest Substring Shared by Two Strings
-#
-# See https://en.wikipedia.org/wiki/Longest_common_substring_problem
 
-def LongestSharedSubstring(s,t):
-            
-    t0 = time.time()
-    print ( f'About to build suffix Array {time.time()-t0}')
-    text = s + '$' + t + '#'
-    r,p,lcp = SuffixArray(text,auxiliary=True,padLCP=True)
-    print ( f'Built tree {time.time()-t0}')
-    
-    previous_from_s = False
-    Pairs = []
-    for i in range(len(lcp)):
-        from_s = r[i]<len(s)+2
-        #print (f'{i},{r[i]},{lcp[i]},{text[r[i]:r[i]+lcp[i]]},{from_s},{previous_from_s}')
-        if i>0 and previous_from_s != from_s:
-            Pairs.append(i)
-        previous_from_s = from_s
-    candidate_LCPs = [lcp[i] if i in Pairs else 0 for i in range(len(lcp))]
-    index = argmax(candidate_LCPs)
-    return text[r[index]:r[index]+candidate_LCPs[index]]
-        
 if __name__=='__main__':
     start = time.time()
     parser = argparse.ArgumentParser('BA9E Find the Longest Substring Shared by Two Strings')
