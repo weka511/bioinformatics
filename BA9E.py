@@ -16,48 +16,39 @@
 # BA9E Find the Longest Substring Shared by Two Strings
 
 import argparse
+import os
 from   helpers import read_strings
-from   snp     import SuffixTree,ColourTree
+from   snp     import SuffixArray
 import sys
 import time
+from   numpy   import argmax
 
+# LongestSharedSubstring
+#
+# Find the Longest Substring Shared by Two Strings
+#
 # See https://en.wikipedia.org/wiki/Longest_common_substring_problem
 
 def LongestSharedSubstring(s,t):
-    def get_colour(label):
-        return [1,0] if label<=len(s)+1 else [0,1]
-    def purple(colour):
-        return colour[0] and colour[1]    
-    def search(node,candidate,path=[]):
- 
-        #print (path)
-        if purple( Coloured[node.seq]):
-            if len(path)>len(candidate):
-                candidate = [p for p in path]
-                #print (candidate)
-            for symbol,edge in node.edges.items():
-                cc = search(edge.node,candidate,path=path+[symbol])
-                if len(cc)>len(candidate):
-                    candidate = [p for p in cc]
-        return candidate
+            
     t0 = time.time()
-    print ( f'About to build tree {time.time()-t0}')
-    tree             = SuffixTree()
+    print ( f'About to build suffix Array {time.time()-t0}')
+    text = s + '$' + t + '#'
+    r,p,lcp = SuffixArray(text,auxiliary=True,padLCP=True)
     print ( f'Built tree {time.time()-t0}')
-    Leaves,Internal,Nodes  = tree.build(s + '$' + t + '#')
-    Internal.append(tree.root)
-    Adj              = {leaf.seq: [] for leaf in Leaves}
-    for node in Internal:
-        Adj[node.seq] = [edge.node.seq for _,edge in node.edges.items()]
-    Colours          = {node.seq: get_colour(node.label) for node in Leaves}
-    print ( f'About to colour tree {time.time()-t0}')
-    Coloured         = ColourTree(Adj,Colours)
-    print ( f'About to search tree {time.time()-t0}')
-    candidate        = []
-    candidate        = search(tree.root,candidate) 
-    print ( f'Done {time.time()-t0}')
-    return ''.join(candidate)
-
+    
+    previous_from_s = False
+    Pairs = []
+    for i in range(len(lcp)):
+        from_s = r[i]<len(s)+2
+        #print (f'{i},{r[i]},{lcp[i]},{text[r[i]:r[i]+lcp[i]]},{from_s},{previous_from_s}')
+        if i>0 and previous_from_s != from_s:
+            Pairs.append(i)
+        previous_from_s = from_s
+    candidate_LCPs = [lcp[i] if i in Pairs else 0 for i in range(len(lcp))]
+    index = argmax(candidate_LCPs)
+    return text[r[index]:r[index]+candidate_LCPs[index]]
+        
 if __name__=='__main__':
     start = time.time()
     parser = argparse.ArgumentParser('BA9E Find the Longest Substring Shared by Two Strings')
@@ -72,17 +63,19 @@ if __name__=='__main__':
                                  'AGGGGCTCGCAGTGTAAGAA'))        
         
     if args.extra:
-        sys.setrecursionlimit(4000)
-        Input,Expected  = read_strings('data/LongestSharedSubstring.txt',init=0)
-        #print (Input[0])       
+        Input,Expected  = read_strings('data/LongestSharedSubstring.txt',init=0)       
         Actual = LongestSharedSubstring(Input[0],Input[1])
         print (len(Expected[0]),len(Actual))
         print (Expected[0])
         print (Actual)        
  
     if args.rosalind:
-        pass
-    
+        Input  = read_strings(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt')    
+        Result = LongestSharedSubstring(Input[0],Input[1])
+        print (Result)
+        with open(f'{os.path.basename(__file__).split(".")[0]}.txt','w') as f:
+            f.write(f'{Result}\n')
+            
     elapsed = time.time()-start
     minutes = int(elapsed/60)
     seconds = elapsed-60*minutes
