@@ -681,18 +681,24 @@ def mrep(w,ml=20):
 # See https://en.wikipedia.org/wiki/Longest_common_substring_problem
 
 def LongestSharedSubstring(s,t):
+    # find_straddling
+    #
+    # Find indices of LCPs that straddle end of s,
+    # i.e. one string is from s, the other from t
     
-    text = s + '$' + t + '#'
-    r,p,lcp = SuffixArray(text,auxiliary=True,padLCP=True)
-    previous_from_s = False
-    Pairs = []
-    for i in range(len(lcp)):
-        from_s = r[i]<len(s)+2
-        #print (f'{i},{r[i]},{lcp[i]},{text[r[i]:r[i]+lcp[i]]},{from_s},{previous_from_s}')
-        if i>0 and previous_from_s != from_s:
-            Pairs.append(i)
-        previous_from_s = from_s
-    candidate_LCPs = [lcp[i] if i in Pairs else 0 for i in range(len(lcp))]
-    index = argmax(candidate_LCPs)
+    def find_straddling():
+        previous_from_s = False
+        Pairs           = []
+        for i in range(len(lcp)):
+            from_s          = r[i]<len(s)+2
+            if i>0 and previous_from_s != from_s:
+                Pairs.append(i)
+            previous_from_s = from_s
+        return Pairs
+    
+    text           = s + '$' + t + '#'
+    r,_,lcp        = SuffixArray(text,auxiliary=True,padLCP=True)
+    candidate_LCPs = [lcp[i] if i in  find_straddling() else 0 for i in range(len(lcp))]
+    index          = argmax(candidate_LCPs)
     return text[r[index]:r[index]+candidate_LCPs[index]]
                  
