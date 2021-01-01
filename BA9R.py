@@ -92,14 +92,23 @@ def SuffixArray2Tree(Text, SuffixArray, LCP, trace=False):
         # find_attachment_point
         #
         # Starting with last node added, search up until descent <= limit. This will always 
-        # return a value provided limit is from a legal LCP arrau, as DESCENT(root)==0
+        # return a value provided limit is from a legal LCP array, as DESCENT(root)==0
         
         def find_attachment_point(self,limit):
             v = self
             while v.descent>limit:
                 v = v.entry.entry
-            return v,v.descent    
+            return v,v.descent
         
+        def get_concatenated_edge_labels(self):
+            Concat = []
+            v = self
+            while True:
+                if v.is_root():
+                    return ''.join(Concat)
+                edge = v.entry
+                Concat.insert(0,edge.label)
+                v    = edge.entry
     # Edge
     #
     # Represents an Edge in Suffix Tree
@@ -142,26 +151,35 @@ def SuffixArray2Tree(Text, SuffixArray, LCP, trace=False):
            
     n    = len(Text)
     root = Node(root=True)
-    x    = root   # x is always the last node that has been added
     
     # x, y, v, w are nodes
-    # two letter combinations of nodes, e.g. vx represent Edges
+    # x will always be the last node that has been added
+    # two letter combinations of nodes, e.g. vx, represent Edges
+    
+    x    = root
     
     for i in range(n): # cf Biometrics Algorithms 9R; my 'i' represents textbook's 'i+1'
         if trace:
             print ('----------------')
-            print (f'i={i}, SuffixArray[{i}]={SuffixArray[i]}--{Text[SuffixArray[i]:]} LCP[{i}]={LCP[i]}') 
+            print (f'i={i}, SuffixArray[{i}]={SuffixArray[i]}--{Text[SuffixArray[i]:]}/{Text[SuffixArray[i-1]:]} LCP[{i}]={LCP[i]}') 
             
-        v,descent = x.find_attachment_point(LCP[i])   
+        v,descent = x.find_attachment_point(LCP[i])
+        if trace:
+            print (f'Concatenated Edge labels: {v.get_concatenated_edge_labels()}')
 
-        if descent == LCP[i]:    # Can insert suffix as a new leaf
-            x  = Node(label=SuffixArray[i])
-            vx = Edge(Text[SuffixArray[i] + LCP[i]:], x)
-            v.link(vx)
+        if descent == LCP[i]:                             # Concatenation of labels on path is equal to
+                                                          # longest common prefix of suffixes corresponding to
+                                                          # SuffixArray[i] and SuffixArray[i-1]
+            x  = Node(label=SuffixArray[i])               # Insert suffix as a new leaf
+            vx = Edge(Text[SuffixArray[i] + LCP[i]:], x)  # Edge label is suffix
+            v.link(vx)                                    # Link back to V
             if trace:
                 print (f'Added vx: {vx.label}')
                 
-        elif descent < LCP[i]:    # In this case we need to split a Node
+        elif descent < LCP[i]:     # Concatenation of labels on path has fewer symbols than we need
+                                   # to match the longest common prefix of suffixes corresponding to
+                                   # SuffixArray[i] and SuffixArray[i-1]            
+                                   # In this case we need to split a Node
             # Delete (v,w)
             vw        = v.unlink()
             w         = vw.destination
