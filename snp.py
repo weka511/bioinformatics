@@ -58,7 +58,12 @@ def create_trie(Patterns,root=1):
                 
             
 # BA9B Implement TrieMatching
-
+#
+# MatchPrefix
+#
+# Given: A string Text and a collection of strings Patterns.
+#
+# Return: First starting positions in Text where a string from Patterns appears as a substring.
 
 def MatchPrefix(Text,Trie):
     i      = iter(Text)
@@ -81,6 +86,12 @@ def MatchPrefix(Text,Trie):
                     return []
         else:
             return []
+        
+# MatchAll
+#
+# Given: A string Text and a collection of strings Patterns.
+#
+# Return: All starting positions in Text where a string from Patterns appears as a substring.
 
 def MatchAll(Text,Trie):
     return [i for i in range(len(Text)) if MatchPrefix(Text[i:],Trie)]
@@ -191,10 +202,15 @@ class SuffixTree:
         return [ ''.join(run[:-1]) for run in self.root.collectEdges(accumulator=[])]
 
 # BA9D Find the Longest Repeat in a String
-# BA9E Find the Longest Substring Shared by Two Strings
 
 def sort_by_descending_length(edges):
     return [e for _,e in sorted([(len(edge),edge) for edge in edges],reverse=True)]
+
+# FindLongestRepeat
+#
+# Given: A string Text.
+#
+# Return: A longest substring of Text that appears in Text more than once.
 
 def FindLongestRepeat(string1,string2=None):        
     tree = SuffixTree()
@@ -217,6 +233,40 @@ def FindLongestRepeat(string1,string2=None):
             j+=1
 
         return string[index1-i:index1+j]
+
+# BA9E Find the Longest Substring Shared by Two Strings
+
+# LongestSharedSubstring
+#
+# Find the Longest Substring Shared by Two Strings
+#
+# Given: Strings Text1 and Text2.
+#
+# Return: The longest substring that occurs in both Text1 and Text2. 
+#
+# See https://en.wikipedia.org/wiki/Longest_common_substring_problem
+
+def LongestSharedSubstring(s,t):
+    # find_straddling
+    #
+    # Find indices of LCPs that straddle end of s,
+    # i.e. one string is from s, the other from t
+    
+    def find_straddling():
+        previous_from_s = False
+        Pairs           = []
+        for i in range(len(lcp)):
+            from_s          = r[i]<len(s)+2
+            if i>0 and previous_from_s != from_s:
+                Pairs.append(i)
+            previous_from_s = from_s
+        return Pairs
+    
+    text           = s + '$' + t + '#'
+    r,_,lcp        = SuffixArray(text,auxiliary=True,padLCP=True)
+    candidate_LCPs = [lcp[i] if i in  find_straddling() else 0 for i in range(len(lcp))]
+    index          = argmax(candidate_LCPs)
+    return text[r[index]:r[index]+candidate_LCPs[index]]
 
 # BA9G Construct the Suffix Array of a String
 
@@ -254,8 +304,6 @@ def SuffixArray(s,auxiliary=False,padLCP=False):
     else:
         return r
         
-        
-
 #  BA9H 	Pattern Matching with the Suffix Array
 
 # MatchOnePatternUsingSuffixArray
@@ -314,17 +362,8 @@ def MatchPatternsUsingSuffixArray(Text,Patterns):
 # of the symbols of Text. We are interested in the last column of M(Text), 
 # called the Burrows-Wheeler transform of Text, or BWT(Text).
 def BurrowsWheeler(s):
-    def cyclicPermutation(s):
-        return s[1:] + s[0:1]
 
-    perms = []
-    perm  = s
-    for i in range(len(s)):
-        perm = cyclicPermutation(perm)
-        perms.append(perm)
-    perms.sort()
-    bwt = [perm[-1] for perm in perms]
-    return ''.join(bwt)
+    return ''.join([row[-1] for row in sorted([s[k:] + s[0:k] for k in range(len(s))])])
 
 # BA9J Reconstruct a String from its Burrows-Wheeler Transform
 
@@ -672,33 +711,5 @@ def mrep(w,ml=20):
         if (p_i==0 or LCP[p_i-1]!=LCP[i]) and (n_i==n-1 or LCP[n_i]!=LCP[i]):                          # Maximal on right?
             if r[p_i]==0 or r[n_i]==0 or w[r[p_i]-1]!=w[r[n_i]-1] or p[r[n_i]-1]-p[r[p_i]-1]!=n_i-p_i: # Maximal on left?
                 yield w[r[i]:r[i]+LCP[i]]                                                              # banzai
-# BA9E Find the Longest Substring Shared by Two Strings
 
-# LongestSharedSubstring
-#
-# Find the Longest Substring Shared by Two Strings
-#
-# See https://en.wikipedia.org/wiki/Longest_common_substring_problem
-
-def LongestSharedSubstring(s,t):
-    # find_straddling
-    #
-    # Find indices of LCPs that straddle end of s,
-    # i.e. one string is from s, the other from t
-    
-    def find_straddling():
-        previous_from_s = False
-        Pairs           = []
-        for i in range(len(lcp)):
-            from_s          = r[i]<len(s)+2
-            if i>0 and previous_from_s != from_s:
-                Pairs.append(i)
-            previous_from_s = from_s
-        return Pairs
-    
-    text           = s + '$' + t + '#'
-    r,_,lcp        = SuffixArray(text,auxiliary=True,padLCP=True)
-    candidate_LCPs = [lcp[i] if i in  find_straddling() else 0 for i in range(len(lcp))]
-    index          = argmax(candidate_LCPs)
-    return text[r[index]:r[index]+candidate_LCPs[index]]
                  
