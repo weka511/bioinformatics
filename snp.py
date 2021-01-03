@@ -366,7 +366,17 @@ def BurrowsWheeler(s):
     return ''.join([row[-1] for row in sorted([s[k:] + s[0:k] for k in range(len(s))])])
 
 # BA9J Reconstruct a String from its Burrows-Wheeler Transform
+# BA9K Generate the Last-to-First Mapping of a String
 
+# getN
+#
+# Used by InverseBWT and LastToFirst: given a character that is known to appear in a 
+# specific position in a column, deterine whether is is the first, 2nd, ..., occurrence
+#
+# Parameters:
+#     ch
+#     row
+#     column
 def getN(ch,row,column):
     n = 0
     i = 0
@@ -376,39 +386,50 @@ def getN(ch,row,column):
         i+=1
     return n
 
+# get_char
+#
+# Used by InverseBWT and LastToFirst: find a specific occurrence of chracter in column
+#
+# Parameters:
+#     ch      Chracter to search for
+#     column  Column to be searched
+#     seq     Number of occurrence - 1 for first occurence, 2 for 2nd, etc.
+
 def get_char(ch,column,seq):
-    pos   = 0
     count = 0
-    for i in range(len(column)):
-        if column[i]==ch:
-            pos = i
-            count+=1
+    for pos in range(len(column)):
+        if column[pos]==ch:
+            count +=1
             if count==seq:
-                return pos,count
-            
-def InverseBWT(string):
-    lastColumn  = [a for a in string]
+                return pos
+
+# Inverse BWT
+#
+# Reconstruct a String from its Burrows-Wheeler Transform
+
+def InverseBWT(BWT):
+    lastColumn  = [a for a in BWT]
     firstColumn = sorted(lastColumn)
     Result      = [firstColumn[0]]
-    ch          = min(string)
+    ch          = min(BWT)        # $ in examples in textbook
     seq         = 1
-    while len(Result)<len(string):
-        row,count    = get_char(ch,lastColumn,seq)
-        ch           = firstColumn[row]
-        seq          = getN(ch,row,firstColumn)
+    while len(Result) < len(BWT):
+        row = get_char(ch,lastColumn,seq)  # Find row number for character in last coumn
+        ch  = firstColumn[row]             # Find coresponding symbol in first column
+        seq = getN(ch,row,firstColumn)     # Indicates whether 1st, 2nd, ... occurrence 
         Result.append(ch)
  
     return ''.join(Result[1:]+Result[0:1])
 
 # BA9K Generate the Last-to-First Mapping of a String
 
-def LastToFirst(Transform,i):
-    last      = Transform
-    first     = sorted(Transform)
-    ch        = last[i]              # 0 based
-    n         = getN(ch,i,last)
-    pos,count = get_char(ch,first,n)
-    return pos
+def LastToFirst(BWT,i):
+    last  = BWT
+    first = sorted(BWT)
+    ch    = last[i]              # 0 based
+    n     = getN(ch,i,last)
+    return get_char(ch,first,n)
+
 
 # BA9L 	Implement BWMatching
 #

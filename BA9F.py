@@ -22,24 +22,31 @@ import time
 from numpy import argmin
 
 def FindShortestNonShared(s,t):
-    text = s + '$' + t + '#'
-    r,p,lcp = SuffixArray(text,auxiliary=True,padLCP=True)
-    Candidates = []
-    Rejects    = []
-    for i in range(len(r)):
-        if r[i]<= len(s)+ 2:
-            Candidates.append((i,text[r[i]:]))
-        print (f'{i:2d} {r[i]:2d} {lcp[i]:2d} {l} {text[r[i]:]}')
-    Pairs           = []
-    previous_from_s = False
-    for i in range(len(lcp)):
-        from_s          = r[i]<len(s)+2
-        if from_s and previous_from_s:
-            Pairs.append(i) 
-        previous_from_s = from_s
-    candidate_LCPs = [lcp[i] if i in  Pairs else len(lcp) for i in range(len(lcp))]
-    index          = argmin(candidate_LCPs)
-    return text[r[index]:r[index]+candidate_LCPs[index]]    
+    m = len(s)
+    n = len(t)
+    print (m,n)
+    r0,p0,l0 = SuffixArray(s,auxiliary=True,padLCP=True)
+    for i in range(len(r0)):
+        print (f'{i:2d} {r0[i]:2d} {p0[i]:2d}  {l0[i]:2d} {s[r0[i]:]}')    
+    r1,p1,l1 = SuffixArray(t,auxiliary=True,padLCP=True)
+    for i in range(len(r1)):
+        print (f'{i:2d} {r1[i]:2d} {p1[i]:2d}  {l1[i]:2d} {t[r1q[i]:]}')       
+    #text = s + '$' + t + '#'
+    #r,p,l = SuffixArray(text,auxiliary=True,padLCP=True)
+    #Candidates  = []
+    #Lengths     = []
+    #previous    = -1
+    #for i in range(len(r)):
+        #if r[i]<m:
+            #print (f'{i:2d} {r[i]:2d} {p[i]:2d}  {l[i]:2d} {text[r[i]:]}')
+            #if i==previous+1:
+                #Candidates.append(i)
+                #Lengths.append(l[i])
+            #previous = i
+    #shortest = min(Lengths)
+    #locations = [Candidates[i] for i in range(len(Candidates)) if Lengths[i]==shortest]
+    #for i in locations:
+        #print (f'{i:2d} {r[i]:2d} {p[i]:2d}  {l[i]:2d} {text[r[i]:]}')
     
 if __name__=='__main__':
     start = time.time()
@@ -52,7 +59,8 @@ if __name__=='__main__':
         print (FindShortestNonShared('CCAAGCTGCTAGAGG','CATGCTGGGCTGGCT'))
         
     if args.extra:
-        Input,Expected  = read_strings('data/ShortestNonSharedSubstring.txt',init=0)       
+        Input,Expected  = read_strings('data/ShortestNonSharedSubstring.txt',init=0)
+        print (Expected[0])
         Actual          = FindShortestNonShared(Input[0],Input[1])
         print (len(Expected[0]),len(Actual))
         print (Expected[0])

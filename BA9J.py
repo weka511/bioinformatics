@@ -21,8 +21,6 @@ import time
 from helpers import read_strings
 from snp import InverseBWT
 
-
-
 if __name__=='__main__':
     start = time.time()
     parser = argparse.ArgumentParser('BA9J Reconstruct a String from its Burrows-Wheeler Transform')
