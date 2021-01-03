@@ -20,7 +20,9 @@ import os
 import time
 from   helpers import read_strings
 
-  
+def EvenBetterBWMatching(String,Patterns):
+    pass
+
 if __name__=='__main__':
     start = time.time()
     parser = argparse.ArgumentParser('BA9N 	Find All Occurrences of a Collection of Patterns in a String ')
@@ -28,17 +30,23 @@ if __name__=='__main__':
     parser.add_argument('--rosalind', default=False, action='store_true', help='process Rosalind dataset')
     args = parser.parse_args()
     if args.sample:
-        pass
+        print (EvenBetterBWMatching('AATCGGGTTCAATCGGGGT',
+                                    ['ATCG',
+                                     'GGGT']))
         
     
-
+    if args.extra:
+        Input,Expected  = read_strings('data/MultiplePatternMatching.txt',init=0)
+        Actual = EvenBetterBWMatching(Input[0],Input[1:])
+        print (Expected[0])
+        print (Actual)
+        
     if args.rosalind:
         Input  = read_strings(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt')
  
-        Result = None
-        print (Result)
         with open(f'{os.path.basename(__file__).split(".")[0]}.txt','w') as f:
-            for line in Result:
+            for line in EvenBetterBWMatching(Input[0],Input[1:]):
+                print(line)
                 f.write(f'{line}\n')
                 
     elapsed = time.time() - start
