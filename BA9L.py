@@ -34,9 +34,18 @@ if __name__=='__main__':
                         ['CCT', 'CAC', 'GAG', 'CAG', 'ATC']))
            
     if args.extra:
-        Input  = read_strings(f'data/BWMatching.txt')
-        Result = BW_Match(Input[1],Input[2].split())
-        print (Result)
+        Input,Expected  = read_strings(f'data/BWMatching.txt',init=0)
+        Expected = [int(s) for s in Expected[0].split()]
+        Result   = BW_Match(Input[0],Input[1].split())
+        if len(Result)!=len(Expected):
+            print (f'Mismatched lengths {len(Result)} {len(Expected)}')
+            
+        mismatches = 0
+        for i in range(min(len(Result),len(Expected))):
+            if (Result[i]!=Expected[i]):
+                print (f'{i} {Expected[i]} {Result[i]}')
+                mismatches += 1
+        print (f'{mismatches} mismatches')
         
     if args.rosalind:
         Input  = read_strings(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt')
