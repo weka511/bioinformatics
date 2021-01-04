@@ -406,30 +406,71 @@ def get_char(ch,column,seq):
 # Inverse BWT
 #
 # Reconstruct a String from its Burrows-Wheeler Transform
+#
+# See pages 139-149 of Compeau Pevzner, Volume II
 
 def InverseBWT(BWT):
     lastColumn  = [a for a in BWT]
     firstColumn = sorted(lastColumn)
     Result      = [firstColumn[0]]
     ch          = min(BWT)        # $ in examples in textbook
-    seq         = 1
+    seq         = 1               # Keep track of whether this is 1st, 2nd,... occurence
+                                  # Of course there is only one occurrence of $, but this
+                                  # isn't necessarly true for other characters
     while len(Result) < len(BWT):
-        row = get_char(ch,lastColumn,seq)  # Find row number for character in last coumn
+        row = get_char(ch,lastColumn,seq)  # Find row number for seq-th occurence of character in last coumn
         ch  = firstColumn[row]             # Find coresponding symbol in first column
+                                           # this is the next character arising from a cyclic permutation
         seq = getN(ch,row,firstColumn)     # Indicates whether 1st, 2nd, ... occurrence 
         Result.append(ch)
  
     return ''.join(Result[1:]+Result[0:1])
 
 # BA9K Generate the Last-to-First Mapping of a String
+#
+#  LastToFirst
+#
+#  Parameters:
+#      BWT
+#      i
+#
+#  Return:
+#    The position LastToFirst(i) in FirstColumn in the Burrows-Wheeler matrix if LastColumn = BWT.
 
 def LastToFirst(BWT,i):
-    last  = BWT
-    first = sorted(BWT)
-    ch    = last[i]              # 0 based
-    n     = getN(ch,i,last)
-    return get_char(ch,first,n)
+    first = sorted(BWT)         # First column = last column, sorted
+    ch    = BWT[i]              # ith character, 0 based
+    n     = getN(ch,i,BWT)      # character is nth occurrence
+    return get_char(ch,first,n) # nth occurence in first column
 
+# ColumnContains
+#
+# Used by Match to search the last column for last symbol in Pattern
+#
+# Parameters:
+#     symbol   Current last symbol in Pattern
+#     top      The first row in last column that matches current suffix (excluding symbol)
+#     bottom   The last row in last column that matches current suffix (excluding symbol)
+#
+# Returns:
+#     topIndex     Index in first column of first row that matches current suffix (including symbol)
+#     bottomIndex  Index in first column of last row that matches current suffix (including symbol)
+
+def ColumnContains(Column,symbol,top,bottom):
+    topIndex    = None
+    bottomIndex = None
+
+    for i in range(top,len(Column)):
+        if Column[i]==symbol:
+            bottomIndex = i
+            break
+        
+    for i in range(bottom,-1,-1):
+        if Column[i]==symbol:
+            topIndex = i
+            break
+        
+    return topIndex,bottomIndex
 
 # BA9L 	Implement BWMatching
 #
@@ -439,34 +480,22 @@ def LastToFirst(BWT,i):
 #          of substring matches of the i-th member of Patterns in Text.
 
 def BW_Match(LastColumn,Patterns):
-    def LastColumnContains(symbol,top,bottom):
-        topIndex    = None
-        bottomIndex = None
-        N           = len(LastColumn)
-        
-        for i in range(top,N):
-            if LastColumn[i]==symbol:
-                bottomIndex = i
-                break
-            
-        for i in range(bottom,-1,-1):
-            if LastColumn[i]==symbol:
-                topIndex = i
-                break
-            
-        return topIndex,bottomIndex
     
+
+    # Match
+    #
+    # Used by BW_Match to match one occurrence of Pattern in text
     def Match(Pattern):
-        top    = 0
-        bottom = len(LastColumn)-1
+        top    = 0                  # When we iterate, top will be the first row in last column that matches current suffix                  
+        bottom = len(LastColumn)-1  # bottom will be the last row in last column that matches current suffix
+        i      = len(Pattern)       # Current position within pattern
         while top <= bottom:
-            if len(Pattern) > 0:
-                symbol  = Pattern[-1]
-                Pattern = Pattern[:-1]
-                topIndex,bottomIndex = LastColumnContains(symbol,top,bottom)
+            if i >0 :
+                i                   -= 1
+                topIndex,bottomIndex = ColumnContains(LastColumn,Pattern[i],top,bottom)
                 if type(topIndex)==int and type(bottomIndex)==int:
-                    top    = LastToFirst(LastColumn,bottomIndex)
-                    bottom = LastToFirst(LastColumn,topIndex)
+                    top    = LastToFirst(LastColumn, bottomIndex)
+                    bottom = LastToFirst(LastColumn, topIndex)
                 else:
                     return 0
             else:
@@ -487,23 +516,6 @@ def BetterBWMatching(LastColumn,Patterns):
         for i in range(len(FirstColumn)):
             if FirstColumn[i]==ch:
                 return i
-     
-    def LastColumnContains(symbol,top,bottom):
-        topIndex    = None
-        bottomIndex = None
-        N           = len(LastColumn)
-        
-        for i in range(top,N):
-            if LastColumn[i]==symbol:
-                bottomIndex = i
-                break
-            
-        for i in range(bottom,-1,-1):
-            if LastColumn[i]==symbol:
-                topIndex = i
-                break
-            
-        return topIndex,bottomIndex
     
     def Match(Pattern):
         top    = 0
@@ -512,7 +524,7 @@ def BetterBWMatching(LastColumn,Patterns):
             if len(Pattern) > 0:
                 symbol  = Pattern[-1]
                 Pattern = Pattern[:-1]
-                topIndex,bottomIndex = LastColumnContains(symbol,top,bottom)
+                topIndex,bottomIndex = ColumnContains(LastColumn,symbol,top,bottom)
                 if type(topIndex)==int and type(bottomIndex)==int:
                     top    = FirstOccurences[symbol] + Count(symbol,top)
                     bottom = FirstOccurences[symbol] + Count(symbol,bottom+1) - 1
@@ -523,7 +535,7 @@ def BetterBWMatching(LastColumn,Patterns):
         return 0    
     
  
-    FirstColumn = sorted(LastColumn)
+    FirstColumn     = sorted(LastColumn)
     FirstOccurences = {ch:FirstOccurence(ch) for ch in FirstColumn}
     return [Match(Pattern) for Pattern in Patterns]
 
