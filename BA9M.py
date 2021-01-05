@@ -36,8 +36,8 @@ if __name__=='__main__':
     
     if args.extra:
         Input,Expected  = read_strings(f'data/BetterBWMatching.txt',init=0)
-        Expected = [int(s) for s in Expected[0].split()]
-        Result   = BetterBWMatching(Input[0],Input[1].split())
+        Expected        = [int(s) for s in Expected[0].split()]
+        Result          = BetterBWMatching(Input[0],Input[1].split())
         if len(Result)!=len(Expected):
             print (f'Mismatched lengths {len(Result)} {len(Expected)}')
             
