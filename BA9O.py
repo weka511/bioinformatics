@@ -20,22 +20,37 @@ import os
 import time
 from   helpers import read_strings
 
-  
+# FindApproximateMatches
+#
+# Find all approximate occurrences of a collection of patterns in a text.
+#
+# Given: A string Text, a collection of strings Patterns, and an integer d.
+#
+# Return: All positions in Text where a string from Patterns appears as a substring with at most d mismatches.
+
+def FindApproximateMatches(Text,Patterns,d):
+    pass
+
 if __name__=='__main__':
     start = time.time()
     parser = argparse.ArgumentParser('BA9O 	Find All Approximate Occurrences of a Collection of Patterns in a String ')
     parser.add_argument('--sample',   default=False, action='store_true', help='process sample dataset')
+    parser.add_argument('--extra',   default=False, action='store_true', help='process extra dataset')
     parser.add_argument('--rosalind', default=False, action='store_true', help='process Rosalind dataset')
     args = parser.parse_args()
     if args.sample:
-        pass
-        
-    
-
+        print (FindApproximateMatches('ACATGCTACTTT', ['ATT', 'GCC', 'GCTA', 'TATT'], 1))
+         
+    if args.extra:
+        Input,Expected  = read_strings('data/MultipleApproximatePatternMatching.txt',init=0)
+        Result          = FindApproximateMatches(Input[0],int(Input[1:-1],int(Input[-1])))
+        for a,b in Result:
+            print (a,b)
+            
     if args.rosalind:
         Input  = read_strings(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt')
  
-        Result = None
+        Result = FindApproximateMatches(Input[0],int(Input[1:-1],int(Input[-1])))
         print (Result)
         with open(f'{os.path.basename(__file__).split(".")[0]}.txt','w') as f:
             for line in Result:
