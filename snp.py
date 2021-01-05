@@ -391,7 +391,7 @@ def getN(ch,row,column):
 # Used by InverseBWT and LastToFirst: find a specific occurrence of chracter in column
 #
 # Parameters:
-#     ch      Chracter to search for
+#     ch      Character to search for
 #     column  Column to be searched
 #     seq     Number of occurrence - 1 for first occurence, 2 for 2nd, etc.
 
@@ -472,6 +472,21 @@ def ColumnContains(Column,symbol,top,bottom):
         
     return topIndex,bottomIndex
 
+# getCount
+#
+# Count number of occurrences of symbol in first i positions of last column.
+def getCount(Column, symbol, i):
+    return sum([1 for ch in Column[:i] if ch==symbol]) 
+
+# getFirstOccurrence
+#
+# Find first occurrence of symbol in first column
+
+def getFirstOccurrence(Column,symbol):
+    for i in range(len(Column)):
+        if Column[i]==symbol:
+            return i
+
 # BA9L 	Implement BWMatching
 #
 # Given: A string BWT(Text), followed by a collection of strings Patterns.
@@ -481,7 +496,6 @@ def ColumnContains(Column,symbol,top,bottom):
 
 def BW_Match(LastColumn,Patterns):
     
-
     # Match
     #
     # Used by BW_Match to match one occurrence of Pattern in text
@@ -505,19 +519,22 @@ def BW_Match(LastColumn,Patterns):
     return [Match(Pattern) for Pattern in Patterns]
 
 #  BA9M 	Implement BetterBWMatching 
-
+#
+# Given: A string BWT(Text), followed by a collection of strings Patterns.
+#
+# Return: A list of integers, where the i-th integer corresponds to the number
+#          of substring matches of the i-th member of Patterns in Text.
 
 def BetterBWMatching(LastColumn,Patterns):
     
-    def Count(symbol,i):
-        return sum([1 for ch in LastColumn[:i] if ch==symbol]) 
-
-    def FirstOccurence(ch):
-        for i in range(len(FirstColumn)):
-            if FirstColumn[i]==ch:
-                return i
-    
-    def Match(Pattern):
+    # Match
+    #
+    # Used by BetterBWMatching to match one occurrence of Pattern in text 
+    #
+    # Parameters:
+    #      Pattern
+    #      FirstOccurrences
+    def Match(Pattern,FirstOccurrences):
         top    = 0
         bottom = len(LastColumn) - 1
         while top <= bottom:
@@ -526,18 +543,19 @@ def BetterBWMatching(LastColumn,Patterns):
                 Pattern = Pattern[:-1]
                 topIndex,bottomIndex = ColumnContains(LastColumn,symbol,top,bottom)
                 if type(topIndex)==int and type(bottomIndex)==int:
-                    top    = FirstOccurences[symbol] + Count(symbol,top)
-                    bottom = FirstOccurences[symbol] + Count(symbol,bottom+1) - 1
+                    top    = FirstOccurrences[symbol] + getCount(LastColumn,symbol,top)
+                    bottom = FirstOccurrences[symbol] + getCount(LastColumn,symbol,bottom+1) - 1
                 else:
                     return 0
             else:
                 return bottom - top + 1
+            
         return 0    
     
  
-    FirstColumn     = sorted(LastColumn)
-    FirstOccurences = {ch:FirstOccurence(ch) for ch in FirstColumn}
-    return [Match(Pattern) for Pattern in Patterns]
+    FirstColumn      = sorted(LastColumn)
+    FirstOccurrences = {ch:getFirstOccurrence(FirstColumn,ch) for ch in FirstColumn}
+    return [Match(Pattern,FirstOccurrences) for Pattern in Patterns]
 
 #  BA9P 	Implement TreeColoring 
 #
