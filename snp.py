@@ -763,4 +763,61 @@ def mrep(w,ml=20):
             if r[p_i]==0 or r[n_i]==0 or w[r[p_i]-1]!=w[r[n_i]-1] or p[r[n_i]-1]-p[r[p_i]-1]!=n_i-p_i: # Maximal on left?
                 yield w[r[i]:r[i]+LCP[i]]                                                              # banzai
 
-                 
+
+# BA9N 	Find All Occurrences of a Collection of Patterns in a String 
+
+def EvenBetterBWMatching(Text,Patterns,K=10):
+    # get_entry
+    #
+    # Search partial suffix array for a value whose position matches row
+    
+    def get_entry(row):
+        for i,value in PSA:
+            if i==row: return value
+            if i>row: return None
+            
+    # find_position
+    #
+    # Locate match within Text
+    #
+    def find_position(row):
+        steps = 0
+        pos = get_entry(row)
+        while pos==None:
+            predecessor = LastColumn[row]                              # Predecessor of 1st character of match (cyclic)
+            occurrence  = getN(predecessor,row,LastColumn)             # 1st, 2nd, ... occurence
+            row         = get_char(predecessor,FirstColumn,occurrence) # Find occurrence in 1st column
+            steps += 1
+            pos = get_entry(row)
+        return steps + pos
+    
+    # Match
+    #
+    # Used by BetterBWMatching to match one occurrence of Pattern in text 
+    #
+    # Parameters:
+    #      Pattern
+    #      FirstOccurrences
+    def Match(Pattern,FirstOccurrences):
+        top    = 0
+        bottom = len(LastColumn) - 1
+        while top <= bottom:
+            if len(Pattern) > 0:
+                symbol  = Pattern[-1]
+                Pattern = Pattern[:-1]
+                topIndex,bottomIndex = ColumnContains(LastColumn,symbol,top,bottom)
+                if type(topIndex)==int and type(bottomIndex)==int:
+                    top    = FirstOccurrences[symbol] + getCount(LastColumn,symbol,top)
+                    bottom = FirstOccurrences[symbol] + getCount(LastColumn,symbol,bottom+1) - 1
+                else:
+                    return []
+            else:
+                return [find_position(i) for i in range(top,bottom+1)]
+ 
+        return []   
+    
+    PSA              = PartialSuffixArray(Text+'$',K)
+    LastColumn       = BurrowsWheeler(Text+'$')
+    FirstColumn      = sorted(LastColumn)
+    FirstOccurrences = {ch:getFirstOccurrence(FirstColumn,ch) for ch in FirstColumn}
+    return [match for Pattern in Patterns for match in Match(Pattern,FirstOccurrences)]                 
