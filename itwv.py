@@ -19,9 +19,7 @@ import argparse
 import os
 import time
 from   helpers import read_strings,format_list
-from   graphs   import trie
-import itertools
-
+from   numpy   import zeros, amax 
 # itwv
 #
 # Given: A text DNA string s of length at most 10 kbp, followed by a collection of n DNA strings of
@@ -29,45 +27,40 @@ import itertools
 #
 # Return: An nxn matrix M for which M[j,k]==1 if the jth and kth pattern strings can be interwoven into s and Mj,k=0 otherwise.
 
-def itwv(s,patterns):
+def itwv2(s,u,v):
+    def score(a,b):
+        return 1 if a==b else 0
+    def match(k):
+        def update_score(i,j):
+            if (i,j) in Closed: return
+            #print (i,j, i+j)
+            s0 = s[k+i+j-1]
+            u0 = u[i-1]
+            v0 = v[j-1]
+            S[i,j] = max(S[i-1,j] + score(s0,u0),S[i,j-1] + score(s0,v0))
+            Closed.add((i,j))
+        S      = zeros((len(u)+1,len(v)+1),dtype=int)
+        N      = max(len(u),len(v))+1
+        Closed = set()
+        Closed.add((0,0))
+        for n in range(1,N+1):
+            #print (f'n={n}')
+            for i in range(0,min(n,len(u)+1)):
+                for j in range(0,min(n,len(v)+1)):
+                    update_score(i,j)
 
-    def can_match(p,q,l):
-        ss      = s_list[l:l+len(p)+len(q)]
-        indices = set()
-        matched = False
-        for index in itertools.permutations([0]*len(p) + [1]*len(q)):
-            if index in indices: continue
-            indices.add(index)
-            matched = True # assumption
-            i  = 0
-            j  = 0
-            for k in range(len(p)+len(q)):
-                if index[k]==0: # sample p
-                    if ss[k]==p[i]:
-                        i += 1
-                    else:
-                        matched = False
-                        break    # from k
-                else:           #sample q
-                    if ss[k]==q[j]:
-                        j+= 1
-                    else:
-                        matched = False
-                        break  # from k
-            if matched: return 1
-        return 0
+        return amax(S)==len(u)+len(v)
     
-    def can_interweave(p,q):
-        L = m - len(p) -len(q)
-        for l in range(L+1):
-            if can_match(p,q,l): return 1
-        return 0
-    
-    s_list = list(s)
-    p_list = [list(p) for p in patterns]
-    n      = len(p_list)
-    m      = len(s_list)
-    return [[can_interweave(p_list[i],p_list[j]) for j in range(n)] for i in range(n)]
+    for i in range(len(s)-len(u)-len(v)+1):
+        if s[i]==u[0] or s[i]==v[0]:
+            if match(i)>0:
+                return 1
+    return 0
+
+def itwv(s,patterns):        
+    return [[itwv2(s,u,v)  for v in patterns] for u in patterns]
+
+
 
 if __name__=='__main__':
     start = time.time()
@@ -76,6 +69,7 @@ if __name__=='__main__':
     parser.add_argument('--rosalind', default=False, action='store_true', help='process Rosalind dataset')
     args = parser.parse_args()
     if args.sample:
+        #print (itwv2('GACCACGGTT','GT','GT'))
         for line in itwv('GACCACGGTT',
                     ['ACAG',
                      'GT',
