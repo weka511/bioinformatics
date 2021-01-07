@@ -177,7 +177,7 @@ def print_adjacency_graph(graph):
 
 # format_list
 # 
-# Format a list of numbers for usine as a Rosalind solution
+# Format a list of numbers for use as a Rosalind solution
 
 def format_list(list):
     return ' '.join([str(l) for l in list])

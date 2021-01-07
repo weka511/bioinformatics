@@ -15,7 +15,7 @@
 
 # Common code for alignment problems
 
-from numpy import argmax,argmin,zeros
+from numpy import argmax,argmin,zeros, amax
 from sys import float_info
 from Bio.Align import substitution_matrices
 from reference_tables import createSimpleDNASubst
@@ -990,7 +990,73 @@ def sims(s,t, match=1,mismatch=-1):
     return (max(scores[-1]), ''.join(s_match[::-1]), ''.join(t_match[::-1]))
 
 
+#  ITWV Finding Disjoint Motifs in a Gene 
+
+# itwv
+#
+# Given: A text DNA string s of length at most 10 kbp, followed by a collection of n DNA strings of
+#        length at most 10 bp acting as patterns.
+#
+# Return: An nxn matrix M for which M[j,k]==1 if the jth and kth pattern strings can be interwoven into s and Mj,k=0 otherwise.
+
+
+
+def itwv(s,patterns): 
     
+    # itwv2
+    #
+    # Check to see whether two specific strings can be interweaved
+    #
+    def itwv2(u,v):
+        # score
+        # Compare one character from s with one from u or v
+        def score(a,b):
+            return 1 if a==b else 0
+        
+        # match
+        #
+        # Try to match u and v with substrict of s starting at k.
+        
+        # We will adapt the regular Manhattan algorithm to use a 2D grid along u and v
+        # to keep track of the score when we try to aling successive characters chosen
+        # from u and v with s.        
+        def match(k):
+            # update_score
+            #
+            # Update each position with match-so-far
+            # We wil keep track of updated positions by storing the in Closed
+            
+            def update_score(i,j):
+                if (i,j) in Closed: return
+                s0 = s[k+i+j-1]
+                u0 = u[i-1]
+                v0 = v[j-1]
+                S[i,j] = max(S[i-1,j] + score(s0,u0),
+                             S[i,j-1] + score(s0,v0))
+                Closed.add((i,j))
+                
+            S      = zeros((len(u)+1,len(v)+1),dtype=int)
+            N      = max(len(u),len(v))+1
+            Closed = set()
+            Closed.add((0,0))
+            for n in range(1,N+1):
+                for i in range(0,min(n,len(u)+1)):
+                    for j in range(0,min(n,len(v)+1)):
+                        update_score(i,j)
+    
+            return amax(S)==len(u)+len(v)
+        
+        # Only try to match if 1st character matches
+        for i in range(len(s)-len(u)-len(v)+1):
+            if s[i]==u[0] or s[i]==v[0]:
+                if match(i)>0:
+                    return 1
+        return 0
+
+    return [[itwv2(u,v)  for v in patterns] for u in patterns]
+
+
+
 if __name__=='__main__':
    
     import unittest
