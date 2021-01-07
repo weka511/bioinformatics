@@ -18,9 +18,15 @@
 import argparse
 import os
 import time
-from helpers import read_strings,create_list,parse_graphs
-from graphs import two_sat 
-import tarjan
+from   helpers import read_strings,create_list,parse_graphs
+from   graphs import two_sat 
+
+# to_int
+#
+# Used to parse a line of input
+#
+# Convert a line of text representing a single number to an int
+# and a line of text representing a list to a list of ints
 
 def to_int(s):
     parts=s.split()
@@ -29,20 +35,31 @@ def to_int(s):
     else:
         return [int(p) for p in parts]
     
-
-
-
+# create_sets
+#
+# Create sets of data for 2SAT problem. Each set is in the form given in problem statement, e.g.
+# n,m              i.e. number of variables, number of clauses   
+# clause 1
+# clause 2
+# ...
+# clause m
+#
+# Output: list of form [(n,m, (...), (...) ...],,,]  where each inner tuple is a clause, each out tuple a set
     
 def create_sets(data):
     product = []
-    i    = 1
+    i       = 1
     while i<len(data):
         n,m = data[i]
         product.append((n,m, [(xx[0],xx[1]) for xx in data[i+1:i+1+m]]))
         i = i+1+m
     assert len(product)==data[0]
     return product
- 
+
+# Format
+#
+# Format Solution for display as a single line of numbers
+
 def Format(status,Solution):
     return f'{status} {" ".join(str(sol) for sol in Solution)}'
      
@@ -76,14 +93,13 @@ if __name__=='__main__':
     if args.rosalind:
         with open(f'{os.path.basename(__file__).split(".")[0]}.txt','w') as f:
             Input  = read_strings(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt')
-            Data   = [to_int(s) for s in Input if len(s)>0]
-            Sets   = create_sets(Data)
+            Sets   = create_sets([to_int(s) for s in Input if len(s)>0])
             for problem in Sets:
                 status,Solution = two_sat(problem )
                 print (Format(status,Solution))
                 f.write (f'{Format(status,Solution)}\n')                
                
-    elapsed = time.time()-start
+    elapsed = time.time() - start
     minutes = int(elapsed/60)
-    seconds = elapsed-60*minutes
+    seconds = elapsed - 60*minutes
     print (f'Elapsed Time {minutes} m {seconds:.2f} s')    

@@ -1,4 +1,4 @@
-#    Copyright (C) 2019-2020 Greenweaves Software Limited
+#    Copyright (C) 2019-2021 Greenweaves Software Limited
 #
 #    This is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -20,8 +20,9 @@ from   helpers     import create_adjacency
 from   align       import topological_order
 from   collections import deque
 from   math        import isinf
-import tarjan
-from deprecated import deprecated
+from   tarjan      import tarjan
+from   deprecated import deprecated
+
 # bf
 #
 # Bellman-Ford Algorithm
@@ -549,8 +550,21 @@ def sdag(m,adjacency,weights):
 # Return: For each formula, output 0 if it cannot be satisfied or 1 followed by a satisfying assignment otherwise.
 #
 # See description in Wikipedia -- https://en.wikipedia.org/wiki/2-satisfiability#Strongly_connected_components
+#
+# Aspvall, Bengt; Plass, Michael F.; Tarjan, Robert E. (1979),
+# "A linear-time algorithm for testing the truth of certain quantified boolean formulas"
+#  Information Processing Letters, 8 (3): 121–123, doi:10.1016/0020-0190(79)90002-4.
 
 def two_sat(problem):
+    
+    # create_assignment
+    #
+    # Assign values to variable, given the condensation of the implication graph,
+    # a smaller graph that has one vertex for each strongly connected component,
+    # and an edge from component i to component j whenever the implication graph
+    # contains an edge uv such that u belongs to component i and v belongs to component j.
+    # The condensation is automatically a directed acyclic graph and,
+    # like the implication graph from which it was formed, it is skew-symmetric.
     def create_assignment(condensation):
         assignment = []
         for component in condensation:
@@ -561,7 +575,7 @@ def two_sat(problem):
 
     n,m,clauses = problem
     edges       = [(-a,b) for a,b in clauses] + [(-b,a) for a,b in clauses]
-    scc         = tarjan.tarjan(create_adj([[n,len(edges)]] + edges)) 
+    scc         = tarjan(create_adj([[n,len(edges)]] + edges)) 
     for component in scc:
         for i in range(len(component)):
             for j in range(i+1,len(component)):
