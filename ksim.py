@@ -31,39 +31,44 @@ from   numpy   import zeros
 #
 #       Return: All substrings t' of t such that the edit distance dE(s,t') is less than or equal to k.
 #       Each substring should be encoded by a pair containing its location in t followed by its length.
+#
+# The following code is an attempt to see wther we can execure the Manhattan algorithm for rosalind data
+# within 5 minutes (300 seconds). It looks as if this isn't possible.
+#
+# 4900 iterations along t axis required 456 sec, so all of th will need 3934 sec.
 
 def ksim(k,s,t):
-   def match(tt):
-      def update_score(i,j):
-         if (i,j) in Closed: return
-         #print (i,j,i-1,j-1)
-         scores = []
-         if i>0 and j>0:
-            scores.append(S[i-1,j-1] + (0 if s[i-1]==tt[j-1] else 1))
-         if i>0:
-            scores.append(S[i-1,j]   + 1)
-         if j>0:
-            scores.append(S[i,j-1]   + 1)
-            
-         S[i,j] = min(scores)
-         Closed.add((i,j))
-      S = zeros((len(s)+1,len(tt)+1),dtype=int)
-      S[0,0] = 0
-      N      = max(len(s),len(tt))+1
-      Closed = set()
-      Closed.add((0,0))
-      for n in range(1,N+1):
-         for i in range(0,min(n,len(s)+1)):
-            for j in range(0,min(n,len(tt)+1)):
-               update_score(i,j)
+   start = time.time()
+   def update_score(i,j):
+      scores = []
+      scores.append((S0[i-1] if j%2==0 else S1[i-1]) + (0 if s[i-1]==t[j-1] else 1))
+      scores.append((S1[i]   if j%2==0 else S0[i])   + 1)
+      scores.append((S0[i-1] if j%2==0 else S1[i-1])   + 1)
+      score = min(scores)
+      if i%2==0:
+         S1[i] = score
+      else:
+         S0[i] = score
+      return score
+   S0 = zeros((len(s)+1),dtype=int)
+   S1 = zeros((len(s)+1),dtype=int)
+
+   for j in range(1,len(t)+1):
+      if (j%100==0): 
+         elapsed = time.time() - start
+         print (j,elapsed,len(t)*elapsed/j)
+      for i in range(1,len(s)+1):
+         if update_score(i,j)>k:
+            break
+   x=0
       #print (S)
-      for l in range(len(tt)+1):
-         if S[len(s),l]<=k:
-            yield l
-   for j in range(len(t)):
-      #match(t[j:])
-      for length in match(t[j:j+len(s)+1]):
-         yield j+1,length
+      #for l in range(len(tt)+1):
+         #if S[len(s),l]<=k:
+            #yield l
+   #for j in range(len(t)):
+      ##match(t[j:])
+      #for length in match(t[j:j+len(s)+1]):
+         #yield j+1,length
 
 if __name__=='__main__':
    start = time.time()
