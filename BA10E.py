@@ -30,16 +30,15 @@ def ConstructProfileHMM(theta,Alphabet,Alignment,trace=True):
     # This class and its children represent the states of the HMM
     
     class State:
-        INSERT  = 0
-        MATCH   = 1 
-        DELETE  = 2
-        N_TYPES = 3
-        END     = 3
+        INSERT   = 0
+        MATCH    = INSERT + 1 
+        DELETE   = MATCH  + 1
+        N_STATES = DELETE + 1        # Number of states
 
         def __init__(self,index=None):
-            self.index              = index
+            self.index             = index
             self.emissions         = {}
-            self.next_state_counts = [0]*State.N_TYPES
+            self.next_state_counts = [0]*State.N_STATES
 
 #       record_transition
 #
@@ -312,12 +311,16 @@ def ConstructProfileHMM(theta,Alphabet,Alignment,trace=True):
 #   Returns:   index in States array
 
     def get_state_index(state_type,conserved_index):
-        if State.MATCH == state_type:
-            return 3*conserved_index -1
-        elif State.INSERT == state_type:
-            return 3*conserved_index + 1 
-        elif State.DELETE == state_type:
-            return 3*conserved_index
+        def get_offset():
+            if State.MATCH == state_type:
+                return -1
+            elif State.INSERT == state_type:
+                return  +1 
+            elif State.DELETE == state_type:
+                return 0
+            else:
+                raise RosalindException(f'Could not get state index {state_type} {conserved_index}')
+        return   3*conserved_index  + get_offset()
 
     
 #   Accumulate statistics
@@ -330,7 +333,7 @@ def ConstructProfileHMM(theta,Alphabet,Alignment,trace=True):
             Sequence    = Alignment[i]
             state_index = 0   # Index in states array
             for str_index in range(n):
-                # next_state_type is State.MATCH(1), State.INSERT(0), State.DELETE (2), or State.END (3)
+                # next_state_type is State.MATCH(1), State.INSERT(0), or State.DELETE (2)
                 # index tells is whether we are dealing with I0, I1/M1/D1, etc
                 try:
                     next_state_type,index = States[state_index].record_transition(Sequence[str_index],Conserved[str_index])
@@ -386,9 +389,16 @@ def ConstructProfileHMM(theta,Alphabet,Alignment,trace=True):
 #     x         Value to be displayed
 #     procision Number of digits (after decimal point)
 
-def float2str(x,precision=2):
+def float2str(x,precision=2,p0=0,p1=1):
     format_str = f'{{:.{precision}f}}'
-    return format_str.format(x)
+    if x==0:
+        format_str = f'{{:.{p0}f}}'
+    if x==1:
+        format_str = f'{{:.{p1}f}}'    
+    format3= format_str.format(x)
+    while len(format3)>3 and format3[-1]=='0':
+        format3 = format3[:-1]
+    return format3
 
 def formatEmission(Emission,States,Alphabet,precision=2):  
     yield '\t' + '\t'.join(Alphabet)
