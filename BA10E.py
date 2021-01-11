@@ -100,14 +100,19 @@ def ConstructProfileHMM(theta,Alphabet,Alignment):
                         Product[(s,i),(t,j)] = 0
                 else:
                     assert(s=='E')
-        #for x,y in Product.keys():
-            #print (x,y)
-        #print (len(Product))
+
         return Product
 
+    def create_emission_counts(StateIndices,Alphabet):
+        Product  = {}
+        for index in StateIndices:
+            for ch in Alphabet:
+                Product[(index,ch)] = 0
+        return Product
+    
     def create_state_frequencies(StateCounts,StateIndices):
         Totals  = {i:0 for i in StateIndices}
- 
+    
         for key,count in StateCounts.items():
             ((s,i),_) = key
             Totals[(s,i)] += count
@@ -117,6 +122,18 @@ def ConstructProfileHMM(theta,Alphabet,Alignment):
             ((s,i),_) = key
             Product[key] = count/Totals[(s,i)] if Totals[(s,i)]>0 else 0        
         return Product
+    
+    def create_emission_frequencies(EmissionCounts, StateIndices):
+        Totals  = {i:0 for i in StateIndices}
+        for key,count in EmissionCounts.items():
+            ((s,i),_) = key
+            Totals[(s,i)] += count        
+        Product = {}
+        for key,count in EmissionCounts.items():
+            ((s,i),_) = key
+            Product[key] = count/Totals[(s,i)] if Totals[(s,i)]>0 else 0 
+            print (Product[key])
+        return Product   
     
     #   Useful constants - lengths of arrays
     
@@ -138,13 +155,14 @@ def ConstructProfileHMM(theta,Alphabet,Alignment):
     
     column_count   = sum(1 for column in Conserved if column)
     
-    Merges       = create_states(Conserved)
-    Inserts      = create_states(Conserved)
-    Deletes      = create_states(Conserved)
-    StateIndices = create_state_indices(Conserved)
-    StateCounts  = create_state_counts(StateIndices)
+    Merges         = create_states(Conserved)
+    Inserts        = create_states(Conserved)
+    Deletes        = create_states(Conserved)
+    StateIndices   = create_state_indices(Conserved)
+    StateCounts    = create_state_counts(StateIndices)
+    EmissionCounts = create_emission_counts(StateIndices,Alphabet)
     
-                
+    Runs        = []           
     for Sequence in Alignment:
         previous =  'S'
         States   = [previous]
@@ -172,19 +190,30 @@ def ConstructProfileHMM(theta,Alphabet,Alignment):
                     pass
                 else:
                     raise RosalindException(f'Invalid {ch}')
-        States.append('E')    
+        States.append('E') 
+        Runs.append(States)
         print (f'Counting {Sequence} {"".join(States)}')
-        index          = 0
-        previous       = None
+        index     = 0
+        previous  = None
+        seq_index = 0
         for state in States:
+            while seq_index < len(Sequence)-1 and Sequence[seq_index]=='-':
+                seq_index += 1
             if state in ['M','D','E']:
                 index = index+1
             if previous != None:
                 StateCounts[previous,(state,index)] += 1
+                if state in ['M','I']:
+                    EmissionCounts[(state,index),Sequence[seq_index]] += 1
+                    seq_index += 1
             previous = (state, index)
             
-    Transitions = create_state_frequencies(StateCounts,StateIndices)            
+    Transitions = create_state_frequencies(StateCounts, StateIndices)
+
+    Emissions   = create_emission_frequencies(EmissionCounts, StateIndices)
     x=0
+
+    return StateIndices,Transitions,Emissions
 
 
         
