@@ -19,16 +19,27 @@ import argparse
 import os
 import time
 from   helpers import read_strings
-
+from   hmm import ConstructProfileHMM,formatEmission,formatTransition
   
 if __name__=='__main__':
     start = time.time()
     parser = argparse.ArgumentParser('BA10F 	Construct a Profile HMM with Pseudocounts ')
     parser.add_argument('--sample',   default=False, action='store_true', help='process sample dataset')
     parser.add_argument('--rosalind', default=False, action='store_true', help='process Rosalind dataset')
+    parser.add_argument('--precision', default=3,                          help='Controls display of probabilities')
+    
     args = parser.parse_args()
     if args.sample:
-        pass
+        States,Transition,Emission = ConstructProfileHMM(0.358,
+                                                         ['A',   'B',   'C',   'D',   'E'],
+                                                         ['ADA', 'ADA', 'AAA', 'ADC', '-DA', 'D-A'],
+                                                         sigma=0.01)
+        
+        for row in formatTransition(Transition,States,precision=args.precision):
+            print (row)
+        print ('--------')
+        for row in formatEmission(Emission,States,['A',   'B',   'C',   'D',   'E'],precision=args.precision):
+            print (row)
         
     
 
