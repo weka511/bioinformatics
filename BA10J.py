@@ -19,16 +19,39 @@ import argparse
 import os
 import time
 from   helpers import read_strings
+from   hmm     import float2str
 
-  
+def SoftDecode(s,Alphabet,States,Transition,Emission):
+    def step(Ps):
+        Ps[0] +=0.01
+        Ps[1] -=0.01
+        return [p for p in Ps]
+    N = len(s)
+    K = len(States)
+    Ps = [1/K for _ in range(K)]
+    return [step(Ps) for i in range(N)]
+
 if __name__=='__main__':
     start = time.time()
     parser = argparse.ArgumentParser('BA10J 	Solve the Soft Decoding Problem ')
     parser.add_argument('--sample',   default=False, action='store_true', help='process sample dataset')
     parser.add_argument('--rosalind', default=False, action='store_true', help='process Rosalind dataset')
+    parser.add_argument('--precision', default=4,                          help='Controls display of probabilities')
     args = parser.parse_args()
     if args.sample:
-        pass
+        print ('A\tB')
+        for Ps in SoftDecode('zyxxxxyxzz',
+                          ['xyz'],
+                          ['A','B'],
+                          {                                #sample
+                            ('A','A'):  0.911, ('A','B'):  0.089,
+                            ('B','A'): 0.228, ('B','B'):  0.772,
+                            },
+                          {
+                              ('A','x'):0.356,('A','y'):   0.191, ('A','z'):   0.453, 
+                              ('B','x'):   0.04, ('B','y'):    0.467, ('B','z'):   0.493   }
+                          ):
+            print ('\t'.join(float2str(p,precision=args.precision) for p in Ps))
         
     
 
