@@ -97,7 +97,7 @@ if __name__=='__main__':
                 if compare(Expected[i],row):
                     mismatches+=1
                 i += 1
-        print (mismatches)
+        print (f'{mismatches} mismatches')
                
     if args.rosalind:
         Input                      = read_strings(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt')

@@ -20,6 +20,7 @@ import os
 import time
 from   helpers import read_strings
 from   numpy   import zeros
+from   snp     import create_trie
 
 # ksim
 #
@@ -38,38 +39,8 @@ from   numpy   import zeros
 # 4900 iterations along t axis required 456 sec, so all of th will need 3934 sec.
 
 def ksim(k,s,t):
-   start = time.time()
-   def update_score(i,j):
-      scores = []
-      scores.append((S0[i-1] if j%2==0 else S1[i-1]) + (0 if s[i-1]==t[j-1] else 1))
-      scores.append((S1[i]   if j%2==0 else S0[i])   + 1)
-      scores.append((S0[i-1] if j%2==0 else S1[i-1])   + 1)
-      score = min(scores)
-      if i%2==0:
-         S1[i] = score
-      else:
-         S0[i] = score
-      return score
-   S0 = zeros((len(s)+1),dtype=int)
-   S1 = zeros((len(s)+1),dtype=int)
-
-   for j in range(1,len(t)+1):
-      if (j%100==0): 
-         elapsed = time.time() - start
-         print (j,elapsed,len(t)*elapsed/j)
-      for i in range(1,len(s)+1):
-         if update_score(i,j)>k:
-            break
+   Trie = create_trie([t])
    x=0
-      #print (S)
-      #for l in range(len(tt)+1):
-         #if S[len(s),l]<=k:
-            #yield l
-   #for j in range(len(t)):
-      ##match(t[j:])
-      #for length in match(t[j:j+len(s)+1]):
-         #yield j+1,length
-
 if __name__=='__main__':
    start = time.time()
    parser = argparse.ArgumentParser('KSIM Finding All Similar Motifs')
