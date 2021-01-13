@@ -19,42 +19,14 @@ import argparse
 import os
 import time
 from   helpers import read_strings
-from   hmm     import float2str
+from   hmm     import float2str,EstimateParameters
 
-def EstimateParameters(s,Alphabet,path,States):
-    def create_Transitions():
-        Transitions = {(i,j):0 for i in States for j in States}
-        for i in range(1,n):
-            Transitions[path[i-1],path[i]]+= 1
-        Sums = {i: sum(Transitions[(i,j)] for j in States) for i in States}
-        for i in States:
-            for j in States:
-                if Sums[i]>0:
-                    Transitions[i,j]/= Sums[i]
-                else:
-                    Transitions[i,j] = 1/len(States)
-                    
-        return Transitions
-    def create_Emissions():
-        Emissions   = {(ch,state): 0 for state in States for ch in Alphabet}
-        for i in range(n):
-            Emissions[(s[i],path[i])]+= 1
-        Sums = {j:sum(Emissions[(ch,j)] for ch in Alphabet) for j in States }
-        for ch in Alphabet:
-            for j in States:
-                if Sums[j]>0:
-                    Emissions[(ch,j)]/= Sums[j]
-                else:
-                    Emissions[(ch,j)] = 1/len(States)
-        return Emissions
-    n = len(path)
-    assert n==len(s)
-    return create_Transitions(),create_Emissions()
+
 
 # formatEmission
 
 def formatEmission(Emission,States,Alphabet,precision=2):  
-    yield '\t'.join(Alphabet)
+    yield '\t'+'\t'.join(Alphabet)
     for state in States:
         row = []    
         for symbol in Alphabet:
@@ -68,7 +40,7 @@ def formatEmission(Emission,States,Alphabet,precision=2):
 
     
 def formatTransition(Transition,States,precision=2):
-    yield  '\t'.join(state for state in States)
+    yield '\t'+ '\t'.join(state for state in States)
     for state1 in States:
         row = []
         for state2 in States:
@@ -97,19 +69,25 @@ if __name__=='__main__':
     if args.extra:
         Input,Expected             = read_strings(f'data/HMMParameterEstimation.txt',init=0)
         Transitions,Emissions = EstimateParameters(Input[0],Input[2].split(),Input[4],Input[6].split())
-        for row in formatTransition(Transitions,['A', 'B', 'C'],precision=args.precision):
+        for row in formatTransition(Transitions,Input[6].split(),precision=args.precision):
             print (row)
-        for row in formatEmission(Emissions,['A', 'B', 'C'], ['x',  'y',   'z'],precision=args.precision):
+        print ('--------')
+        for row in formatEmission(Emissions,Input[6].split(), Input[2].split(),precision=args.precision):
             print (row)
         
     if args.rosalind:
         Input  = read_strings(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt')
- 
-        Result = None
-        print (Result)
+        Transitions,Emissions = EstimateParameters(Input[0],Input[2].split(),Input[4],Input[6].split())
+  
         with open(f'{os.path.basename(__file__).split(".")[0]}.txt','w') as f:
-            for line in Result:
-                f.write(f'{line}\n')
+            for row in formatTransition(Transitions,Input[6].split(),precision=args.precision):
+                print (row)
+                f.write(f'{row}\n')
+            print ('--------')
+            f.write('--------\n')
+            for row in formatEmission(Emissions,Input[6].split(), Input[2].split(),precision=args.precision):
+                print (row)
+                f.write(f'{row}\n')
                 
     elapsed = time.time() - start
     minutes = int(elapsed/60)
