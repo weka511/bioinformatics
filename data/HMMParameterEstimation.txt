@@ -1,0 +1,19 @@
+Input:
+yyzzzyzzyxyxzxyyzzzzyxyxxyyxyxzzyyyzyyyyyxxzzxxyxyxxxzxxxxxxzyzxxxzzxzyzxxxzxzxxxxzyzyxxyxzxxxxxxyxx
+--------
+x y z
+--------
+BABACBABACAACBBBBCBBBCCACCABAABCAAACCACCBBBCBCBCCABBBCAABBCCABBCCBAABABACCCAACCAAABACCBCAABBCCACCABC
+--------
+A B C
+
+Output:
+	A	B	C
+A	0.313	0.375	0.313	
+B	0.273	0.364	0.364	
+C	0.382	0.235	0.382	
+--------
+	x	y	z
+A	0.344	0.406	0.25	
+B	0.455	0.242	0.303	
+C	0.543	0.2	0.257

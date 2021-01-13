@@ -80,6 +80,7 @@ if __name__=='__main__':
     start = time.time()
     parser = argparse.ArgumentParser('BA10H 	Estimate the Parameters of an HMM ')
     parser.add_argument('--sample',   default=False, action='store_true', help='process sample dataset')
+    parser.add_argument('--extra',     default=False, action='store_true', help='process extra dataset')
     parser.add_argument('--rosalind', default=False, action='store_true', help='process Rosalind dataset')
     parser.add_argument('--precision', default=3,                          help='Controls display of probabilities')
     args = parser.parse_args()
@@ -93,7 +94,14 @@ if __name__=='__main__':
         for row in formatEmission(Emissions,['A', 'B', 'C'], ['x',  'y',   'z'],precision=args.precision):
             print (row)
     
-
+    if args.extra:
+        Input,Expected             = read_strings(f'data/HMMParameterEstimation.txt',init=0)
+        Transitions,Emissions = EstimateParameters(Input[0],Input[2].split(),Input[4],Input[6].split())
+        for row in formatTransition(Transitions,['A', 'B', 'C'],precision=args.precision):
+            print (row)
+        for row in formatEmission(Emissions,['A', 'B', 'C'], ['x',  'y',   'z'],precision=args.precision):
+            print (row)
+        
     if args.rosalind:
         Input  = read_strings(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt')
  
