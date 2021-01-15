@@ -15,14 +15,12 @@
 #
 #    BA6A Implement GreedySorting to Sort a Permutation by Reversals
 
-from   fragile import GreedySorting
+from   fragile import GreedySorting,get_permutation
 import argparse
 import os
 import time
 from   helpers import read_strings
 
-def get_permutation(Input):
-    return [int(i) for i in Input[1:-1].split()]
 
 def format(P,signed=True):
     def f(p):

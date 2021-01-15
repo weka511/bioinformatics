@@ -18,6 +18,13 @@
 from helpers import create_frequency_table
 from rosalind import revc,subs
 
+# get_permutation
+#
+# Read a permutation from Input
+
+def get_permutation(Input):
+    return [int(i) for i in Input[1:-1].split()]
+
 #    BA6A Implement GreedySorting to Sort a Permutation by Reversals
 
 def kReverse(P,k,signed=False):
