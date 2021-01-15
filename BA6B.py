@@ -25,7 +25,7 @@ from fragile import getBreakPoints,get_permutation
 
 if __name__=='__main__':
      start = time.time()
-     parser = argparse.ArgumentParser('Find a Shortest Transformation of One Genome into Another by 2-Breaks')
+     parser = argparse.ArgumentParser('BA6B Compute the Number of Breakpoints in a Permutation ')
      parser.add_argument('--sample',   default=False, action='store_true', help='process sample dataset')
      parser.add_argument('--rosalind', default=False, action='store_true', help='process Rosalind dataset')
      args = parser.parse_args()
