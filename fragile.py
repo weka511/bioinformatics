@@ -1,4 +1,4 @@
-#    Copyright (C) 2019 Greenweaves Software Limited
+#    Copyright (C) 2019-2021 Greenweaves Software Limited
 #
 #    This is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -11,7 +11,7 @@
 #    GNU General Public License for more details.
 #
 #    You should have received a copy of the GNU General Public License
-#    along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>
 #
 # fragile.py # code for Chapter 6 - Are there fragile regions in the human genome?
 
@@ -24,26 +24,22 @@ def kReverse(P,k,signed=False):
     pos = P.index(k if k in P else -k)
     return P[0:k-1] + [-P[j] if signed else P[j] for j in range(pos,k-2,-1)] + P[pos+1:]
 
+# GreedySorting
+#
+# Given: A signed permutation P.
+
+# Return: The sequence of permutations corresponding to applying GreedySorting to P,
+#          ending with the identity permutation.
+
 def GreedySorting(P,signed=False):
 
-    def format(P):
-        def f(p):
-            return str(p) if not signed or p<0 else '+' + str(p)
-        return '(' + ' '.join(f(p) for p in P) + ')'
-    reversalDistance = 0
     for k in range(1,len(P)+1):
         if k!=P[k-1]:
-            P=kReverse(P,k,signed=signed)
-            reversalDistance+=1
-            print (format(P))
+            P = kReverse(P,k,signed=signed)
+            yield P
             if P[k-1]==-k:
-                P[k-1]=k
-                reversalDistance+=1
-                print (format(P))
-    return reversalDistance
-
-
-
+                P[k-1] = k
+                yield P
 
 # BA6B Compute the Number of Breakpoints in a Permutation 
 #
