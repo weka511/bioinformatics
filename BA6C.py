@@ -1,4 +1,4 @@
-#    Copyright (C) 2019 Greenweaves Software Limited
+#    Copyright (C) 2019-2021 Greenweaves Software Limited
 #
 #    This is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -11,24 +11,51 @@
 #    GNU General Public License for more details.
 #
 #    You should have received a copy of the GNU General Public License
-#    along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>
 #
 #    BA6C Compute the 2-Break Distance Between a Pair of Genomes
 
-from fragile import d2break
+import argparse
+import os
+import time
+from   helpers import read_strings
+from   fragile import d2break
 
-
+def parse_permutations(text):
+    Permutations = []
+    depth        = 0
+    i0           = None
+    for i in range(len(text)):
+        if text[i] =='(':
+            depth += 1
+            i0     = i
+        else:
+            if depth==0: continue
+            if text[i]==')':
+                depth -= 1
+                i1     = i
+                Permutations.append([int(j) for j in text[i0+1:i1-1].split()])
+    
+    return Permutations
+    
 if __name__=='__main__':
-    def conv(xx):
-        return [int(s) for s in xx]
-    def parse(line):
-        ff=line[1:-1].split(')(')
-        result=[conv(fff.split(' ')) for fff in ff]
-        return result
-    with open('/Users/Simon/Downloads/rosalind_ba6c.txt') as f:
- 
-        print (
-            d2break(
-               parse(f.readline().strip()),
-                parse(f.readline().strip())
-        ))
+
+    start = time.time()
+    parser = argparse.ArgumentParser('Find a Shortest Transformation of One Genome into Another by 2-Breaks')
+    parser.add_argument('--sample',   default=False, action='store_true', help='process sample dataset')
+    parser.add_argument('--rosalind', default=False, action='store_true', help='process Rosalind dataset')
+    args = parser.parse_args()
+    if args.sample:
+        print (d2break([[+1, +2, +3, +4, +5, +6]],
+                       [[+1, -3, -6, -5],[+2, -4]]))
+               
+    if args.rosalind:
+        Input  = read_strings(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt')
+        Perms  = [parse_permutations(i) for i in Input]
+        print (d2break(Perms[0],Perms[1]))
+
+    elapsed = time.time() - start
+    minutes = int(elapsed/60)
+    seconds = elapsed - 60*minutes
+    print (f'Elapsed Time {minutes} m {seconds:.2f} s')  
+         

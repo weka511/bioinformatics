@@ -154,6 +154,8 @@ def d2break(a,b):
     edges     = []
     adjacency = {}
     max_node  = -1
+    #Ca = ColouredEdges(a)
+    Cb= ColouredEdges(b)
     for (x,y) in ColouredEdges(a) + ColouredEdges(b):       
         max_node = update(adjacency,edges,x,y,max_node)
         max_node = update(adjacency,edges,y,x,max_node)
