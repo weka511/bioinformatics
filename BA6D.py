@@ -1,4 +1,4 @@
-# Copyright (C) 2019-2020 Greenweaves Software Limited
+# Copyright (C) 2019-2021 Greenweaves Software Limited
 
 # This is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -22,6 +22,12 @@ from   helpers import read_strings
 
 from fragile import ChromosomeToCycle,ColouredEdges,BlackEdges,get2BreakOnGenomeGraph,CycleToChromosome
 
+# Find a shortest transformation of one genome into another by 2-breaks.
+
+# Given: Two genomes with circular chromosomes on the same set of synteny blocks.
+
+# Return: The sequence of genomes resulting from applying a shortest sequence of
+#         2-breaks transforming one genome into the other.
 def FindShortestTransformation(s,t,N=25,M=10):
      def mismatches(s,t):
           return sum([0 if a==b else 1 for (a,b) in zip(sorted(s),sorted(t))])
