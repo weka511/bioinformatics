@@ -1,4 +1,4 @@
-#   Copyright (C) 2020 Greenweaves Software Limited
+#   Copyright (C) 2020-2021 Greenweaves Software Limited
 
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@ import numpy as np
 from   rosalind  import LabelledTree
 from   random  import randrange
 from   newick  import newick_to_adjacency_list
-from   numpy   import argmin
+from   numpy   import argmin,argmax
 from   fasta   import FastaContent
 from   helpers import  flatten
 
@@ -856,3 +856,30 @@ def rsub(T,Assignments):
     
     # Build list of unique reversals. 
     return get_unique([subst for subst in [FindReversingSubstitutions(path,pos) for path in Paths for pos in range(m)] if len(subst)>0])
+
+# cset A submatrix of a matrix M is a matrix formed by selecting rows and columns from M and
+# taking only those entries found at the intersections of the selected rows and columns.
+# We may also think of a submatrix as formed by deleting the remaining rows and columns from M
+#
+# Given: An inconsistent character table C on at most 100 taxa.
+#
+# Return: A submatrix of C representing a consistent character table on the same taxa 
+#         and formed by deleting a single row of C. (If multiple solutions exist, you may return any one.)
+def cset(matrix):
+    def conflicts_with(c1, c2):
+        for a in [set(i for i, c in enumerate(c1) if c == c0) for c0 in [0,1]]:
+            for b in [set(i for i, c in enumerate(c2) if c == c0) for c0 in [0,1]]:
+                if len(a.intersection(b)) == 0: return False
+    
+        return True  
+    
+    n  = len(matrix)
+
+    Conflicts = [0 for _ in range(n)]   # Count conflicts
+    for i in range(n):     
+        for j in range(i+1,n):
+            if conflicts_with(matrix[i],matrix[j]):
+                Conflicts[i]+=1
+                Conflicts[j]+=1
+  
+    return [matrix[row] for row in range(n) if row!=argmax(Conflicts)]

@@ -1,4 +1,4 @@
-#   Copyright (C) 2020 Greenweaves Software Limited
+#   Copyright (C) 2020-2021 Greenweaves Software Limited
 
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -20,57 +20,29 @@ import os
 import time
 from helpers import read_strings,expand
 
-def cset(matrix):
-    def find_inconsistencies(i,j,skip=-1):
-        values = [[],[],[],[]]
-        for k in range(n):
-            if k==skip: continue
-            values[2*matrix[k][i] + matrix[k][j]].append(k)
-        if all([len(values[l])>0 for l in range(4)]):
-            return values
-        else:
-            return []
+from phylogeny import cset
+
         
-    m = len(matrix[0])
-    n = len(matrix)
-    inconsistencies = [find_inconsistencies(i,j) for i in range(m) for j in range(i)]
-    candidates = set()
-    for values in inconsistencies:
-        if len(values)>0:
-            for value in values:
-                if len(value)==1:
-                    candidates.add(value[0])
-    
-    for skip in candidates:
-        inconsistencies = [find_inconsistencies(i,j,skip=skip) for i in range(m) for j in range(i)]
-        for values in inconsistencies:
-            if len(values)==0:
-                return [matrix[row] for row in range(n) if row!=skip] 
-            for value in values:
-                if len(value)==0:
-                    return [matrix[row] for row in range(n) if row!=skip] 
-        #x=0
-    #return [matrix[row] for row in range(n) if row!=candidate]        
 
 if __name__=='__main__':
-    start = time.time()
-    parser = argparse.ArgumentParser('....')
+    start  = time.time()
+    parser = argparse.ArgumentParser('CSET  Fixing an Inconsistent Character Set ')
     parser.add_argument('--sample',   default=False, action='store_true', help='process sample dataset')
     parser.add_argument('--rosalind', default=False, action='store_true', help='process Rosalind dataset')
     args = parser.parse_args()
     if args.sample:
-        print (cset([expand('100001'),
-                     expand('000110'),
-                     expand('111000'),
-                     expand('100111')]))
+        for char in cset([expand('100001'),
+                          expand('000110'),
+                          expand('111000'),
+                          expand('100111')]):
+            print (char)
   
     if args.rosalind:
         Input           = read_strings(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt')
         character_table = [expand(row) for row in Input]
-        Result          = cset(character_table)
-        print (Result)
         with open(f'{os.path.basename(__file__).split(".")[0]}.txt','w') as f:
-            for row in Result:
+            for row in cset(character_table):
+                print (row)
                 f.write(f'{"".join(str(i) for i in row)}\n')
                 
     elapsed = time.time() - start
