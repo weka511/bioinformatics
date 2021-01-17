@@ -151,8 +151,8 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 |BA7G|BA7G.py|[Adapt SmallParsimony to Unrooted Trees](http://rosalind.info/problems/ba7g/)|
 |alph|alph.py phylogeny.py|[Alignment-Based Phylogeny](http://rosalind.info/problems/alph/)|
 |chbp|chbp.py phylogeny.py|[Character-Based Phylogeny](http://rosalind.info/problems/chbp/)|
-|cntq|cntq.py |[Counting Quartets](http://rosalind.info/problems/cntq/)|
-|cset|cset.py|[Fixing an Inconsistent Character Set](http://rosalind.info/problems/cset/) |
+|cntq|cntq.py phylogeny.py|[Counting Quartets](http://rosalind.info/problems/cntq/)|
+|cset|cset.py  phylogeny.py|[Fixing an Inconsistent Character Set](http://rosalind.info/problems/cset/) |
 |cstr|cstr.py phylogeny.py|[Creating a Character Table from Genetic Strings](http://rosalind.info/problems/cstr/)|
 |ctbl|ctbl.py phylogeny.py|[Creating a Character Table](http://rosalind.info/problems/ctbl/) |
 |cunr|phylogeny.py|[Counting Unrooted Binary Trees](http://rosalind.info/problems/cunr/) |

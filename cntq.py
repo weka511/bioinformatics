@@ -1,4 +1,4 @@
-#   Copyright (C) 2020 Greenweaves Software Limited
+#   Copyright (C) 2020-2021 Greenweaves Software Limited
 
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@ import argparse
 import os
 import time
 from   helpers import read_strings#, Tree
-
+from   phylogeny import cntq
 import re
 
 # snarfed from https://stackoverflow.com/questions/51373300/how-to-convert-newick-tree-format-to-a-tree-like-hierarchical-object
@@ -40,53 +40,6 @@ def parse(newick):
                 "parentid": parentid, "children": children}, delim, nextid
 
     return recurse()[0]
-
-def create_adj(tree):
-    adj = {}
-    def bfs(tree):
-        id       = tree['id']
-        name     = tree['name']
-        children = tree['children']
-        parentid = tree['parentid']
-        if len(name)==0:
-            adj[id]=[]
-        if parentid>-1:
-            adj[parentid].append(id if len(name)==0 else name)     
-        for child in children:
-            bfs(child)
-    bfs(tree)
-    return adj
-
-def cntq(n,newick):
-    def bfs(subtree,leaves):
-        for node in adj[subtree]:
-            if type(node)==str:
-                leaves.append(node)
-            else:
-                bfs(node,leaves)
-    def pair(leaves):
-        for i in range(len(leaves)):
-            for j in range(i+1,len(leaves)):
-                yield [leaves[i],leaves[j]] if leaves[i]<leaves[j] else [leaves[j],leaves[i]]
-                
-    adj = create_adj(parse(newick))
-    taxa = [leaf for children in adj.values() for leaf in children if type(leaf)==str]
-    splitting_edges = [(key,child) for key,value in adj.items() for child in value if type(child)==int]
-    Quartets        = []
-    for _,node in splitting_edges:
-        leaves = []
-        bfs(node,leaves)
-        other_leaves = [leaf for leaf in taxa if leaf not in leaves]
-        for pair1 in pair(leaves):
-            for pair2 in pair(other_leaves):
-                quartet = pair1 + pair2 if pair1[0]<pair2[0] else pair2 + pair1
-                Quartets.append(quartet)
-    Quartets.sort()
-    Unique =[Quartets[0]]
-    for i in range(1,len(Quartets)):
-        if Quartets[i]!=Unique[-1]:
-            Unique.append(Quartets[i])
-    return len(Unique),Unique
 
 # cntq is desperately slow for real problems (e.g. n=4525). This quick hack works - ignores actual tree!
 

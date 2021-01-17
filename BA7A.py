@@ -1,4 +1,4 @@
-# Copyright (C) 2017-2019 Greenweaves Software Limited
+# Copyright (C) 2017-2021 Greenweaves Software Limited
 
 # This is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -11,10 +11,12 @@
 # GNU General Public License for more details.
 
 # You should have received a copy of the GNU General Public License
-# along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>
+# along with this program.  If not, see <http://www.gnu.org/licenses/>
 
 # BA7A Compute Distances Between Leaves
 
+from helpers import create_weighted_adjacency_list
+    
 # ComputeDistancesBetweenLeaves
 
 # Inputs:  n an integer n 
@@ -42,7 +44,7 @@ def ComputeDistancesBetweenLeaves(n,T):
     return [[D(i,j)for j in range(n)] for i in range(n) ]
     
 if __name__=='__main__':
-    from helpers import create_weighted_adjacency_list
+
     n,T = create_weighted_adjacency_list()           
     for ds in ComputeDistancesBetweenLeaves(n,T):
         print(' '.join(str(d) for d in ds))

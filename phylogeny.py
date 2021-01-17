@@ -866,6 +866,7 @@ def rsub(T,Assignments):
 # Return: A submatrix of C representing a consistent character table on the same taxa 
 #         and formed by deleting a single row of C. (If multiple solutions exist, you may return any one.)
 def cset(matrix):
+    
     def conflicts_with(c1, c2):
         for a in [set(i for i, c in enumerate(c1) if c == c0) for c0 in [0,1]]:
             for b in [set(i for i, c in enumerate(c2) if c == c0) for c0 in [0,1]]:
@@ -883,3 +884,53 @@ def cset(matrix):
                 Conflicts[j]+=1
   
     return [matrix[row] for row in range(n) if row!=argmax(Conflicts)]
+
+#  cntq Counting Quartets
+
+def cntq(n,newick):
+    
+    def create_adj(tree):
+        adj = {}
+        def bfs(tree):
+            id       = tree['id']
+            name     = tree['name']
+            children = tree['children']
+            parentid = tree['parentid']
+            if len(name)==0:
+                adj[id]=[]
+            if parentid>-1:
+                adj[parentid].append(id if len(name)==0 else name)     
+            for child in children:
+                bfs(child)
+        bfs(tree)
+        return adj
+
+    def bfs(subtree,leaves):
+        for node in adj[subtree]:
+            if type(node)==str:
+                leaves.append(node)
+            else:
+                bfs(node,leaves)
+    def pair(leaves):
+        for i in range(len(leaves)):
+            for j in range(i+1,len(leaves)):
+                yield [leaves[i],leaves[j]] if leaves[i]<leaves[j] else [leaves[j],leaves[i]]
+                
+    adj             = create_adj(parse(newick))
+    taxa            = [leaf for children in adj.values() for leaf in children if type(leaf)==str]
+    splitting_edges = [(key,child) for key,value in adj.items() for child in value if type(child)==int]
+    Quartets        = []
+    for _,node in splitting_edges:
+        leaves       = []
+        bfs(node,leaves)
+        other_leaves = [leaf for leaf in taxa if leaf not in leaves]
+        for pair1 in pair(leaves):
+            for pair2 in pair(other_leaves):
+                quartet = pair1 + pair2 if pair1[0]<pair2[0] else pair2 + pair1
+                Quartets.append(quartet)
+    Quartets.sort()
+    Unique =[Quartets[0]]
+    for i in range(1,len(Quartets)):
+        if Quartets[i]!=Unique[-1]:
+            Unique.append(Quartets[i])
+    return len(Unique),Unique
