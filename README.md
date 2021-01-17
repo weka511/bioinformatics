@@ -396,12 +396,13 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 
 ## Support
 
-| # | Location | Description |
-| ---- | --------------- | ------------------------------------------------|
-|-|helpers.py|Utilities for formatting output, parsing input, etc |
-|-|LICENSE|License Agreement|
-|-|newick.py|Parser for files in [Newick format](http://evolution.genetics.washington.edu/phylip/newicktree.html) |
-|-|README.md|This file|
-|-|rosalind.py|Shared code|
-|-|rosalind.wpr|WingWare Project File |
-|-|template.py|Template for getting started on a problem|
+| Location | Description |
+| --------------- | ------------------------------------------------|
+|bioinformatics.bib|Bibliography|
+|helpers.py|Utilities for formatting output, parsing input, etc |
+|LICENSE|License Agreement|
+|newick.py|Parser for files in [Newick format](http://evolution.genetics.washington.edu/phylip/newicktree.html) |
+|README.md|This file|
+|rosalind.py|Shared code|
+|rosalind.wpr|WingWare Project File |
+|template.py|Template for getting started on a problem|
