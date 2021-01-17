@@ -60,3 +60,9 @@ target/
 lalign*.txt
 lalign*.svg
 lalign*.jpg
+
+# Bibliography stuff
+
+*.bib.bak
+*.bib.sav
+
