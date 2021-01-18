@@ -16,13 +16,12 @@
 # Phylogeny -- http://rosalind.info/problems/topics/phylogeny/
 
 import re
-import numpy as np
-from   rosalind  import LabelledTree
-from   random  import randrange
-from   newick  import newick_to_adjacency_list
-from   numpy   import argmin,argmax
-from   fasta   import FastaContent
-from   helpers import  flatten
+from   rosalind import LabelledTree
+from   random   import randrange
+from   newick   import newick_to_adjacency_list
+from   numpy    import argmin,argmax
+from   fasta    import FastaContent
+from   helpers  import  flatten
 
 #  tree -- Completing a Tree 
 #
@@ -864,26 +863,40 @@ def rsub(T,Assignments):
 # Given: An inconsistent character table C on at most 100 taxa.
 #
 # Return: A submatrix of C representing a consistent character table on the same taxa 
-#         and formed by deleting a single row of C. (If multiple solutions exist, you may return any one.)
-def cset(matrix):
+#         and formed by deleting a single row of C.
+
+def cset(table):
+    # get_split
+    #
+    # Used to split indices of character (row) into two groups, one for each allele
+    # First we yield all indices corresponding to 0, then those to 1
     
+    def get_splits(character):
+        for allele in [0,1]:
+            yield set(i for i, c in enumerate(character) if c == allele)
+    
+    # conflicts_with
+    #
+    # Determine whether two characters are in conflict
+    # We iterate through all the splits of each character.
+    # If any pair of splits consists of two disjoint subsets, 
+    # the characters are compatible.
     def conflicts_with(c1, c2):
-        for a in [set(i for i, c in enumerate(c1) if c == c0) for c0 in [0,1]]:
-            for b in [set(i for i, c in enumerate(c2) if c == c0) for c0 in [0,1]]:
-                if len(a.intersection(b)) == 0: return False
+        for part1 in get_splits(c1):
+            for part2 in get_splits(c2):
+                if len(part1.intersection(part2)) == 0: return False
     
         return True  
     
-    n  = len(matrix)
-
-    Conflicts = [0 for _ in range(n)]   # Count conflicts
+    n         = len(table)
+    Conflicts = [0 for _ in range(n)]   # Count number of times each row conflicts with another
     for i in range(n):     
         for j in range(i+1,n):
-            if conflicts_with(matrix[i],matrix[j]):
-                Conflicts[i]+=1
-                Conflicts[j]+=1
+            if conflicts_with(table[i],table[j]):
+                Conflicts[i] += 1
+                Conflicts[j] += 1
   
-    return [matrix[row] for row in range(n) if row!=argmax(Conflicts)]
+    return [table[row] for row in range(n) if row!=argmax(Conflicts)]
 
 #  cntq Counting Quartets
 

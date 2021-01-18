@@ -22,8 +22,6 @@ from helpers import read_strings,expand
 
 from phylogeny import cset
 
-        
-
 if __name__=='__main__':
     start  = time.time()
     parser = argparse.ArgumentParser('CSET  Fixing an Inconsistent Character Set ')
