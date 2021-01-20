@@ -1,4 +1,4 @@
-#   Copyright (C) 2020 Greenweaves Software Limited
+#   Copyright (C) 2020-2021 Greenweaves Software Limited
 
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -19,10 +19,17 @@ import argparse
 import os
 import time
 from   helpers import read_strings
+from   align import edta
+
+# ctea
+#
+# Given: Two protein strings s and t in FASTA format, each of length at most 1000 aa.
+#
+# Return: The total number of optimal alignments of s and t with respect to edit alignment score, modulo 134,217,727.
 
 def ctea(s,t):
-    pass
-
+    d,s1,t1 = edta(s,t)
+    x=0
 if __name__=='__main__':
     start = time.time()
     parser = argparse.ArgumentParser('CTEA Counting Optimal Alignments')

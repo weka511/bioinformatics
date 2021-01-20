@@ -452,7 +452,32 @@ def edit(s,t,indel_cost=1,replace_cost=lambda a,b: 1,show_matrix=False):
             
     return dynamic_programming([s0 for s0 in s], [t0 for t0 in t])
 
+# edta
+
 # EDTA Edit Distance Alignment http://rosalind.info/problems/edta/
+#
+# An alignment of two strings s and t is defined by two strings s' and t' satisfying the following three conditions: 
+# 1. s' and t' must be formed from adding gap symbols "-" to each of s and t, respectively;
+#    as a result, s and t will form subsequences of s' and t'.
+# 2. s' and t' must have the same length.
+# 3. Two gap symbols may not be aligned; that is, if s'[j] is a gap symbol, then t'[j] cannot be a gap symbol, and vice-versa.
+#
+# We say that s' and t' augment s and t. Writing s' directly over t' so that symbols are aligned 
+# provides us with a scenario for transforming s into t. Mismatched symbols from s and t
+# correspond to symbol substitutions; a gap symbol s'[j] aligned with a non-gap symbol t'[j] 
+# implies the insertion of this symbol into t; a gap symbol t'[j] aligned with a non-gap 
+# symbol s'[j] implies the deletion of this symbol from s.
+#
+# Thus, an alignment represents a transformation of s into t via edit operations.
+# We define the corresponding edit alignment score of s' and t' as dH(s',t') 
+# (Hamming distance is used because the gap symbol has been introduced for insertions and deletions).
+# It follows that dE(s,t)=min s',t' dH(s',t'), where the minimum is taken over all alignments of s and t.
+#
+# We call such a minimum score alignment an optimal alignment (with respect to edit distance).
+
+# Given: Two protein strings s and t in FASTA format (with each string having length at most 1000 aa).
+
+# Return: The edit distance dE(s,t) followed by two augmented strings s' and t' representing an optimal alignment of s and t.
 
 def edta(s,t,indel_cost=1,replace_cost=lambda a,b: 1):
     def extract(s,t,matrix):
