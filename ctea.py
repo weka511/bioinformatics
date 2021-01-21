@@ -31,24 +31,51 @@ from   Bio import SeqIO
 
 def ctea(s,t,indel_cost=1,replace_cost=lambda a,b: 1, mod=134217727):
  
-    def count(s,t,matrix):
-        m       = len(matrix)    - 1
-        n       = len(matrix[0]) - 1
-        product = 1
+    class Move:
         
-        while m>0 and n>0:
-            moves        = [(m-1,n),(m,n-1),(m-1,n-1)]
-            scores       = [matrix[m-1][n]+indel_cost,
-                            matrix[m][n-1]+indel_cost,
-                            matrix[m-1][n-1] + (0 if s[m-1]==t[n-1] else replace_cost(s[m-1],t[n-1]))]
-            index        = argmin(scores)
-            alternatives = len([score for score in scores if score==scores[index]])
-            product     *= alternatives
-            product     %= mod
-            m,n          = moves[index]
-        return product
+        #count     = 0
+        Processed = {}
+        Leaves    = {}
+        
+        def __init__(self,m,n):
+            self.m = m
+            self.n = n
+ 
+        def explore(self,path=[]):
+            while self.m>0 and self.n>0:
+                if (self.m,self.n) in Move.Processed:
+                    Move.Processed[(self.m,self.n)] += 1
+                    return
+                Move.Processed[(self.m,self.n)] = 1
+                moves        = [(self.m-1,self.n),(self.m,self.n-1),(self.m-1,self.n-1)]
+                scores       = [matrix[self.m-1][self.n]+indel_cost,
+                                matrix[self.m][self.n-1]+indel_cost,
+                                matrix[self.m-1][self.n-1] + (0 if s[self.m-1]==t[self.n-1] else replace_cost(s[self.m-1],
+                                                                                                              t[self.n-1]))]
+                index        = argmin(scores)
+                alternatives = [moves[i] for i in range(len(scores)) if scores[i]==scores[index]]
+                if len(alternatives)>1:
+                    for m,n in alternatives:
+                        predecessor = Move(m,n)
+                        predecessor.explore(path=path+[(m,n)])
+                    return
+                else:
+                    self.m,self.n = alternatives[0]
+                    continue
+            Move.Leaves[(self.m,self.n)] = path
+            #Move.count +=1
+        
     _,matrix = edit(s,t,indel_cost,replace_cost)
-    return count([s0 for s0 in s], [t0 for t0 in t],matrix)
+    move = Move(len(matrix) - 1, len(matrix[0]) - 1)
+    move.explore()
+    count = 0
+    for path in Move.Leaves.values():
+        product = 1
+        for z in path:
+            if z in Move.Processed:
+                product *= Move.Processed[z]
+        count += product
+    return count %mod
     
 if __name__=='__main__':
     start = time.time()
