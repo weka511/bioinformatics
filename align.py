@@ -21,8 +21,13 @@ from Bio.Align import substitution_matrices
 from reference_tables import createSimpleDNASubst
 from helpers import zeroes,sign
 
+# reverse
+#
+# Input:    a string, 
+# Return:   new string with characters in reverse order
+
 def reverse(chars):
-    return ''.join(c for c in chars[::-1])
+    return ''.join(chars[i] for i in range(len(chars)-1,-1,-1))
 
 # BA5A 	Find the Minimum Number of Coins Needed to Make Change 	
 #
