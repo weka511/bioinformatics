@@ -102,10 +102,10 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 |BA5K|BA5K.py align.py|[Find a Middle Edge in an Alignment Graph in Linear Space](http://rosalind.info/problems/ba5k/) |
 |BA5L|BA5L.py align.py|[Align Two Strings Using Linear Space](http://rosalind.info/problems/ba5l/) [WIP](https://github.com/weka511/bioinformatics/issues/29)|    
 |BA5M|BA5M.py align.py|[Find a Highest-Scoring Multiple Sequence Alignment](http://rosalind.info/problems/ba5m/) | 
-|BA5N |align.py|[Find a Topological Ordering of a DAG](http://rosalind.info/problems/ba5n/) | 
-|ctea|ctea.py|[Counting Optimal Alignments](http://rosalind.info/problems/ctea/) [WIP](https://github.com/weka511/bioinformatics/issues/67)|
-|edit|edit.py|[Edit Distance](http://rosalind.info/problems/edit/) |
-|edta|edta.py|[Edit Distance Alignment](http://rosalind.info/problems/edta/)|
+|BA5N |align.py align.py|[Find a Topological Ordering of a DAG](http://rosalind.info/problems/ba5n/) | 
+|ctea|ctea.py align.py|[Counting Optimal Alignments](http://rosalind.info/problems/ctea/)|
+|edit|edit.py align.py|[Edit Distance](http://rosalind.info/problems/edit/) |
+|edta|edta.py align.py|[Edit Distance Alignment](http://rosalind.info/problems/edta/)|
 |gaff|gaff.py|[Global Alignment with Scoring Matrix and Affine Gap Penalty](http://rosalind.info/problems/gaff/)|
 |gcon|gcon.py|[Global Alignment with Constant Gap Penalty](http://rosalind.info/problems/gcon/)|
 |glob|GLOB.py|[Global Alignment with Scoring Matrix](http://rosalind.info/problems/glob/) -- test harness only|
