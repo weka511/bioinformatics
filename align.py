@@ -1090,36 +1090,50 @@ def itwv(s,patterns):
 # Return: The total number of optimal alignments of s and t with respect to edit alignment score, modulo 134,217,727.
 
 def ctea(s,t,indel_cost=1,replace_cost=lambda a,b: 1, mod=134217727):
-    count        = 0
-    Closed       = set()
-    Open         = []
-    Leaves       = []
-    Adj          = {}
     
-    # explore
-    # Build adjacancy list for graph moving back to origin of matrix
+    # create_adjacency_list
+    #
+    # Backtrack through matrix and create DAG made from all possible paths
+    # Inputs: matrix from computing edit distance
+    # Returns:   Adjacency matrix for traversing from last posotion
+    #            Leaves of graph
     
-    def explore():
-        mn = Open.pop(0)
-        if mn in Closed: return
-        Closed.add(mn)
-        m,n = mn
-        Adj[(m,n)] = []
-        if m>0 and n>0:
-            moves      = [(m-1,n),(m,n-1),(m-1,n-1)]
-            scores     = [matrix[m-1][n]+indel_cost,
-                          matrix[m][n-1]+indel_cost,
-                          matrix[m-1][n-1] + (0 if s[m-1]==t[n-1] else replace_cost(s[m-1],t[n-1]))]
-            index      = argmin(scores)
-            lowest     = scores[index]
-            candidates = [i for i in range(len(scores)) if scores[i]==lowest]
-            Adj[(m,n)] = [moves[i] for i in candidates]
-            
-            for i in candidates:
-                if i not in Closed:
-                    Open.append((moves[i]))
-        else:
-            Leaves.append((m,n))
+    def create_adjacency_list(matrix):
+        Closed       = set()      # Positions in matrix that have been visited
+        Open         = []         # Positions in matrix that need to be visited
+        Leaves       = []         # Terminal positions
+        Adj          = {}         # Adjacency list
+    
+        # explore
+        # Used to build adjacancy list for graph moving back to origin of matrix
+        # It processes first element from Open List, and adds its successors to Open if necessary 
+        def explore():
+            mn = Open.pop(0)
+            if mn in Closed: return
+            Closed.add(mn)
+            m,n = mn
+            Adj[(m,n)] = []
+            if m>0 and n>0:    # if not a leaf
+                moves      = [(m-1,n),(m,n-1),(m-1,n-1)]
+                scores     = [matrix[m-1][n]+indel_cost,
+                              matrix[m][n-1]+indel_cost,
+                              matrix[m-1][n-1] + (0 if s[m-1]==t[n-1] else replace_cost(s[m-1],t[n-1]))]
+                index      = argmin(scores)
+                lowest     = scores[index]
+                # Find all possible nodes links to this node, i.e. all that have lowest score
+                candidates = [i for i in range(len(scores)) if scores[i]==lowest]
+                Adj[(m,n)] = [moves[i] for i in candidates]
+                # We need to process any that we haven't already processed
+                for i in candidates:
+                    if i not in Closed:
+                        Open.append((moves[i]))
+            else:
+                Leaves.append((m,n))
+                
+        Open.append((m,n))    # Start with last node from edit
+        while len(Open)>0:
+            explore()
+        return Adj,Leaves
             
     # invert
     # Invert adcancy list - build list of backward links
@@ -1131,29 +1145,29 @@ def ctea(s,t,indel_cost=1,replace_cost=lambda a,b: 1, mod=134217727):
                 Inverse[destination].append(source)
         return Inverse
     
+    # count_paths
+    
+    # Used the algorithm of https://cs.stackexchange.com/questions/118799/counting-number-of-paths-between-two-vertices-in-a-dag
+    # to count paths through DAG
+    def count_paths(Adj,Inverse,start=None):
+        C  = {ground:1}
+        for node in topological_order(dict(Inverse)):
+            if node == ground: continue
+            C[node] = sum([C[x] for x in Adj[node]])       
+     
+        return C[(m,n)]
+    
     # Build matrix of distances
     
-    _,matrix = edit(s,t,indel_cost,replace_cost)
-    m,n = len(matrix)-1, len(matrix[0])-1
-    Open.append((m,n))
-    while len(Open)>0:
-        explore() 
+    _,matrix   = edit(s,t,indel_cost,replace_cost)
+    m,n        = len(matrix)-1, len(matrix[0])-1
+    Adj,Leaves = create_adjacency_list(matrix)  
     
-    # Link all leaves to dummy node    
-    ground          = (-1,-1)
+    ground     = (-1,-1) # Link all leaves to dummy node, so we can just do one pass through tree to count paths
     for leaf in Leaves:
-        Adj[leaf] = [ground]    
-    Inverse         = invert(Adj)
+        Adj[leaf] = [ground]     
 
-    # Use the algorithm of https://cs.stackexchange.com/questions/118799/counting-number-of-paths-between-two-vertices-in-a-dag
-    # to count paths through DAG
-    
-    C               = {ground:1}
-    for node in topological_order(dict(Inverse)):
-        if node == ground: continue
-        C[node] = sum([C[x] for x in Adj[node]])       
- 
-    return C[(m,n)] %mod
+    return  count_paths(Adj,invert(Adj),start=ground) % mod
             
 if __name__=='__main__':
    

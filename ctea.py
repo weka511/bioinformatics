@@ -22,8 +22,6 @@ from   helpers import read_strings
 from   align import ctea
 from   Bio import SeqIO
 
-
-    
 if __name__=='__main__':
     start = time.time()
     parser = argparse.ArgumentParser('CTEA Counting Optimal Alignments')
@@ -34,12 +32,9 @@ if __name__=='__main__':
         print (ctea('PLEASANTLY','MEANLY'))
         
     if args.rosalind:
-        inFile = open(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt','r')
-        strings = []
-        for record in SeqIO.parse(inFile,'fasta'):
-            strings.append(str(record.seq))        
- 
-        Result = ctea(strings[0],strings[1])
+        data = [str(rec.seq) for rec in SeqIO.parse(open(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt','r'),
+                                                         'fasta')]        
+        Result = ctea(data[0],data[1])
         print (Result)
         with open(f'{os.path.basename(__file__).split(".")[0]}.txt','w') as f:
             f.write(f'{Result}\n')
