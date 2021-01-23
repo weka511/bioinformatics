@@ -30,7 +30,7 @@ from   Bio       import SeqIO
 
 def laff(s,t,replace_score=substitution_matrices.load("BLOSUM62"),sigma=11,epsilon=1):
     def score_pair(a,b):
-        return int(replace_score[(a,b)] if (a,b) in replace_score else replace_score[(b,a)])
+        return replace_score[(a,b)] if (a,b) in replace_score else replace_score[(b,a)]
     def unwind_moves(moves,score,i,j):
         ss = []
         ts = []
@@ -43,35 +43,39 @@ def laff(s,t,replace_score=substitution_matrices.load("BLOSUM62"),sigma=11,epsil
     
     m      = len(s)
     n      = len(t)
-    lower  = zeros((m+1,n+1),dtype=int)
-    middle = zeros((m+1,n+1),dtype=int)
-    upper  = zeros((m+1,n+1),dtype=int)
+    lower  = zeros((2,n+1),dtype=int)
+    middle = zeros((2,n+1),dtype=int)
+    upper  = zeros((2,n+1),dtype=int)
     moves  = {}
     
     imax      = -1
     max_score = -1
     jmax      = -1
-    
+    start = time.time()
     for i in range(1,m+1):
-        if i%10==0: print (f'{i} {m}')
+        
+        i_to      = i%2
+        i_from    = 1 - i_to
+        if i%25==0:
+            print (f'{i} {m} {int(time.time()-start)}')
         for j in range(1,n+1):
-            lower[i,j]      = max(lower[i-1,j]  - epsilon,
-                                  middle[i-1,j] - sigma)
-            upper[i,j]      = max(upper[i,j-1]  - epsilon,
-                                  middle[i,j-1] - sigma)
-            possible_scores = [lower[i,j], 
-                               upper[i,j], 
-                               middle[i-1,j-1] + score_pair(s[i-1],t[j-1])]
+            lower[i_to,j]      = max(lower[i_from,j]  - epsilon,
+                                  middle[i_from,j] - sigma)
+            upper[i_to,j]      = max(upper[i_to,j-1]  - epsilon,
+                                  middle[i_to,j-1] - sigma)
+            possible_scores = [lower[i_to,j], 
+                               upper[i_to,j], 
+                               middle[i_from,j-1] + score_pair(s[i-1],t[j-1])]
             possible_moves = [(i-1, j,   s[i-1], '-'   ),  # Comes from lower
                               (i-1, j-1, s[i-1], t[j-1]),  # Comes from middle
                               (i,   j-1, '-',    t[j-1])]  # Comes from upper
             
             index          = argmax(possible_scores)
-            middle[i,j]    = possible_scores[index]                             
+            middle[i_to,j] = possible_scores[index]                             
             moves[(i,j)]   = possible_moves[index]
             
-        j     = argmax(middle[i])
-        score = middle[i,j]
+        j     = argmax(middle[i_to])
+        score = middle[i_to,j]
         if score>max_score:
             imax      = i
             jmax      = j
