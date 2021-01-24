@@ -105,12 +105,12 @@ def laff(s,t,
                 tt.append(t[j])
             elif middle[i][j]==upper[i][j]:
                 j -= 1
-                ss.append('-')
+                #ss.append('-')
                 tt.append(t[j])                
             elif middle[i][j]==lower[i][j]:
                 i -= 1
                 ss.append(s[i])
-                tt.append('-')
+                #tt.append('-')
             else:
                 raise Exception(f'Oops {i} {j}')
             
@@ -156,7 +156,7 @@ if __name__=='__main__':
     parser.add_argument('--sample',    default=False, action='store_true', help='process sample dataset')
     parser.add_argument('--rosalind',  default=False, action='store_true', help='process Rosalind dataset')
     parser.add_argument('--version',   default=False, action='store_true', help='Get version of python')
-    parser.add_argument('--frequency', default=100,  type=int,             help='Number of iteration per progress tick' )
+    parser.add_argument('--frequency', default=100,   type=int,            help='Number of iteration per progress tick' )
     args = parser.parse_args()
     
     if args.version:
