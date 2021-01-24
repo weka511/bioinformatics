@@ -135,7 +135,7 @@ def laff(s,t,replace_score=create_blosum62(),sigma=11,epsilon=1):
             imax      = i
             jmax      = j
             max_score = score
-            #print (f'{imax} {i} {jmax} {j} {score} {middle[i][j]} {middle[imax][jmax]}')
+
             assert max_score == middle[imax][jmax],f'score={max_score}, middle[{imax}][{jmax}]={middle[imax][jmax]}'
         assert max_score == middle[imax][jmax],f'score={max_score}, middle[{imax}][{jmax}]={middle[imax][jmax]}'
     return unwind_moves(max_score,imax,jmax)
