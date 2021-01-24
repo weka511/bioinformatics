@@ -94,25 +94,19 @@ def laff(s,t,
         tt = []
         assert score == middle[i][j],f'score={score}, middle[{i}][{j}]={middle[i][j]}'
         while i>0 and j > 0:
-            #possible_scores = [lower[i][j], 
-                               #upper[i][j], 
-                               #middle[i-1][j-1] + replace_score[(s[i-1],t[j-1])],0]
-            #assert max(possible_scores)==middle[i][j]
             if middle[i][j] == middle[i-1][j-1] + replace_score[(s[i-1],t[j-1])]:
                 i -= 1
                 j -= 1
                 ss.append(s[i])
                 tt.append(t[j])
-            elif middle[i][j]==upper[i][j]:
+            elif middle[i][j]==upper[i][j]: # See Yury Grushetsky's hint http://rosalind.info/problems/laff/questions/
                 j -= 1
-                #ss.append('-')
                 tt.append(t[j])                
-            elif middle[i][j]==lower[i][j]:
+            elif middle[i][j]==lower[i][j]: # See Yury Grushetsky's hint http://rosalind.info/problems/laff/questions/
                 i -= 1
                 ss.append(s[i])
-                #tt.append('-')
             else:
-                raise Exception(f'Oops {i} {j}')
+                raise Exception(f'This cannot possible happen {i} {j}!')
             
             if middle[i][j]==0:
                 print (f'Exiting at {i} {j}')
