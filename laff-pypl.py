@@ -14,10 +14,13 @@
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 #  LAFF Local Alignment with Affine Gap Penalty
+#
+# Rewritten to use pypy - cannot use numpy, etc.
 
 import argparse
 import os
 import time
+#from   sys import exit
 
 def create_blosum62() :
     Product = {}
@@ -51,77 +54,91 @@ def create_blosum62() :
             Product[(x,y)] = scores[i]
             i += 1
     return Product
-    
-#from   helpers   import read_strings
-#from   numpy     import argmax,zeros
-#from   fasta     import FastaContent
-#from   Bio.Align import substitution_matrices
-#from   align     import reverse
-#from   Bio       import SeqIO
+
+# reverse
+#
+# Input:    a string, 
+# Return:   new string with characters in reverse order
+
+def reverse(chars):
+    return ''.join(chars[i] for i in range(len(chars)-1,-1,-1))
+
 # laff
 #
 # Local Alignment with Affine Gap Penalty
 
 def laff(s,t,replace_score=create_blosum62(),sigma=11,epsilon=1):
  
-    def unwind_moves(moves,score,i,j):
+    def unwind_moves(score,i,j):
+        print (f'Unwinding from: {score}, {i}, {j}')
         ss = []
-        ts = []
-    
+        tt = []
+        assert score == middle[i][j],f'score={score}, middle[{i}][{j}]={middle[i][j]}'
         while i>0 and j > 0:
-            i,j,s0,t0=moves[(i,j)]
-            ss.append(s0)
-            ts.append(t0)
-        return score,reverse(ss),reverse(ts)
+            possible_scores = [lower[i][j], 
+                               upper[i][j], 
+                               middle[i-1][j-1] + replace_score[(s[i-1],t[j-1])]]
+            assert max(possible_scores)==middle[i][j]
+            if middle[i][j]==possible_scores[2]:
+                i -= 1
+                j -= 1
+                ss.append(s[i])
+                tt.append(t[j])
+            elif middle[i][j]==possible_scores[1]:
+                j -= 1
+                ss.append('-')
+                tt.append(t[j])                
+            else:
+                i -= 1
+                ss.append(s[i])
+                tt.append('-')            
+            
+        return score,reverse(ss),reverse(tt)
     
     m      = len(s)
     n      = len(t)
-    print (m,n)
-    lower  = [[0 for j in range(n+1)] for i in range(2) ]
-    middle = [[0 for j in range(n+1)] for i in range(2) ]
-    upper  = [[0 for j in range(n+1)] for i in range(2) ]
-    #moves  = {}
-    
+ 
+    lower  = [[0 for j in range(n+1)] for i in range((m+1)) ]
+    middle = [[0 for j in range(n+1)] for i in range((m+1)) ]
+    upper  = [[0 for j in range(n+1)] for i in range((m+1)) ]
+
     imax      = -1
     max_score = -1
     jmax      = -1
-    start = time.time()
+    start     = time.time()
     for i in range(1,m+1):
         
-        i_to      = i%2
-        i_from    = 1 - i_to
         if i%100==0:
             print (f'{i} {m} {int(time.time()-start)}')
         for j in range(1,n+1):
-            lower[i_to][j]      = max(lower[i_from][j]  - epsilon,
-                                  middle[i_from][j] - sigma)
-            upper[i_to][j]      = max(upper[i_to][j-1]  - epsilon,
-                                  middle[i_to][j-1] - sigma)
-            possible_scores = [lower[i_to][j], 
-                               upper[i_to][j], 
-                               middle[i_from][j-1] + replace_score[(s[i-1],t[j-1])]]
-            #possible_moves = [(i-1, j,   s[i-1], '-'   ),  # Comes from lower
-                              #(i-1, j-1, s[i-1], t[j-1]),  # Comes from middle
-                              #(i,   j-1, '-',    t[j-1])]  # Comes from upper
-            
-            max_score      = max(possible_scores)
+            lower[i][j]      = max(lower[i-1][j]  - epsilon,
+                                  middle[i-1][j] - sigma)
+            upper[i][j]      = max(upper[i][j-1]  - epsilon,
+                                  middle[i][j-1] - sigma)
+            possible_scores = [lower[i][j], 
+                               upper[i][j], 
+                               middle[i-1][j-1] + replace_score[(s[i-1],t[j-1])]]
+               
             for index in range(len(possible_scores)):
-                if possible_scores[index]==max_score:
+                if possible_scores[index]==max(possible_scores):
                     break
-            middle[i_to][j] = possible_scores[index]                             
-            #moves[(i,j)]   = possible_moves[index]
+            middle[i][j] = possible_scores[index]                             
+   
         
-        score =  max(middle[i_to])
+        score =  max(middle[i])
         for j in range(1,n+1):
-            if middle[i_to][j]  == score: break
+            if middle[i][j]  == score: break
             
-        #score = middle[i_to,j]
+        assert score == middle[i][j],f'score={score}, middle[{i}][{j}]={middle[i][j]}'
+        
         if score>max_score:
             imax      = i
             jmax      = j
             max_score = score
-        
-    return unwind_moves(None,max_score,imax,jmax)
+            #print (f'{imax} {i} {jmax} {j} {score} {middle[i][j]} {middle[imax][jmax]}')
+            assert max_score == middle[imax][jmax],f'score={max_score}, middle[{imax}][{jmax}]={middle[imax][jmax]}'
+        assert max_score == middle[imax][jmax],f'score={max_score}, middle[{imax}][{jmax}]={middle[imax][jmax]}'
+    return unwind_moves(max_score,imax,jmax)
 
 if __name__=='__main__':
     start = time.time()
