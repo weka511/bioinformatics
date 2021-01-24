@@ -73,31 +73,50 @@ def laff(s,t,
          sigma         = 11,
          epsilon       = 1,
          frequency     = 0):
- 
+
+    # get_max_score
+    
+    def get_max_score():
+        imax      = -1
+        max_score = -1
+        jmax      = -1        
+        for i in range(1,m+1):
+            for j in range(1,n+1):
+                if middle[i][j] > max_score:
+                    imax      = i
+                    jmax      = j
+                    max_score = middle[i][j]    
+        return max_score,imax,jmax
+
     def unwind_moves(score,i,j):
         print (f'Unwinding from: {score}, {i}, {j}')
         ss = []
         tt = []
         assert score == middle[i][j],f'score={score}, middle[{i}][{j}]={middle[i][j]}'
         while i>0 and j > 0:
-            possible_scores = [lower[i][j], 
-                               upper[i][j], 
-                               middle[i-1][j-1] + replace_score[(s[i-1],t[j-1])]]
-            assert max(possible_scores)==middle[i][j]
-            if middle[i][j]==possible_scores[2]:
+            #possible_scores = [lower[i][j], 
+                               #upper[i][j], 
+                               #middle[i-1][j-1] + replace_score[(s[i-1],t[j-1])],0]
+            #assert max(possible_scores)==middle[i][j]
+            if middle[i][j] == middle[i-1][j-1] + replace_score[(s[i-1],t[j-1])]:
                 i -= 1
                 j -= 1
                 ss.append(s[i])
                 tt.append(t[j])
-            elif middle[i][j]==possible_scores[1]:
+            elif middle[i][j]==upper[i][j]:
                 j -= 1
                 ss.append('-')
                 tt.append(t[j])                
-            else:
+            elif middle[i][j]==lower[i][j]:
                 i -= 1
                 ss.append(s[i])
-                tt.append('-')            
-            if middle[i][j]==0: break
+                tt.append('-')
+            else:
+                raise Exception(f'Oops {i} {j}')
+            
+            if middle[i][j]==0:
+                print (f'Exiting at {i} {j}')
+                break
             
         return score,reverse(ss),reverse(tt)
     
@@ -108,9 +127,6 @@ def laff(s,t,
     middle = [[0 for j in range(n+1)] for i in range((m+1)) ]
     upper  = [[0 for j in range(n+1)] for i in range((m+1)) ]
 
-    imax      = -1
-    max_score = -1
-    jmax      = -1
     start     = time.time()
     for i in range(1,m+1):
         
@@ -120,32 +136,18 @@ def laff(s,t,
             
         for j in range(1,n+1):
             lower[i][j]      = max(lower[i-1][j]  - epsilon,
-                                  middle[i-1][j] - sigma)
+                                   middle[i-1][j] - sigma,
+                                   0)
             upper[i][j]      = max(upper[i][j-1]  - epsilon,
-                                  middle[i][j-1] - sigma)
-            possible_scores = [lower[i][j], 
-                               upper[i][j], 
-                               middle[i-1][j-1] + replace_score[(s[i-1],t[j-1])]]
-               
-            for index in range(len(possible_scores)):
-                if possible_scores[index]==max(possible_scores):
-                    break
-            middle[i][j] = max(0,possible_scores[index])                             
+                                   middle[i][j-1] - sigma,
+                                   0)
+            middle[i][j]     = max(lower[i][j], 
+                                   upper[i][j], 
+                                   middle[i-1][j-1] + replace_score[(s[i-1],t[j-1])],
+                                   0)                             
+    
+    max_score,imax,jmax = get_max_score()
    
-        
-        score =  max(middle[i])
-        for j in range(1,n+1):
-            if middle[i][j]  == score: break
-            
-        assert score == middle[i][j],f'score={score}, middle[{i}][{j}]={middle[i][j]}'
-        
-        if score>max_score:
-            imax      = i
-            jmax      = j
-            max_score = score
-
-            assert max_score == middle[imax][jmax],f'score={max_score}, middle[{imax}][{jmax}]={middle[imax][jmax]}'
-        assert max_score == middle[imax][jmax],f'score={max_score}, middle[{imax}][{jmax}]={middle[imax][jmax]}'
     return unwind_moves(max_score,imax,jmax)
 
 if __name__=='__main__':
