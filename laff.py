@@ -68,7 +68,11 @@ def reverse(chars):
 #
 # Local Alignment with Affine Gap Penalty
 
-def laff(s,t,replace_score=create_blosum62(),sigma=11,epsilon=1):
+def laff(s,t,
+         replace_score = create_blosum62(),
+         sigma         = 11,
+         epsilon       = 1,
+         frequency     = 0):
  
     def unwind_moves(score,i,j):
         print (f'Unwinding from: {score}, {i}, {j}')
@@ -110,8 +114,10 @@ def laff(s,t,replace_score=create_blosum62(),sigma=11,epsilon=1):
     start     = time.time()
     for i in range(1,m+1):
         
-        if i%100==0:
-            print (f'{i} {m} {int(time.time()-start)}')
+        if frequency>0 and i%frequency==0:
+            T = time.time()-start
+            print (f'Row={i}/{m}, elapsed={T:.1f} sec., time/step={T/i:.4f} sec., ETA={m*T/i-T:.0f} sec.')
+            
         for j in range(1,n+1):
             lower[i][j]      = max(lower[i-1][j]  - epsilon,
                                   middle[i-1][j] - sigma)
@@ -145,9 +151,10 @@ def laff(s,t,replace_score=create_blosum62(),sigma=11,epsilon=1):
 if __name__=='__main__':
     start = time.time()
     parser = argparse.ArgumentParser('LAFF Local Alignment with Affine Gap Penalty')
-    parser.add_argument('--sample',   default=False, action='store_true', help='process sample dataset')
-    parser.add_argument('--rosalind', default=False, action='store_true', help='process Rosalind dataset')
-    parser.add_argument('--version', default=False, action='store_true', help='Get version of python')
+    parser.add_argument('--sample',    default=False, action='store_true', help='process sample dataset')
+    parser.add_argument('--rosalind',  default=False, action='store_true', help='process Rosalind dataset')
+    parser.add_argument('--version',   default=False, action='store_true', help='Get version of python')
+    parser.add_argument('--frequency', default=100,  type=int,             help='Number of iteration per progress tick' )
     args = parser.parse_args()
     
     if args.version:
@@ -176,7 +183,7 @@ if __name__=='__main__':
         Data.append(''.join(Record))
         x=0
                        
-        score,s,t = laff(Data[0],Data[1])
+        score,s,t = laff(Data[0],Data[1],frequency=args.frequency)
         print (score)
         print (s)
         print (t)   
