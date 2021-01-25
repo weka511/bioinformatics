@@ -20,7 +20,27 @@ import os
 import time
 from   helpers import read_strings
 
+# osym
+#
+# Say that we have two strings s and t of respective lengths m and n and an alignment score.
+# Let's define a matrix M corresponding to s and t by setting Mj,k equal to the maximum score of any
+# alignment that aligns s[j] with t[k]. So each entry in M can be equal to at most the maximum
+# score of any alignment of s and t
+#
+# Given: Two DNA strings s and t in FASTA format, each having length at most 1000 bp.
+#
+# Return: The maximum alignment score of a global alignment of s and t, followed by
+# the sum of all elements of the matrix M corresponding to s and t that was defined above.
+# Apply the mismatch score introduced in Finding a Motif with Modifications.
+
+def osym(s,t, match=1,mismatch=-1):
+  def get_score(a,b, match=1,mismatch=-1):
+    return match if a==b else mismatch
   
+  def score_string(s,t):
+    return sum(get_score(a,b) for (a,b) in zip(s,t))   
+  return 0,0
+ 
 if __name__=='__main__':
     start = time.time()
     parser = argparse.ArgumentParser('OSYM Isolating Symbols in Alignments')
@@ -28,7 +48,7 @@ if __name__=='__main__':
     parser.add_argument('--rosalind', default=False, action='store_true', help='process Rosalind dataset')
     args = parser.parse_args()
     if args.sample:
-        pass
+        print (osym('ATAGATA','ACAGGTA'))
         
     
 
