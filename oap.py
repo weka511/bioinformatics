@@ -21,57 +21,59 @@ import time
 import sys
 from   laff import read_fasta
 
+# oap
+#
+# Given: Two DNA strings s and t, each having length at most 10 kbp.
+#
+# Return: The score of an optimal overlap alignment of s and t, followed by an alignment of a suffix  of s
+#         and a prefix  of t achieving this optimal score. 
 
-def oap(v,w,
+def oap(s,t,
         match_bonus   = 1,
         mismatch_cost = 2,
         indel_cost    = 2):
-    def score(v_,w_):
-        return match_bonus if v_==w_ else -mismatch_cost
+    def score(v,w):
+        return match_bonus if v==w else -mismatch_cost
         
-    def dynamic_programming(v,w):
-        def format(i,j):
-            return v[i-1] if j==0 else f'{distances[i][j]}'
-        distances = [[0 for j in range(len(w)+1)] for i in range(len(v)+1)]
-        for i in range(1,len(v)+1):
-            for j in range(1,len(w)+1):
+    def dynamic_programming(s,t):
+        
+        distances = [[0 for j in range(len(t)+1)] for i in range(len(s)+1)]
+        for i in range(1,len(s)+1):
+            for j in range(1,len(t)+1):
                 distances[i][j]  = max(
                                         distances[i-1][j]   - indel_cost,
                                         distances[i][j-1]   - indel_cost,
-                                        distances[i-1][j-1] + score(v[i-1],w[j-1]))
+                                        distances[i-1][j-1] + score(s[i-1],t[j-1]))
         
-        #print ('  ' + ' '.join(w[j] for j in range(len(w))))        
-        #for i in range(1,len(v)+1): 
-            #print (' '.join(format(i,j) for j in range(len(w)+1)))
-        i = len(v)
+        # Begin backtracking. Since we want a suffix of s, start in the last row.
+        # For some reason I need to use the last j that matches maximum score
+        
+        i = len(s)
         distance = max(distances[i])
-        for j in range(len(w)+1):
+        for j in range(len(t),0,-1):
             if distances[i][j] == distance: break
-        #distance,i,j = get_max_score(distances, len(v), len(w))
-        print (distance,i,j)
-        v1       = []
-        w1       = []
-        while i>0 and j>0:
-            #if distances[i][j]==0:
-                #i1,j1 = (0,j-1)
+ 
+        s1       = []
+        t1       = []
+        while j>0:                  # we want a prefix of t
             if distances[i][j]==distances[i-1][j]   - indel_cost:
                 i1,j1 = (i-1,j)
             elif distances[i][j]==distances[i][j-1]   - indel_cost:
                 i1,j1 = (i,j-1)
-            elif distances[i][j]==distances[i-1][j-1] + score(v[i-1],w[j-1]):
+            elif distances[i][j]==distances[i-1][j-1] + score(s[i-1],t[j-1]):
                 i1,j1 = (i-1,j-1)
             else:
                 raise Exception(f'This cannot possible happen {i} {j}!')
              
-            v1.append(v[i1] if i1<i else '-')
-            w1.append(w[j1] if j1<j else '-')
-            #if distances[i][j]==0: break
+            s1.append(s[i1] if i1<i else '-')
+            t1.append(t[j1] if j1<j else '-')
+   
             i,j = i1,j1
+            
+        return distance,s1[::-1],t1[::-1]
     
-        return distance,v1[::-1],w1[::-1] # was sum(score(u,v) for u,v in zip(v1,w1))
-    
-    score,u1,v1=dynamic_programming([vv for vv in v],[ww for ww in w])
-    return score,''.join(u1),''.join(v1)
+    score,u1,s1=dynamic_programming(s,t)
+    return score,''.join(u1),''.join(s1)
 
 if __name__=='__main__':
     start = time.time()
@@ -79,7 +81,6 @@ if __name__=='__main__':
     parser.add_argument('--sample',    default=False, action='store_true', help='process sample dataset')
     parser.add_argument('--rosalind',  default=False, action='store_true', help='process Rosalind dataset')
     parser.add_argument('--version',   default=False, action='store_true', help='Get version of python')
-    parser.add_argument('--frequency', default=100,   type=int,            help='Number of iteration per progress tick' )
     args = parser.parse_args()
     
     if args.version:

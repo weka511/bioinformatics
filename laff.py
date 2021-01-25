@@ -148,11 +148,9 @@ def read_fasta(name):
     Data   = []
     Record = []
     with open(name,'r') as input:
-        i = -1
         for line in input:
             text = line.strip()
             if text[0]=='>':
-                i += 1
                 if len(Record)>0:
                     Data.append(''.join(Record))
                 Record = []
