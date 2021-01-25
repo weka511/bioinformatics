@@ -144,6 +144,23 @@ def laff(s,t,
    
     return unwind_moves(max_score,imax,jmax)
 
+def read_fasta(name):
+    Data   = []
+    Record = []
+    with open(name,'r') as input:
+        i = -1
+        for line in input:
+            text = line.strip()
+            if text[0]=='>':
+                i += 1
+                if len(Record)>0:
+                    Data.append(''.join(Record))
+                Record = []
+            else:
+                Record.append(text)
+    Data.append(''.join(Record))
+    return Data
+
 if __name__=='__main__':
     start = time.time()
     parser = argparse.ArgumentParser('LAFF Local Alignment with Affine Gap Penalty')
@@ -163,22 +180,7 @@ if __name__=='__main__':
         print (t1)    
         
     if args.rosalind:
-        Data = []
-        Record = []
-        with open(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt','r') as input:
-            i = -1
-            for line in input:
-                text = line.strip()
-                if text[0]=='>':
-                    i += 1
-                    if len(Record)>0:
-                        Data.append(''.join(Record))
-                    Record = []
-                else:
-                    Record.append(text)
-        Data.append(''.join(Record))
-        x=0
-                       
+        Data      = read_fasta(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt')
         score,s,t = laff(Data[0],Data[1],frequency=args.frequency)
         print (score)
         print (s)

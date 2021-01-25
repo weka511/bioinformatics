@@ -1,4 +1,4 @@
-#    Copyright (C) 2019 Greenweaves Software Limited
+#    Copyright (C) 2019-2021 Greenweaves Software Limited
 #
 #    This is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -11,13 +11,23 @@
 #    GNU General Public License for more details.
 #
 #    You should have received a copy of the GNU General Public License
-#    along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>
 
-# OAP Overlap Alignment
+#    OAP Overlap Alignment
 
+import argparse
+import os
+import time
+import sys
+from laff import read_fasta
 from numpy import zeros,argmax,dtype,int,shape,unravel_index
-from time import time
-from reference_tables import createSimpleDNASubst
+
+def createSimpleDNASubst(match=+1,subst=1,bases='ATGC'):
+    weights={}
+    for i in range(len(bases)):
+        for j in range(len(bases)):
+            weights[(bases[i],bases[j])] = +match if i==j else -subst          
+    return weights
 
 def oap(v,w,match_bonus=+1,mismatch_cost=2,indel_cost=2):
     def score(v,w):
@@ -60,18 +70,37 @@ def oap(v,w,match_bonus=+1,mismatch_cost=2,indel_cost=2):
     return score,''.join(u1),''.join(v1)
 
 if __name__=='__main__':
-    from helpers import create_strings
-    #d,s1,t1 = oap('CTAAGGGATTCCGGTAATTAGACAG',
-                  #'ATAGACCATATGTCAGTGACTGTGTAA')
-    start_time = time()
-    strings  = create_strings('oap',fasta=1,ext=4)
-    d,s1,t1 = oap(strings[0],strings[1])      
-    print ('{0}'.format(d))
-    print (s1)
-    print (t1)
-    print (time()-start_time)
-    with open('oap.txt','w') as o:
-        o.write('{0}\n'.format(d))
-        o.write('{0}\n'.format(s1))
-        o.write('{0}\n'.format(t1))    
+    start = time.time()
+    parser = argparse.ArgumentParser('OAP Overlap Alignment')
+    parser.add_argument('--sample',    default=False, action='store_true', help='process sample dataset')
+    parser.add_argument('--rosalind',  default=False, action='store_true', help='process Rosalind dataset')
+    parser.add_argument('--version',   default=False, action='store_true', help='Get version of python')
+    parser.add_argument('--frequency', default=100,   type=int,            help='Number of iteration per progress tick' )
+    args = parser.parse_args()
     
+    if args.version:
+        print (f'{sys.version}')
+        
+    if args.sample:
+        d,s1,t1 = oap('CTAAGGGATTCCGGTAATTAGACAG',
+                      'ATAGACCATATGTCAGTGACTGTGTAA')
+        
+        print ('{0}'.format(d))
+        print (s1)
+        print (t1)
+        
+    if args.rosalind:
+        Data      = read_fasta(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt')          
+        d,s1,t1   = oap(Data[0],Data[1])      
+        print ('{0}'.format(d))
+        print (s1)
+        print (t1)
+        with open(f'{os.path.basename(__file__).split(".")[0]}.txt','w') as o:
+            o.write('{0}\n'.format(d))
+            o.write('{0}\n'.format(s1))
+            o.write('{0}\n'.format(t1))    
+
+    elapsed = time.time() - start
+    minutes = int(elapsed/60)
+    seconds = elapsed - 60*minutes
+    print (f'Elapsed Time {minutes} m {seconds:.2f} s')        
