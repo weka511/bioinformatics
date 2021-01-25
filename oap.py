@@ -19,46 +19,41 @@ import argparse
 import os
 import time
 import sys
-from laff import read_fasta
-from numpy import zeros,argmax,dtype,int,shape,unravel_index
+from   laff import read_fasta
 
-def createSimpleDNASubst(match=+1,subst=1,bases='ATGC'):
-    weights={}
-    for i in range(len(bases)):
-        for j in range(len(bases)):
-            weights[(bases[i],bases[j])] = +match if i==j else -subst          
-    return weights
 
 def oap(v,w,match_bonus=+1,mismatch_cost=2,indel_cost=2):
     def score(v,w):
-        if v==w:
-            return match_bonus 
-        else:
-            return -mismatch_cost
+        return match_bonus if v==w else -mismatch_cost
         
     def dynamic_programming(v,w):
-        distances = zeros((len(v)+1,len(w)+1),dtype=int)
+        distances = [[0 for j in range(len(w)+1)] for i in range(len(v)+1)]
         for j in range(1,len(w)+1):
-            #print (w[j-1])
             for i in range(1,len(v)+1):
-                #print (v[i-1])
-                distances[i,j]  = max( 0,
-                                       distances[i-1,j]   - indel_cost,
-                                       distances[i,  j-1] - indel_cost,
-                                       distances[i-1,j-1] + score(v[i-1],w[j-1]))
+                distances[i][j]  = max( 0,
+                                        distances[i-1][j]   - indel_cost,
+                                        distances[i][j-1]   - indel_cost,
+                                        distances[i-1][j-1] + score(v[i-1],w[j-1]))
  
-        print(distances[i,:])
-        print(max(distances[i,:]))
-        j    = argmax(distances[i,:])
-        #i,j     = unravel_index(distances.argmax(), distances.shape)
-        distance = distances[i,j]
+
+        dd = max(distances[i])
+        for j in range(1,len(w)+1):
+            if distances[i][j]==dd:
+                break
+            
+        distance = distances[i][j]
         v1       = []
         w1       = []
         while i>0 and j>0:
-            index =  argmax([0,
-                             distances[i-1,j]   - indel_cost,
-                             distances[i,j-1]   - indel_cost,
-                             distances[i-1,j-1] + score(v[i-1],w[j-1])])
+            xx = [0,
+                  distances[i-1][j]   - indel_cost,
+                  distances[i][j-1]   - indel_cost,
+                  distances[i-1][j-1] + score(v[i-1],w[j-1])]
+            mx =  max(xx)
+            for index in range(len(xx)):
+                if xx[index]==mx:
+                    break
+                
             i1,j1 = [(0,j-1), (i-1,j), (i,j-1), (i-1,j-1)][index]
             v1.append(v[i1] if i1<i else '-')
             w1.append(w[j1] if j1<j else '-')
