@@ -22,44 +22,53 @@ import sys
 from   laff import read_fasta
 
 
-def oap(v,w,match_bonus=+1,mismatch_cost=2,indel_cost=2):
-    def score(v,w):
-        return match_bonus if v==w else -mismatch_cost
+def oap(v,w,
+        match_bonus   = 1,
+        mismatch_cost = 2,
+        indel_cost    = 2):
+    def score(v_,w_):
+        return match_bonus if v_==w_ else -mismatch_cost
         
     def dynamic_programming(v,w):
+        def format(i,j):
+            return v[i-1] if j==0 else f'{distances[i][j]}'
         distances = [[0 for j in range(len(w)+1)] for i in range(len(v)+1)]
-        for j in range(1,len(w)+1):
-            for i in range(1,len(v)+1):
-                distances[i][j]  = max( 0,
+        for i in range(1,len(v)+1):
+            for j in range(1,len(w)+1):
+                distances[i][j]  = max(
                                         distances[i-1][j]   - indel_cost,
                                         distances[i][j-1]   - indel_cost,
                                         distances[i-1][j-1] + score(v[i-1],w[j-1]))
- 
-
-        dd = max(distances[i])
-        for j in range(1,len(w)+1):
-            if distances[i][j]==dd:
-                break
-            
-        distance = distances[i][j]
+        
+        #print ('  ' + ' '.join(w[j] for j in range(len(w))))        
+        #for i in range(1,len(v)+1): 
+            #print (' '.join(format(i,j) for j in range(len(w)+1)))
+        i = len(v)
+        distance = max(distances[i])
+        for j in range(len(w)+1):
+            if distances[i][j] == distance: break
+        #distance,i,j = get_max_score(distances, len(v), len(w))
+        print (distance,i,j)
         v1       = []
         w1       = []
         while i>0 and j>0:
-            xx = [0,
-                  distances[i-1][j]   - indel_cost,
-                  distances[i][j-1]   - indel_cost,
-                  distances[i-1][j-1] + score(v[i-1],w[j-1])]
-            mx =  max(xx)
-            for index in range(len(xx)):
-                if xx[index]==mx:
-                    break
-                
-            i1,j1 = [(0,j-1), (i-1,j), (i,j-1), (i-1,j-1)][index]
+            #if distances[i][j]==0:
+                #i1,j1 = (0,j-1)
+            if distances[i][j]==distances[i-1][j]   - indel_cost:
+                i1,j1 = (i-1,j)
+            elif distances[i][j]==distances[i][j-1]   - indel_cost:
+                i1,j1 = (i,j-1)
+            elif distances[i][j]==distances[i-1][j-1] + score(v[i-1],w[j-1]):
+                i1,j1 = (i-1,j-1)
+            else:
+                raise Exception(f'This cannot possible happen {i} {j}!')
+             
             v1.append(v[i1] if i1<i else '-')
             w1.append(w[j1] if j1<j else '-')
+            #if distances[i][j]==0: break
             i,j = i1,j1
     
-        return sum(score(u,v) for u,v in zip(v1,w1)),v1[::-1],w1[::-1]
+        return distance,v1[::-1],w1[::-1] # was sum(score(u,v) for u,v in zip(v1,w1))
     
     score,u1,v1=dynamic_programming([vv for vv in v],[ww for ww in w])
     return score,''.join(u1),''.join(v1)
