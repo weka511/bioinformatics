@@ -112,7 +112,7 @@ NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info
 |hamm|rosalind.py|[Counting Point Mutations](http://rosalind.info/problems/hamm/) |
 |laff|laff.py |[Local Alignment with Affine Gap Penalty](http://rosalind.info/problems/laff/)|
 |loca|loca.py|[Local Alignment with Scoring Matrix ](http://rosalind.info/problems/loca/) |
-|mgap|mmgap.py|[Maximizing the Gap Symbols of an Optimal Alignment](http://rosalind.info/problems/mgap/) [WIP](https://github.com/weka511/bioinformatics/issues/98)|
+|mgap|mmgap.py|[Maximizing the Gap Symbols of an Optimal Alignment](http://rosalind.info/problems/mgap/)|
 |mult|mult.py align.py|[Multiple Alignment](http://rosalind.info/problems/mult/)|
 |oap|oap.py|[Overlap Alignment](http://rosalind.info/problems/oap/) |
 |osym|osym.py|[Isolating Symbols in Alignments](http://rosalind.info/problems/osym/) [WIP](https://github.com/weka511/bioinformatics/issues/97)|

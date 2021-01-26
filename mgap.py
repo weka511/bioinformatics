@@ -18,7 +18,7 @@
 import argparse
 import os
 import time
-from   helpers import read_strings
+from   laff import read_fasta
 
 # mgap
 #
@@ -31,7 +31,7 @@ from   helpers import read_strings
 # Return: The maximum number of gap symbols that can appear in any maximum score alignment of s
 # and t with score parameters satisfying m>0, d<0, and g<0.
 
-def mgap(s,t):
+def mgap(s,t,m0=1,d0=-1,g0=-1,Nm=2,Nd=2,Ng=2):
     def get_N(m=1,d=-1,g=-1):
         def dynamic_programming():
             scores = [[0 for j in range(len(t)+1)] for i in range(len(s)+1)]
@@ -56,15 +56,15 @@ def mgap(s,t):
             j    = len(scores[0]) -1
             while i>0 or j>0:
                 if scores[i][j]==scores[i-1][j]   + g:
-                    print (s[i-1], '-')
+                    #print (s[i-1], '-')
                     i    -= 1
                     gaps += 1
                 elif  scores[i][j]==scores[i][j-1]   + g:
-                    print ('-', t[j-1])
+                    #print ('-', t[j-1])
                     j    -= 1
                     gaps += 1
                 elif  scores[i][j]==scores[i-1][j-1] + (m if s[i-1]==t[j-1] else d):
-                    print (s[i-1], t[j-1])
+                    #print (s[i-1], t[j-1])
                     i  -= 1
                     j  -= 1
                 else:
@@ -72,27 +72,32 @@ def mgap(s,t):
             return gaps    
         
         return backtrack(dynamic_programming())
-    
-    gaps = get_N()
-    return gaps
+    # Nm=2,Nd=2,Ng=2
+    max_gaps = -1
+    for i in range(Nm):
+        for j in range(Nd):
+            for k in range(Ng):
+                gaps = get_N(m=m0+i, d=d0-j, g = g0-k)
+                if gaps>max_gaps:
+                    max_gaps=gaps
+    return max_gaps
 
 if __name__=='__main__':
     start = time.time()
     parser = argparse.ArgumentParser('MGAP Maximizing the Gap Symbols of an Optimal Alignment')
     parser.add_argument('--sample',   default=False, action='store_true', help='process sample dataset')
-    parser.add_argument('--rosalind', default=False, action='store_true', help='process Rosalind dataset')
+    parser.add_argument('--rosalind', default=False, action='store_true', help='proces[1]s Rosalind dataset')
     args = parser.parse_args()
     if args.sample:
         print (mgap('AACGTA','ACACCTA'))
         
     if args.rosalind:
-        Input  = read_strings(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt')
+        Data      = read_fasta(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt')
  
-        Result = None
+        Result = mgap(Data[0],Data[1])
         print (Result)
         with open(f'{os.path.basename(__file__).split(".")[0]}.txt','w') as f:
-            for line in Result:
-                f.write(f'{line}\n')
+            f.write(f'{Result}\n')
                 
     elapsed = time.time() - start
     minutes = int(elapsed/60)
