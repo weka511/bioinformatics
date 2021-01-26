@@ -32,7 +32,49 @@ from   helpers import read_strings
 # and t with score parameters satisfying m>0, d<0, and g<0.
 
 def mgap(s,t):
-    pass
+    def get_N(m=1,d=-1,g=-1):
+        def dynamic_programming():
+            scores = [[0 for j in range(len(t)+1)] for i in range(len(s)+1)]
+    
+            for j in range(len(t)+1):
+                scores[0][j] = g * j
+            for i in range(len(s)+1):
+                scores[i][0] = g * i
+    
+            for i in range(1,len(s)+1):
+                for j in range(1,len(t)+1):
+                    scores[i][j] = max(
+                        scores[i-1][j]   + g,
+                        scores[i][j-1]   + g,
+                        scores[i-1][j-1] + (m if s[i-1]==t[j-1] else d))
+    
+            return scores
+        
+        def backtrack(scores):
+            gaps = 0
+            i    = len(scores) - 1
+            j    = len(scores[0]) -1
+            while i>0 or j>0:
+                if scores[i][j]==scores[i-1][j]   + g:
+                    print (s[i-1], '-')
+                    i    -= 1
+                    gaps += 1
+                elif  scores[i][j]==scores[i][j-1]   + g:
+                    print ('-', t[j-1])
+                    j    -= 1
+                    gaps += 1
+                elif  scores[i][j]==scores[i-1][j-1] + (m if s[i-1]==t[j-1] else d):
+                    print (s[i-1], t[j-1])
+                    i  -= 1
+                    j  -= 1
+                else:
+                    raise Exception(f'{i} {j}')
+            return gaps    
+        
+        return backtrack(dynamic_programming())
+    
+    gaps = get_N()
+    return gaps
 
 if __name__=='__main__':
     start = time.time()
