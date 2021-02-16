@@ -4,6 +4,8 @@ Code inspired by [Bioinformatics Algorithms: an Active Learning Approach](http:/
 from [Rosalind](http://rosalind.info). 
 NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info) uses 1-based.
 
+I have written this code in Python 3, generally with the most recent release at the time each module was written-- Python 3.8.5 (tags/v3.8.5:580fbb0, Jul 20 2020, 15:57:54) at the time this file was updated. I have tended to use newly added features whenever they might make me more productive. I've been writing code since 1968, during which time computer have got faster, but my brain hasn't. You are welcome to use this code if it is useful to you, subject to the terms of the Licence, but it may need to be adapted if you use an earlier version of Python.
+
 ## Bioinformatics Algorithms TextBook Track
 
 ### 1. Where in the Genome does DNA replication begin?
