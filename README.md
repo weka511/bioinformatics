@@ -2,7 +2,7 @@
 
 Code inspired by [Bioinformatics Algorithms: an Active Learning Approach](http://bioinformaticsalgorithms.com/) and 
 from [Rosalind](http://rosalind.info). 
-NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info) uses 1-based.
+NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info) uses 1-based.test
 
 ## Bioinformatics Algorithms TextBook Track
 
