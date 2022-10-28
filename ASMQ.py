@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 '''
  ASMQ Assessing Assembly Quality with N50 and N75
 
@@ -30,7 +31,7 @@ def asmq_n(S,N):
         ss+=S[n]
         n-=1
     return S[n+1]
-    
+
 def asmq(S,N=50):
     return asmq_n([len(s) for s in S],N)
 
@@ -40,5 +41,5 @@ if __name__=='__main__':
     S=[]
     with open('c:/Users/Weka/Downloads/rosalind_asmq.txt') as f:
         for line in f:
-            S.append(line.strip())     
-    print (asmq(S),asmq(S,N=75))    
+            S.append(line.strip())
+    print (asmq(S),asmq(S,N=75))

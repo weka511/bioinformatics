@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 #    Copyright (C) 2018 Greenweaves Software Pty Ltd
 #
 #    This is free software: you can redistribute it and/or modify
@@ -38,23 +40,23 @@ def f2sum(A):
             q-=1
         elif abs(A_Sorted[p])>abs( A_Sorted[q]):
             p+=1
- 
+
     return best(pairs) if len(pairs)>0 else (-1,-1)
 
 if __name__=='__main__':
     m = -1
     k = -1
     As=[]
- 
-    with open (r'data\rosalind_2sum(5).txt') as f:    
+
+    with open (r'data\rosalind_2sum(5).txt') as f:
         for line in f:
             if k==-1:
                 values=line.strip().split()
                 k=int(values[0])
                 m=int(values[1])
             else:
-                As.append([int(v) for v in line.strip().split()])    
-                
+                As.append([int(v) for v in line.strip().split()])
+
     for A in As:
         i,j=f2sum(A)
         if i>-1:

@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 #    Copyright (C) 2019 Greenweaves Software Limited
 #
 #    This is free software: you can redistribute it and/or modify
@@ -26,11 +28,11 @@ def build_matrix(s,t,matrix,replace_score=createSimpleDNASubst(),indel_cost=1,ge
             def reverse(pair):
                   a,b=pair
                   return (b,a)
-            return replace_score[pair] if pair in replace_score else replace_score[reverse(pair)] 
+            return replace_score[pair] if pair in replace_score else replace_score[reverse(pair)]
       for i in range(len(s)+1):
             for j in range(len(t)+1):
                   if i==0 and j==0: pass
-                  elif i==0: 
+                  elif i==0:
                         matrix[i][j] = 0
                         moves[(i,j)] = (0,0,0,-1)
                   elif j==0:
@@ -47,13 +49,13 @@ def build_matrix(s,t,matrix,replace_score=createSimpleDNASubst(),indel_cost=1,ge
                         matrix[i][j] = scores[index]
                         moves[(i,j)] = froms[index]
 
-      return matrix,moves      
+      return matrix,moves
 
 def backtrack(s,t,matrix,moves,showPath=False):
-      
+
       score = max([matrix[i][-1] for i in range(len(s)+1)])
       i     = -1
-      j     = len(t)      
+      j     = len(t)
       for k in range(len(s)-1,-1,-1):
             if matrix[k][-1]==score:
                   i = k
@@ -82,9 +84,9 @@ def ba5h(s,t):
 
 if __name__=='__main__':
       import timeit
-      start_time = timeit.default_timer()      
-      strings   = create_strings(ext=1)              
-      d,s1,t1 = ba5h(strings[0],strings[1])      
+      start_time = timeit.default_timer()
+      strings   = create_strings(ext=1)
+      d,s1,t1 = ba5h(strings[0],strings[1])
       print ('Score = {0}'.format(d))
       print (s1)
       print (t1)

@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 #    Copyright (C) 2018 Greenweaves Software Pty Ltd
 #
 #    This is free software: you can redistribute it and/or modify
@@ -36,7 +38,7 @@ def sum3(A,n):
                 for r in complement[term]:
                     if r != p and r !=q:
                         return (p+1, q+1, r+1)
-    return (-1,-1,-1)        
+    return (-1,-1,-1)
 
 if __name__=='__main__':
     import time
@@ -60,5 +62,5 @@ if __name__=='__main__':
                     print (-1)
                 else:
                     print ('{0} {1} {2}'.format(p,q,r))
-    print ()                
+    print ()
     print (time.time() - start_time)

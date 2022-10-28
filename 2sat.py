@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 # Copyright (C) 2020 Greenweaves Software Limited
 
 #   This program is free software: you can redistribute it and/or modify
@@ -19,7 +21,7 @@ import argparse
 import os
 import time
 from   helpers import read_strings,create_list,parse_graphs
-from   graphs import two_sat 
+from   graphs import two_sat
 
 # to_int
 #
@@ -34,18 +36,18 @@ def to_int(s):
         return int(s)
     else:
         return [int(p) for p in parts]
-    
+
 # create_sets
 #
 # Create sets of data for 2SAT problem. Each set is in the form given in problem statement, e.g.
-# n,m              i.e. number of variables, number of clauses   
+# n,m              i.e. number of variables, number of clauses
 # clause 1
 # clause 2
 # ...
 # clause m
 #
 # Output: list of form [(n,m, (...), (...) ...],,,]  where each inner tuple is a clause, each out tuple a set
-    
+
 def create_sets(data):
     product = []
     i       = 1
@@ -62,7 +64,7 @@ def create_sets(data):
 
 def Format(status,Solution):
     return f'{status} {" ".join(str(sol) for sol in Solution)}'
-     
+
 if __name__=='__main__':
     start = time.time()
     parser = argparse.ArgumentParser('2SAT')
@@ -77,19 +79,19 @@ if __name__=='__main__':
                 [-1, 2],
                 [1, -2],
                 [-1, -2],
-                
+
                 [3, 4],
                 [1, 2],
                 [2, 3],
                 [-1, -2],
                 [-2, -3]]
-        
+
         for problem in create_sets(data):
             status,Solution = two_sat(problem )
             print (Format(status,Solution))
 
- 
-      
+
+
     if args.rosalind:
         with open(f'{os.path.basename(__file__).split(".")[0]}.txt','w') as f:
             Input  = read_strings(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt')
@@ -97,9 +99,9 @@ if __name__=='__main__':
             for problem in Sets:
                 status,Solution = two_sat(problem )
                 print (Format(status,Solution))
-                f.write (f'{Format(status,Solution)}\n')                
-               
+                f.write (f'{Format(status,Solution)}\n')
+
     elapsed = time.time() - start
     minutes = int(elapsed/60)
     seconds = elapsed - 60*minutes
-    print (f'Elapsed Time {minutes} m {seconds:.2f} s')    
+    print (f'Elapsed Time {minutes} m {seconds:.2f} s')
