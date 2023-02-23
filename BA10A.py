@@ -1,4 +1,6 @@
-# Copyright (C) 2019-2020 Greenweaves Software Limited
+#!/usr/bin/env python
+
+# Copyright (C) 2019-2023 Simon Crase
 
 # This is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -15,17 +17,20 @@
 
 # BA10A Compute the Probability of a Hidden Path
 
+import numpy as np
+
 from hmm import ProbabilityHiddenPath
 
 if __name__=='__main__':
     print (ProbabilityHiddenPath('AABBBAABABAAAABBBBAABBABABBBAABBAAAABABAABBABABBAB',
-                                 {                                #sample
-                                                                  ('A','A'): 0.194, ('A','B'):   0.806,
-                                                                  ('B','A'): 0.273, ('B','B'):   0.727,
-                                                                  }))
-    
+                                 np.array([[ 0.194,   0.806],[ 0.273,   0.727]])))
+
+
     print (ProbabilityHiddenPath('BBABBBABBAABABABBBAABBBBAAABABABAAAABBBBBAABBABABB',
-                                 {                               #extra
-                                                                 ('A','A'): 0.863, ('A','B'):   0.137,
-                                                                 ('B','A'): 0.511, ('B','B'):   0.489,
-                                                                 }))    
+                                 np.array([[ 0.863,   0.137],[0.511,   0.489]])))
+
+    print (ProbabilityHiddenPath('BBABBAAABBAABBBBABABBBBAAABBBBBBAABAABAAABABAABBBA',
+                                 np.array([[ 0.497,	0.503],[0.263,	0.737]])))
+
+    print (ProbabilityHiddenPath('ABBBAABBAABABBABBAABBBABABABAABAABBBBAAAAAAABABAAB',
+                                 np.array([[0.849,	0.151],[0.43,	0.57]])))

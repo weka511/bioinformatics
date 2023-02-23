@@ -1,4 +1,4 @@
-#    Copyright (C) 2019-2020 Greenweaves Software Limited
+#    Copyright (C) 2019-2023 Simon Crase
 #
 #    This is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -15,8 +15,10 @@
 #
 #    Hidden Markov Models
 
-from numpy import argmax
-from math  import isqrt
+# from math  import exp,  log
+
+import numpy as np
+
 
 # BA10A Compute the Probability of a Hidden Path
 
@@ -27,13 +29,13 @@ from math  import isqrt
 # Return: The probability of this path. You may assume that initial probabilities are equal.
 
 def ProbabilityHiddenPath(path,Transition):
-    n      = isqrt(len(Transition.keys()))  # Number of states: Transition matrix is n by n
-    result = 1/n                            # Initial probability for each state 
-    for i in range(1,len(path)):
-        result *= Transition[(path[i-1],path[i])]
-    return result
+    path_indices  = [ord(c)-ord('A') for c in path]
+    logTransition = np.log(Transition)
+    _,n           = logTransition.shape
+    return np.exp(-np.log(n) + sum([ logTransition[(path_indices[i-1],path_indices[i])] for i in range(1,len(path_indices)) ]))
 
-# BA10B Compute the Probability of an Outcome Given a Hidden Path 
+
+# BA10B Compute the Probability of an Outcome Given a Hidden Path
 
 # ProbabilityOutcomeGivenHiddenPath
 
@@ -45,72 +47,72 @@ def ProbabilityOutcomeGivenHiddenPath(string,path,Emission):
     result = 1
     for i in range(0,len(path)):
         result *= Emission[(path[i],string[i])]
-    return result 
+    return result
 
-# BA10C Implement the Viterbi Algorithm 
+# BA10C Implement the Viterbi Algorithm
 
 # Viterbi
 #
-# Input: A string x, followed by the alphabet from which x was constructed, 
+# Input: A string x, followed by the alphabet from which x was constructed,
 #        followed by the states States, transition matrix Transition,
 #        and emission matrix Emission of an HMM.
 #
 # Return: A path that maximizes the (unconditional) probability Pr(x, p) over all possible paths p
 
 def Viterbi(xs,alphabet,States,Transition,Emission):
-    
+
     # calculateproduct_weights
     #
     # Calculate array of weights by position in string and state
-    
+
     def calculateproduct_weights(s_source = 1):
         def product_weight(k,x):
             return max([s[-1][l] * Transition[(States[l],k)] * Emission[(k,x)] for l in range(len(States))])
-        
+
         s = []  # first index is position, 2nd state
-    
+
         s.append([s_source * (1/len(States)) * Emission[(k,xs[0])] for k in States])
         for x in xs[1:]:
             s.append([product_weight(k,x) for k in States])
         return s
-    
+
     # backtrack
-    # 
+    #
     # Find most likely path through state space by backtracking
-    
+
     def backtrack(s):
         n     = len(s) - 1
-        state = argmax(s[n])
+        state = np.argmax(s[n])
         path  = [States[state]]
         while True:
             ps = [s[n-1][l] * Transition[(States[l],States[state])]  for l in range(len(States))]
-            state = argmax(ps)
+            state = np.argmax(ps)
             path.append(States[state])
             n-=1
             if n<=0: return path[::-1]
-    
+
     return ''.join(backtrack(calculateproduct_weights()))
 
-#  BA10D 	Compute the Probability of a String Emitted by an HMM 
+#  BA10D 	Compute the Probability of a String Emitted by an HMM
 #
 # Likelihood
 #
 # Given: A string x, followed by the alphabet from which x was constructed, followed by the states,
-# transition matrix, and emission matrix  of an HMM 
+# transition matrix, and emission matrix  of an HMM
 #
-# Return: The probability Pr(x) that the HMM emits x. 
+# Return: The probability Pr(x) that the HMM emits x.
 
 def Likelihood(xs,Alphabet,States,Transition,Emission):
     def calculateproduct_weights(s_source = 1):
         def product_weight(k,x):
             return sum([s[-1][l] * Transition[(States[l],k)] * Emission[(k,x)] for l in range(len(States))])
-        
+
         s = []  # first index is position, 2nd state
-    
+
         s.append([s_source * (1/len(States)) * Emission[(k,xs[0])] for k in States])
         for x in xs[1:]:
             s.append([product_weight(k,x) for k in States])
-        return s 
+        return s
     return sum(calculateproduct_weights()[-1])
 
 
@@ -129,30 +131,30 @@ def ConstructProfileHMM(theta,Alphabet,Alignment,sigma=0):
     #
     #   Used to count alphabetical characters in specified column of alignment
     #
-    #   Parameters: 
+    #   Parameters:
     #       m     Number of sequences
     #       j     The column to be counted
     #       K     Number of symbols in Alphabet
     #
     #  Returns:
     #       Number of symbols from alphabet in column i
-    
+
     def CountChars(m,j,K):
         Counts = [0]*K
         for i in range(m):
             if Alignment[i][j] in Alphabet:
                 Counts[Alphabet.index(Alignment[i][j])]+=1
-        return Counts 
+        return Counts
 
     def create_states(Conserved):
         Product        = [[] for column in Conserved if column]
         Product.append([])
         return Product
-        
+
     def create_state_indices(Conserved):
         def get_symbol(State):
             return (State,index)
-        
+
         index   = 0
         Product = [get_symbol('S'),get_symbol('I')]
         for column in Conserved:
@@ -164,7 +166,7 @@ def ConstructProfileHMM(theta,Alphabet,Alignment,sigma=0):
         index += 1
         Product.append(get_symbol('E'))
         return Product
-    
+
     def create_state_counts(StateIndices):
         Product  = {}
         for s,i in StateIndices:
@@ -184,7 +186,7 @@ def ConstructProfileHMM(theta,Alphabet,Alignment,sigma=0):
                         if (t=='I' and j==i) or (t in ['M','D'] and j==i+1):
                             Product[(s,i),(t,j)] = 0
                         if t=='E' and j==i+1:
-                            Product[(s,i),(t,j)] = 0                            
+                            Product[(s,i),(t,j)] = 0
                 elif s in ['M','D']:
                     if (t=='I' and j==i) or (t in ['M','D'] and j==i+1):
                         Product[(s,i),(t,j)] = 0
@@ -201,60 +203,60 @@ def ConstructProfileHMM(theta,Alphabet,Alignment,sigma=0):
             for ch in Alphabet:
                 Product[(index,ch)] = 0
         return Product
-    
+
     def create_state_frequencies(StateCounts,StateIndices):
         Totals  = {i:0 for i in StateIndices}
-    
+
         for key,count in StateCounts.items():
             ((s,i),_) = key
             Totals[(s,i)] += count
-            
+
         Product = {}
         for key,count in StateCounts.items():
             ((s,i),_) = key
-            Product[key] = count/Totals[(s,i)] if Totals[(s,i)]>0 else 0        
+            Product[key] = count/Totals[(s,i)] if Totals[(s,i)]>0 else 0
         return Product
-    
+
     def create_emission_frequencies(EmissionCounts, StateIndices):
         Totals  = {i:0 for i in StateIndices}
         for key,count in EmissionCounts.items():
             ((s,i),_) = key
-            Totals[(s,i)] += count        
+            Totals[(s,i)] += count
         Product = {}
         for key,count in EmissionCounts.items():
             ((s,i),_) = key
-            Product[key] = count/Totals[(s,i)] if Totals[(s,i)]>0 else 0 
- 
-        return Product   
-    
+            Product[key] = count/Totals[(s,i)] if Totals[(s,i)]>0 else 0
+
+        return Product
+
     #   Useful constants - lengths of arrays
-    
+
     K              = len(Alphabet)      # Number of symbols in alphabet
     m              = len(Alignment)     # Number of strings in alignment
-    n              = len(Alignment[0])  # Number of symbols in each alignment  
+    n              = len(Alignment[0])  # Number of symbols in each alignment
     for Sequence in Alignment[1:]:      # All sequences should be the same length
         assert(n == len(Sequence))
-        
+
     #   construct profile - Number of symbols from alphabet in each column
-    
+
     Counts         = [CountChars(m,j,K) for j in range(n)]
-        
+
     #   Indicate whether or not symbols in column are over threshold
     #   If theta is maximum proportion of deleted symbols, 1-theta is
     #   maximum number of conserved.
-    
+
     Conserved      = [sum(Count) > (1-theta)*K for Count in Counts]
-    
+
     column_count   = sum(1 for column in Conserved if column)
-    
+
     Merges         = create_states(Conserved)
     Inserts        = create_states(Conserved)
     Deletes        = create_states(Conserved)
     StateIndices   = create_state_indices(Conserved)
     StateCounts    = create_state_counts(StateIndices)
     EmissionCounts = create_emission_counts(StateIndices,Alphabet)
-    
-    Runs        = []           
+
+    Runs        = []
     for Sequence in Alignment:
         previous =  'S'
         States   = [previous]
@@ -282,7 +284,7 @@ def ConstructProfileHMM(theta,Alphabet,Alignment,sigma=0):
                     pass
                 else:
                     raise RosalindException(f'Invalid {ch}')
-        States.append('E') 
+        States.append('E')
         Runs.append(States)
         print (f'Counting {Sequence} {"".join(States)}')
         index     = 0
@@ -299,13 +301,13 @@ def ConstructProfileHMM(theta,Alphabet,Alignment,sigma=0):
                     EmissionCounts[(state,index),Sequence[seq_index]] += 1
                     seq_index += 1
             previous = (state, index)
-            
-    return (StateIndices, 
+
+    return (StateIndices,
             create_state_frequencies(StateCounts, StateIndices),
             create_emission_frequencies(EmissionCounts, StateIndices))
 
 
-        
+
 # float2str
 #
 # Format a floatinmg point number for display
@@ -319,7 +321,7 @@ def float2str(x,precision=2,p0=0,p1=1):
     if x==0:
         format_str = f'{{:.{p0}f}}'
     if x==1:
-        format_str = f'{{:.{p1}f}}'    
+        format_str = f'{{:.{p1}f}}'
     format3= format_str.format(x)
     while len(format3)>3 and format3[-1]=='0':
         format3 = format3[:-1]
@@ -331,23 +333,23 @@ def format_state(s):
         return code
     else:
         return f'{code}{index}'
-    
+
 # formatEmission
 
-def formatEmission(Emission,States,Alphabet,precision=2):  
+def formatEmission(Emission,States,Alphabet,precision=2):
     yield '\t'.join(Alphabet)
     for state in States:
-        row = []    
+        row = []
         for symbol in Alphabet:
-            probability = Emission[(state,symbol)] if (state,symbol) in Emission else 0  
+            probability = Emission[(state,symbol)] if (state,symbol) in Emission else 0
             row.append(float2str(probability,precision))
-        yield format_state(state) + '\t' + '\t'.join(row)            
- 
+        yield format_state(state) + '\t' + '\t'.join(row)
+
 
 # formatTransition
 
 
-    
+
 def formatTransition(Transition,States,precision=2):
     yield  '\t'.join(format_state(state) for state in States)
     for state1 in States:
@@ -357,7 +359,7 @@ def formatTransition(Transition,States,precision=2):
             row.append(float2str(probability,precision))
         yield format_state(state1) + '\t' + '\t'.join(row)
 
-#  BA10H 	Estimate the Parameters of an HMM 
+#  BA10H 	Estimate the Parameters of an HMM
 
 def EstimateParameters(s,Alphabet,path,States):
     def create_Transitions():
@@ -371,7 +373,7 @@ def EstimateParameters(s,Alphabet,path,States):
                     Transitions[i,j]/= Sums[i]
                 else:
                     Transitions[i,j] = 1/len(States)
-                    
+
         return Transitions
     def create_Emissions():
         Emissions   = {(ch,state): 0 for state in States for ch in Alphabet}
