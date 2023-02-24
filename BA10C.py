@@ -28,14 +28,7 @@ if __name__=='__main__':
 
     # print ( Viterbi(xs,alphabet,States,Transition,Emission))
     # print ()
-    # Transition = {
-        # ('A','A') : 0.641, ('A','B') :   0.359,
-        # ('B','A') : 0.729, ('B','B') :   0.271,
-    # }
-    # Emission = {
-        # ('A','x') : 0.117, ('A','y') :   0.691, ('A','z') : 0.192,
-        # ('B','x') : 0.097, ('B','y') :   0.42,  ('B','z') : 0.483,
-    # }
+
     Transition = np.array([
         [ 0.641,    0.359],
         [ 0.729,   0.271]])
@@ -45,8 +38,6 @@ if __name__=='__main__':
         [0.097,  0.42,  0.483]])
 
     print (Viterbi('xyxzzxyxyy','xyz','AB',Transition,Emission))
-#AAAAAAAAAAAAAABBBBBBBBBBBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABBBBBBBBBBBAAAAAAAAAAAAAAAAAAAAABBBBBBBBBBAAA
-#AAAAAAAAAAAAAABBBBBBBBBBBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABBBBBBBBBBBAAAAAAAAAAAAAAAAAAAAABBBBBBBBBBAAAA
 
     Transition1 = np.array([
         [ 0.634,   0.366],
@@ -58,11 +49,3 @@ if __name__=='__main__':
 
     print (Viterbi('zxxxxyzzxyxyxyzxzzxzzzyzzxxxzxxyyyzxyxzyxyxyzyyyyzzyyyyzzxzxzyzzzzyxzxxxyxxxxyyzyyzyyyxzzzzyzxyzzyyy',
                    'xyz','AB',Transition1,Emission1))
-    # AAAAAAAAAAAAAABBBBBBBBBBBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABBBBBBBBBBBAAAAAAAAAAAAAAAAAAAAABBBBBBBBBBAAA
-    # AAAAAAAAAAAAAABBBBBBBBBBBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABBBBBBBBBBBAAAAAAAAAAAAAAAAAAAAABBBBBBBBBBAAA
-
-
-
-
-
-

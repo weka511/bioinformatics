@@ -95,15 +95,16 @@ def Viterbi(xs,alphabet,States,Transition,Emission):
 
         '''
         def product_weight(k,xs,i):
-            return max([s[i-1][j] * Transition[(j,k)] * Emission[(k,xs[i])] for j in range(len(States))])
-            # return max([s[i-1][l] * Transition[(States[l],k)] * Emission[(k,xs[i])] for l in range(len(States))])
+            return np.multiply(s[i-1,:],Transition[:,k]* Emission[k,xs[i]]).max()
+
         x_indices = get_indices(xs,alphabet)
 
         s = np.zeros((len(x_indices),len(States)))
 
-        s[0,:] = np.array([s_source * (1/len(States)) * Emission[k,x_indices[0]] for k in range(len(States))])
+        s[0,:] = s_source * (1/len(States)) * Emission[:,x_indices[0]]
         for i in range(1,len(x_indices)):
             s[i,:] = np.array([product_weight(k,x_indices,i) for k in range(len(States))])
+
         return s
 
     def find_most_likely_path(s):
