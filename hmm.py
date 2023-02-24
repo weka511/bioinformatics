@@ -21,6 +21,16 @@
 import numpy as np
 
 def get_indices(S,Alphabet='AB'):
+    '''
+    Used to convert a string into integers representing the position of each charcter in the alphabet.
+
+    Parameters:
+       S         String to be converrted
+       Alphabet
+
+    Returns:
+       List of indices
+    '''
     IndexTable = {}
     for i in range(len(Alphabet)):
         IndexTable[Alphabet[i]]=i
@@ -36,12 +46,12 @@ def ProbabilityHiddenPath(path,States,Transition):
 
     Return: The probability of this path. You may assume that initial probabilities are equal.
     '''
-    def logP_Transition(i):
+    def logP_Transition(i,path_indices):
         return logTransition[(path_indices[i-1],path_indices[i])]
     path_indices  = get_indices(path)
     logTransition = np.log(Transition)
     _,n           = logTransition.shape
-    return np.exp(sum([logP_Transition(i) for i in range(1,len(path_indices))]))/n
+    return np.exp(sum([logP_Transition(i,path_indices) for i in range(1,len(path_indices))]))/n
 
 
 
@@ -62,49 +72,58 @@ def ProbabilityOutcomeGivenHiddenPath(string,alphabet,path,states,Emission):
                                                        get_indices(string,Alphabet=alphabet))]))
 
 
-# BA10C Implement the Viterbi Algorithm
 
-# Viterbi
-#
-# Input: A string x, followed by the alphabet from which x was constructed,
-#        followed by the states States, transition matrix Transition,
-#        and emission matrix Emission of an HMM.
-#
-# Return: A path that maximizes the (unconditional) probability Pr(x, p) over all possible paths p
 
 def Viterbi(xs,alphabet,States,Transition,Emission):
+    '''
+    Viterbi
 
-    # calculateproduct_weights
-    #
-    # Calculate array of weights by position in string and state
+    Solve:    BA10C Implement the Viterbi Algorithm
+
+    Input: A string x, followed by the alphabet from which x was constructed,
+        followed by the states States, transition matrix Transition,
+        and emission matrix Emission of an HMM.
+
+    Return: A path that maximizes the (unconditional) probability Pr(x, p) over all possible paths p
+    '''
 
     def calculateproduct_weights(s_source = 1):
-        def product_weight(k,x):
-            return max([s[-1][l] * Transition[(States[l],k)] * Emission[(k,x)] for l in range(len(States))])
+        '''
+        calculateproduct_weights
 
-        s = []  # first index is position, 2nd state
+        Calculate array of weights by position in string and state
 
-        s.append([s_source * (1/len(States)) * Emission[(k,xs[0])] for k in States])
-        for x in xs[1:]:
-            s.append([product_weight(k,x) for k in States])
+        '''
+        def product_weight(k,xs,i):
+            return max([s[i-1][j] * Transition[(j,k)] * Emission[(k,xs[i])] for j in range(len(States))])
+            # return max([s[i-1][l] * Transition[(States[l],k)] * Emission[(k,xs[i])] for l in range(len(States))])
+        x_indices = get_indices(xs,alphabet)
+
+        s = np.zeros((len(x_indices),len(States)))
+
+        s[0,:] = np.array([s_source * (1/len(States)) * Emission[k,x_indices[0]] for k in range(len(States))])
+        for i in range(1,len(x_indices)):
+            s[i,:] = np.array([product_weight(k,x_indices,i) for k in range(len(States))])
         return s
 
-    # backtrack
-    #
-    # Find most likely path through state space by backtracking
+    def find_most_likely_path(s):
+        '''
+        backtrack
 
-    def backtrack(s):
-        n     = len(s) - 1
-        state = np.argmax(s[n])
+        Find most likely path through state space by backtracking
+
+        '''
+        m,_    = s.shape
+        m     -= 1
+        state = np.argmax(s[m])
         path  = [States[state]]
-        while True:
-            ps = [s[n-1][l] * Transition[(States[l],States[state])]  for l in range(len(States))]
+        for i in range(m-1,-1,-1):
+            ps    = [s[i,j] * Transition[j,state]  for j in range(len(States))]
             state = np.argmax(ps)
             path.append(States[state])
-            n-=1
-            if n<=0: return path[::-1]
+        return path[::-1]
 
-    return ''.join(backtrack(calculateproduct_weights()))
+    return ''.join(find_most_likely_path(calculateproduct_weights()))
 
 #  BA10D 	Compute the Probability of a String Emitted by an HMM
 #
@@ -129,6 +148,20 @@ def Likelihood(xs,Alphabet,States,Transition,Emission):
     return sum(calculateproduct_weights()[-1])
 
 
+def ConstructProfileHMM(theta,Alphabet,Alignment,sigma=0):
+    '''
+    ConstructProfileHMM
+
+    BA10E Construct a Profile HMM
+
+    Parameters:
+        theta      Threshold. This isn't the same as the theta in the textbook
+                   See David Eccles and fanta's comments - http://rosalind.info/problems/ba10e/questions/
+        Alphabet
+        Alignment
+   '''
+    pass
+
 # ConstructProfileHMM
 #
 # ConstructProfileHMM
@@ -139,7 +172,7 @@ def Likelihood(xs,Alphabet,States,Transition,Emission):
 #    Alphabet
 #    Alignment
 
-def ConstructProfileHMM(theta,Alphabet,Alignment,sigma=0):
+def ConstructProfileHMM666(theta,Alphabet,Alignment,sigma=0):
     #   CountChars
     #
     #   Used to count alphabetical characters in specified column of alignment
