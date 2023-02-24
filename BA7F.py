@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 # Copyright (C) 2017-2020 Greenweaves Software Limited
 #
 # This is free software: you can redistribute it and/or modify
@@ -13,7 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>
 
-# BA7F Implement SmallParsimony 
+# BA7F Implement SmallParsimony
 
 import argparse
 import os
@@ -26,7 +28,7 @@ from   phylogeny import SmallParsimony
 
 def print_assignments(assignments):
     assignments.nodes.sort()
-  
+
     for node in assignments.nodes:
         if node in assignments.edges:
             for edge in assignments.edges[node]:
@@ -34,7 +36,7 @@ def print_assignments(assignments):
                 if node in assignments.labels and end in assignments.labels:
                     print ('{0}->{1}:{2}'.format(assignments.labels[node],
                                                  assignments.labels[end],
-                                                 hamm(assignments.labels[node],assignments.labels[end])))    
+                                                 hamm(assignments.labels[node],assignments.labels[end])))
 
 if __name__=='__main__':
     start = time.time()
@@ -56,23 +58,23 @@ if __name__=='__main__':
         score,assignments=SmallParsimony(T)
         print (score)
         print_assignments(assignments)
-    
+
 
     if args.rosalind:
         Input  = read_strings(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt')
-                  
-        T = LabelledTree.parse(int(Input[0]),Input[1],bidirectional=False)            
-        
+
+        T = LabelledTree.parse(int(Input[0]),Input[1],bidirectional=False)
+
         score,assignments=SmallParsimony(T)
         print (score)
-        print_assignments(assignments) 
+        print_assignments(assignments)
         Result = None
         print (Result)
         with open(f'{os.path.basename(__file__).split(".")[0]}.txt','w') as f:
             for line in Result:
                 f.write(f'{line}\n')
-                
+
     elapsed = time.time() - start
     minutes = int(elapsed/60)
     seconds = elapsed - 60*minutes
-    print (f'Elapsed Time {minutes} m {seconds:.2f} s') 
+    print (f'Elapsed Time {minutes} m {seconds:.2f} s')

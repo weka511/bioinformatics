@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 # Copyright (C) 2017 Greenweaves Software Pty Ltd
 
 # This is free software: you can redistribute it and/or modify
@@ -17,7 +19,7 @@ import numpy as np
 
 def soft_kmeans(k,m,beta,points,N=1,centres=None):
     def distance(p1,p2):
-        return np.sqrt(sum((p1[i]-p2[i])**2 for i in range (m)))    
+        return np.sqrt(sum((p1[i]-p2[i])**2 for i in range (m)))
     @np.vectorize
     def hidden_matrix(i,j):
         return np.exp(-beta*distance(centres[i],points[j]))
@@ -38,7 +40,7 @@ def soft_kmeans(k,m,beta,points,N=1,centres=None):
     if centres==None:
         centres=points[:k]
     for i in range(N):
-        centres=step(centres) 
+        centres=step(centres)
     return centres
 
 if __name__=='__main__':
@@ -46,8 +48,8 @@ if __name__=='__main__':
     k = -1
     beta = -1
     points=[]
- 
-    with open (r'C:\Users\Weka\Downloads\rosalind_ba8d.txt') as f:   
+
+    with open (r'C:\Users\Weka\Downloads\rosalind_ba8d.txt') as f:
     #with open('BA8D.txt') as f:
         for line in f:
             if k==-1:

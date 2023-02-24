@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 # Copyright (C) 2017-2021 Greenweaves Software Limited
 
 # This is free software: you can redistribute it and/or modify
@@ -16,13 +18,13 @@
 # BA7A Compute Distances Between Leaves
 
 from helpers import create_weighted_adjacency_list
-    
+
 # ComputeDistancesBetweenLeaves
 
-# Inputs:  n an integer n 
+# Inputs:  n an integer n
 #          T the adjacency list of a weighted tree with n leaves.
 #
-# Returns: An n by n symmetric matrix of distannces between leaves 
+# Returns: An n by n symmetric matrix of distannces between leaves
 
 def ComputeDistancesBetweenLeaves(n,T):
 
@@ -42,9 +44,9 @@ def ComputeDistancesBetweenLeaves(n,T):
         return d
 
     return [[D(i,j)for j in range(n)] for i in range(n) ]
-    
+
 if __name__=='__main__':
 
-    n,T = create_weighted_adjacency_list()           
+    n,T = create_weighted_adjacency_list()
     for ds in ComputeDistancesBetweenLeaves(n,T):
         print(' '.join(str(d) for d in ds))

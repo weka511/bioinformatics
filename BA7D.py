@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 # Copyright (C) 2017 Greenweaves Software Pty Ltd
 
 # This is free software: you can redistribute it and/or modify
@@ -15,7 +17,7 @@
 
 # BA7D Implement UPGMA
 
-from rosalind import Tree,read_matrix,DPrint 
+from rosalind import Tree,read_matrix,DPrint
 
 def UPGMA(D, n):
     def find_two_closest_clusters():
@@ -28,7 +30,7 @@ def UPGMA(D, n):
                     ii=i
                     jj=j
                     best_distance=D[i][j]
-        return (ii,jj,best_distance)    
+        return (ii,jj,best_distance)
     Clusters={}
     for i in range(n):
         Clusters[i]=[i]
@@ -42,12 +44,12 @@ def UPGMA(D, n):
             return sum([D[cl_i][cl_j] for cl_i in Clusters[i] for cl_j in Clusters[j]])/(len( Clusters[i])* len(Clusters[j])) \
                    if i in Clusters and j in Clusters \
                    else float('nan')
-  
+
         i,j,distance=find_two_closest_clusters()
         node=T.next_node()
 
         T.link(node,i)
-        T.link(node,j)        
+        T.link(node,j)
         Clusters[node]=Clusters[i]+Clusters[j]
         Age[node]=D[i][j]/2
         del Clusters[i]
@@ -60,11 +62,11 @@ def UPGMA(D, n):
 
     for node in T.nodes:
         T.edges[node]=[(e,abs(Age[node]-Age[e])) for e,W in T.edges[node]]
-        
+
     return T
 
 if __name__=='__main__':
-    params,D=read_matrix('c:/Users/Weka/Downloads/rosalind_ba7d(1).txt',conv=float) 
+    params,D=read_matrix('c:/Users/Weka/Downloads/rosalind_ba7d(1).txt',conv=float)
     UPGMA(D, params[0]).print()
 
 

@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 # Copyright (C) 2017 Greenweaves Software Pty Ltd
 
 # This is free software: you can redistribute it and/or modify
@@ -17,12 +19,12 @@
 
 import random,math
 from rosalind import distance
- 
+
 def SquaredErrorDistortion(centres,data,k,m):
-     
+
    def distance_to_nearest(pt):
       return min([distance(pt,c) for c in centres])
-   
+
    return sum([distance_to_nearest(pt) for pt in data])/len(data)
 
 
@@ -31,7 +33,7 @@ if __name__=='__main__':
    k = -1
    points=[]
 
-   with open (r'C:\Users\Weka\Downloads\rosalind_ba8b(1).txt') as f:   
+   with open (r'C:\Users\Weka\Downloads\rosalind_ba8b(1).txt') as f:
       for line in f:
          if k==-1:
                values=line.strip().split()

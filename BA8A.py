@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 # Copyright (C) 2017 Greenweaves Software Pty Ltd
 
 # This is free software: you can redistribute it and/or modify
@@ -29,7 +31,7 @@ def FarthestFirstTraversal(data,k,m):
                 best_point = point
         return best_point
     centres = [data[0]]
-   
+
     while len(centres)<k:
         centres.append(furthest_point())
     return centres
@@ -38,9 +40,9 @@ if __name__=='__main__':
     m = -1
     k = -1
     points=[]
- 
-    with open (r'C:\Users\Weka\Downloads\rosalind_ba8a(1).txt') as f:   
-#    with open (r'ba8a.txt') as f:   
+
+    with open (r'C:\Users\Weka\Downloads\rosalind_ba8a(1).txt') as f:
+#    with open (r'ba8a.txt') as f:
         for line in f:
             if k==-1:
                 values=line.strip().split()

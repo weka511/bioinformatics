@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 # Copyright (C) 2017-2019 Greenweaves Software Limited
 
 # This is free software: you can redistribute it and/or modify
@@ -30,5 +32,5 @@ def ComputeLimbLength(n,j,D):
 
 if __name__=='__main__':
     from helpers import read_matrix
-    params,D=read_matrix(len_params=2)  
+    params,D=read_matrix(len_params=2)
     print (ComputeLimbLength(params[0],params[1],D))

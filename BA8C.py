@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 # Copyright (C) 2017 Greenweaves Software Pty Ltd
 
 # This is free software: you can redistribute it and/or modify
@@ -38,7 +40,7 @@ def step(k,m,data,centres):
                 index=i
                 best=d1
         return index
-    
+
     def centroid(i,indices):
         #print ('centroid', i, indices)
         count=0
@@ -49,17 +51,17 @@ def step(k,m,data,centres):
                 for l in range(m):
                     point[l]+=data[j][l]
         return [p/max(count,1) for p in point]
-    
+
     indices = [nearest(p) for p in data]
-    
+
     return [centroid(i,indices) for i in range(k)]
 
 if __name__=='__main__':
     m = -1
     k = -1
     points=[]
- 
-    with open (r'C:\Users\Weka\Downloads\rosalind_ba8c.txt') as f:   
+
+    with open (r'C:\Users\Weka\Downloads\rosalind_ba8c.txt') as f:
     #with open('BA8C.txt') as f:
         for line in f:
             if k==-1:

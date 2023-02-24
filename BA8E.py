@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 # Copyright (C) 2017 Greenweaves Software Pty Ltd
 
 # This is free software: you can redistribute it and/or modify
@@ -28,17 +30,17 @@ def format(T):
         result=result+expand(ll)
     result.sort()
     return result
-  
+
   return [expand(links) for key,links in T.items() if len(links)>0]
 
-  
+
 def HierarchicalClustering(D, n):
   def create_graph():
     T = {}
     for i in range(n):
       T[i]=[]
     return T
- 
+
   def find_two_closest_clusters():
     ii=-1
     jj=-1
@@ -50,10 +52,10 @@ def HierarchicalClustering(D, n):
           jj=j
           best_distance=D[i][j]
     return (ii,jj,best_distance)
-  
+
   NClusters=len(D)
   T= create_graph()
-  
+
   for k in range(n-1):
     def d(i,j,k):
       return (D[i][k]+D[j][k])/2
@@ -66,16 +68,15 @@ def HierarchicalClustering(D, n):
       D[k].append(row[k])
     D.append(row)
     D[i]=[float('inf')]*len(D)
-    D[j]=[float('inf')]*len(D) 
+    D[j]=[float('inf')]*len(D)
     for ds in D:
       ds[i]=float('inf')
       ds[j]=float('inf')
   return (format(T))
-  
+
 if __name__=='__main__':
- 
-  params,D=read_matrix('c:/Users/Weka/Downloads/rosalind_ba8e(4).txt',conv=float) 
+
+  params,D=read_matrix('c:/Users/Weka/Downloads/rosalind_ba8e(4).txt',conv=float)
 
   for e in HierarchicalClustering(D, params[0]):
     write_list(e)
- 

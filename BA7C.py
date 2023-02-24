@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 # Copyright (C) 2017-2019 Greenweaves Software Limited
 
 # This is free software: you can redistribute it and/or modify
@@ -23,7 +25,7 @@ from rosalind import Tree
 #
 # Inputs: n and a tab-delimited n x n additive matrix.
 #
-# Return: A weighted adjacency list for the simple tree fitting this matrix.   
+# Return: A weighted adjacency list for the simple tree fitting this matrix.
 
 def AdditivePhylogeny(D,n,N=-1):
     # find_ikn
@@ -34,7 +36,7 @@ def AdditivePhylogeny(D,n,N=-1):
             for k in range(n):
                 if DD[i][k]==DD[i][n-1]+DD[n-1][k] and i!=k:
                     return(i,k,n-1,DD[i][n-1])
-    
+
     def get_Position_v(traversal):
         d=0
         for l,w in traversal:
@@ -43,35 +45,35 @@ def AdditivePhylogeny(D,n,N=-1):
             if d==x: return (True,l,l,d0,d)
             if d>x: return (False,l_previous,l,d0,d)
             l_previous=l
-            
+
         return (False, l_previous, l, d0,d)
-        
+
     if N==-1:
         N=n
-        
+
     if n==2:
         T = Tree(N)
         T.link(0,1,D[0][1])
         return T
     else:
         limbLength = ComputeLimbLength(n,n-1,D)
-        
+
         D_bald     = [d_row[:] for d_row in D]
-        for j in range(n-1):   
+        for j in range(n-1):
             D_bald[n-1][j] -= limbLength
-            D_bald[j][n-1] = D_bald[n-1][j]  
-         
+            D_bald[j][n-1] = D_bald[n-1][j]
+
         i,k,node,x        = find_ikn(D_bald)  #x=D_bald[i][n-1]
-       
+
         D_Trimmed         = [D_bald[l][:-1] for l in range(n-1)]
-        
+
         T                 = AdditivePhylogeny(D_Trimmed,n-1,N)
-        # v= the (potentially new) node in T at distance x from i on the path between i and 
+        # v= the (potentially new) node in T at distance x from i on the path between i and
         found_k,traversal = T.traverse(i,k)
         path,weights      = zip(*traversal)
 
         found,l0,l1,d,d0=get_Position_v(traversal)
-         
+
         if found:
             v=l0  #Untested!
             T.link(node,v,limbLength)
@@ -82,11 +84,11 @@ def AdditivePhylogeny(D,n,N=-1):
             T.unlink(l0,l1)
             T.link(v,l0,x-d)
             T.link(v,l1,d0-x)
-        
+
         T.link(node,v,limbLength) # add leaf n back to T by creating a limb (v, n) of length limbLength
-        
+
         return T
- 
+
 
 
 if __name__=='__main__':
@@ -96,7 +98,6 @@ if __name__=='__main__':
        [21,  12,  0,   13],
        [22,  13,  13,  0]]
     AdditivePhylogeny(D,n).print_adjacency()
-    from helpers import read_matrix  
-    params,D=read_matrix(name='Additive_Phylogeny')           
+    from helpers import read_matrix
+    params,D=read_matrix(name='Additive_Phylogeny')
     AdditivePhylogeny(D,params[0]).print_adjacency()
-    
