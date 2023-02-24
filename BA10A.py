@@ -15,7 +15,9 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>
 
-# BA10A Compute the Probability of a Hidden Path
+'''
+BA10A Compute the Probability of a Hidden Path
+'''
 
 import numpy as np
 
@@ -23,14 +25,18 @@ from hmm import ProbabilityHiddenPath
 
 if __name__=='__main__':
     print (ProbabilityHiddenPath('AABBBAABABAAAABBBBAABBABABBBAABBAAAABABAABBABABBAB',
+                                 'AB',
                                  np.array([[ 0.194,   0.806],[ 0.273,   0.727]])))
 
 
     print (ProbabilityHiddenPath('BBABBBABBAABABABBBAABBBBAAABABABAAAABBBBBAABBABABB',
+                                 'AB',
                                  np.array([[ 0.863,   0.137],[0.511,   0.489]])))
 
     print (ProbabilityHiddenPath('BBABBAAABBAABBBBABABBBBAAABBBBBBAABAABAAABABAABBBA',
+                                 'AB',
                                  np.array([[ 0.497,	0.503],[0.263,	0.737]])))
 
     print (ProbabilityHiddenPath('ABBBAABBAABABBABBAABBBABABABAABAABBBBAAAAAAABABAAB',
+                                 'AB',
                                  np.array([[0.849,	0.151],[0.43,	0.57]])))

@@ -12,42 +12,55 @@
 #
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>
-#
-#    Hidden Markov Models
 
-# from math  import exp,  log
+'''
+   Hidden Markov Models
+'''
+
 
 import numpy as np
 
+def get_indices(S,Alphabet='AB'):
+    IndexTable = {}
+    for i in range(len(Alphabet)):
+        IndexTable[Alphabet[i]]=i
+    return [IndexTable[s] for s in S]
 
-# BA10A Compute the Probability of a Hidden Path
+def ProbabilityHiddenPath(path,States,Transition):
+    '''
+    ProbabilityHiddenPath
 
-# ProbabilityHiddenPath
-#
-# Given: A hidden path followed by the states States and transition matrix Transition of an HMM.
-#
-# Return: The probability of this path. You may assume that initial probabilities are equal.
+    Solves: BA10A Compute the Probability of a Hidden Path
 
-def ProbabilityHiddenPath(path,Transition):
-    path_indices  = [ord(c)-ord('A') for c in path]
+    Given: A hidden path followed by the states States and transition matrix Transition of an HMM.
+
+    Return: The probability of this path. You may assume that initial probabilities are equal.
+    '''
+    def logP_Transition(i):
+        return logTransition[(path_indices[i-1],path_indices[i])]
+    path_indices  = get_indices(path)
     logTransition = np.log(Transition)
     _,n           = logTransition.shape
-    return np.exp(-np.log(n) + sum([ logTransition[(path_indices[i-1],path_indices[i])] for i in range(1,len(path_indices)) ]))
+    return np.exp(sum([logP_Transition(i) for i in range(1,len(path_indices))]))/n
 
 
-# BA10B Compute the Probability of an Outcome Given a Hidden Path
 
-# ProbabilityOutcomeGivenHiddenPath
 
-# Given: A string x, followed by the alphabet from which x was constructed, followed by a hidden path, followed by the states  and emission matrix Emission of an HMM.
+def ProbabilityOutcomeGivenHiddenPath(string,alphabet,path,states,Emission):
+    '''
+    ProbabilityOutcomeGivenHiddenPath
 
-# Return: The conditional probability  that string x will be emitted by the HMM given the hidden path
+    Solves: BA10B Compute the Probability of an Outcome Given a Hidden Path
 
-def ProbabilityOutcomeGivenHiddenPath(string,path,Emission):
-    result = 1
-    for i in range(0,len(path)):
-        result *= Emission[(path[i],string[i])]
-    return result
+    Given: A string x, followed by the alphabet from which x was constructed, followed by a hidden path, followed by the states  and emission matrix Emission of an HMM.
+
+    Return: The conditional probability  that string x will be emitted by the HMM given the hidden path
+    '''
+
+    logEmission = np.log(Emission)
+    return np.exp(sum([logEmission[a,b] for a,b in zip(get_indices(path,Alphabet=states),
+                                                       get_indices(string,Alphabet=alphabet))]))
+
 
 # BA10C Implement the Viterbi Algorithm
 
