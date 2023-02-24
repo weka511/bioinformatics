@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 # Copyright (C) 2019-2021 Greenweaves Software Limited
 
 # This is free software: you can redistribute it and/or modify
@@ -13,7 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>
 
-# BA6D Find a Shortest Transformation of One Genome into Another by 2-Breaks 
+# BA6D Find a Shortest Transformation of One Genome into Another by 2-Breaks
 
 import argparse
 import os
@@ -39,7 +41,7 @@ def FindShortestTransformation(s,t,N=25,M=10):
                     i1,j1 = Configuration[l]
                     result.append((i0,j0,i1,j1))
           return result
-     
+
      def FindShortestTransformationCycles(s,t):
           assert sorted(s)== sorted(t)
           ColouredS     = ColouredEdges(s)
@@ -61,7 +63,7 @@ def FindShortestTransformation(s,t,N=25,M=10):
                Config,score,path = leader_board[0]
                if score==0:
                     return path,Blacks
-     
+
      return FindShortestTransformationCycles(ChromosomeToCycle(s),ChromosomeToCycle(t))
 
 def CycleToChromosome1(Blacks,Coloured):
@@ -89,7 +91,7 @@ if __name__=='__main__':
           #print (len(paths))
           for Coloured in paths:
                #print (Coloured)
-               print (CycleToChromosome1(Blacks,Coloured))          
+               print (CycleToChromosome1(Blacks,Coloured))
 
 
 
@@ -105,5 +107,4 @@ if __name__=='__main__':
      elapsed = time.time() - start
      minutes = int(elapsed/60)
      seconds = elapsed - 60*minutes
-     print (f'Elapsed Time {minutes} m {seconds:.2f} s')  
-  
+     print (f'Elapsed Time {minutes} m {seconds:.2f} s')

@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 #    Copyright (C) 2019-2021 Greenweaves Software Limited
 #
 #    This is free software: you can redistribute it and/or modify
@@ -35,9 +37,9 @@ def parse_permutations(text):
                 depth -= 1
                 i1     = i
                 Permutations.append([int(j) for j in text[i0+1:i1-1].split()])
-    
+
     return Permutations
-    
+
 if __name__=='__main__':
 
     start = time.time()
@@ -48,7 +50,7 @@ if __name__=='__main__':
     if args.sample:
         print (d2break([[+1, +2, +3, +4, +5, +6]],
                        [[+1, -3, -6, -5],[+2, -4]]))
-               
+
     if args.rosalind:
         Input  = read_strings(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt')
         Perms  = [parse_permutations(i) for i in Input]
@@ -57,5 +59,5 @@ if __name__=='__main__':
     elapsed = time.time() - start
     minutes = int(elapsed/60)
     seconds = elapsed - 60*minutes
-    print (f'Elapsed Time {minutes} m {seconds:.2f} s')  
-         
+    print (f'Elapsed Time {minutes} m {seconds:.2f} s')
+

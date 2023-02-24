@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 #    Copyright (C) 2019 Greenweaves Software Limited
 #
 #    This is free software: you can redistribute it and/or modify
@@ -22,13 +24,13 @@ def ba5j(s,t):
     return score,''.join(s1),''.join(t1)
 
 if __name__=='__main__':
-    from helpers import create_strings    
+    from helpers import create_strings
 
     strings  = create_strings('ba5j',ext=7)
     score,s,t=ba5j(strings[0],strings[1])
     print (score)
     print (s)
-    print (t)        
+    print (t)
     with open('ba5j.txt','w') as o:
         o.write('{0}\n'.format(score))
         o.write('{0}\n'.format(s))

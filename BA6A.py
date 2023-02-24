@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 #    Copyright (C) 2019-2021 Greenweaves Software Limited
 #
 #    This is free software: you can redistribute it and/or modify
@@ -43,8 +45,8 @@ if __name__=='__main__':
             for permutation in GreedySorting(get_permutation(Input[0]),signed=True):
                 print (format(permutation))
                 f.write(f'{format(permutation)}\n')
-        
+
     elapsed = time.time() - start
     minutes = int(elapsed/60)
     seconds = elapsed - 60*minutes
-    print (f'Elapsed Time {minutes} m {seconds:.2f} s')  
+    print (f'Elapsed Time {minutes} m {seconds:.2f} s')

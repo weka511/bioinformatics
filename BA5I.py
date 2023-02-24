@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 #    Copyright (C) 2019 Greenweaves Software Limited
 #
 #    This is free software: you can redistribute it and/or modify
@@ -19,10 +21,9 @@ from align import create_distance_matrix,overlap_assignment
 
 if __name__=='__main__':
     from helpers import create_strings
-    
+
     strings  = create_strings('ba5i',ext=1)
-    d,s1,t1  = overlap_assignment(strings[0],strings[1])      
+    d,s1,t1  = overlap_assignment(strings[0],strings[1])
     print ('{0}'.format(d))
     print (s1)
-    print (t1)    
-    
+    print (t1)
