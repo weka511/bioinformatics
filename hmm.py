@@ -182,8 +182,6 @@ def ConstructProfileHMM(theta,Alphabet,Alignment,sigma=0):
         fractions = [get_count(i)/len(Alignment) for i in range(len(Alignment[0]))]
         return [fractions[i]<theta for i in range(len(Alignment[0]))]
 
-    # def create_seed_alignment(mask):
-        # return [get_reduced(s,mask) for s in Alignment]
 
     def get_state_name(i):
         if i   == 0: return ('S',None)
@@ -280,7 +278,6 @@ def ConstructProfileHMM(theta,Alphabet,Alignment,sigma=0):
         for key,chars in States.items():
             state,index = split_key(key)
             if state in ['M','I']:
-                # print (state,index,chars)
                 counts = {ch:0 for ch in Alphabet}
                 for ch in chars:
                     counts[ch] += 1
@@ -288,15 +285,12 @@ def ConstructProfileHMM(theta,Alphabet,Alignment,sigma=0):
                 state_index = get_state_index((state,index))
                 for j in range(n):
                     product[state_index,j] = fractions[Alphabet[j]]
-                    # print (state_index,j,product[state_index,j])
+
         verify_constraints(product)
         return product
 
     mask          = create_mask()
-    # SeedAlignment = create_seed_alignment(mask)
     Paths         = [create_path(s,mask) for s in Alignment]
-    # for p in Paths:
-        # print (p)
     m             = 3 * (sum([1 for m in mask if m]) + 1)
     n             = len(Alphabet)
     return create_transition(m,Paths), create_emission(m,n,Paths), [get_state_name(i) for i in range(m)]
@@ -624,7 +618,20 @@ if __name__=='__main__':
             self.assertEqual(12,m)
             self.assertEqual(m1,m)
             self.assertEqual(m2,m)
-
+            self.assertEqual(1, Transition[0,2])
+            self.assertEqual(0.875, Transition[2,5])
+            self.assertEqual(0.125, Transition[2,6])
+            self.assertAlmostEqual(0.857, Transition[5,8], places=3)
+            self.assertAlmostEqual(0.143, Transition[5,9],places=3)
+            self.assertEqual(1, Transition[6,8])
+            self.assertEqual(1, Transition[8,11])
+            self.assertEqual(1, Transition[9,11])
+            self.assertEqual(1, Emission[2,4])
+            self.assertAlmostEqual(0.857, Emission[5,1], places=3)
+            self.assertAlmostEqual(0.143, Emission[5,4], places=3)
+            self.assertAlmostEqual(0.143, Emission[8,0], places=3)
+            self.assertAlmostEqual( 0.714, Emission[8,3], places=3)
+            self.assertAlmostEqual(0.143, Emission[8,4], places=3)
 
         def test_ba10e3(self): #BA10E Construct a Profile HMM
             Transition, Emission,StateNames = ConstructProfileHMM(0.252,
