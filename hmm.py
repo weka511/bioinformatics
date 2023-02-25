@@ -516,13 +516,13 @@ def format_state(s):
 # formatEmission
 
 def formatEmission(Emission,States,Alphabet,precision=2):
+    m,n = Emission.shape
     yield '\t'.join(Alphabet)
-    for state in States:
+    for i in range(m):
         row = []
-        for symbol in Alphabet:
-            probability = Emission[(state,symbol)] if (state,symbol) in Emission else 0
-            row.append(float2str(probability,precision))
-        yield format_state(state) + '\t' + '\t'.join(row)
+        for j in range(n):
+            row.append(float2str(Emission[i,j],precision))
+        yield format_state(States[i]) + '\t' + '\t'.join(row)
 
 
 # formatTransition
@@ -530,13 +530,13 @@ def formatEmission(Emission,States,Alphabet,precision=2):
 
 
 def formatTransition(Transition,States,precision=2):
+    m,n = Transition.shape
     yield  '\t'.join(format_state(state) for state in States)
-    for state1 in States:
+    for i in range(m):
         row = []
-        for state2 in States:
-            probability = Transition[(state1,state2)] if (state1,state2) in Transition else 0
-            row.append(float2str(probability,precision))
-        yield format_state(state1) + '\t' + '\t'.join(row)
+        for j in range(n):
+            row.append(float2str(Transition[i,j],precision))
+        yield format_state(States[i]) + '\t' + '\t'.join(row)
 
 #  BA10H 	Estimate the Parameters of an HMM
 
