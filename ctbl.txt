@@ -1,0 +1,1 @@
+(dog,((elephant,mouse),robot),cat);
