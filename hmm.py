@@ -155,6 +155,8 @@ def Likelihood(xs,Alphabet,States,Transition,Emission):
 
     return sum(create_weights(get_indices(xs,Alphabet=Alphabet))[-1])
 
+def get_reduced(s,mask):
+    return [s[i] for i in range(len(s)) if mask[i]]
 
 def ConstructProfileHMM(theta,Alphabet,Alignment,sigma=0):
     '''
@@ -165,23 +167,139 @@ def ConstructProfileHMM(theta,Alphabet,Alignment,sigma=0):
     Parameters:
         theta      Threshold. This isn't the same as the theta in the textbook
                    See David Eccles and fanta's comments - http://rosalind.info/problems/ba10e/questions/
+                   Is this true?
         Alphabet
         Alignment
    '''
-    def create_seed_alignment():
-        def get_count(i):
-            return sum([c=='-' for s in Alignment for c in s[i]])
-        def get_reduced(s):
-            return [s[i] for i in range(len(s)) if fractions[i]<theta]
-        fractions = [get_count(i)/len(Alignment) for i in range(len(Alignment[0]))]
-        return [get_reduced(s) for s in Alignment]
 
-    SeedAlignment = create_seed_alignment()
-    m          = 3 * (len(SeedAlignment[0]) + 1)
-    n          = len(Alphabet)
-    Transition = np.zeros((m,m))
-    Emission   = np.zeros((m,n))
-    return Transition, Emission
+    def is_space(c):
+        return c=='-'
+
+    def create_mask():
+        def get_count(i):
+            return sum([is_space(c) for s in Alignment for c in s[i]])
+
+        fractions = [get_count(i)/len(Alignment) for i in range(len(Alignment[0]))]
+        return [fractions[i]<theta for i in range(len(Alignment[0]))]
+
+    # def create_seed_alignment(mask):
+        # return [get_reduced(s,mask) for s in Alignment]
+
+    def get_state_name(i):
+        if i   == 0: return ('S',None)
+        if i   == m-1: return ('E',None)
+        if i%3 == 0: return ('D', i//3)
+        if i%3 == 1: return ('I', i//3)
+        if i%3 == 2: return ('M', i//3+1)
+
+    def get_state_index(state):
+        function,i = state
+        if function == 'S': return 0
+        if function == 'E': return m-1
+        if function == 'D': return 3*i
+        if function == 'I': return 3*i+1
+        if function == 'M': return 3*i-1
+
+    def get_key(op,seq):
+        return f'{op}-{seq}'
+
+    def split_key(key):
+        parts =key.split('-')
+        if parts[0] in ['M','D','I']:
+            return parts[0],int(parts[1])
+        else:
+            return parts[0],parts[1]
+
+    def create_path(s,mask):
+        product = [('S',None,None)]
+        index   = 0
+        assert len(s)==len(mask)
+        for i in range(len(s)):
+            match mask[i],is_space(s[i]):
+                case (True,False):
+                    index += 1
+                    product.append(('M',index,s[i]))
+                case (True,True):
+                    index += 1
+                    product.append(('D',index,s[i]))
+                case (False,True):  # Nothing needs to happen skipping spaces
+                    pass
+                case (False,False):
+                    product.append(('I',index,s[i]))
+
+        product.append(('E',None,None))
+        return product
+
+    def verify_constraints(matrix):
+        m,_ = matrix.shape
+        for i in range(m):
+            row_total = matrix[i,:].sum()
+            assert row_total==0 or row_total==1,f'Row {i} total = {row_total}'
+
+    def create_transition(m,Paths):
+        def create_census():
+            States = {}
+            for path in Paths:
+                for (op1, seq1, _),(op2, seq2, _) in zip(path[:-1],path[1:]):
+                    if get_key(op1,seq1)  not in States:
+                        States[get_key(op1,seq1)] = []
+                    States[get_key(op1,seq1)].append((op2, seq2))
+            return States
+
+        product = np.zeros((m,m))
+        States  = create_census()
+        for key1,successors in States.items():
+            state1,index1 = split_key(key1)
+            counts      = {}
+            for succ,seq in successors:
+                if get_key(succ,seq) not in counts:
+                    counts[get_key(succ,seq)] = 0
+                counts[get_key(succ,seq)]   += 1
+            fractions    = {key:count/len(successors) for key,count in counts.items()}
+            state_index1 = get_state_index((state1,index1))
+            for key2,fraction in fractions.items():
+                state2,index2 = split_key(key2)
+                state_index2 = get_state_index((state2,index2))
+                product[state_index1,state_index2] = fraction
+
+        verify_constraints(product)
+        return product
+
+    def create_emission(m,n,Paths):
+        def create_census():
+            States = {}
+            for path in Paths:
+                for op, seq, ch in path:
+                    if get_key(op,seq)  not in States:
+                        States[get_key(op,seq)] = []
+                    States[get_key(op,seq)].append(ch)
+            return States
+
+        product = np.zeros((m,n))
+        States  = create_census()
+        for key,chars in States.items():
+            state,index = split_key(key)
+            if state in ['M','I']:
+                # print (state,index,chars)
+                counts = {ch:0 for ch in Alphabet}
+                for ch in chars:
+                    counts[ch] += 1
+                fractions = {ch:count/len(chars) for ch,count in counts.items()}
+                state_index = get_state_index((state,index))
+                for j in range(n):
+                    product[state_index,j] = fractions[Alphabet[j]]
+                    # print (state_index,j,product[state_index,j])
+        verify_constraints(product)
+        return product
+
+    mask          = create_mask()
+    # SeedAlignment = create_seed_alignment(mask)
+    Paths         = [create_path(s,mask) for s in Alignment]
+    # for p in Paths:
+        # print (p)
+    m             = 3 * (sum([1 for m in mask if m]) + 1)
+    n             = len(Alphabet)
+    return create_transition(m,Paths), create_emission(m,n,Paths), [get_state_name(i) for i in range(m)]
 
 # ConstructProfileHMM
 #
@@ -442,6 +560,7 @@ def EstimateParameters(s,Alphabet,path,States):
                     Transitions[i,j] = 1/len(States)
 
         return Transitions
+
     def create_Emissions():
         Emissions   = {(ch,state): 0 for state in States for ch in Alphabet}
         for i in range(n):
@@ -462,9 +581,43 @@ if __name__=='__main__':
     class Test_10_HMM(TestCase):
 
         def test_ba10e1(self): #BA10E Construct a Profile HMM
-            Transition, Emission = ConstructProfileHMM(0.289,
-                                                       'ABCDE',
-                                                       ['EBA', 'EBD', 'EB-', 'EED', 'EBD', 'EBE', 'E-D','EBD'])
+            Transition, Emission,StateNames = ConstructProfileHMM(0.35,
+                                                                  'ACDEF',
+                                                                  ['ACDEFACADF',
+                                                                   'AFDA---CCF',
+                                                                   'A--EFD-FDC',
+                                                                   'ACAEF--A-C',
+                                                                   'ADDEFAAADF'])
+            m1,m2 = Transition.shape
+            m,n   = Emission.shape
+            self.assertEqual(5,n)
+            self.assertEqual(27,m)
+            self.assertEqual(m1,m)
+            self.assertEqual(m2,m)
+            self.assertEqual(1, Transition[0,2])
+            self.assertEqual(0.8, Transition[2,5])
+            self.assertEqual(0.2, Transition[2,6])
+            self.assertEqual(1, Transition[5,8])
+            self.assertEqual(1, Transition[6,9])
+            self.assertEqual(1, Transition[8,11])
+            self.assertEqual(1, Transition[9,11])
+            self.assertEqual(0.8, Transition[11,14])
+            self.assertEqual(0.2, Transition[11,15])
+            self.assertEqual(0.75, Transition[14,16])
+            self.assertEqual(0.25, Transition[14,17])
+            self.assertEqual(1, Transition[15,17])
+            self.assertEqual(0.4, Transition[16,16])
+            self.assertEqual(0.6, Transition[16,17])
+            self.assertEqual(0.8, Transition[17,20])
+            self.assertEqual(0.2, Transition[17,21])
+            self.assertEqual(1, Transition[20,23])
+            self.assertEqual(1, Transition[21,23])
+            self.assertEqual(1, Transition[23,26])
+
+        def test_ba10e2(self): #BA10E Construct a Profile HMM
+            Transition, Emission,StateNames = ConstructProfileHMM(0.289,
+                                                                  'ABCDE',
+                                                                  ['EBA', 'EBD', 'EB-', 'EED', 'EBD', 'EBE', 'E-D','EBD'])
             m1,m2 = Transition.shape
             m,n   = Emission.shape
             self.assertEqual(5,n)
@@ -472,14 +625,15 @@ if __name__=='__main__':
             self.assertEqual(m1,m)
             self.assertEqual(m2,m)
 
-        def test_ba10e2(self): #BA10E Construct a Profile HMM
-            Transition, Emission = ConstructProfileHMM(0.252,
-                                                       'ABCDE',
-                                                       ['DCDABACED',
-                                                       'DCCA--CA-',
-                                                       'DCDAB-CA-',
-                                                        'BCDA---A-',
-                                                        'BC-ABE-AE'])
+
+        def test_ba10e3(self): #BA10E Construct a Profile HMM
+            Transition, Emission,StateNames = ConstructProfileHMM(0.252,
+                                                                  'ABCDE',
+                                                                  ['DCDABACED',
+                                                                   'DCCA--CA-',
+                                                                   'DCDAB-CA-',
+                                                                   'BCDA---A-',
+                                                                   'BC-ABE-AE'])
             m1,m2 = Transition.shape
             m,n   = Emission.shape
             self.assertEqual(5,n)
