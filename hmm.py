@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 #    Copyright (C) 2019-2023 Simon Crase
 #
 #    This is free software: you can redistribute it and/or modify
@@ -16,7 +18,7 @@
 '''
    Hidden Markov Models
 '''
-
+from unittest import TestCase, main
 
 import numpy as np
 
@@ -166,7 +168,20 @@ def ConstructProfileHMM(theta,Alphabet,Alignment,sigma=0):
         Alphabet
         Alignment
    '''
-    pass
+    def create_seed_alignment():
+        def get_count(i):
+            return sum([c=='-' for s in Alignment for c in s[i]])
+        def get_reduced(s):
+            return [s[i] for i in range(len(s)) if fractions[i]<theta]
+        fractions = [get_count(i)/len(Alignment) for i in range(len(Alignment[0]))]
+        return [get_reduced(s) for s in Alignment]
+
+    SeedAlignment = create_seed_alignment()
+    m          = 3 * (len(SeedAlignment[0]) + 1)
+    n          = len(Alphabet)
+    Transition = np.zeros((m,m))
+    Emission   = np.zeros((m,n))
+    return Transition, Emission
 
 # ConstructProfileHMM
 #
@@ -442,3 +457,34 @@ def EstimateParameters(s,Alphabet,path,States):
     n = len(path)
     assert n==len(s)
     return create_Transitions(),create_Emissions()
+
+if __name__=='__main__':
+    class Test_10_HMM(TestCase):
+
+        def test_ba10e1(self): #BA10E Construct a Profile HMM
+            Transition, Emission = ConstructProfileHMM(0.289,
+                                                       'ABCDE',
+                                                       ['EBA', 'EBD', 'EB-', 'EED', 'EBD', 'EBE', 'E-D','EBD'])
+            m1,m2 = Transition.shape
+            m,n   = Emission.shape
+            self.assertEqual(5,n)
+            self.assertEqual(12,m)
+            self.assertEqual(m1,m)
+            self.assertEqual(m2,m)
+
+        def test_ba10e2(self): #BA10E Construct a Profile HMM
+            Transition, Emission = ConstructProfileHMM(0.252,
+                                                       'ABCDE',
+                                                       ['DCDABACED',
+                                                       'DCCA--CA-',
+                                                       'DCDAB-CA-',
+                                                        'BCDA---A-',
+                                                        'BC-ABE-AE'])
+            m1,m2 = Transition.shape
+            m,n   = Emission.shape
+            self.assertEqual(5,n)
+            self.assertEqual(18,m)
+            self.assertEqual(m1,m)
+            self.assertEqual(m2,m)
+
+    main()
