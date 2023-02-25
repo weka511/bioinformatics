@@ -87,23 +87,23 @@ def Viterbi(xs,alphabet,States,Transition,Emission):
     Return: A path that maximizes the (unconditional) probability Pr(x, p) over all possible paths p
     '''
 
-    def calculateproduct_weights(s_source = 1):
+    def create_weights(s_source = 1):
         '''
         calculateproduct_weights
 
         Calculate array of weights by position in string and state
 
         '''
-        def product_weight(k,xs,i):
-            return np.multiply(s[i-1,:],Transition[:,k]* Emission[k,xs[i]]).max()
+        def get_weight(state,xs,i):
+            return np.multiply(s[i-1,:],Transition[:,state]* Emission[state,xs[i]]).max()
 
+        m         = len(xs)
+        n         = len(States)
         x_indices = get_indices(xs,alphabet)
-
-        s = np.zeros((len(x_indices),len(States)))
-
-        s[0,:] = s_source * (1/len(States)) * Emission[:,x_indices[0]]
+        s         = np.zeros((m,n))
+        s[0,:]    = s_source  * Emission[:,x_indices[0]] / n
         for i in range(1,len(x_indices)):
-            s[i,:] = np.array([product_weight(k,x_indices,i) for k in range(len(States))])
+            s[i,:] = np.array([get_weight(state,x_indices,i) for state in range(n)])
 
         return s
 
@@ -124,29 +124,34 @@ def Viterbi(xs,alphabet,States,Transition,Emission):
             path.append(States[state])
         return path[::-1]
 
-    return ''.join(find_most_likely_path(calculateproduct_weights()))
+    return ''.join(find_most_likely_path(create_weights()))
 
-#  BA10D 	Compute the Probability of a String Emitted by an HMM
-#
-# Likelihood
-#
-# Given: A string x, followed by the alphabet from which x was constructed, followed by the states,
-# transition matrix, and emission matrix  of an HMM
-#
-# Return: The probability Pr(x) that the HMM emits x.
+
 
 def Likelihood(xs,Alphabet,States,Transition,Emission):
-    def calculateproduct_weights(s_source = 1):
-        def product_weight(k,x):
-            return sum([s[-1][l] * Transition[(States[l],k)] * Emission[(k,x)] for l in range(len(States))])
+    '''
+    Likelihood
 
+      BA10D 	Compute the Probability of a String Emitted by an HMM
+
+      Given: A string x, followed by the alphabet from which x was constructed, followed by the states,
+            transition matrix, and emission matrix  of an HMM
+
+      Return: The probability Pr(x) that the HMM emits x.
+    '''
+    def create_weights(xs, s_source = 1):
+        def product_weight(k,x):
+            return sum([s[-1][j] * Transition[j,k] * Emission[k,x] for j in range(n)])
+
+        n = len(States)
         s = []  # first index is position, 2nd state
 
-        s.append([s_source * (1/len(States)) * Emission[(k,xs[0])] for k in States])
+        s.append([s_source * (1/len(States)) * Emission[k,xs[0]] for k in range(n)])
         for x in xs[1:]:
-            s.append([product_weight(k,x) for k in States])
+            s.append([product_weight(k,x) for k in range(n)])
         return s
-    return sum(calculateproduct_weights()[-1])
+
+    return sum(create_weights(get_indices(xs,Alphabet=Alphabet))[-1])
 
 
 def ConstructProfileHMM(theta,Alphabet,Alignment,sigma=0):

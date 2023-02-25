@@ -25,6 +25,7 @@ from re      import compile, match
 from sys     import argv
 
 from Bio     import SeqIO
+import numpy as np
 
 from reference_tables import integer_masses
 
@@ -679,30 +680,37 @@ def read_matrix(problem=basename(argv[0]).split('.')[0],
     return (params,D)
 
 def create_hmm(problem=basename(argv[0]).split('.')[0],
-               path=join(expanduser('~'),'Downloads'),
-               ext=None,
-               name=None):
+               path = join(expanduser('~'),'Downloads'),
+               ext  = None,
+               name = None):
+    '''
+    Create arguments for a Hidden Markov Model from strings read from a file
+    '''
     return create_hmm_from_strings(create_strings(problem=problem,path=path,ext=ext,name=name))
 
 def create_hmm_from_strings(strings):
     xs         = strings[0]
-    alphabet   = strings[2].split()
-    States     = strings[4].split()
-    Transition = {}
+    alphabet   = strings[2].replace(' ','')
+    States     = strings[4].replace(' ','')
+    n          = len(States)
+    m          = len(alphabet)
+    Transition = np.zeros((n,n))
     i          = 0
-    while i<len(States):
+    while i<n:
         items = strings[7+i].split()
         for j in range(1,len(items)):
-            Transition[(items[0],States[j-1])] = float(items[j])
+            Transition[i,j-1] = float(items[j])
         i+=1
     i+=9
 
-    Emission   = {}
+    Emission   = np.zeros((n,m))
+    k          = 0
     while i<len(strings):
         items = strings[i].split()
         for j in range(1,len(items)):
-            Emission[(items[0],alphabet[j-1])] = float(items[j])
+            Emission[k,j-1] = float(items[j])
         i+=1
+        k+=1
     return (xs,alphabet,States,Transition,Emission)
 
 # expand
