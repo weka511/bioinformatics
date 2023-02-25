@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 #   Copyright (C) 2020 Greenweaves Software Limited
 
 #   This program is free software: you can redistribute it and/or modify
@@ -13,7 +15,7 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-#  BA10H 	Estimate the Parameters of an HMM 
+#  BA10H 	Estimate the Parameters of an HMM
 
 import argparse
 import os
@@ -25,20 +27,20 @@ from   hmm     import float2str,EstimateParameters
 
 # formatEmission
 
-def formatEmission(Emission,States,Alphabet,precision=2):  
+def formatEmission(Emission,States,Alphabet,precision=2):
     yield '\t'+'\t'.join(Alphabet)
     for state in States:
-        row = []    
+        row = []
         for symbol in Alphabet:
-            probability = Emission[(symbol,state)]  
+            probability = Emission[(symbol,state)]
             row.append(float2str(probability,precision))
-        yield state + '\t' + '\t'.join(row)            
- 
+        yield state + '\t' + '\t'.join(row)
+
 
 # formatTransition
 
 
-    
+
 def formatTransition(Transition,States,precision=2):
     yield '\t'+ '\t'.join(state for state in States)
     for state1 in States:
@@ -65,7 +67,7 @@ if __name__=='__main__':
             print (row)
         for row in formatEmission(Emissions,['A', 'B', 'C'], ['x',  'y',   'z'],precision=args.precision):
             print (row)
-    
+
     if args.extra:
         Input,Expected             = read_strings(f'data/HMMParameterEstimation.txt',init=0)
         Transitions,Emissions = EstimateParameters(Input[0],Input[2].split(),Input[4],Input[6].split())
@@ -74,11 +76,11 @@ if __name__=='__main__':
         print ('--------')
         for row in formatEmission(Emissions,Input[6].split(), Input[2].split(),precision=args.precision):
             print (row)
-        
+
     if args.rosalind:
         Input  = read_strings(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt')
         Transitions,Emissions = EstimateParameters(Input[0],Input[2].split(),Input[4],Input[6].split())
-  
+
         with open(f'{os.path.basename(__file__).split(".")[0]}.txt','w') as f:
             for row in formatTransition(Transitions,Input[6].split(),precision=args.precision):
                 print (row)
@@ -88,8 +90,8 @@ if __name__=='__main__':
             for row in formatEmission(Emissions,Input[6].split(), Input[2].split(),precision=args.precision):
                 print (row)
                 f.write(f'{row}\n')
-                
+
     elapsed = time.time() - start
     minutes = int(elapsed/60)
     seconds = elapsed - 60*minutes
-    print (f'Elapsed Time {minutes} m {seconds:.2f} s')    
+    print (f'Elapsed Time {minutes} m {seconds:.2f} s')

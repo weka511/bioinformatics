@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 #   Copyright (C) 2020 Greenweaves Software Limited
 
 #   This program is free software: you can redistribute it and/or modify
@@ -13,7 +15,7 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-#  BA10J 	Solve the Soft Decoding Problem 
+#  BA10J 	Solve the Soft Decoding Problem
 
 import argparse
 import os
@@ -45,22 +47,22 @@ if __name__=='__main__':
                              ['A','B'],
                              {('A','A'):  0.911, ('A','B'):  0.089,
                               ('B','A'): 0.228, ('B','B'):  0.772 },
-                             {('A','x'):0.356,('A','y'):   0.191, ('A','z'):   0.453, 
+                             {('A','x'):0.356,('A','y'):   0.191, ('A','z'):   0.453,
                               ('B','x'):   0.04, ('B','y'):    0.467, ('B','z'):   0.493   }):
             print ('\t'.join(float2str(p,precision=args.precision) for p in Ps))
-        
-    
+
+
 
     if args.rosalind:
         Input  = read_strings(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt')
- 
+
         Result = None
         print (Result)
         with open(f'{os.path.basename(__file__).split(".")[0]}.txt','w') as f:
             for line in Result:
                 f.write(f'{line}\n')
-                
+
     elapsed = time.time() - start
     minutes = int(elapsed/60)
     seconds = elapsed - 60*minutes
-    print (f'Elapsed Time {minutes} m {seconds:.2f} s')    
+    print (f'Elapsed Time {minutes} m {seconds:.2f} s')
