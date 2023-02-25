@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 #  Copyright (C) 2020 Greenweaves Software Limited
 #
 #  This program is free software: you can redistribute it and/or modify
@@ -17,7 +19,7 @@
 
 import argparse
 from helpers import read_strings
-from snp import SuffixArray  
+from snp import SuffixArray
 import time
 from numpy import argmin
 
@@ -27,10 +29,10 @@ def FindShortestNonShared(s,t):
     print (m,n)
     r0,p0,l0 = SuffixArray(s,auxiliary=True,padLCP=True)
     for i in range(len(r0)):
-        print (f'{i:2d} {r0[i]:2d} {p0[i]:2d}  {l0[i]:2d} {s[r0[i]:]}')    
+        print (f'{i:2d} {r0[i]:2d} {p0[i]:2d}  {l0[i]:2d} {s[r0[i]:]}')
     r1,p1,l1 = SuffixArray(t,auxiliary=True,padLCP=True)
     for i in range(len(r1)):
-        print (f'{i:2d} {r1[i]:2d} {p1[i]:2d}  {l1[i]:2d} {t[r1q[i]:]}')       
+        print (f'{i:2d} {r1[i]:2d} {p1[i]:2d}  {l1[i]:2d} {t[r1q[i]:]}')
     #text = s + '$' + t + '#'
     #r,p,l = SuffixArray(text,auxiliary=True,padLCP=True)
     #Candidates  = []
@@ -47,7 +49,7 @@ def FindShortestNonShared(s,t):
     #locations = [Candidates[i] for i in range(len(Candidates)) if Lengths[i]==shortest]
     #for i in locations:
         #print (f'{i:2d} {r[i]:2d} {p[i]:2d}  {l[i]:2d} {text[r[i]:]}')
-    
+
 if __name__=='__main__':
     start = time.time()
     parser = argparse.ArgumentParser('BA9D Find the Longest Repeat in a String')
@@ -57,22 +59,22 @@ if __name__=='__main__':
     args = parser.parse_args()
     if args.sample:
         print (FindShortestNonShared('CCAAGCTGCTAGAGG','CATGCTGGGCTGGCT'))
-        
+
     if args.extra:
         Input,Expected  = read_strings('data/ShortestNonSharedSubstring.txt',init=0)
         print (Expected[0])
         Actual          = FindShortestNonShared(Input[0],Input[1])
         print (len(Expected[0]),len(Actual))
         print (Expected[0])
-        print (Actual) 
-        
+        print (Actual)
+
     if args.rosalind:
-        Input  = read_strings(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt')    
+        Input  = read_strings(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt')
         Result = FindShortestNonShared(Input[0],Input[1])
         print (Result)
         with open(f'{os.path.basename(__file__).split(".")[0]}.txt','w') as f:
             f.write(f'{Result}\n')
-            
+
     elapsed = time.time()-start
     minutes = int(elapsed/60)
     seconds = elapsed-60*minutes

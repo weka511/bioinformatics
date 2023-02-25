@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 #   Copyright (C) 2020 Greenweaves Software Limited
 
 #   This program is free software: you can redistribute it and/or modify
@@ -13,7 +15,7 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-#  BA9H 	Pattern Matching with the Suffix Array 
+#  BA9H 	Pattern Matching with the Suffix Array
 
 import argparse
 import os
@@ -29,18 +31,18 @@ if __name__=='__main__':
     args = parser.parse_args()
     if args.sample:
         print (MatchPatternsUsingSuffixArray('AATCGGGTTCAATCGGGGT',['ATCG','GGGT']))
-    
+
 
     if args.rosalind:
         Input  = read_strings(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt')
- 
+
         Result = MatchPatternsUsingSuffixArray(Input[0],Input[1:])
         Output = ' '.join(str(i) for i in Result)
         print (Output)
         with open(f'{os.path.basename(__file__).split(".")[0]}.txt','w') as f:
             f.write(f'{Output}\n')
-                
+
     elapsed = time.time() - start
     minutes = int(elapsed/60)
     seconds = elapsed - 60*minutes
-    print (f'Elapsed Time {minutes} m {seconds:.2f} s')    
+    print (f'Elapsed Time {minutes} m {seconds:.2f} s')

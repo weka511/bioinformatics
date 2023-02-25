@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 #    Copyright (C) 2019 Greenweaves Software Limited
 #
 #    This is free software: you can redistribute it and/or modify
@@ -22,4 +24,3 @@ if __name__=='__main__':
     for k in sorted(graph.keys()):
         for w,p in graph[k]:
             print ('{0}->{1}:{2}'.format(k,w,p))
- 

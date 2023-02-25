@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 #   Copyright (C) 2020 Greenweaves Software Limited
 
 #   This program is free software: you can redistribute it and/or modify
@@ -13,7 +15,7 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-#  BA9O 	Find All Approximate Occurrences of a Collection of Patterns in a String 
+#  BA9O 	Find All Approximate Occurrences of a Collection of Patterns in a String
 
 import argparse
 import os
@@ -40,23 +42,23 @@ if __name__=='__main__':
     args = parser.parse_args()
     if args.sample:
         print (FindApproximateMatches('ACATGCTACTTT', ['ATT', 'GCC', 'GCTA', 'TATT'], 1))
-         
+
     if args.extra:
         Input,Expected  = read_strings('data/MultipleApproximatePatternMatching.txt',init=0)
         Result          = FindApproximateMatches(Input[0],int(Input[1:-1],int(Input[-1])))
         for a,b in Result:
             print (a,b)
-            
+
     if args.rosalind:
         Input  = read_strings(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt')
- 
+
         Result = FindApproximateMatches(Input[0],int(Input[1:-1],int(Input[-1])))
         print (Result)
         with open(f'{os.path.basename(__file__).split(".")[0]}.txt','w') as f:
             for line in Result:
                 f.write(f'{line}\n')
-                
+
     elapsed = time.time() - start
     minutes = int(elapsed/60)
     seconds = elapsed - 60*minutes
-    print (f'Elapsed Time {minutes} m {seconds:.2f} s')    
+    print (f'Elapsed Time {minutes} m {seconds:.2f} s')

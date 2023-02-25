@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 #  Copyright (C) 2019-2020 Greenweaves Software Limited
 #
 #  This program is free software: you can redistribute it and/or modify
@@ -13,11 +15,11 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
-# BA9C Construct the Suffix Tree of a String 
+# BA9C Construct the Suffix Tree of a String
 
 import argparse
 from helpers import read_strings
-from snp import SuffixTree   
+from snp import SuffixTree
 
 
 def check(Edges,Expected):
@@ -38,14 +40,14 @@ def compare_edges(Edges,Expected):
     while exp != '-' and ed !='-':
         if exp<ed:
             print('{0},{1}'.format(exp,'-'))
-            exp = next(expected,'-')           
+            exp = next(expected,'-')
         elif ed<exp:
             print('{0},{1}'.format('-',ed))
-            ed = next(edges,'-') 
+            ed = next(edges,'-')
         else:
             exp = next(expected,'-')
             ed = next(edges,'-')
-            
+
 if __name__=='__main__':
     parser = argparse.ArgumentParser('BA9C Construct the Suffix Tree of a String ')
     parser.add_argument('--sample',   default=False, action='store_true', help='process sample dataset')
@@ -57,22 +59,21 @@ if __name__=='__main__':
         tree.build('ATAAATG$')
         for edge in tree.collectEdges():
             print (edge)
-         
+
     if args.extra:
         Input,Expected  = read_strings('data/SuffixTreeConstruction.txt',init=0)
         tree = SuffixTree()
         tree.build(Input[0])
         #tree.print()
-        Edges  = tree.collectEdges()   
-        
-        compare_edges(Edges,Expected) 
-            
+        Edges  = tree.collectEdges()
+
+        compare_edges(Edges,Expected)
+
     if args.rosalind:
         Input = read_strings(r'data/rosalind_ba9c.txt')
         tree = SuffixTree()
         tree.build(Input[0])
-        Edges  = tree.collectEdges()   
+        Edges  = tree.collectEdges()
         for e in Edges:
             print (e)
 
-                     

@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 #  Copyright (C) 2020 Greenweaves Software Limited
 #
 #  This program is free software: you can redistribute it and/or modify
@@ -33,10 +35,10 @@ if __name__=='__main__':
     args = parser.parse_args()
     if args.sample:
         print (FindLongestRepeat('ATATCGTTTTATCGTT'))
-        
+
     if args.extra:
         Input,Expected  = read_strings('data/LongestRepeat.txt',init=0)
-        print (Input[0])       
+        print (Input[0])
         Actual = FindLongestRepeat(Input[0])
         print (len(Expected[0]),len(Actual))
         print (Expected[0])
@@ -48,7 +50,7 @@ if __name__=='__main__':
         print (Result)
         with open('ba9d.txt','w') as f:
             f.write(f'{Result}\n')
-            
+
     elapsed = time.time()-start
     minutes = int(elapsed/60)
     seconds = elapsed-60*minutes

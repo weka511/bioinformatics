@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 # Copyright (C) 2019-2020 Greenweaves Software Limited
 
 #   This program is free software: you can redistribute it and/or modify
@@ -13,14 +15,14 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-# BA9A Construct a Trie from a Collection of Patterns 
+# BA9A Construct a Trie from a Collection of Patterns
 
 import argparse
 import os
 import time
 from   helpers import read_strings
 from   snp import create_trie
- 
+
 def convert_trie(Trie):
     return [(key,node,symbol)for key,Edge in Trie.items() for symbol,node in Edge.items()]
 
@@ -36,19 +38,19 @@ if __name__=='__main__':
     if args.sample:
         Trie = create_trie(['ATAGA','ATC','GAT'],root=0)
         for key,node,symbol in convert_trie(Trie):
-            print (format(key,node,symbol)) 
-    
-  
+            print (format(key,node,symbol))
+
+
     if args.rosalind:
         Input  = read_strings(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt')
         Trie = create_trie(Input,root=0)
 
         with open(f'{os.path.basename(__file__).split(".")[0]}.txt','w') as f:
             for key,node,symbol in convert_trie(Trie):
-                print (format(key,node,symbol))            
+                print (format(key,node,symbol))
                 f.write(f'{format(key,node,symbol)}\n')
-                
+
     elapsed = time.time()-start
     minutes = int(elapsed/60)
     seconds = elapsed-60*minutes
-    print (f'Elapsed Time {minutes} m {seconds:.2f} s')    
+    print (f'Elapsed Time {minutes} m {seconds:.2f} s')

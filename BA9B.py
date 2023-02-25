@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 # Copyright (C) 2019-2020 Greenweaves Software Limited
 
 #   This program is free software: you can redistribute it and/or modify
@@ -30,10 +32,10 @@ if __name__=='__main__':
     parser.add_argument('--extra',    default=False, action='store_true', help='process extra dataset')
     parser.add_argument('--rosalind', default=False, action='store_true', help='process Rosalind dataset')
     args = parser.parse_args()
-    if args.sample:    
+    if args.sample:
         Trie = create_trie(['ATCG','GGGT'])
         print (MatchAll('AATCGGGTTCAATCGGGGT',Trie))
-    
+
     if args.extra:
         Input,Expected  = read_strings('data/TrieMatching.txt',init=0)
         Trie            = create_trie(Input[1:])
@@ -42,7 +44,7 @@ if __name__=='__main__':
         print (len(Expected),len(Actual))
         diffs = [(e,a) for e,a in zip(Expected,Actual) if e!=a]
         print (diffs)
-        
+
     if args.rosalind:
         Input  = read_strings(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt')
         Trie   = create_trie(Input[1:])
@@ -51,9 +53,8 @@ if __name__=='__main__':
             Output = ' '.join(str(n) for n in Result)
             print (Output)
             f.write(f'{Output}\n')
-                    
+
     elapsed = time.time()-start
     minutes = int(elapsed/60)
     seconds = elapsed-60*minutes
-    print (f'Elapsed Time {minutes} m {seconds:.2f} s') 
-    
+    print (f'Elapsed Time {minutes} m {seconds:.2f} s')
