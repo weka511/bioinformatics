@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-#   Copyright (C) 202002023 Simon Crase
+#   Copyright (C) 2020-2023 Simon Crase
 
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -32,11 +32,12 @@ from hmm import ConstructProfileHMM,formatEmission,formatTransition
 if __name__=='__main__':
     start = time()
     parser = ArgumentParser(__doc__)
-    parser.add_argument('--sample',    default=False, action='store_true', help='process sample dataset')
-    parser.add_argument('--extra',     default=False, action='store_true', help='process extra dataset')
-    parser.add_argument('--rosalind',  default=False, action='store_true', help='process Rosalind dataset')
-    parser.add_argument('--text',      default=False, action='store_true', help='process dataset from textbook')
+    parser.add_argument('--sample',    default=False, action='store_true', help='Process sample dataset')
+    parser.add_argument('--extra',     default=False, action='store_true', help='Process extra dataset')
+    parser.add_argument('--rosalind',  default=False, action='store_true', help='Process Rosalind dataset')
+    parser.add_argument('--text',      default=False, action='store_true', help='Process dataset from textbook')
     parser.add_argument('--precision', default=3,                          help='Controls display of probabilities')
+    parser.add_argument('--elapsed',   default=False, action='store_true', help='Print elapsed time')
 
     args = parser.parse_args()
     if args.sample:
@@ -109,7 +110,7 @@ if __name__=='__main__':
 
         Transition,Emission,States = ConstructProfileHMM(float(Input[0]),
                                                          Input[2].split(),
-                                                         Input[4:-1])
+                                                         Input[4:])
 
         with open(f'{basename(__file__).split(".")[0]}.txt','w') as f:
             for row in formatTransition(Transition,States,precision=args.precision):
@@ -121,7 +122,8 @@ if __name__=='__main__':
                 print (row)
                 f.write(f'{row}\n')
 
-    elapsed = time() - start
-    minutes = int(elapsed/60)
-    seconds = elapsed - 60*minutes
-    print (f'Elapsed Time {minutes} m {seconds:.2f} s')
+    if args.elapsed:
+        elapsed = time() - start
+        minutes = int(elapsed/60)
+        seconds = elapsed - 60*minutes
+        print (f'Elapsed Time {minutes} m {seconds:.2f} s')

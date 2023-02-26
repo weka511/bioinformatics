@@ -228,11 +228,12 @@ def ConstructProfileHMM(theta,Alphabet,Alignment,sigma=0):
         product.append(('E',None,None))
         return product
 
-    def verify_constraints(matrix):
+    def verify_constraints(matrix,eps=1e-15):
         m,_ = matrix.shape
         for i in range(m):
-            row_total = matrix[i,:].sum()
-            assert row_total==0 or row_total==1,f'Row {i} total = {row_total}'
+            row_total = abs(matrix[i,:].sum())
+            if row_total>eps and row_total<1-eps:
+                raise Exception(f'Constraint violated on row {i}, eps = {eps}')
 
     def create_transition(m,Paths):
         def create_census():
@@ -295,207 +296,20 @@ def ConstructProfileHMM(theta,Alphabet,Alignment,sigma=0):
     n             = len(Alphabet)
     return create_transition(m,Paths), create_emission(m,n,Paths), [get_state_name(i) for i in range(m)]
 
-# ConstructProfileHMM
-#
-# ConstructProfileHMM
-#
-# Parameters:
-#    theta      Threshold. This isn't the same as the theta in the textbook
-#               See David Eccles and fanta's comments - http://rosalind.info/problems/ba10e/questions/
-#    Alphabet
-#    Alignment
+def float2str(x,
+              precision=3,
+              p0=0,
+              p1=1):
+    '''
+     float2str
 
-def ConstructProfileHMM666(theta,Alphabet,Alignment,sigma=0):
-    #   CountChars
-    #
-    #   Used to count alphabetical characters in specified column of alignment
-    #
-    #   Parameters:
-    #       m     Number of sequences
-    #       j     The column to be counted
-    #       K     Number of symbols in Alphabet
-    #
-    #  Returns:
-    #       Number of symbols from alphabet in column i
+     Format a floatinmg point number in the manner that the
+     grader wants for matrices when dealing with HMM
 
-    def CountChars(m,j,K):
-        Counts = [0]*K
-        for i in range(m):
-            if Alignment[i][j] in Alphabet:
-                Counts[Alphabet.index(Alignment[i][j])]+=1
-        return Counts
-
-    def create_states(Conserved):
-        Product        = [[] for column in Conserved if column]
-        Product.append([])
-        return Product
-
-    def create_state_indices(Conserved):
-        def get_symbol(State):
-            return (State,index)
-
-        index   = 0
-        Product = [get_symbol('S'),get_symbol('I')]
-        for column in Conserved:
-            if not column: continue
-            index += 1
-            Product.append(get_symbol('M'))
-            Product.append(get_symbol('D'))
-            Product.append(get_symbol('I'))
-        index += 1
-        Product.append(get_symbol('E'))
-        return Product
-
-    def create_state_counts(StateIndices):
-        Product  = {}
-        for s,i in StateIndices:
-            for t,j in StateIndices:
-                if s=='S':
-                    if t=='I' and j==0:
-                        Product[(s,i),(t,j)] = 0
-                    elif t in ['M','D'] and j==1:
-                        Product[(s,i),(t,j)] = 0
-                elif s=='I':
-                    if i==0:
-                        if t=='I' and j==0:
-                            Product[(s,i),(t,j)] = 0
-                        elif t in ['M','D'] and j==1:
-                            Product[(s,i),(t,j)] = 0
-                    else:
-                        if (t=='I' and j==i) or (t in ['M','D'] and j==i+1):
-                            Product[(s,i),(t,j)] = 0
-                        if t=='E' and j==i+1:
-                            Product[(s,i),(t,j)] = 0
-                elif s in ['M','D']:
-                    if (t=='I' and j==i) or (t in ['M','D'] and j==i+1):
-                        Product[(s,i),(t,j)] = 0
-                    if t=='E' and j==i+1:
-                        Product[(s,i),(t,j)] = 0
-                else:
-                    assert(s=='E')
-
-        return Product
-
-    def create_emission_counts(StateIndices,Alphabet):
-        Product  = {}
-        for index in StateIndices:
-            for ch in Alphabet:
-                Product[(index,ch)] = 0
-        return Product
-
-    def create_state_frequencies(StateCounts,StateIndices):
-        Totals  = {i:0 for i in StateIndices}
-
-        for key,count in StateCounts.items():
-            ((s,i),_) = key
-            Totals[(s,i)] += count
-
-        Product = {}
-        for key,count in StateCounts.items():
-            ((s,i),_) = key
-            Product[key] = count/Totals[(s,i)] if Totals[(s,i)]>0 else 0
-        return Product
-
-    def create_emission_frequencies(EmissionCounts, StateIndices):
-        Totals  = {i:0 for i in StateIndices}
-        for key,count in EmissionCounts.items():
-            ((s,i),_) = key
-            Totals[(s,i)] += count
-        Product = {}
-        for key,count in EmissionCounts.items():
-            ((s,i),_) = key
-            Product[key] = count/Totals[(s,i)] if Totals[(s,i)]>0 else 0
-
-        return Product
-
-    #   Useful constants - lengths of arrays
-
-    K              = len(Alphabet)      # Number of symbols in alphabet
-    m              = len(Alignment)     # Number of strings in alignment
-    n              = len(Alignment[0])  # Number of symbols in each alignment
-    for Sequence in Alignment[1:]:      # All sequences should be the same length
-        assert(n == len(Sequence))
-
-    #   construct profile - Number of symbols from alphabet in each column
-
-    Counts         = [CountChars(m,j,K) for j in range(n)]
-
-    #   Indicate whether or not symbols in column are over threshold
-    #   If theta is maximum proportion of deleted symbols, 1-theta is
-    #   maximum number of conserved.
-
-    Conserved      = [sum(Count) > (1-theta)*K for Count in Counts]
-
-    column_count   = sum(1 for column in Conserved if column)
-
-    Merges         = create_states(Conserved)
-    Inserts        = create_states(Conserved)
-    Deletes        = create_states(Conserved)
-    StateIndices   = create_state_indices(Conserved)
-    StateCounts    = create_state_counts(StateIndices)
-    EmissionCounts = create_emission_counts(StateIndices,Alphabet)
-
-    Runs        = []
-    for Sequence in Alignment:
-        previous =  'S'
-        States   = [previous]
-        j = 0
-        for i in range(n):
-            ch = Sequence[i]
-            if Conserved[i]:
-                j+=1
-                if ch in Alphabet:
-                    Merges[j].append((previous,ch))
-                    previous =  'M'
-                    States.append(previous)
-                elif ch == '-':
-                    Deletes[j].append((previous,ch))
-                    previous =  'D'
-                    States.append(previous)
-                else:
-                    raise RosalindException(f'Invalid {ch}')
-            else:
-                if ch in Alphabet:
-                    Inserts[j].append((previous,ch))
-                    previous =  'I'
-                    States.append(previous)
-                elif ch == '-':
-                    pass
-                else:
-                    raise RosalindException(f'Invalid {ch}')
-        States.append('E')
-        Runs.append(States)
-        print (f'Counting {Sequence} {"".join(States)}')
-        index     = 0
-        previous  = None
-        seq_index = 0
-        for state in States:
-            while seq_index < len(Sequence)-1 and Sequence[seq_index]=='-':
-                seq_index += 1
-            if state in ['M','D','E']:
-                index = index+1
-            if previous != None:
-                StateCounts[previous,(state,index)] += 1
-                if state in ['M','I']:
-                    EmissionCounts[(state,index),Sequence[seq_index]] += 1
-                    seq_index += 1
-            previous = (state, index)
-
-    return (StateIndices,
-            create_state_frequencies(StateCounts, StateIndices),
-            create_emission_frequencies(EmissionCounts, StateIndices))
-
-
-
-# float2str
-#
-# Format a floatinmg point number for display
-#
-# Parameters:
-#     x         Value to be displayed
-#     precision Number of digits (after decimal point)
-
-def float2str(x,precision=2,p0=0,p1=1):
+     Parameters:
+         x         Value to be displayed
+         precision Number of digits (after decimal point)
+    '''
     format_str = f'{{:.{precision}f}}'
     if x==0:
         format_str = f'{{:.{p0}f}}'
@@ -513,9 +327,11 @@ def format_state(s):
     else:
         return f'{code}{index}'
 
-# formatEmission
 
 def formatEmission(Emission,States,Alphabet,precision=2):
+    '''
+    formatEmission
+    '''
     m,n = Emission.shape
     yield '\t'.join(Alphabet)
     for i in range(m):
@@ -525,11 +341,10 @@ def formatEmission(Emission,States,Alphabet,precision=2):
         yield format_state(States[i]) + '\t' + '\t'.join(row)
 
 
-# formatTransition
-
-
-
 def formatTransition(Transition,States,precision=2):
+    '''
+    formatTransition
+    '''
     m,n = Transition.shape
     yield  '\t'.join(format_state(state) for state in States)
     for i in range(m):

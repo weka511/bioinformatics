@@ -213,7 +213,7 @@ I have written this code in Python 3, generally with the most recent release at 
 |BA10B|BA10B.py hmm.py| [Compute the Probability of an Outcome Given a Hidden Path](http://rosalind.info/problems/ba10b/) |
 |BA10C|BA10C.py hmm.py| [Implement the Viterbi Algorithm](http://rosalind.info/problems/ba10c/) |
 |BA10D|BA10D.py hmm.py| [Compute the Probability of a String Emitted by an HMM ](http://rosalind.info/problems/ba10d/)|
-|BA10E|BA10E.py hmm.py| [Construct a Profile HMM](http://rosalind.info/problems/ba10e/) [WIP](https://github.com/weka511/bioinformatics/issues/83)|
+|BA10E|BA10E.py hmm.py| [Construct a Profile HMM](http://rosalind.info/problems/ba10e/) |
 |BA10F|BA10F.py hmm.py| [Construct a Profile HMM with Pseudocounts](http://rosalind.info/problems/ba10f/) [WIP](https://github.com/weka511/bioinformatics/issues/84)|
 |BA10G|BA10G.py hmm.py| [Perform a Multiple Sequence Alignment with a Profile HMM ](http://rosalind.info/problems/ba10g/) [WIP](https://github.com/weka511/bioinformatics/issues/85)|
 |BA10H|BA10H.py hmm.py| [Estimate the Parameters of an HMM ](http://rosalind.info/problems/ba10h/) |
