@@ -463,4 +463,23 @@ if __name__=='__main__':
             self.assertEqual(m1,m)
             self.assertEqual(m2,m)
 
+        def test_ba10f1(self):
+            Transition, Emission,StateNames = ConstructProfileHMM(0.358,
+                                                             'ABCD',
+                                                             ['ADA',
+                                                              'ADA',
+                                                              'AAA',
+                                                              'ADC',
+                                                              '-DA',
+                                                              'D-A'],
+                                                             sigma=0.01)
+
+            m1,m2 = Transition.shape
+            m,n   = Emission.shape
+            self.assertEqual(4,n)
+            self.assertEqual(12,m)
+            self.assertEqual(m1,m)
+            self.assertEqual(m2,m)
+            self.assertEqual(0.01, Transition[0,1])
+            self.assertEqual(0.01, Emission[2,1])
     main()
