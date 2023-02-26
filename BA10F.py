@@ -31,21 +31,25 @@ if __name__=='__main__':
 
     args = parser.parse_args()
     if args.sample:
-        States,Transition,Emission = ConstructProfileHMM(0.358,
-                                                         ['A',   'B',   'C',   'D',   'E'],
+        Transition, Emission,StateNames = ConstructProfileHMM(0.358,
+                                                         'ABCD',
                                                          ['ADA', 'ADA', 'AAA', 'ADC', '-DA', 'D-A'],
                                                          sigma=0.01)
 
-        for row in formatTransition(Transition,States,precision=args.precision):
+        for row in formatTransition(Transition,StateNames,precision=args.precision):
             print (row)
         print ('--------')
-        for row in formatEmission(Emission,States,['A',   'B',   'C',   'D',   'E'],precision=args.precision):
+        for row in formatEmission(Emission,StateNames,'ABCD',precision=args.precision):
             print (row)
 
 
 
     if args.rosalind:
         Input  = read_strings(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt')
+
+        Transition,Emission,States = ConstructProfileHMM(float(Input[0]),
+                                                         Input[2].split(),
+                                                         Input[4:])
 
         Result = None
         print (Result)

@@ -234,29 +234,30 @@ def ConstructProfileHMM(theta,Alphabet,Alignment,sigma=0):
         product.append(('E',None,None))
         return product
 
-    def verify_constraints(matrix,eps=1e-15):
-        m,_ = matrix.shape
-        for i in range(m):
-            row_total = abs(matrix[i,:].sum())
-            if row_total>eps and row_total<1-eps:
-                raise Exception(f'Constraint violated on row {i}, eps = {eps}')
 
     def get_successors(state,m):
         block = (state+1)//3
         for i in range(3):
-            successor = 3*block+i
+            successor = 3*block+i+1
             if successor<m:
                 yield(successor)
 
-    def normalize_rows(product):
-        row_totals = product.sum(axis=1)
-        row_totals[-1] = 1
+    def normalize_rows(A):
+        '''
+        Normalize a matrix so each row sums to 1, unless all elements of row are 0
+        '''
+        row_totals = A.sum(axis=1)
+
         for i in range(m):
             if row_totals[i]==0:
                 row_totals[i]=1
-        return product/row_totals.reshape(m,1)
+
+        return A/row_totals.reshape(m,1)
 
     def create_transition(m,Paths):
+        '''
+        Create matrix of transition probabilities
+        '''
         def create_census():
             States = {}
             for path in Paths:
@@ -284,12 +285,15 @@ def ConstructProfileHMM(theta,Alphabet,Alignment,sigma=0):
             for key2,fraction in fractions.items():
                 state2,index2 = split_key(key2)
                 state_index2 = get_state_index((state2,index2))
-                product[state_index1,state_index2] = fraction
+                product[state_index1,state_index2] = max(fraction,sigma)
 
         return normalize_rows(product)
 
 
     def create_emission(m,n,Paths):
+        '''
+        Create matrix of emission probabilities
+        '''
         def create_census():
             States = {}
             for path in Paths:
@@ -313,9 +317,6 @@ def ConstructProfileHMM(theta,Alphabet,Alignment,sigma=0):
                 for j in range(n):
                     product[state_index,j] = fractions[Alphabet[j]]
         return normalize_rows(product)
-
-
-
 
     mask          = create_mask()
     Paths         = [create_path(s,mask) for s in Alignment]
@@ -507,6 +508,12 @@ if __name__=='__main__':
             self.assertEqual(12,m)
             self.assertEqual(m1,m)
             self.assertEqual(m2,m)
-            self.assertAlmostEqual(0.01, Transition[0,1],places=3)
+            self.assertAlmostEqual(0, Transition[0,0],places=3)
+            self.assertAlmostEqual(0.01, Transition[0,1],places=2)
+            self.assertAlmostEqual( 0.819 , Transition[0,2],delta=0.01)
+            self.assertAlmostEqual(  0.172, Transition[0,3],delta=0.01)
+            self.assertAlmostEqual(0.333, Transition[7,7],places=2)
+            self.assertAlmostEqual(0.333, Transition[7,8],places=2)
+            self.assertAlmostEqual(0.333, Transition[7,9],places=2)
             self.assertAlmostEqual(0.01, Emission[2,1],places=3)
     main()
