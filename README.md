@@ -1,6 +1,6 @@
 # Bioinformatics
-Code inspired by [Bioinformatics Algorithms: an Active Learning Approach](http://bioinformaticsalgorithms.com/) and 
-by [Rosalind](http://rosalind.info). 
+Code inspired by [Bioinformatics Algorithms: an Active Learning Approach](http://bioinformaticsalgorithms.com/) and
+by [Rosalind](http://rosalind.info).
 
 NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info) uses 1-based.
 
@@ -37,9 +37,9 @@ I have written this code in Python 3, generally with the most recent release at 
 |BA2C |rosalind.py|[Find a Profile-most Probable k-mer in a String	](http://rosalind.info/problems/ba2c/)
 |BA2D |rosalind.py|[Implement GreedyMotifSearch](http://rosalind.info/problems/ba2d/)
 |BA2E |rosalind.py|[Implement GreedyMotifSearch with Pseudocounts](http://rosalind.info/problems/ba2e/)
-|BA2F |rosalind.py|[Implement RandomizedMotifSearch](http://rosalind.info/problems/ba2f/)	
+|BA2F |rosalind.py|[Implement RandomizedMotifSearch](http://rosalind.info/problems/ba2f/)
 |BA2G |rosalind.py|[Implement GibbsSampler](http://rosalind.info/problems/ba2g/)
-|BA2H |rosalind.py|[Implement DistanceBetweenPatternAndStrings](http://rosalind.info/problems/ba2h/) 
+|BA2H |rosalind.py|[Implement DistanceBetweenPatternAndStrings](http://rosalind.info/problems/ba2h/)
 
 ### 3. How Do We Assemble Genomes?  See also  [Genome Assembly](http://rosalind.info/problems/topics/genome-assembly/)
 
@@ -88,7 +88,7 @@ I have written this code in Python 3, generally with the most recent release at 
 |sgra|sgra.py+spectrum.py|[Using the Spectrum Graph to Infer Peptides](http://rosalind.info/problems/sgra/)|
 
 ### 5. How do we compare Biological Sequences?  See also [Alignment](http://rosalind.info/problems/topics/alignment/)
- 
+
 | # | Location | Description |
 | ---- | --------------- | ------------------------------------------------|
 |BA5A|align.py|[Find the Minimum Number of Coins Needed to Make Change](http://rosalind.info/problems/ba5a/)|
@@ -98,13 +98,13 @@ I have written this code in Python 3, generally with the most recent release at 
 |BA5E|align.py|[Find a Highest-Scoring Alignment of Two Strings](http://rosalind.info/problems/ba5e/)|
 |BA5F|align.py|[Find a Highest-Scoring Local Alignment of Two Strings](http://rosalind.info/problems/ba5f/)|
 |BA5G|align.py| [Compute the Edit Distance Between Two Strings](http://rosalind.info/problems/ba5g/) |
-|BA5H|BA5H.py align.py| [Find a Highest-Scoring Fitting Alignment of Two Strings](http://rosalind.info/problems/ba5h/) |   
-|BA5I|BA5I.py align.py|[Find a Highest-Scoring Overlap Alignment of Two Strings](http://rosalind.info/problems/ba5i/)|    
-|BA5J|BA5J.py align.py|[Align Two Strings Using Affine Gap Penalties](http://rosalind.info/problems/ba5j/)|    
+|BA5H|BA5H.py align.py| [Find a Highest-Scoring Fitting Alignment of Two Strings](http://rosalind.info/problems/ba5h/) |
+|BA5I|BA5I.py align.py|[Find a Highest-Scoring Overlap Alignment of Two Strings](http://rosalind.info/problems/ba5i/)|
+|BA5J|BA5J.py align.py|[Align Two Strings Using Affine Gap Penalties](http://rosalind.info/problems/ba5j/)|
 |BA5K|BA5K.py align.py|[Find a Middle Edge in an Alignment Graph in Linear Space](http://rosalind.info/problems/ba5k/) |
-|BA5L|BA5L.py align.py|[Align Two Strings Using Linear Space](http://rosalind.info/problems/ba5l/) [WIP](https://github.com/weka511/bioinformatics/issues/29)|    
-|BA5M|BA5M.py align.py|[Find a Highest-Scoring Multiple Sequence Alignment](http://rosalind.info/problems/ba5m/) | 
-|BA5N |align.py align.py|[Find a Topological Ordering of a DAG](http://rosalind.info/problems/ba5n/) | 
+|BA5L|BA5L.py align.py|[Align Two Strings Using Linear Space](http://rosalind.info/problems/ba5l/) [WIP](https://github.com/weka511/bioinformatics/issues/29)|
+|BA5M|BA5M.py align.py|[Find a Highest-Scoring Multiple Sequence Alignment](http://rosalind.info/problems/ba5m/) |
+|BA5N |align.py align.py|[Find a Topological Ordering of a DAG](http://rosalind.info/problems/ba5n/) |
 |ctea|ctea.py align.py|[Counting Optimal Alignments](http://rosalind.info/problems/ctea/)|
 |edit|edit.py align.py|[Edit Distance](http://rosalind.info/problems/edit/) |
 |edta|edta.py align.py|[Edit Distance Alignment](http://rosalind.info/problems/edta/)|
@@ -214,7 +214,7 @@ I have written this code in Python 3, generally with the most recent release at 
 |BA10C|BA10C.py hmm.py| [Implement the Viterbi Algorithm](http://rosalind.info/problems/ba10c/) |
 |BA10D|BA10D.py hmm.py| [Compute the Probability of a String Emitted by an HMM ](http://rosalind.info/problems/ba10d/)|
 |BA10E|BA10E.py hmm.py| [Construct a Profile HMM](http://rosalind.info/problems/ba10e/) |
-|BA10F|BA10F.py hmm.py| [Construct a Profile HMM with Pseudocounts](http://rosalind.info/problems/ba10f/) [WIP](https://github.com/weka511/bioinformatics/issues/84)|
+|BA10F|BA10F.py hmm.py| [Construct a Profile HMM with Pseudocounts](http://rosalind.info/problems/ba10f/)|
 |BA10G|BA10G.py hmm.py| [Perform a Multiple Sequence Alignment with a Profile HMM ](http://rosalind.info/problems/ba10g/) [WIP](https://github.com/weka511/bioinformatics/issues/85)|
 |BA10H|BA10H.py hmm.py| [Estimate the Parameters of an HMM ](http://rosalind.info/problems/ba10h/) |
 |BA10I|BA10I.py hmm.py| [Implement Viterbi Learning ](http://rosalind.info/problems/ba10i/) [WIP](https://github.com/weka511/bioinformatics/issues/87)|
