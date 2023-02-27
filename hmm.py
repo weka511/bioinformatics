@@ -162,13 +162,14 @@ def ConstructProfileHMM(theta,Alphabet,Alignment,sigma=0):
     '''
     ConstructProfileHMM
 
-    BA10E Construct a Profile HMM
+    BA10E Construct a Profile HMM and
+    BA10F Construct a Profile HMM with Pseudocounts
 
     Parameters:
         theta      Threshold.
         Alphabet
         Alignment
-        sigma
+        sigma      Minimum probability assigned to legal transitions
    '''
 
     def is_space(ch):
@@ -381,9 +382,22 @@ def formatTransition(Transition,States,precision=2):
             row.append(float2str(Transition[i,j],precision))
         yield format_state(States[i]) + '\t' + '\t'.join(row)
 
-#  BA10H 	Estimate the Parameters of an HMM
+
+def AlignSequenceWithProfileHMM(theta,Alphabet,Alignment,sigma=0):
+    '''
+    AlignSequenceWithProfileHMM
+
+    BA10G   Sequence Alignment with Profile HMM Problem
+
+    Given: A string Text, a multiple alignment Alignment, a threshold θ, and a pseudocount σ.
+
+    Return: An optimal hidden path emitting Text in HMM(Alignment,θ,σ).
+    '''
+    pass
+
 
 def EstimateParameters(s,Alphabet,path,States):
+    '''BA10H 	Estimate the Parameters of an HMM'''
     def create_Transitions():
         Transitions = {(i,j):0 for i in States for j in States}
         for i in range(1,n):
@@ -414,10 +428,57 @@ def EstimateParameters(s,Alphabet,path,States):
     assert n==len(s)
     return create_Transitions(),create_Emissions()
 
+
+
 if __name__=='__main__':
     class Test_10_HMM(TestCase):
 
-        def test_ba10e1(self): #BA10E Construct a Profile HMM
+        def test_ba10a(self):
+            '''BA10A Compute the Probability of a Hidden Path'''
+
+            self.assertAlmostEqual(5.01732865318,
+                                        1e19*ProbabilityHiddenPath('AABBBAABABAAAABBBBAABBABABBBAABBAAAABABAABBABABBAB',
+                                             'AB',
+                                             np.array([[ 0.194,   0.806],[ 0.273,   0.727]])),
+                                        places=5)
+
+        def test_ba10b(self):
+            '''BA10B Compute the Probability of an Outcome Given a Hidden Path'''
+            self.assertAlmostEqual(1.93157070893,
+                                   1e28*ProbabilityOutcomeGivenHiddenPath('xxyzyxzzxzxyxyyzxxzzxxyyxxyxyzzxxyzyzxzxxyxyyzxxzx',
+                                                                          'xyz',
+                                                                          'BBBAAABABABBBBBBAAAAAABAAAABABABBBBBABAABABABABBBB',
+                                                                          'AB',
+                                                                          np.array([[0.612,   0.314,   0.074 ],
+                                                                                   [0.346,   0.317 ,  0.336]])),
+                                   places=5)
+
+        def test_ba10c(self):
+            '''BA10C Implement the Viterbi Algorithm'''
+            Transition = np.array([
+                [ 0.641,    0.359],
+                [ 0.729,   0.271]])
+
+            Emission = np.array([
+                [0.117,  0.691, 0.192],
+                [0.097,  0.42,  0.483]])
+
+            self.assertEqual('AAABBAAAAA',
+                             Viterbi('xyxzzxyxyy','xyz','AB',Transition,Emission))
+
+        def test_ba10d(self):
+            '''BA10D 	Compute the Probability of a String Emitted by an HMM'''
+            self.assertAlmostEqual(1.1005510319694847,
+                              1e6*Likelihood('xzyyzzyzyy',
+                                         'xyz',
+                                         'AB',
+                                         np.array([[0.303, 0.697],
+                                                   [0.831, 0.169]]),
+                                         np.array([[0.533, 0.065, 0.402],
+                                                   [0.342, 0.334, 0.324]])))
+
+        def test_ba10e1(self):
+            '''BA10E Construct a Profile HMM'''
             Transition, Emission,StateNames = ConstructProfileHMM(0.35,
                                                                   'ACDEF',
                                                                   ['ACDEFACADF',
@@ -492,6 +553,7 @@ if __name__=='__main__':
             self.assertEqual(m2,m)
 
         def test_ba10f1(self):
+            '''BA10F Construct a Profile HMM with Pseudocounts'''
             Transition, Emission,StateNames = ConstructProfileHMM(0.358,
                                                              'ABCD',
                                                              ['ADA',
@@ -516,4 +578,20 @@ if __name__=='__main__':
             self.assertAlmostEqual(0.333, Transition[7,8],places=2)
             self.assertAlmostEqual(0.333, Transition[7,9],places=2)
             self.assertAlmostEqual(0.01, Emission[2,1],places=3)
+
+        def test_ba10g(self):
+            '''
+            BA10G   Sequence Alignment with Profile HMM Problem
+            '''
+            Path = AlignSequenceWithProfileHMM(0.4,
+                                                'ABCDEF',
+                                                ['ACDEFACADF',
+                                                 'AFDA---CCF',
+                                                 'A--EFD-FDC',
+                                                 'ACAEF--A-C',
+                                                 'ADDEFAAADF'],
+                                                sigma=0.01)
+            self.assertEqual(9,len(Path))
+
+
     main()
