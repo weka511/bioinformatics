@@ -25,19 +25,32 @@ import numpy as np
 
 class StateSet:
     '''
-    Manage states for, S, Mi, Ii, Di, E
-    '''
+    Manage states: S, I0, M1, D1, I1, M2, D2, I2, ...E '''
+
     def __init__(self,m):
+        '''
+        Initialize state set
+
+        Parameters:
+            m       Number of states
+        '''
         self.m = m
 
     def get_pair(self,index):
-        if index   == 0:   return ('S',None)
-        if index == self.m-1: return ('E',None)
-        if index%3 == 0:   return ('D', index//3)
-        if index%3 == 1:   return ('I', index//3)
-        if index%3 == 2:   return ('M', index//3+1)
+        '''
+        Convert index number to State, expresses as pair, e.g. 2->('M',1)
+        '''
+        if index   == 0:        return ('S',None)
+        if index   == self.m-1: return ('E',None)
+        if index%3 == 0:        return ('D', index//3)
+        if index%3 == 1:        return ('I', index//3)
+        if index%3 == 2:        return ('M', index//3+1)
+
 
     def get_index(self,state):
+        '''
+        Convert State to index number, e.g. ('M',1)->2
+        '''
         function,i = state
         if function == 'S': return 0
         if function == 'E': return self.m-1
@@ -47,9 +60,15 @@ class StateSet:
 
 
     def get_key(self,op,seq):
+        '''
+        Format state for printing, e.g. ('M',1)->'M1'
+        '''
         return f'{op}-{seq}'
 
     def split_key(self,key):
+        '''
+        Used to read a state name, e.g. 'M1'->('M',1)
+        '''
         parts =key.split('-')
         if parts[0] in ['M','D','I']:
             return parts[0],int(parts[1])
@@ -58,6 +77,18 @@ class StateSet:
 
     @classmethod
     def create_path(cls,s,mask):
+        '''
+        Parse a substring into a sequence of Match and Delete states
+
+        Parameters:
+              s     String from which subset is to be extracted
+              mask  Indicates which elements of are to be included in subset
+
+        Returns:
+           A set of States, starting with ('S',) and ending with ('E'). The other elements are matches or
+           deletes, depending on whether corresponding character is a non-space character, each accomanied by the
+           corresponding character
+        '''
         product = [('S',None,None)]
         index   = 0
         assert len(s)==len(mask)
@@ -101,8 +132,7 @@ def get_indices(S,Alphabet='AB'):
         IndexTable[Alphabet[i]]=i
     return [IndexTable[s] for s in S]
 
-def get_reduced(s,mask):
-    return [s[i] for i in range(len(s)) if mask[i]]
+
 
 def is_space(ch):
     '''
@@ -580,18 +610,18 @@ if __name__=='__main__':
             self.assertAlmostEqual(0.333, Transition[7,9],places=2)
             self.assertAlmostEqual(0.01, Emission[2,1],places=3)
 
-        # def test_ba10g(self):
-            # '''
-            # BA10G   Sequence Alignment with Profile HMM Problem
-            # '''
-            # Path = AlignSequenceWithProfileHMM(0.4,
-                                                # 'ABCDEF',
-                                                # ['ACDEFACADF',
-                                                 # 'AFDA---CCF',
-                                                 # 'A--EFD-FDC',
-                                                 # 'ACAEF--A-C',
-                                                 # 'ADDEFAAADF'],
-                                                # sigma=0.01)
+        def test_ba10g(self):
+            '''
+            BA10G   Sequence Alignment with Profile HMM Problem
+            '''
+            Path = AlignSequenceWithProfileHMM(0.4,
+                                                'ABCDEF',
+                                                ['ACDEFACADF',
+                                                 'AFDA---CCF',
+                                                 'A--EFD-FDC',
+                                                 'ACAEF--A-C',
+                                                 'ADDEFAAADF'],
+                                                sigma=0.01)
             # self.assertEqual(9,len(Path))
 
         def test_ba10h(self):
