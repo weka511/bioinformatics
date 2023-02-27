@@ -605,9 +605,9 @@ if __name__=='__main__':
                                                 # sigma=0.01)
             # self.assertEqual(9,len(Path))
 
-        # def test_ba10h(self):
-            # Transitions,Emissions = EstimateParameters('yzzzyxzxxx','xyz','BBABABABAB','ABC')
-            # x=0
+        def test_ba10h(self):
+            Transitions,Emissions = EstimateParameters('yzzzyxzxxx','xyz','BBABABABAB','ABC')
+            x=0
 
 
 
