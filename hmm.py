@@ -225,6 +225,19 @@ class StateSet:
             if successor<self.m:
                 yield(successor)
 
+def normalize_rows(A):
+    '''
+    Normalize a matrix so each row sums to 1, unless all elements of row are 0
+    '''
+    m,_ = A.shape
+    row_totals = A.sum(axis=1)
+
+    for i in range(m):
+        if row_totals[i]==0:
+            row_totals[i]=1
+
+    return A/row_totals.reshape(m,1)
+
 def ConstructProfileHMM(theta,Alphabet,Alignment,sigma=0):
     '''
     ConstructProfileHMM
@@ -250,19 +263,6 @@ def ConstructProfileHMM(theta,Alphabet,Alignment,sigma=0):
         fractions = [get_count(i)/len(Alignment) for i in range(len(Alignment[0]))]
         return [fractions[i]<theta for i in range(len(Alignment[0]))]
 
-
-
-    def normalize_rows(A):
-        '''
-        Normalize a matrix so each row sums to 1, unless all elements of row are 0
-        '''
-        row_totals = A.sum(axis=1)
-
-        for i in range(m):
-            if row_totals[i]==0:
-                row_totals[i]=1
-
-        return A/row_totals.reshape(m,1)
 
     def create_transition(m,Paths):
         '''
@@ -408,37 +408,27 @@ def AlignSequenceWithProfileHMM(theta,Alphabet,Alignment,sigma=0):
 
 def EstimateParameters(s,Alphabet,path,States):
     '''BA10H 	Estimate the Parameters of an HMM'''
-    def create_Transitions():
-        Transitions = np.zeros((len(States),len(States))) #{(i,j):0 for i in States for j in States}
+    def create_Transitions(path_indices,n):
+        Transitions = np.zeros((len(States),len(States)))
         for i in range(1,n):
-            Transitions[path[i-1],path[i]]+= 1
-        Sums = {i: sum(Transitions[(i,j)] for j in States) for i in States}
-        for i in States:
-            for j in States:
-                if Sums[i]>0:
-                    Transitions[i,j]/= Sums[i]
-                else:
-                    Transitions[i,j] = 1/len(States)
+            Transitions[path_indices[i-1],path_indices[i]]+= 1
+        Transitions[-1,:] = 1
 
-        return Transitions
+        return normalize_rows(Transitions)
 
-    def create_Emissions():
-        Emissions   = {(ch,state): 0 for state in States for ch in Alphabet}
+    def create_Emissions(path_indices,n):
+        str_indices = get_indices(s,Alphabet)
+        Emissions   = np.zeros((len(States),len(Alphabet)))
         for i in range(n):
-            Emissions[(s[i],path[i])]+= 1
-        Sums = {j:sum(Emissions[(ch,j)] for ch in Alphabet) for j in States }
-        for ch in Alphabet:
-            for j in States:
-                if Sums[j]>0:
-                    Emissions[(ch,j)]/= Sums[j]
-                else:
-                    Emissions[(ch,j)] = 1/len(States)
-        return Emissions
+            Emissions[path_indices[i],str_indices[i]]+= 1
+        Emissions[-1,:] = 1
+
+        return normalize_rows(Emissions)
 
     n = len(path)
     assert n==len(s)
     path_indices=get_indices(path,States)
-    return create_Transitions(),create_Emissions()
+    return create_Transitions(path_indices,n),create_Emissions(path_indices,n)
 
 
 
@@ -607,7 +597,21 @@ if __name__=='__main__':
 
         def test_ba10h(self):
             Transitions,Emissions = EstimateParameters('yzzzyxzxxx','xyz','BBABABABAB','ABC')
-            x=0
+            self.assertEqual(1, Transitions[0,1])
+            self.assertEqual(0.8, Transitions[1,0])
+            self.assertEqual(0.2, Transitions[1,1])
+            self.assertAlmostEqual(1/3, Transitions[2,0])
+            self.assertAlmostEqual(1/3, Transitions[2,1])
+            self.assertAlmostEqual(1/3, Transitions[2,2])
+            self.assertEqual(0.25, Emissions[0,0])
+            self.assertEqual(0.25, Emissions[0,1])
+            self.assertEqual(0.5, Emissions[0,2])
+            self.assertEqual(0.5, Emissions[1,0])
+            self.assertAlmostEqual(1/6, Emissions[1,1])
+            self.assertAlmostEqual(1/3, Emissions[1,2])
+            self.assertAlmostEqual(1/3, Emissions[2,0])
+            self.assertAlmostEqual(1/3, Emissions[2,1])
+            self.assertAlmostEqual(1/3, Emissions[2,2])
 
 
 
