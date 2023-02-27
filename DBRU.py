@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 '''
  DBRU Constructing a De Bruijn Graph
 
@@ -20,7 +21,7 @@
 from rosalind import dbru,read_strings
 
 if __name__=='__main__':
-    S=read_strings('c:/Users/Weka/Downloads/rosalind_dbru.txt')  
+    S=read_strings('c:/Users/Weka/Downloads/rosalind_dbru.txt')
     _,E= dbru(S)
     for a,b in E:
         print('({0}, {1})'.format(a,b))

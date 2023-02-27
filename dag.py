@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 #    Copyright (C) 2019 Greenweaves Software Limited
 #
 #    This is free software: you can redistribute it and/or modify
@@ -19,6 +20,6 @@ from helpers import format_list,  parse_graphs
 from graphs import dag
 
 
-if __name__=='__main__':  
+if __name__=='__main__':
     with open(r'C:\Users\Simon\Downloads\rosalind_dag.txt') as f:
-        print (format_list([dag(g) for g in parse_graphs(f)]))    
+        print (format_list([dag(g) for g in parse_graphs(f)]))

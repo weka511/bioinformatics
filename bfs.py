@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 #    Copyright (C) 2017-2020 Greenweaves Software Limited
 #
 #    This is free software: you can redistribute it and/or modify
@@ -28,7 +29,7 @@ def create_tree(links):
     result     = {a:[] for a in range(1,max_node+1)}
     for (a,b) in links[1:]:
         result[a].append(b)
-        
+
     return (max_node,result)
 
 def format(Result):
@@ -53,8 +54,8 @@ if __name__=='__main__':
                                 (3, 5),
                                 (2, 1),
                                 (1, 4)]))))
-   
-    
+
+
 
     if args.rosalind:
         Input  = read_strings(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt')
@@ -63,8 +64,8 @@ if __name__=='__main__':
         print (Result)
         with open(f'{os.path.basename(__file__).split(".")[0]}.txt','w') as f:
             f.write(f'{Result}\n')
-                
+
     elapsed = time.time() - start
     minutes = int(elapsed/60)
     seconds = elapsed - 60*minutes
-    print (f'Elapsed Time {minutes} m {seconds:.2f} s')    
+    print (f'Elapsed Time {minutes} m {seconds:.2f} s')

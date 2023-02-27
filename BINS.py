@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 #   Copyright (C) 2017-2020 Greenweaves Software Limited
 
 #   This program is free software: you can redistribute it and/or modify
@@ -25,18 +27,18 @@ from helpers import read_strings
 # Find a given set of keys in a given array.
 
 def bins(n,m,a,values):
-    
+
     def search(value,imin,imax):
         if imin>imax:
             return -1
         if imin==imax:
             return imin if value==a[imin-1] else -1
-   
+
         imid = (imax+imin)//2
         left = search(value,imin,imid)
-        
+
         return left if left>-1 else search(value,imid+1,imax)
-            
+
     return [search(value,1,n) for value in values]
 
 
@@ -52,21 +54,21 @@ if __name__=='__main__':
                     6,
                     [10, 20, 30, 40, 50],
                     [40, 10, 35, 15, 40, 20]))
-  
+
     if args.rosalind:
         Input  = read_strings(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt')
- 
+
         Result = ' '.join([str(r) for r in bins(int(Input[0]),
                                                 int(Input[1]),
                                                 [int(i) for i in Input[2].split()],
                                                 [int(i) for i in Input[3].split()])])
-        
+
         print (Result)
         with open(f'{os.path.basename(__file__).split(".")[0]}.txt','w') as f:
             f.write(f'{Result}\n')
-                
+
     elapsed = time.time() - start
     minutes = int(elapsed/60)
     seconds = elapsed - 60*minutes
-    print (f'Elapsed Time {minutes} m {seconds:.2f} s') 
-    
+    print (f'Elapsed Time {minutes} m {seconds:.2f} s')
+

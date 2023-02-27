@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 # Copyright (C) 2017-2020 Greenweaves Software Limited
 
 #   This program is free software: you can redistribute it and/or modify
@@ -21,33 +22,33 @@ import argparse
 import os
 import time
 from helpers import read_strings
- 
+
 if __name__=='__main__':
     start = time.time()
     parser = argparse.ArgumentParser('....')
     parser.add_argument('--sample',   default=False, action='store_true', help='process sample dataset')
     parser.add_argument('--rosalind', default=False, action='store_true', help='process Rosalind dataset')
     args = parser.parse_args()
-    if args.sample:       
+    if args.sample:
         for row in cstr([
             'ATGCTACC',
             'CGTTTACC',
             'ATTCGACC',
             'AGTCTCCC',
-            'CGTCTATC'    
+            'CGTCTATC'
             ]):
             print (row)
-        
+
     if args.rosalind:
         Input  = read_strings(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt')
- 
+
         Result = cstr(Input)
- 
+
         with open(f'{os.path.basename(__file__).split(".")[0]}.txt','w') as f:
             for line in Result:
                 print (line)
                 f.write(f'{line}\n')
-                               
+
     elapsed = time.time()-start
     minutes = int(elapsed/60)
     seconds = elapsed-60*minutes

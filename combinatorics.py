@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 #   Copyright (C) 2020 Greenweaves Software Limited
 
 #   This program is free software: you can redistribute it and/or modify
@@ -23,13 +24,13 @@ from   helpers import read_strings
 
 
 #    cat 	Catalan Numbers and RNA Secondary Structures
-#    motz 	Motzkin Numbers and RNA Secondary Structures 
+#    motz 	Motzkin Numbers and RNA Secondary Structures
 
 # partition
 #
 # Ensure that matching are non-crossing by splitting set into two partitions,
 # one between i and and j, one outside
-# 
+#
 #   Parameters:
 #       indices The set (of indices) that are to be partitioned
 #       i       One end of bond
@@ -38,7 +39,7 @@ from   helpers import read_strings
 def partition(indices,i,j):
     I1 = []
     I2 = []
-    
+
     for k in indices:
         if k==i: continue
         if k==j: continue
@@ -46,7 +47,7 @@ def partition(indices,i,j):
             I1.append(k)
         else:
             I2.append(k)
-            
+
     return (I1,I2)
 
 # valid_bonds
@@ -66,7 +67,7 @@ def valid_bonds(seq,indices):
 
 def count_partitioned(indices,i,j,count=lambda x:0):
     I1,I2  = partition(indices,i,j)
-    return count(I1)*count(I2)  
+    return count(I1)*count(I2)
 
 #    count_perfect_matchings
 #
@@ -81,10 +82,10 @@ def count_perfect_matchings(seq):
             if len(indices)==0: return 1
             if len(indices)==2: return 1
             return sum([count_partitioned(indices,i,j,count=count) for i,j in valid_bonds(seq,indices)])
-    
+
         key = str(indices)
         if not key in cache:
-            cache[key] = count(indices)        
+            cache[key] = count(indices)
         return cache[key]
     cache = {}
     return wrapped_count(list(range(len(seq))))
@@ -96,22 +97,22 @@ def count_perfect_matchings(seq):
 # case where n nodes match
 
 
-            
+
 def count_matchings(seq):
-    def wrapped_count(indices):                
+    def wrapped_count(indices):
         def count(indices):
-            
+
             n      = len(indices)
-            if n<2: return 1          
+            if n<2: return 1
             return wrapped_count(indices[1:]) + \
                    sum([count_partitioned(indices,i,j,count=count) for i,j in valid_bonds(seq,indices)])
-        
+
         key = str(indices)
         if not key in cache:
-            cache[key] = count(indices)        
+            cache[key] = count(indices)
         return cache[key]
     cache = {}
-    return wrapped_count(list(range(len(seq)))) 
+    return wrapped_count(list(range(len(seq))))
 
 # catmotz
 #
@@ -126,8 +127,7 @@ def count_matchings(seq):
 def catmotz(s,
             counter=count_perfect_matchings,
             to_int = {'A': +1,
-                      'U': -1, 
+                      'U': -1,
                       'G': -2,
                       'C': +2}):
     return counter([to_int[c] for c in s])
-    

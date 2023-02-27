@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 #    Copyright (C) 2019-2020 Greenweaves Software Limited
 #
 #    This is free software: you can redistribute it and/or modify
@@ -20,7 +21,7 @@ import os
 import time
 from   helpers       import read_strings
 from   combinatorics import catmotz
-        
+
 if __name__=='__main__':
     start = time.time()
     parser = argparse.ArgumentParser('CAT Catalan Numbers and RNA Secondary Structures')
@@ -31,15 +32,15 @@ if __name__=='__main__':
         print (catmotz('AUAU'))
         print (catmotz('UAGCGUGAUCAC'))
         print (catmotz('CGGCUGCUACGCGUAAGCCGGCUGCUACGCGUAAGC'))
-  
+
     if args.rosalind:
         Input  = read_strings(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt')
- 
+
         Result = catmotz(''.join(line for line in Input[1:]))%1000000
         print (Result)
         with open(f'{os.path.basename(__file__).split(".")[0]}.txt','w') as f:
             f.write(f'{Result}\n')
-                
+
     elapsed = time.time()-start
     minutes = int(elapsed/60)
     seconds = elapsed-60*minutes

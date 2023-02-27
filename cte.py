@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 #    Copyright (C) 2019 Greenweaves Software Limited
 #
 #    This is free software: you can redistribute it and/or modify
@@ -34,8 +35,7 @@ if __name__=='__main__':
             else:
                 g.append((numbers[0],numbers[1],numbers[2]))
         if len(g)>0:
-            gs.append(g)           
+            gs.append(g)
         return gs
-        
-    print (' '.join([str(cte(g)) for g in create_graphs()])) 
-  
+
+    print (' '.join([str(cte(g)) for g in create_graphs()]))

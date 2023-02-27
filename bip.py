@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 #    Copyright (C) 2019 Greenweaves Software Limited
 #
 #    This is free software: you can redistribute it and/or modify
@@ -20,7 +21,6 @@ from graphs import bip
 
 if __name__=='__main__':
 
-    
+
     with open(r'C:\Users\Simon\Downloads\rosalind_bip(3).txt') as f:
         print (format_list([bip(g) for g in parse_graphs(f)]))
- 

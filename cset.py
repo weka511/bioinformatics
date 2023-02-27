@@ -1,4 +1,4 @@
-#   Copyright (C) 2020-2021 Greenweaves Software Limited
+#!/usr/bin/env python
 
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -13,7 +13,7 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-#  CSET  	Fixing an Inconsistent Character Set 
+#  CSET  	Fixing an Inconsistent Character Set
 
 import argparse
 import os
@@ -34,7 +34,7 @@ if __name__=='__main__':
                           expand('111000'),
                           expand('100111')]):
             print (char)
-  
+
     if args.rosalind:
         Input           = read_strings(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt')
         character_table = [expand(row) for row in Input]
@@ -42,8 +42,8 @@ if __name__=='__main__':
             for row in cset(character_table):
                 print (row)
                 f.write(f'{"".join(str(i) for i in row)}\n')
-                
+
     elapsed = time.time() - start
     minutes = int(elapsed/60)
     seconds = elapsed - 60*minutes
-    print (f'Elapsed Time {minutes} m {seconds:.2f} s')    
+    print (f'Elapsed Time {minutes} m {seconds:.2f} s')

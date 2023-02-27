@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 #    Copyright (C) 2019 Greenweaves Software Limited
 #
 #    This is free software: you can redistribute it and/or modify
@@ -17,7 +18,7 @@
 
 from spectrum import conv
 
-    
+
 if __name__=='__main__':
     print (
         conv(

@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2019 Greenweaves Software Limited
+#!/usr/bin/env python
 
 # This is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -83,15 +83,15 @@ def neighbours(kmer,k,d):
             result=result+temp
         return result[1:]
     return join(join([generate(i) for i in indices(d)]))
-   
-# Given a table of kmers and counts, explore d-neighbourhood of each kmer and 
+
+# Given a table of kmers and counts, explore d-neighbourhood of each kmer and
 # update count to include counts of neighbours
 def explore_neighbourhood(stats,k,d):
     if d==0:
-        return stats    
+        return stats
     accumulated={}
     for key in stats.keys():
-        accumulated[key]=sum([stats[kmer] for kmer in neighbours(key,k,d) if kmer in stats])    
+        accumulated[key]=sum([stats[kmer] for kmer in neighbours(key,k,d) if kmer in stats])
     return accumulated
 
 # include reverse complement in couts
@@ -113,13 +113,13 @@ def plot_stats(folder,name,k,d,m,fig):
     print (name,fig)
     with open (os.path.join(folder,name),'r') as file:
         dna=''.join(file.read().split('\n'))
-        
+
         stats=accumulate(explore_neighbourhood(generate_stats(dna,k),k,d))
         counts=sorted(stats.values(),reverse=True)
         stats_random=accumulate(explore_neighbourhood(generate_stats(random_dna(len(dna)),k),k,d))
         counts_random=sorted(stats_random.values(),reverse=True)
         plt.figure(fig)
-        plt.plot(counts,label=name)  
+        plt.plot(counts,label=name)
         plt.plot(counts_random,label="random")
         base=name.replace('.txt','')
         title = '%(k)d-mers in %(d)d-neighbourhood of %(base)s'%locals()
@@ -133,7 +133,7 @@ def plot_stats(folder,name,k,d,m,fig):
                     'count_random':counts_random[i],
                     'ratio' : counts[i]/max(counts_random[i],1)})
     plt.savefig('%(k)d-mers-%(d)d-neighbourhood-%(base)s.png'%locals())
-   
+
 if __name__=='__main__':
     fig=1
     #plot_stats('data','E-coli.txt',9,1,25,fig)
@@ -145,5 +145,5 @@ if __name__=='__main__':
             ]:
             plot_stats('data',name,k,0,25,fig)
             fig+=1
-     
+
     plt.show()

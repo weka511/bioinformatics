@@ -1,4 +1,4 @@
-# Copyright (C) 2017-2020 Greenweaves Software Limited
+#!/usr/bin/env python
 
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -26,7 +26,7 @@ from   phylogeny import CharacterTable
 
 def create_tree(treedata):
     handle   = StringIO(treedata)
-    return Phylo.read(handle, "newick") 
+    return Phylo.read(handle, "newick")
 
 if __name__=='__main__':
     start = time.time()
@@ -34,10 +34,10 @@ if __name__=='__main__':
     parser.add_argument('--sample',   default=False, action='store_true', help='process sample dataset')
     parser.add_argument('--rosalind', default=False, action='store_true', help='process Rosalind dataset')
     args = parser.parse_args()
-    if args.sample:       
+    if args.sample:
         for ch in CharacterTable(create_tree('(dog,((elephant,mouse),robot),cat);')):
-            print (ch) 
-        
+            print (ch)
+
     if args.rosalind:
         tree = Phylo.read(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt', 'newick')
 
@@ -46,9 +46,9 @@ if __name__=='__main__':
             for line in Result:
                 print (line)
                 f.write(f'{line}\n')
-                
+
     elapsed = time.time()-start
     minutes = int(elapsed/60)
     seconds = elapsed-60*minutes
-    print (f'Elapsed Time {minutes} m {seconds:.2f} s') 
-    
+    print (f'Elapsed Time {minutes} m {seconds:.2f} s')
+

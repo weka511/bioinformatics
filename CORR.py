@@ -1,6 +1,7 @@
+#!/usr/bin/env python
 '''
  CORR Error Correction in Reads
- 
+
  Copyright (C) 2017 Greenweaves Software Pty Ltd
 
  This is free software: you can redistribute it and/or modify
@@ -15,7 +16,7 @@
 
  You should have received a copy of the GNU General Public License
  along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>
- 
+
  As is the case with point mutations, the most common type of sequencing
  error occurs when a single nucleotide from a read is interpreted incorrectly.
 
@@ -25,10 +26,10 @@
     s was correctly sequenced and appears in the dataset at least twice
 	   (possibly as a reverse complement);
     s is incorrect, it appears in the dataset exactly once, and its
-	  Hamming distance is 1 with respect to exactly one correct read 
+	  Hamming distance is 1 with respect to exactly one correct read
 	  in the dataset (or its reverse complement).
 
- Return: A list of all corrections in the form "[old read]->[new read]". 
+ Return: A list of all corrections in the form "[old read]->[new read]".
  (Each correction must be a single symbol substitution, and you may return the corrections in any order.)
 '''
 
@@ -39,7 +40,7 @@ import rosalind as r
 def corr(reads):
 	def create_read_match_counts(reads):
 		read_match_counts={}
-	
+
 		for key,read in reads:
 			if read in read_match_counts:
 				read_match_counts[read]+=1
@@ -55,7 +56,7 @@ def corr(reads):
 		return matches
 
 	def create_unmatched(read_match_counts,matches):
-		unmatched=[]		
+		unmatched=[]
 		for key,count in read_match_counts.items():
 			if count==1 and not key in matches:
 				r.revc_key=r.revc(key)
@@ -65,7 +66,7 @@ def corr(reads):
 				else:
 					unmatched.append(key)
 		return unmatched
-	
+
 	def find_neighbours(key,matches):
 		neighbours=[]
 		for i in range(len(key)):
@@ -75,7 +76,7 @@ def corr(reads):
 					if key_1 in matches:
 						neighbours.append(key_1)
 		return neighbours
-	
+
 	def fixup(unmatched,matches):
 		pairs=[]
 		for read in unmatched:
@@ -86,7 +87,7 @@ def corr(reads):
 			if len(neighbours)==0 and len(r.revc_neighbours)==1:
 				pairs.append((read,r.revc(neighbours[0])))
 		return pairs
-	
+
 	read_match_counts = create_read_match_counts(reads)
 	matches=create_matches(read_match_counts)
 	unmatched=create_unmatched(read_match_counts,matches)
@@ -94,9 +95,9 @@ def corr(reads):
 
 
 
-if __name__=='__main__':    
+if __name__=='__main__':
 	from Bio import SeqIO
 	def combine(seq_record):
-		return (seq_record.id,str(seq_record.seq))        
+		return (seq_record.id,str(seq_record.seq))
 	for a,b in corr([combine(seq_record) for seq_record in SeqIO.parse("c:/Users/Weka/Downloads/rosalind_corr(6).txt", "fasta")]):
 		print ('{0}->{1}'.format(a,b))
