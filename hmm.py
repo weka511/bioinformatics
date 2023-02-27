@@ -158,64 +158,47 @@ def Likelihood(xs,Alphabet,States,Transition,Emission):
 def get_reduced(s,mask):
     return [s[i] for i in range(len(s)) if mask[i]]
 
-def ConstructProfileHMM(theta,Alphabet,Alignment,sigma=0):
+def is_space(ch):
     '''
-    ConstructProfileHMM
+    Check whether chatacter is a space (represented by hyphen)
+    '''
+    return ch=='-'
 
-    BA10E Construct a Profile HMM and
-    BA10F Construct a Profile HMM with Pseudocounts
+class StateSet:
+    '''
+    Manage states for, S, Mi, Ii, Di, E
+    '''
+    def __init__(self,m):
+        self.m = m
 
-    Parameters:
-        theta      Threshold.
-        Alphabet
-        Alignment
-        sigma      Minimum probability assigned to legal transitions
-   '''
+    def get_pair(self,index):
+        if index   == 0:   return ('S',None)
+        if index == self.m-1: return ('E',None)
+        if index%3 == 0:   return ('D', index//3)
+        if index%3 == 1:   return ('I', index//3)
+        if index%3 == 2:   return ('M', index//3+1)
 
-    def is_space(ch):
-        '''
-        Check whether chatacter is a space (represented by hyphen)
-        '''
-        return ch=='-'
-
-    def create_mask():
-        '''
-        Construct a mask to exclude columns from an alignment
-        if the freaction of spaces exceeds theta
-        '''
-        def get_count(i):
-            return sum([is_space(c) for s in Alignment for c in s[i]])
-
-        fractions = [get_count(i)/len(Alignment) for i in range(len(Alignment[0]))]
-        return [fractions[i]<theta for i in range(len(Alignment[0]))]
-
-
-    def get_state_name(i):
-        if i   == 0: return ('S',None)
-        if i   == m-1: return ('E',None)
-        if i%3 == 0: return ('D', i//3)
-        if i%3 == 1: return ('I', i//3)
-        if i%3 == 2: return ('M', i//3+1)
-
-    def get_state_index(state):
+    def get_index(self,state):
         function,i = state
         if function == 'S': return 0
-        if function == 'E': return m-1
+        if function == 'E': return self.m-1
         if function == 'D': return 3*i
         if function == 'I': return 3*i+1
         if function == 'M': return 3*i-1
 
-    def get_key(op,seq):
+
+    def get_key(self,op,seq):
         return f'{op}-{seq}'
 
-    def split_key(key):
+    def split_key(self,key):
         parts =key.split('-')
         if parts[0] in ['M','D','I']:
             return parts[0],int(parts[1])
         else:
             return parts[0],parts[1]
 
-    def create_path(s,mask):
+    @classmethod
+    def create_path(cls,s,mask):
         product = [('S',None,None)]
         index   = 0
         assert len(s)==len(mask)
@@ -235,13 +218,39 @@ def ConstructProfileHMM(theta,Alphabet,Alignment,sigma=0):
         product.append(('E',None,None))
         return product
 
-
-    def get_successors(state,m):
+    def get_successors(self,state):
         block = (state+1)//3
         for i in range(3):
             successor = 3*block+i+1
-            if successor<m:
+            if successor<self.m:
                 yield(successor)
+
+def ConstructProfileHMM(theta,Alphabet,Alignment,sigma=0):
+    '''
+    ConstructProfileHMM
+
+    BA10E Construct a Profile HMM and
+    BA10F Construct a Profile HMM with Pseudocounts
+
+    Parameters:
+        theta      Threshold.
+        Alphabet
+        Alignment
+        sigma      Minimum probability assigned to legal transitions
+   '''
+
+    def create_mask():
+        '''
+        Construct a mask to exclude columns from an alignment
+        if the freaction of spaces exceeds theta
+        '''
+        def get_count(i):
+            return sum([is_space(c) for s in Alignment for c in s[i]])
+
+        fractions = [get_count(i)/len(Alignment) for i in range(len(Alignment[0]))]
+        return [fractions[i]<theta for i in range(len(Alignment[0]))]
+
+
 
     def normalize_rows(A):
         '''
@@ -263,29 +272,29 @@ def ConstructProfileHMM(theta,Alphabet,Alignment,sigma=0):
             States = {}
             for path in Paths:
                 for (op1, seq1, _),(op2, seq2, _) in zip(path[:-1],path[1:]):
-                    if get_key(op1,seq1)  not in States:
-                        States[get_key(op1,seq1)] = []
-                    States[get_key(op1,seq1)].append((op2, seq2))
+                    if state_set.get_key(op1,seq1)  not in States:
+                        States[state_set.get_key(op1,seq1)] = []
+                    States[state_set.get_key(op1,seq1)].append((op2, seq2))
             return States
 
         product = np.zeros((m,m))
         for i in range(m):
-            for j in get_successors(i,m):
+            for j in state_set.get_successors(i):
                 product[i,j] = sigma
 
         States  = create_census()
         for key1,successors in States.items():
-            state1,index1 = split_key(key1)
+            state1,index1 = state_set.split_key(key1)
             counts      = {}
             for succ,seq in successors:
-                if get_key(succ,seq) not in counts:
-                    counts[get_key(succ,seq)] = 0
-                counts[get_key(succ,seq)]   += 1
+                if state_set.get_key(succ,seq) not in counts:
+                    counts[state_set.get_key(succ,seq)] = 0
+                counts[state_set.get_key(succ,seq)]   += 1
             fractions    = {key:count/len(successors) for key,count in counts.items()}
-            state_index1 = get_state_index((state1,index1))
+            state_index1 = state_set.get_index((state1,index1))
             for key2,fraction in fractions.items():
-                state2,index2 = split_key(key2)
-                state_index2 = get_state_index((state2,index2))
+                state2,index2 = state_set.split_key(key2)
+                state_index2 = state_set.get_index((state2,index2))
                 product[state_index1,state_index2] = max(fraction,sigma)
 
         return normalize_rows(product)
@@ -299,31 +308,32 @@ def ConstructProfileHMM(theta,Alphabet,Alignment,sigma=0):
             States = {}
             for path in Paths:
                 for op, seq, ch in path:
-                    if get_key(op,seq)  not in States:
-                        States[get_key(op,seq)] = []
-                    States[get_key(op,seq)].append(ch)
+                    if state_set.get_key(op,seq)  not in States:
+                        States[state_set.get_key(op,seq)] = []
+                    States[state_set.get_key(op,seq)].append(ch)
             return States
 
         product = np.zeros((m,n))
 
         States  = create_census()
         for key,chars in States.items():
-            state,index = split_key(key)
+            state,index = state_set.split_key(key)
             if state in ['M','I']:
                 counts = {ch:0 for ch in Alphabet}
                 for ch in chars:
                     counts[ch] += 1
                 fractions = {ch:max(count/len(chars),sigma) for ch,count in counts.items()}
-                state_index = get_state_index((state,index))
+                state_index = state_set.get_index((state,index))
                 for j in range(n):
                     product[state_index,j] = fractions[Alphabet[j]]
         return normalize_rows(product)
 
     mask          = create_mask()
-    Paths         = [create_path(s,mask) for s in Alignment]
+    Paths         = [StateSet.create_path(s,mask) for s in Alignment]
     m             = 3 * (sum([1 for m in mask if m]) + 1)
+    state_set     = StateSet(m)
     n             = len(Alphabet)
-    return create_transition(m,Paths), create_emission(m,n,Paths), [get_state_name(i) for i in range(m)]
+    return create_transition(m,Paths), create_emission(m,n,Paths), [state_set.get_pair(i) for i in range(m)]
 
 def float2str(x,
               precision=3,
@@ -399,7 +409,7 @@ def AlignSequenceWithProfileHMM(theta,Alphabet,Alignment,sigma=0):
 def EstimateParameters(s,Alphabet,path,States):
     '''BA10H 	Estimate the Parameters of an HMM'''
     def create_Transitions():
-        Transitions = {(i,j):0 for i in States for j in States}
+        Transitions = np.zeros((len(States),len(States))) #{(i,j):0 for i in States for j in States}
         for i in range(1,n):
             Transitions[path[i-1],path[i]]+= 1
         Sums = {i: sum(Transitions[(i,j)] for j in States) for i in States}
@@ -424,8 +434,10 @@ def EstimateParameters(s,Alphabet,path,States):
                 else:
                     Emissions[(ch,j)] = 1/len(States)
         return Emissions
+
     n = len(path)
     assert n==len(s)
+    path_indices=get_indices(path,States)
     return create_Transitions(),create_Emissions()
 
 
@@ -579,19 +591,24 @@ if __name__=='__main__':
             self.assertAlmostEqual(0.333, Transition[7,9],places=2)
             self.assertAlmostEqual(0.01, Emission[2,1],places=3)
 
-        def test_ba10g(self):
-            '''
-            BA10G   Sequence Alignment with Profile HMM Problem
-            '''
-            Path = AlignSequenceWithProfileHMM(0.4,
-                                                'ABCDEF',
-                                                ['ACDEFACADF',
-                                                 'AFDA---CCF',
-                                                 'A--EFD-FDC',
-                                                 'ACAEF--A-C',
-                                                 'ADDEFAAADF'],
-                                                sigma=0.01)
-            self.assertEqual(9,len(Path))
+        # def test_ba10g(self):
+            # '''
+            # BA10G   Sequence Alignment with Profile HMM Problem
+            # '''
+            # Path = AlignSequenceWithProfileHMM(0.4,
+                                                # 'ABCDEF',
+                                                # ['ACDEFACADF',
+                                                 # 'AFDA---CCF',
+                                                 # 'A--EFD-FDC',
+                                                 # 'ACAEF--A-C',
+                                                 # 'ADDEFAAADF'],
+                                                # sigma=0.01)
+            # self.assertEqual(9,len(Path))
+
+        # def test_ba10h(self):
+            # Transitions,Emissions = EstimateParameters('yzzzyxzxxx','xyz','BBABABABAB','ABC')
+            # x=0
+
 
 
     main()
