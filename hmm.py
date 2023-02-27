@@ -22,9 +22,72 @@ from unittest import TestCase, main
 
 import numpy as np
 
+
+class StateSet:
+    '''
+    Manage states for, S, Mi, Ii, Di, E
+    '''
+    def __init__(self,m):
+        self.m = m
+
+    def get_pair(self,index):
+        if index   == 0:   return ('S',None)
+        if index == self.m-1: return ('E',None)
+        if index%3 == 0:   return ('D', index//3)
+        if index%3 == 1:   return ('I', index//3)
+        if index%3 == 2:   return ('M', index//3+1)
+
+    def get_index(self,state):
+        function,i = state
+        if function == 'S': return 0
+        if function == 'E': return self.m-1
+        if function == 'D': return 3*i
+        if function == 'I': return 3*i+1
+        if function == 'M': return 3*i-1
+
+
+    def get_key(self,op,seq):
+        return f'{op}-{seq}'
+
+    def split_key(self,key):
+        parts =key.split('-')
+        if parts[0] in ['M','D','I']:
+            return parts[0],int(parts[1])
+        else:
+            return parts[0],parts[1]
+
+    @classmethod
+    def create_path(cls,s,mask):
+        product = [('S',None,None)]
+        index   = 0
+        assert len(s)==len(mask)
+        for i in range(len(s)):
+            match mask[i],is_space(s[i]):
+                case (True,False):
+                    index += 1
+                    product.append(('M',index,s[i]))
+                case (True,True):
+                    index += 1
+                    product.append(('D',index,s[i]))
+                case (False,True):  # Nothing needs to happen skipping spaces
+                    pass
+                case (False,False):
+                    product.append(('I',index,s[i]))
+
+        product.append(('E',None,None))
+        return product
+
+    def get_successors(self,state):
+        block = (state+1)//3
+        for i in range(3):
+            successor = 3*block+i+1
+            if successor<self.m:
+                yield(successor)
+
+
 def get_indices(S,Alphabet='AB'):
     '''
-    Used to convert a string into integers representing the position of each charcter in the alphabet.
+    Used to convert a string into integers representing the position of each character in the alphabet.
 
     Parameters:
        S         String to be converrted
@@ -37,6 +100,86 @@ def get_indices(S,Alphabet='AB'):
     for i in range(len(Alphabet)):
         IndexTable[Alphabet[i]]=i
     return [IndexTable[s] for s in S]
+
+def get_reduced(s,mask):
+    return [s[i] for i in range(len(s)) if mask[i]]
+
+def is_space(ch):
+    '''
+    Check whether character is a space (represented by hyphen)
+    '''
+    return ch=='-'
+
+def normalize_rows(A):
+    '''
+    Normalize a matrix so each row sums to 1, unless all elements of row are 0
+    '''
+    m,_        = A.shape
+    row_totals = A.sum(axis=1)
+
+    for i in range(m):
+        if row_totals[i]==0:
+            row_totals[i]=1
+
+    return A/row_totals.reshape(m,1)
+
+def float2str(x,
+              precision=3,
+              p0=0,
+              p1=1):
+    '''
+     float2str
+
+     Format a floating point number in the manner that the
+     grader wants for matrices when dealing with HMM
+
+     Parameters:
+         x         Value to be displayed
+         precision Number of digits (after decimal point)
+    '''
+    format_str = f'{{:.{precision}f}}'
+    if x==0:
+        format_str = f'{{:.{p0}f}}'
+    if x==1:
+        format_str = f'{{:.{p1}f}}'
+    format3= format_str.format(x)
+    while len(format3)>3 and format3[-1]=='0':
+        format3 = format3[:-1]
+    return format3
+
+def format_state(s):
+    code,index = s
+    if code in ['S','E']:
+        return code
+    else:
+        return f'{code}{index}'
+
+
+def formatEmission(Emission,States,Alphabet,precision=2):
+    '''
+    formatEmission
+    '''
+    m,n = Emission.shape
+    yield '\t'.join(Alphabet)
+    for i in range(m):
+        row = []
+        for j in range(n):
+            row.append(float2str(Emission[i,j],precision))
+        yield format_state(States[i]) + '\t' + '\t'.join(row)
+
+
+def formatTransition(Transition,States,precision=2):
+    '''
+    formatTransition
+    '''
+    m,n = Transition.shape
+    yield  '\t'.join(format_state(state) for state in States)
+    for i in range(m):
+        row = []
+        for j in range(n):
+            row.append(float2str(Transition[i,j],precision))
+        yield format_state(States[i]) + '\t' + '\t'.join(row)
+
 
 def ProbabilityHiddenPath(path,States,Transition):
     '''
@@ -55,9 +198,6 @@ def ProbabilityHiddenPath(path,States,Transition):
     _,n           = logTransition.shape
     return np.exp(sum([logP_Transition(i,path_indices) for i in range(1,len(path_indices))]))/n
 
-
-
-
 def ProbabilityOutcomeGivenHiddenPath(string,alphabet,path,states,Emission):
     '''
     ProbabilityOutcomeGivenHiddenPath
@@ -72,8 +212,6 @@ def ProbabilityOutcomeGivenHiddenPath(string,alphabet,path,states,Emission):
     logEmission = np.log(Emission)
     return np.exp(sum([logEmission[a,b] for a,b in zip(get_indices(path,Alphabet=states),
                                                        get_indices(string,Alphabet=alphabet))]))
-
-
 
 
 def Viterbi(xs,alphabet,States,Transition,Emission):
@@ -154,89 +292,6 @@ def Likelihood(xs,Alphabet,States,Transition,Emission):
         return s
 
     return sum(create_weights(get_indices(xs,Alphabet=Alphabet))[-1])
-
-def get_reduced(s,mask):
-    return [s[i] for i in range(len(s)) if mask[i]]
-
-def is_space(ch):
-    '''
-    Check whether chatacter is a space (represented by hyphen)
-    '''
-    return ch=='-'
-
-class StateSet:
-    '''
-    Manage states for, S, Mi, Ii, Di, E
-    '''
-    def __init__(self,m):
-        self.m = m
-
-    def get_pair(self,index):
-        if index   == 0:   return ('S',None)
-        if index == self.m-1: return ('E',None)
-        if index%3 == 0:   return ('D', index//3)
-        if index%3 == 1:   return ('I', index//3)
-        if index%3 == 2:   return ('M', index//3+1)
-
-    def get_index(self,state):
-        function,i = state
-        if function == 'S': return 0
-        if function == 'E': return self.m-1
-        if function == 'D': return 3*i
-        if function == 'I': return 3*i+1
-        if function == 'M': return 3*i-1
-
-
-    def get_key(self,op,seq):
-        return f'{op}-{seq}'
-
-    def split_key(self,key):
-        parts =key.split('-')
-        if parts[0] in ['M','D','I']:
-            return parts[0],int(parts[1])
-        else:
-            return parts[0],parts[1]
-
-    @classmethod
-    def create_path(cls,s,mask):
-        product = [('S',None,None)]
-        index   = 0
-        assert len(s)==len(mask)
-        for i in range(len(s)):
-            match mask[i],is_space(s[i]):
-                case (True,False):
-                    index += 1
-                    product.append(('M',index,s[i]))
-                case (True,True):
-                    index += 1
-                    product.append(('D',index,s[i]))
-                case (False,True):  # Nothing needs to happen skipping spaces
-                    pass
-                case (False,False):
-                    product.append(('I',index,s[i]))
-
-        product.append(('E',None,None))
-        return product
-
-    def get_successors(self,state):
-        block = (state+1)//3
-        for i in range(3):
-            successor = 3*block+i+1
-            if successor<self.m:
-                yield(successor)
-
-def normalize_rows(A):
-    '''
-    Normalize a matrix so each row sums to 1, unless all elements of row are 0
-    '''
-    m,_ = A.shape
-    row_totals = A.sum(axis=1)
-
-    for i in range(m):
-        if row_totals[i]==0:
-            row_totals[i]=1
-
-    return A/row_totals.reshape(m,1)
 
 def ConstructProfileHMM(theta,Alphabet,Alignment,sigma=0):
     '''
@@ -335,62 +390,6 @@ def ConstructProfileHMM(theta,Alphabet,Alignment,sigma=0):
     n             = len(Alphabet)
     return create_transition(m,Paths), create_emission(m,n,Paths), [state_set.get_pair(i) for i in range(m)]
 
-def float2str(x,
-              precision=3,
-              p0=0,
-              p1=1):
-    '''
-     float2str
-
-     Format a floatinmg point number in the manner that the
-     grader wants for matrices when dealing with HMM
-
-     Parameters:
-         x         Value to be displayed
-         precision Number of digits (after decimal point)
-    '''
-    format_str = f'{{:.{precision}f}}'
-    if x==0:
-        format_str = f'{{:.{p0}f}}'
-    if x==1:
-        format_str = f'{{:.{p1}f}}'
-    format3= format_str.format(x)
-    while len(format3)>3 and format3[-1]=='0':
-        format3 = format3[:-1]
-    return format3
-
-def format_state(s):
-    code,index = s
-    if code in ['S','E']:
-        return code
-    else:
-        return f'{code}{index}'
-
-
-def formatEmission(Emission,States,Alphabet,precision=2):
-    '''
-    formatEmission
-    '''
-    m,n = Emission.shape
-    yield '\t'.join(Alphabet)
-    for i in range(m):
-        row = []
-        for j in range(n):
-            row.append(float2str(Emission[i,j],precision))
-        yield format_state(States[i]) + '\t' + '\t'.join(row)
-
-
-def formatTransition(Transition,States,precision=2):
-    '''
-    formatTransition
-    '''
-    m,n = Transition.shape
-    yield  '\t'.join(format_state(state) for state in States)
-    for i in range(m):
-        row = []
-        for j in range(n):
-            row.append(float2str(Transition[i,j],precision))
-        yield format_state(States[i]) + '\t' + '\t'.join(row)
 
 
 def AlignSequenceWithProfileHMM(theta,Alphabet,Alignment,sigma=0):
