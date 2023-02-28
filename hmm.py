@@ -25,7 +25,8 @@ import numpy as np
 
 class StateSet:
     '''
-    Manage states: S, I0, M1, D1, I1, M2, D2, I2, ...E '''
+    Manage states: S, I0, M1, D1, I1, M2, D2, I2, ...E
+    '''
 
     def __init__(self,m):
         '''
@@ -115,6 +116,14 @@ class StateSet:
             if successor<self.m:
                 yield(successor)
 
+    @classmethod
+    def format(cls,s):
+        code,index = s
+        if code in ['S','E']:
+            return code
+        else:
+            return f'{code}{index}'
+
 
 def get_indices(S,Alphabet='AB'):
     '''
@@ -177,12 +186,7 @@ def float2str(x,
         format3 = format3[:-1]
     return format3
 
-def format_state(s):
-    code,index = s
-    if code in ['S','E']:
-        return code
-    else:
-        return f'{code}{index}'
+
 
 
 def formatEmission(Emission,States,Alphabet,precision=2):
@@ -195,7 +199,7 @@ def formatEmission(Emission,States,Alphabet,precision=2):
         row = []
         for j in range(n):
             row.append(float2str(Emission[i,j],precision))
-        yield format_state(States[i]) + '\t' + '\t'.join(row)
+        yield StateSet.format(States[i]) + '\t' + '\t'.join(row)
 
 
 def formatTransition(Transition,States,precision=2):
@@ -203,12 +207,12 @@ def formatTransition(Transition,States,precision=2):
     formatTransition
     '''
     m,n = Transition.shape
-    yield  '\t'.join(format_state(state) for state in States)
+    yield  '\t'.join(StateSet.format(state) for state in States)
     for i in range(m):
         row = []
         for j in range(n):
             row.append(float2str(Transition[i,j],precision))
-        yield format_state(States[i]) + '\t' + '\t'.join(row)
+        yield StateSet.format(States[i]) + '\t' + '\t'.join(row)
 
 
 def ProbabilityHiddenPath(path,States,Transition):
@@ -331,22 +335,26 @@ def ConstructProfileHMM(theta,Alphabet,Alignment,sigma=0):
     BA10F Construct a Profile HMM with Pseudocounts
 
     Parameters:
-        theta      Threshold.
-        Alphabet
-        Alignment
+        theta      Threshold: exclude columns from an alignment if the fraction of spaces is greater than or equal to theta
+        Alphabet   Symbols sed for Alignment
+        Alignment  A list of strings representing aligned proteins
         sigma      Minimum probability assigned to legal transitions
    '''
 
     def create_mask():
         '''
         Construct a mask to exclude columns from an alignment
-        if the freaction of spaces exceeds theta
+        if the fraction of spaces is greater than or equal to theta
         '''
         def get_count(i):
+            '''
+            Returns:
+                Number of spacen in column i
+            '''
             return sum([is_space(c) for s in Alignment for c in s[i]])
 
         fractions = [get_count(i)/len(Alignment) for i in range(len(Alignment[0]))]
-        return [fractions[i]<theta for i in range(len(Alignment[0]))]
+        return [fraction<theta for fraction in fractions]
 
 
     def create_transition(m,Paths):
@@ -422,7 +430,7 @@ def ConstructProfileHMM(theta,Alphabet,Alignment,sigma=0):
 
 
 
-def AlignSequenceWithProfileHMM(theta,Alphabet,Alignment,sigma=0):
+def AlignSequenceWithProfileHMM(theta,s,Alphabet,Alignment,sigma=0):
     '''
     AlignSequenceWithProfileHMM
 
@@ -432,8 +440,24 @@ def AlignSequenceWithProfileHMM(theta,Alphabet,Alignment,sigma=0):
 
     Return: An optimal hidden path emitting Text in HMM(Alignment,θ,σ).
     '''
-    pass
+    def parse_state_string(Path):
+        product = []
+        i = 0
+        while i<len(Path):
+            ch = Path[i]
+            i += 1
+            if ch in ['S','E']: product.append((ch,))
+            if ch in ['M','I','D']:
+                j = i
+                while i<len(Path) and Path[i].isdigit():
+                    i+= 1
+                product.append((ch,int(Path[j:i])))
+        return product
 
+    Transition, Emission,StateNames = ConstructProfileHMM(theta,Alphabet,Alignment,sigma=sigma)
+    States                          = [StateSet.format(x) for x in StateNames]
+    Path                            = Viterbi(s,Alphabet,States,Transition,Emission)   #FIXME
+    return parse_state_string(Path)
 
 def EstimateParameters(s,Alphabet,path,States):
     '''BA10H 	Estimate the Parameters of an HMM'''
@@ -615,6 +639,7 @@ if __name__=='__main__':
             BA10G   Sequence Alignment with Profile HMM Problem
             '''
             Path = AlignSequenceWithProfileHMM(0.4,
+                                                'AEFDFDC',
                                                 'ABCDEF',
                                                 ['ACDEFACADF',
                                                  'AFDA---CCF',
