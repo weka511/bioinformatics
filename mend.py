@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 # Copyright (C) 2017-2020 Greenweaves Software Limited
 
 # This is free software: you can redistribute it and/or modify
@@ -41,7 +42,7 @@ if __name__=='__main__':
         print (Result)
         with open(f'{os.path.basename(__file__).split(".")[0]}.txt','w') as f:
             f.write(f'{Result}\n')
-                
+
     elapsed = time.time() - start
     minutes = int(elapsed/60)
     seconds = elapsed - 60*minutes

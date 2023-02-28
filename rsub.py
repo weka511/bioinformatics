@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 #   Copyright (C) 2020 Greenweaves Software Limited
 
 #   This program is free software: you can redistribute it and/or modify
@@ -13,7 +14,7 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-#  RSUB  	Identifying Reversing Substitutions 
+#  RSUB  	Identifying Reversing Substitutions
 
 import argparse
 import os
@@ -53,7 +54,7 @@ if __name__=='__main__':
                              '>elephant',
                              'AATTC']):
             print(format(reverse))
-        
+
     if args.extra: #Elmar Hitz's example from Questions
         for reverse in rsub('(((ostrich,cat)rat,mouse)dog,elephant)robot;',
                             ['>robot',
@@ -71,18 +72,18 @@ if __name__=='__main__':
                              '>elephant',
                              'AATTC']):
             print(format(reverse))
-                    
+
     if args.rosalind:
         Input  = read_strings(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt')
- 
+
         Result = rsub(Input[0],Input[1:])
-        
+
         with open(f'{os.path.basename(__file__).split(".")[0]}.txt','w') as f:
             for reverse in Result:
                 print (format(reverse))
                 f.write(f'{format(reverse)}\n')
-                
+
     elapsed = time.time() - start
     minutes = int(elapsed/60)
     seconds = elapsed - 60*minutes
-    print (f'Elapsed Time {minutes} m {seconds:.2f} s')    
+    print (f'Elapsed Time {minutes} m {seconds:.2f} s')

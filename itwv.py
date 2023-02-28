@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 #   Copyright (C) 2020-2021 Greenweaves Software Limited
 
 #   This program is free software: you can redistribute it and/or modify
@@ -13,7 +14,7 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-#  ITWV Finding Disjoint Motifs in a Gene 
+#  ITWV Finding Disjoint Motifs in a Gene
 
 import argparse
 import os
@@ -29,25 +30,25 @@ if __name__=='__main__':
     parser.add_argument('--rosalind', default=False, action='store_true', help='process Rosalind dataset')
     args = parser.parse_args()
     if args.sample:
-   
+
         for line in itwv('GACCACGGTT',
                     ['ACAG',
                      'GT',
                      'CCG']):
             print (format_list(line))
-        
-    
+
+
 
     if args.rosalind:
         Input  = read_strings(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt')
- 
+
         Result = itwv(Input[0],Input[1:])
         with open(f'{os.path.basename(__file__).split(".")[0]}.txt','w') as f:
             for line in Result:
                 out = format_list(line)
                 f.write(f'{out}\n')
-                
+
     elapsed = time.time() - start
     minutes = int(elapsed/60)
     seconds = elapsed - 60*minutes
-    print (f'Elapsed Time {minutes} m {seconds:.2f} s')    
+    print (f'Elapsed Time {minutes} m {seconds:.2f} s')

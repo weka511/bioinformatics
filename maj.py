@@ -1,4 +1,4 @@
-#    Copyright (C) 2018 Greenweaves Software Pty Ltd
+#!/usr/bin/env python
 #
 #    This is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -33,15 +33,15 @@ if __name__=='__main__':
     m = -1
     k = -1
     As=[]
- 
-    with open (r'data\rosalind_maj.txt') as f:    
+
+    with open (r'data\rosalind_maj.txt') as f:
         for line in f:
             if k==-1:
                 values=line.strip().split()
                 k=int(values[0])
                 m=int(values[1])
             else:
-                As.append([int(v) for v in line.strip().split()])    
+                As.append([int(v) for v in line.strip().split()])
 
     print (' '.join([str(maj(As[i])) for i in range(k)]))
 

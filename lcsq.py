@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 #    Copyright (C) 2019 Greenweaves Software Limited
 #
 #    This is free software: you can redistribute it and/or modify
@@ -13,7 +14,7 @@
 #    You should have received a copy of the GNU General Public License
 #    along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>
 
-# LCSQ 	Finding a Shared Spliced Motif 
+# LCSQ 	Finding a Shared Spliced Motif
 
 # See http://www.cs.cmu.edu/afs/cs/academic/class/15451-s15/LectureNotes/lecture04.pdf, and
 # https://www.ics.uci.edu/~goodrich/teach/cs260P/notes/LCS.pdf
@@ -27,8 +28,8 @@ def lcsq(s,t):
             for i in range(len(s)):
                 for j in range(len(t)):
                     lcs[i][j] = (get_lcs(i-1,j-1) + 1) if s[i]==t[j] else max(get_lcs(i-1,j), get_lcs(i,j-1))
-                
-        def extract():        
+
+        def extract():
             i = len(s)-1
             j = len(t)-1
             seq = []
@@ -44,9 +45,9 @@ def lcsq(s,t):
                     return seq[::-1]
         populate()
         return extract()
-      
+
     return ''.join(dynamic_programming([s0 for s0 in s], [t0 for t0 in t]))
-    
+
 if __name__=='__main__':
     print (lcsq('GATTCAGAGAATGTTTTCGTAAGCTGTAATTCGGTTTGTATTTGCAACGAACGATTGACA'
                 'GAAAGAGGGATATAACGGCAGACGTACGGAAAGAACTCGAGCCATGCCATCATACGAACT'
@@ -79,4 +80,3 @@ if __name__=='__main__':
                 'CATGGGATTAACAGGGCGCACCATTGGCTTCTTCCTAGCCCTCACCCTGGTTCGTGAGAA'
                 'TCCGGGTGAGCTTTCTTGTTACACCAGTCACAGATAACAACATAAGTGTTTGGGGTTCCC'
                 'GGAATTC'))
-    

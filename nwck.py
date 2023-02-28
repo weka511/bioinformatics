@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 # Copyright (C) 2017 Greenweaves Software Pty Ltd
 
 # This is free software: you can redistribute it and/or modify
@@ -36,13 +37,13 @@ def diff(path1,path2):
         return sum(l for (_,l) in path)
     if len(path1)>len(path2):
         return diff(path2,path1)
-    
+
     i=0
     while i<len(path1)  and path1[i][0]==path2[i][0]:
         i+=1
- 
+
     return length(path1[i:]) +length(path2[i:])
-    
+
 with open (r'C:\Users\Weka\Downloads\rosalind_nkew.txt') as f:
     diffs=[]
     i = 0

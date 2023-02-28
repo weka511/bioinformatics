@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 #    Copyright (C) 2020 Simon Crase
 #
 #    This is free software: you can redistribute it and/or modify
@@ -14,7 +15,7 @@
 #    along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>
 #
 #   MPRT Finding a Protein Motif
-# 
+#
 #  N{P}[ST]{P}.
 
 import os
@@ -25,7 +26,7 @@ import reference_tables as rt
 
 # read_uniprot_as_fasta
 #
-# Read data from uniprot site as fasta file     
+# Read data from uniprot site as fasta file
 
 def read_uniprot_as_fasta(url = 'http://www.uniprot.org/uniprot/',ID='B5ZC00'):
       resource = urlopen(urljoin(url,ID+'.FASTA'))
@@ -45,7 +46,7 @@ def get_protein_sequence(fasta):
             pos        = matched.end(0)+1
             re_protein = rt.get_re_protein(min_length=1)
             matched    = re_protein.search(fasta,pos=pos)
-      return ''.join(amino_acids) 
+      return ''.join(amino_acids)
 
 # mprt
 #
@@ -72,7 +73,7 @@ def mprt(url = 'http://www.uniprot.org/uniprot/',ID='B5ZC00',motif_pattern='N[\s
 def read_data(file,path=r'C:\Users\Simon\bioinformatics\data'):
       with open (os.path.join(path,file)) as f:
             return [line.strip() for line in f]
-      
+
 if __name__=='__main__':
       import argparse
       parser = argparse.ArgumentParser('MPRT')
@@ -88,16 +89,16 @@ if __name__=='__main__':
             ]
       if args.output:
             with open (args.output,'w') as out:
-                  for ID in IDs:    
+                  for ID in IDs:
                         motifs = mprt(ID=ID)
                         if len(motifs)>0:
                               out.write (f'{ID}\n')
                               locations = [seq for seq in motifs.values()]
                               locations.sort()
                               line = ' '.join([str(p) for p in locations])
-                              out.write (f'{line}\n')                  
-      else:            
-            for ID in IDs:    
+                              out.write (f'{line}\n')
+      else:
+            for ID in IDs:
                   motifs = mprt(ID=ID)
                   if len(motifs)>0:
                         print (ID)

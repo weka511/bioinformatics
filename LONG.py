@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 # Copyright (C) 2017 Greenweaves Software Pty Ltd
 
 # This is free software: you can redistribute it and/or modify
@@ -48,7 +49,7 @@ def long(strings):
                     break
             if not matched:
                 return i
-            
+
     pairs=compare()
     genome=[]
     while len(pairs)>0:
@@ -65,6 +66,6 @@ def long(strings):
 if __name__=='__main__':
     def combine(seq_record):
         return (seq_record.id,str(seq_record.seq))
-    
+
     from Bio import SeqIO
     print (long([combine(seq_record) for seq_record in SeqIO.parse("c:/Users/Weka/Downloads/rosalind_long.txt", "fasta")]))

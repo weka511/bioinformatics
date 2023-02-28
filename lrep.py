@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 #   Copyright (C) 2020 Greenweaves Software Limited
 
 #   This program is free software: you can redistribute it and/or modify
@@ -13,7 +14,7 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-#  lrep Finding the Longest Multiple Repeat 
+#  lrep Finding the Longest Multiple Repeat
 
 import argparse
 import os
@@ -22,7 +23,7 @@ from   helpers import read_strings
 from   numpy import argsort
 
 def lrep(text,target_count,edges):
-    
+
     # extract_entries_from_edges
     #
     # Convert edges from string to list of lists:
@@ -30,21 +31,21 @@ def lrep(text,target_count,edges):
     #       -to
     #       - start of substring
     #       - length of substring
-    
+
     def extract_entries_from_edges():
         return [[int(e.replace('node','')) for e in edge.split()] for edge in edges]
-    
+
     # standardize_entry
     #
     # 1. If string includes '$', remove it (so it matches same substring as internal)
     # 2. Change start of substring to have zero offset as in Python
-    
+
     def standardize_entry(entry):
         link1,link2,pos,length = entry
         if pos+length>len(text):
             length -=1
         return [link1,link2,pos-1,length]
-    
+
     # remove_duplicates
     def remove_duplicates(entries):
         Result = []
@@ -60,9 +61,9 @@ def lrep(text,target_count,edges):
                     Result.append(entries[k])
             i = j
         return Result
-    
+
     POS    = 2 # Index in entry
-    LENGTH = 3 # Index in entry 
+    LENGTH = 3 # Index in entry
     n      = len(text)
 
     # Sort entries into descending order by length
@@ -86,7 +87,7 @@ def lrep(text,target_count,edges):
                     m += k
                 k = m
         i = j+1
-  
+
 
 if __name__=='__main__':
     start = time.time()
@@ -113,16 +114,16 @@ if __name__=='__main__':
                      'node11 node13 10 1',
                      'node14 node15 6 5',
                      'node14 node16 10 1']))
-        
+
     if args.rosalind:
         Input  = read_strings(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt')
- 
+
         Result = lrep(Input[0], int(Input[1]), Input[2:])
         print (Result)
         with open(f'{os.path.basename(__file__).split(".")[0]}.txt','w') as f:
             f.write(f'{Result}\n')
-                
+
     elapsed = time.time() - start
     minutes = int(elapsed/60)
     seconds = elapsed - 60*minutes
-    print (f'Elapsed Time {minutes} m {seconds:.2f} s') 
+    print (f'Elapsed Time {minutes} m {seconds:.2f} s')

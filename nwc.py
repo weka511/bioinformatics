@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 # Copyright (C) 2019-2020 Greenweaves Software Limited
 
 #   This program is free software: you can redistribute it and/or modify
@@ -22,14 +23,14 @@
 import argparse
 import os
 import time
-from helpers import read_strings,create_list 
-from graphs import bf  
+from helpers import read_strings,create_list
+from graphs import bf
 
 def extract_data(Input):
     RowsAsInts = [[int(i) for i in row.split()] for row in Input]
     return [data if len(data)>1 else data[0] for data in RowsAsInts if len(data)>0]
 
-          
+
 def extract_graphs(data):
     Result = []
     Edges  = []
@@ -59,24 +60,24 @@ if __name__=='__main__':
                  [2, 3, 1],
                  [3, 1, 6],
                  [2, 1, -7],
-                 
+
                  [3, 4],
                  [1, 2, -8],
                  [2, 3, 20],
                  [3, 1, -1],
                  [3, 2, -30]]
-        
+
         print ([n for n,_,_ in [bf(edges) for edges in extract_graphs(data)]])
 
     if args.rosalind:
-        Input     = read_strings(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt')      
-        Result    = [n for n,_,_ in [bf(edges,s=0) for edges in extract_graphs(extract_data(Input))]] 
+        Input     = read_strings(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt')
+        Result    = [n for n,_,_ in [bf(edges,s=0) for edges in extract_graphs(extract_data(Input))]]
         Formatted = ' '.join(str(r) for r in Result)
         print (Formatted)
         with open(f'{os.path.basename(__file__).split(".")[0]}.txt','w') as f:
             f.write(f'{Formatted}\n')
-                
+
     elapsed = time.time()-start
     minutes = int(elapsed/60)
     seconds = elapsed-60*minutes
-    print (f'Elapsed Time {minutes} m {seconds:.2f} s')    
+    print (f'Elapsed Time {minutes} m {seconds:.2f} s')

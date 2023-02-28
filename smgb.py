@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 #   Copyright (C) 2020 Greenweaves Software Limited
 
 #   This program is free software: you can redistribute it and/or modify
@@ -24,7 +25,7 @@ from   fasta import FastaContent
 from   align import reverse
 
 def smgb(s,t,match=+1,mismatch=-1,indel=-1):
- 
+
     def score_pair(a,b):
         return match if a==b else mismatch
 
@@ -33,12 +34,12 @@ def smgb(s,t,match=+1,mismatch=-1,indel=-1):
         t1 = []
         i  = m
         j  = n
-        
+
         while i>index:
             i-=1
             s1.append(s[i])
             t1.append('-')
-            
+
         while i>0 and j>0:
             step = argmax([scores[i-1][j]   + indel,
                            scores[i][j-1]   + indel,
@@ -56,13 +57,13 @@ def smgb(s,t,match=+1,mismatch=-1,indel=-1):
                 j-=1
                 s1.append(s[i])
                 t1.append(t[j])
-                
+
         while i>0:
             i-=1
             s1.append(s[i])
-            t1.append('-')        
+            t1.append('-')
         return s1,t1
-     
+
     m      = len(s)
     n      = len(t)
     assert m>n, 't should be shorter than s'
@@ -73,12 +74,12 @@ def smgb(s,t,match=+1,mismatch=-1,indel=-1):
             scores[i][j] = max(scores[i-1][j]   + indel,
                                scores[i][j-1]   + indel,
                                scores[i-1][j-1] + score_pair(s[i-1],t[j-1]))
-        
+
     last_column = [row[-1] for row in scores]
     index       = argmax(last_column)
     s1,t1       = backtrack()
     return last_column[index],reverse(s1),reverse(t1)
-    
+
 
 if __name__=='__main__':
     start = time.time()
@@ -90,8 +91,8 @@ if __name__=='__main__':
         score,s1,t1 = smgb('CAGCACTTGGATTCTCGG','CAGCGTGG')
         print (score)
         print (s1)
-        print (t1)      
-        
+        print (t1)
+
     if args.rosalind:
         Input       = read_strings(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt')
         fasta       = FastaContent(Input)
@@ -102,12 +103,12 @@ if __name__=='__main__':
         with open(f'{os.path.basename(__file__).split(".")[0]}.txt','w') as f:
             print (score)
             print (s1)
-            print (t1)                
+            print (t1)
             f.write(f'{score}\n')
             f.write(f'{s1}\n')
             f.write(f'{t1}\n')
-                
+
     elapsed = time.time() - start
     minutes = int(elapsed/60)
     seconds = elapsed - 60*minutes
-    print (f'Elapsed Time {minutes} m {seconds:.2f} s')    
+    print (f'Elapsed Time {minutes} m {seconds:.2f} s')

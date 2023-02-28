@@ -1,4 +1,4 @@
-#    Copyright (C) 2019-2020 Greenweaves Software Limited
+#!/usr/bin/env python
 #
 #    This is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -26,7 +26,7 @@ def get_score(s,t,replace_score=substitution_matrices.load("BLOSUM62"),sigma=11,
     score = 0
     gap   = 0
     match_s=False
-    match_t=False    
+    match_t=False
     for i in range(len(s)):
         if s[i]=='-':
             match_s=False
@@ -34,7 +34,7 @@ def get_score(s,t,replace_score=substitution_matrices.load("BLOSUM62"),sigma=11,
             if t[i]=='-':
                 match_t=False
             else:
-                match_t=True            
+                match_t=True
         else:
             match_s=True
             if t[i]=='-':
@@ -42,7 +42,7 @@ def get_score(s,t,replace_score=substitution_matrices.load("BLOSUM62"),sigma=11,
                 gap+=1
             else:
                 match_t=True
- 
+
         if match_s and match_t:
             if gap>0:
                 score-= (sigma + (gap-1)*epsilon)
@@ -51,12 +51,12 @@ def get_score(s,t,replace_score=substitution_matrices.load("BLOSUM62"),sigma=11,
                 score+=replace_score[(s[i],t[i])]
             else:
                 score+=replace_score[(t[i],s[i])]
-                
+
     if gap>0:
         score-= (sigma + (gap-1)*epsilon)
-        
+
     return score
-    
+
 if __name__=='__main__':
     from helpers import create_strings
     #score,s,t = gaff('PRTEINS','PRTWPSEIN')
@@ -66,7 +66,7 @@ if __name__=='__main__':
     score,s,t = gaff(strings[0],strings[1])
     print (score,get_score(s,t))
     print (s)
-    print (t)        
+    print (t)
     with open('gaff.txt','w') as o:
         o.write('{0}\n'.format(get_score(s,t)))
         o.write('{0}\n'.format(s))

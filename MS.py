@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 # Copyright (C) 2017 Greenweaves Software Pty Ltd
 
 # This is free software: you can redistribute it and/or modify
@@ -24,7 +25,7 @@ def ms(n,A):
         B1=A[n1:]
         m1=len(B1)
         return MER.mer(n1,ms(n1,A1),m1,ms(m1,B1))
-    
+
 #print (ms(10,[20, 19, 35, -18, 17, -20, 20, 1 ,4, 4]))
 
 with open('c:/Users/Weka/Downloads/rosalind_ms(1).txt') as f:

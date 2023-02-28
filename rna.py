@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 #   Copyright (C) 2020 Greenweaves Software Limited
 
 #   This program is free software: you can redistribute it and/or modify
@@ -20,7 +21,7 @@ import os
 import time
 from   helpers import  read_strings
 from   rosalind import dna_to_rna
-  
+
 if __name__=='__main__':
     start = time.time()
     parser = argparse.ArgumentParser('....')
@@ -29,18 +30,18 @@ if __name__=='__main__':
     args = parser.parse_args()
     if args.sample:
         print (dna_to_rna('GATGGAACTTGACTACGTAAATT'))
-        
-    
+
+
 
     if args.rosalind:
         Input  = read_strings(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt')
- 
+
         Result = dna_to_rna(Input[0])
         print (Result)
         with open(f'{os.path.basename(__file__).split(".")[0]}.txt','w') as f:
             f.write(f'{Result}\n')
-                
+
     elapsed = time.time() - start
     minutes = int(elapsed/60)
     seconds = elapsed - 60*minutes
-    print (f'Elapsed Time {minutes} m {seconds:.2f} s')    
+    print (f'Elapsed Time {minutes} m {seconds:.2f} s')

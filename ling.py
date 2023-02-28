@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 #    Copyright (C) 2019-2020 Greenweaves Software Limited
 #
 #    This is free software: you can redistribute it and/or modify
@@ -28,7 +29,7 @@ from   ukkonen import build,Node
 #  Return: The linguistic complexity lc(s)
 #
 # This follows  Troyanskaya OG, Arbell O, Koren Y, Landau GM, Bolshoy A.
-# Sequence complexity profiles of prokaryotic genomic sequences: a fast algorithm 
+# Sequence complexity profiles of prokaryotic genomic sequences: a fast algorithm
 # for calculating linguistic complexity. Bioinformatics. 2002 May;18(5):679-88.
 # doi: 10.1093/bioinformatics/18.5.679. PMID: 12050064.
 #
@@ -39,24 +40,24 @@ def ling(string,a=4):
     def possible(k):
         return a if k==1 else min(a**k,n-k+1)
     tree, pst = build(string, regularize=True)
-       
+
     n   = len(string)
     m   = [possible(k) for k in range(1,n+1)]
-    
+
     return Node.count(tree, pst, ed='#')  /sum(m)
-        
+
 def convert_to_indices(string,lookup = {'A':0,'C':1,'G':2,'T':3}):
-    return [lookup[c] for c in string] 
+    return [lookup[c] for c in string]
 
 
-        
+
 if __name__=='__main__':
     start = time.time()
     parser = argparse.ArgumentParser('....')
     parser.add_argument('--sample',   default=False, action='store_true', help='process sample dataset')
     parser.add_argument('--rosalind', default=False, action='store_true', help='process Rosalind dataset')
     args = parser.parse_args()
-        
+
     if args.sample:
         print (ling('ATTTGGATT'))
 
@@ -67,8 +68,8 @@ if __name__=='__main__':
         print (Result)
         with open(f'{os.path.basename(__file__).split(".")[0]}.txt','w') as f:
             f.write(f'{Result:.3f}\n')
-                
+
     elapsed = time.time() - start
     minutes = int(elapsed/60)
     seconds = elapsed - 60*minutes
-    print (f'Elapsed Time {minutes} m {seconds:.2f} s') 
+    print (f'Elapsed Time {minutes} m {seconds:.2f} s')

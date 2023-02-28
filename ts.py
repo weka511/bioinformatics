@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 #    Copyright (C) 2019 Greenweaves Software Limited
 #
 #    This is free software: you can redistribute it and/or modify
@@ -17,7 +18,7 @@
 
 from align import topological_order
 from helpers import parse_graph, create_adjacency, format_list
-               
+
 if __name__=='__main__':
      with open(r'C:\Users\Simon\Downloads\rosalind_ts.txt') as f:
           g = parse_graph(f)

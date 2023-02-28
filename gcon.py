@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 #    Copyright (C) 2019-2020 Greenweaves Software Limited
 #
 #    This is free software: you can redistribute it and/or modify
@@ -21,15 +22,15 @@ import sys
 
 def gcon(s,t):
     score,s1,t1 = san_kai([s0 for s0 in s],[t0 for t0 in t],sigma=5,epsilon=0)
-    return score,''.join(s1),''.join(t1) 
+    return score,''.join(s1),''.join(t1)
 
 if __name__=='__main__':
     score = -float('inf')
     if sys.argv[1]=='--sample':
         score,_,_=gcon('PLEASANTLY','MEANLY')
     elif sys.argv[1]=='--test':
-        strings   = create_strings('gcon',ext=3,fasta=True)    
+        strings   = create_strings('gcon',ext=3,fasta=True)
         score,_,_ = gcon(strings[0],strings[1])
     else:
         score,_,_=gcon(sys.argv[1],sys.argv[2])
-    print (score)         
+    print (score)

@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 #    Copyright (C) 2019 Greenweaves Software Limited
 #
 #    This is free software: you can redistribute it and/or modify
@@ -24,5 +25,4 @@ if __name__=='__main__':
             strings.append(line.strip())
         d,_=edit(strings[0],strings[1])
         print(d)
-            
-        
+

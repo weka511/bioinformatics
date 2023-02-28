@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 #    Copyright (C) 2019 Greenweaves Software Limited
 #
 #    This is free software: you can redistribute it and/or modify
@@ -16,7 +17,7 @@
 #    full Inferring Peptide from Full Spectrum
 
 from spectrum import full
-    
+
 if __name__=='__main__':
     L = [14986.6971128,
          2717.10801638,
@@ -182,7 +183,7 @@ if __name__=='__main__':
          12075.4835764,
          12106.5257664,
          12172.5363364,
-         12269.5890964   
+         12269.5890964
     ]
-    
-    print (full(L)) 
+
+    print (full(L))

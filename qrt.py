@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 # Copyright (C) 2020 Greenweaves Software Limited
 
 #   This program is free software: you can redistribute it and/or modify
@@ -38,18 +39,18 @@ if __name__=='__main__':
                         ['cat', 'dog', 'elephant', ' ostrich', 'mouse', 'rabbit', 'robot'],
                         [expand_character() for character in ['01xxx00', 'x11xx00', '111x00x']]):
             print (format(quartet))
-  
+
     if args.rosalind:
         Input  = read_strings(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt')
-        
+
         with open(f'{os.path.basename(__file__).split(".")[0]}.txt','w') as f:
             for quartet in qrt(Input[0].split(),
                                [expand_character(character) for character in Input[1:]]):
                 Result = format(quartet)
                 print (Result)
                 f.write(f'{Result}\n')
-                
+
     elapsed = time.time() - start
     minutes = int(elapsed/60)
     seconds = elapsed - 60*minutes
-    print (f'Elapsed Time {minutes} m {seconds:.2f} s')    
+    print (f'Elapsed Time {minutes} m {seconds:.2f} s')

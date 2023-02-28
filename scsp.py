@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 #    Copyright (C) 2019 Greenweaves Software Limited
 #
 #    This is free software: you can redistribute it and/or modify
@@ -41,7 +42,7 @@ def scsp(s,t):
       #              pad_me     Companion - will be padded with leading spaces
       #
       # Returns: two strings, the first extended, the second padded
-      
+
       def extend(extend_me,original,pad_me):
             extension = []
             i = 0
@@ -49,12 +50,12 @@ def scsp(s,t):
                   w.append(original[i])
                   i+=1
             return extension + extend_me,i*['-']+pad_me
-      
+
       _,b,c          = align(s,t,replace_score=createSimpleDNASubst(subst=len(s)+len(t)),indel_cost=0)
       b1,c1          = extend(b,s,c)
       c2,b2          = extend(c1,t,b1)
       super_sequence = [aa if bb=='-' else bb for aa,bb in zip(b2,c2)]
-      return ''.join(super_sequence)      
+      return ''.join(super_sequence)
 
 if __name__=='__main__':
       from helpers import create_strings

@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 # Copyright (C) 2017-2020 Greenweaves Software Limited
 
 # This is free software: you can redistribute it and/or modify
@@ -34,43 +35,43 @@ class FastaContent(object):
                 text = ''
             else:                         # Data
                 text = text+line
-                
+
         if len(nn)>0:
             self.pairs.append((nn,text))
-    
+
     # __getitem__
     #
-    # Retrieve items (pairs) by index       
+    # Retrieve items (pairs) by index
     def __getitem__(self,index):
         return self.pairs[index]
-    
+
     # __len__
     #
     # Number of entries
     def __len__(self):
         return len(self.pairs)
-    
+
     # to_list
     #
     # Used if caller wants a simple list seq,value, seq,value,...
-    
+
     def to_list(self):
         List = []
         for a,b in self.pairs:
             List.append(a)
             List.append(b)
         return List
-    
+
     #to_dict
     #
     # Used if caller wants a dictionary
-    
+
     def to_dict(self):
         Dict = {}
         for a,b in self.pairs:
             Dict[a]=b
         return Dict
-    
+
 # FastaFile
 #
 # This class is used to parse Fasta data from a file
@@ -79,7 +80,7 @@ class FastaFile(FastaContent):
     def __init__(self,name):
         with open(name,'r') as file_text:
             FastaContent.__init__(self,file_text)
-  
+
 # fasta_out
 #
 # Generator, used to output one key value pair to a file in FASTA format
@@ -95,4 +96,3 @@ def fasta_out(key,value,max_length=800000000000):
     while len(remainder)>0:
         yield remainder[0:max_length]
         remainder = remainder[max_length:]
-            

@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 #    Copyright (C) 2019 Greenweaves Software Limited
 #
 #    This is free software: you can redistribute it and/or modify
@@ -22,7 +23,7 @@ from helpers import create_list
 if __name__=='__main__':
     def parse(line):
         return [int(c) for c in line.strip().split()]
-    
+
     S = create_list(ext=3)
     d,path = sort(S[0],S[1])
     print (d)

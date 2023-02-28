@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 #    Copyright (C) 2019 Greenweaves Software Limited
 #
 #    This is free software: you can redistribute it and/or modify
@@ -27,5 +28,5 @@ if __name__=='__main__':
     d,s,t=highest_scoring_global_alignment(strings[0],strings[1])
     print(d)
     print (s)
-    print (t)    
+    print (t)
     print (highest_scoring_global_alignment('PLEASANTLY','MEANLY'))

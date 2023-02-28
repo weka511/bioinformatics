@@ -1,4 +1,5 @@
-# Copyright (C) 2017 Greenweaves Software Pty Ltd
+#!/usr/bin/env python
+#!/usr/bin/env python# Copyright (C) 2017 Greenweaves Software Pty Ltd
 
 # This is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -39,5 +40,5 @@ if __name__=='__main__':
             elif i==1:
                 A=[int(t) for t in text.split(' ')]
             i+=1
-   
+
     print (' '.join([str(r) for r in par3(n,A)]))

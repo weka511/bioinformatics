@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 #   Copyright (C) 2020 Greenweaves Software Limited
 
 #   This program is free software: you can redistribute it and/or modify
@@ -31,7 +32,7 @@ def create_adj(tree,indices=None):
         if len(name)==0:
             adj[id]=[]
         if parentid>-1:
-            adj[parentid].append(id if len(name)==0 else indices[name])     
+            adj[parentid].append(id if len(name)==0 else indices[name])
         for child in children:
             dfs(child)
     dfs(tree)
@@ -43,7 +44,7 @@ def create_edges(adj,n=None):
 # extract_quartets
 
 def extract_quartets(edges,adj,n=None):
-    
+
     # get_leaves
     #
     # Get all leaves in graph 'adj' that are below some specified node
@@ -54,22 +55,22 @@ def extract_quartets(edges,adj,n=None):
         def dfs(u):
             if u>=n:
                 for v in adj[u]:
-                    dfs(v)                
+                    dfs(v)
             else:
                 leaves.append(u)
-                  
+
         leaves = []
         dfs(node)
         return leaves
-    
+
     def split(a,b):
         s_b = leaves[b]
         s_a = [s for s in all_leaves if s not in s_b]
         return [(s_a[j],s_a[i],s_b[l],s_b[k]) for i in range(len(s_a))
-                for j in range(i) 
-                for k in range(len(s_b)) 
+                for j in range(i)
+                for k in range(len(s_b))
                 for l in range(k)]
-    
+
     all_leaves     = list(range(n))
     leaves         = {x:sorted(get_leaves(x)) for x in adj.keys()}
     internal_edges = [(a,b) for a,b in edges if b>=n]
@@ -88,12 +89,12 @@ def get_matches(quartets1,quartets2):
             i += 1
         else:  # quartets1[i]>quartets2[j]
             j+=1
-            
+
     return matches
-            
+
 # qrtd
 #
-# Given: A list containing n taxa  and two unrooted binary trees T1 and T2 on the given taxa. 
+# Given: A list containing n taxa  and two unrooted binary trees T1 and T2 on the given taxa.
 #        Both T1 and T2 are given in Newick format.
 #
 # Return: The quartet distance dq(T1,T2)
@@ -106,7 +107,7 @@ def qrtd(species,T1,T2):
     edges1    = create_edges(adj1,n=n)
     quartets1 = extract_quartets(edges1,adj1,n=n)
     print (len(quartets1), quartets1)
-    
+
     tree2     = parse(T2,start=n)
     adj2      = create_adj(tree2,indices=indices)
     edges2    = create_edges(adj2,n=n)
@@ -118,8 +119,8 @@ def qrtd(species,T1,T2):
             mismatches+=1
     for q in quartets2:
         if not q in quartets1:
-            mismatches+=1   
-    return mismatches        
+            mismatches+=1
+    return mismatches
     #return len(quartets1) + len(quartets2) - 2*get_matches(quartets1,quartets2)
 
 if __name__=='__main__':
@@ -132,18 +133,18 @@ if __name__=='__main__':
         print(qrtd(
             'A B C D E'.split(),
             '(A,C,((B,D),E));',
-            '(C,(B,D),(A,E));'            
+            '(C,(B,D),(A,E));'
         ))
-        
+
     if args.rosalind:
         Input  = read_strings(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt')
- 
+
         Result = qrtd(Input[0].split(), Input[1], Input[2])
         print (Result)
         with open(f'{os.path.basename(__file__).split(".")[0]}.txt','w') as f:
             f.write(f'{Result}\n')
-                
+
     elapsed = time.time() - start
     minutes = int(elapsed/60)
     seconds = elapsed - 60*minutes
-    print (f'Elapsed Time {minutes} m {seconds:.2f} s')    
+    print (f'Elapsed Time {minutes} m {seconds:.2f} s')

@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 #    Copyright (C) 2019-2021 Greenweaves Software Limited
 #
 #    This is free software: you can redistribute it and/or modify
@@ -48,7 +49,7 @@ def GreedySorting(P,signed=False):
                 P[k-1] = k
                 yield P
 
-# BA6B Compute the Number of Breakpoints in a Permutation 
+# BA6B Compute the Number of Breakpoints in a Permutation
 #
 # getBreakPoints
 #
@@ -64,18 +65,18 @@ def getBreakPoints(P):
 
 #  get_synteny_blocks
 #
-# Input: a genome with circular chromosomes, e.g. 
+# Input: a genome with circular chromosomes, e.g.
 #        (+1 +2 +3 +4 +5 +6), or
 #        (+1 -3 -6 -5)(+2 -4)
 #
 # Returns: list of synteny blocks, e.g. [1,2,3,4,5,6]
 
 def get_synteny_blocks(a):
-    return [j for i in a for j in i] 
+    return [j for i in a for j in i]
 
 #  count_synteny_blocks
 #
-# Input: a genome with circular chromosomes, e.g. 
+# Input: a genome with circular chromosomes, e.g.
 #        (+1 +2 +3 +4 +5 +6), or
 #        (+1 -3 -6 -5)(+2 -4)
 #
@@ -102,15 +103,15 @@ def d2break(a,b):
     #         max_node Hightest node number encountered
     #
     # Returns: Hightest node number encountered
-    
+
     def update(adjacency,edges,x,y,max_node):
         edges.append((x,y))
-        
+
         if x in adjacency:
             adjacency[x].append(y)
         else:
-            adjacency[x]=[y] 
-            
+            adjacency[x]=[y]
+
         if x>max_node:
             max_node=x
         return max_node
@@ -125,8 +126,8 @@ def d2break(a,b):
     #         adjacency Adjacency list for noded and edges
     #
     # Returns: newly constructed graph
-    #       
-    
+    #
+
     def build_cycle(start,adjacency):
         cycle=[]
         ins = [start]
@@ -141,22 +142,22 @@ def d2break(a,b):
         for i in cycle:
             adjacency.pop(i)
         return cycle
-    
+
     # Verify that the two genomes share the same synteny blocks
-    
+
     blocks = get_synteny_blocks(a)
     n      = count_synteny_blocks(a)
     nb     = count_synteny_blocks(b)
     assert (n==nb),'Mismatched synteny blocks {0} != {1}'.format(n,nb)
 
     # Combines coloured edges from both chromosomes
-    
+
     edges     = []
     adjacency = {}
     max_node  = -1
     #Ca = ColouredEdges(a)
     Cb= ColouredEdges(b)
-    for (x,y) in ColouredEdges(a) + ColouredEdges(b):       
+    for (x,y) in ColouredEdges(a) + ColouredEdges(b):
         max_node = update(adjacency,edges,x,y,max_node)
         max_node = update(adjacency,edges,y,x,max_node)
 
@@ -167,7 +168,7 @@ def d2break(a,b):
         if i in adjacency:
             build_cycle(i,adjacency)
             count +=1
-            
+
     return n - count
 
 # BA6E	Find All Shared k-mers of a Pair of Strings
@@ -178,7 +179,7 @@ def d2break(a,b):
 #
 # A shared k-mer can be represented by an ordered pair (x, y), where x is the
 # starting position of the k-mer in the first genome and y is the starting
-# position of the k-mer in the second genome. For the genomes "AAACTCATC" and 
+# position of the k-mer in the second genome. For the genomes "AAACTCATC" and
 # "TTTCAAATC", these shared k-mers are (0,4), (0,0), (4,2), and (6,6).
 #
 # Input: An integer k and two strings.
@@ -223,7 +224,7 @@ def ChromosomeToCycle(Chromosome):
         else:
             Nodes.append(-2*i)
             Nodes.append(-2*i-1)
-        
+
     return Nodes
 
 # BA6G Implement Cycle to Chromosome
@@ -245,7 +246,7 @@ def CycleToChromosome(Nodes):
             Chromosome.append(b//2)
         else:
             Chromosome.append(-a//2)
-        
+
     return Chromosome
 
 # BA6H Implement ColoredEdges
@@ -290,7 +291,7 @@ def GraphToGenome(GenomeGraph):
             _,b = cycle[i-1]
             result.append((b,a))
         return result
- 
+
     extract = [(a,b,diff(a,b)) for (a,b) in zip([GenomeGraph[-1]]+GenomeGraph[0:],GenomeGraph)]
     gaps    = [(a,b) for (a,b,diff) in extract if diff>1]
     cycles  = [(a,b) for (a,b,diff) in extract if diff==1]
@@ -326,7 +327,7 @@ def get2BreakOnGenomeGraph(graph,i0,i1,j0,j1):
         return (u ==w and v==z) or (w==v and u==z)
     removed = [x for x in graph if not eq(x,(i0,i1)) and not eq(x,(j0,j1))]
     return removed +[(i0,j0)] + [(i1,j1)]
-    
+
 #    BA6K Implement 2-BreakOnGenome
 
 # GraphToGenomeAll
@@ -377,7 +378,7 @@ def BlackEdges(Nodes):
 
 def ColouredEdges(Nodes):
     return Edges(iter(Nodes[1:]+[Nodes[0]]))
-    
+
 #    BA6K Implement 2-BreakOnGenome
 #
 #    perform_2_BreakOnGenome
@@ -389,9 +390,9 @@ def ColouredEdges(Nodes):
 #    Return: The genome P' resulting from applying the 2-break operation.
 
 def perform_2_BreakOnGenome(P,i0,i1,j0,j1):
-    
+
     Nodes = ChromosomeToCycle(P)
-    
+
     return GraphToGenomeAll(
         get2BreakOnGenomeGraph(
             BlackEdges(Nodes) + ColouredEdges(Nodes),i0,i1,j0,j1))
@@ -400,7 +401,7 @@ def perform_2_BreakOnGenome(P,i0,i1,j0,j1):
 
 # snarfed from https://stackoverflow.com/questions/3755136/pythonic-way-to-check-if-a-list-is-sorted-or-not
 
-def isSorted(x, key = lambda x: x): 
+def isSorted(x, key = lambda x: x):
     return all([key(x[i]) <= key(x[i + 1]) for i in range(len(x) - 1)])
 
 # leaderBoardSort   Sort a list of synteny blocks into [1,2,3,.....]
@@ -417,33 +418,33 @@ def leaderBoardSort(S,N=25):
     def get_all_reversals(S,path):
         def reverse(i,j):
             def reverse_segment(S):
-                return S[::-1]       
-            return (S[:i] + reverse_segment(S[i:j+1]) + S[j+1:],path+[(i,j)])    
-        return [reverse(i,j) for j in range(len(S)) for i in range(j)]    
+                return S[::-1]
+            return (S[:i] + reverse_segment(S[i:j+1]) + S[j+1:],path+[(i,j)])
+        return [reverse(i,j) for j in range(len(S)) for i in range(j)]
 
     def get_breakpoints(S):
-        return [1 if S[i+1]-S[i]>0 else -1 for i in range(len(S)-1) if abs(S[i+1]-S[i])>1] 
+        return [1 if S[i+1]-S[i]>0 else -1 for i in range(len(S)-1) if abs(S[i+1]-S[i])>1]
 
-                
+
     def create_leaders(leaders):
         permutation = [get_all_reversals(s,path) for s,_,path in leaders] # [[(i,j,permuted),...],...]
         new_list    = [(p,len(get_breakpoints(p)),path) for ps in permutation for p,path in ps]
         sorted_list = sorted(new_list,key=lambda x:x[1])
         return sorted_list[:min(N,len(sorted_list))]
- 
+
     reversalDistance = 0
     leaders    = [(S,len(get_breakpoints(S)),[])]  # permuted, score, list of reversals
-    
+
     for k in range(1,len(S)+1):
         leaders = create_leaders(leaders)
         reversalDistance+=1
         s,b,path = leaders[0]
         if b==0:
             if s[0]<s[1]:
-                return reversalDistance,path 
+                return reversalDistance,path
             else:
                 return reversalDistance+1,path+[(0,len(S)-1)]
-    return reversalDistance,path 
+    return reversalDistance,path
 
 # sort
 #
@@ -457,10 +458,10 @@ def leaderBoardSort(S,N=25):
 def sort(s1,s2):
     # incr
     #
-    # Convert from 0-based to a-based (Rosalind) 
+    # Convert from 0-based to a-based (Rosalind)
     def incr(path):
         return [(a+1,b+1) for (a,b) in path]
-    
+
     # adapt
     #
     # Adapt s1 s2 to leaderBoardSort, which assumes one list is in the form [1,2,3,...]
@@ -468,7 +469,7 @@ def sort(s1,s2):
         if isSorted(s2): return s1
         if isSorted(s1): return s2
         return [s2.index(p)+1 for p in s1]
-    
+
     return leaderBoardSort(adapt())
 
 # WIP code snarfed from Anne Bergeron, A Very Elemantart Presentation of
@@ -479,13 +480,13 @@ def bergeron(s):
     def get_oriented(S):
         return [(i,j,S[i],S[j]) for j in range(len(S)) for i in range(0,j) if abs(S[i]+S[j])==1 and S[i]*S[j]<0]
     def reverse_segment(S):
-        return [-s for s in S[::-1]]    
+        return [-s for s in S[::-1]]
     def reverse(S,pair):
         i,j,pi_i,pi_j = pair
         if pi_i+pi_j>0:
             return S[:i+1] + reverse_segment(S[i+1:j+1]) + S[j+1:]
         else:
-            return S[:i+2] + reverse_segment(S[i+2:j] + S[j:])    
+            return S[:i+2] + reverse_segment(S[i+2:j] + S[j:])
     def get_score(S):
         return len(get_oriented(S))
     framed = [0] + s + [len(s)+1]
@@ -501,11 +502,11 @@ def bergeron(s):
         d+=1
 
 
-            
+
 if __name__=='__main__':
- 
+
     import unittest
-    
+
     class Test_6_Fragile(unittest.TestCase):
         def test_ba6e(self):
             pairs=find_shared_kmers(3,'AAACTCATC','TTTCAAATC')
@@ -513,5 +514,5 @@ if __name__=='__main__':
             self.assertIn((0, 0),pairs)
             self.assertIn((4, 2),pairs)
             self.assertIn((6, 6),pairs)
-            
+
     unittest.main()

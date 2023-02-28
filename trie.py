@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 #   Copyright (C) 2020 Greenweaves Software Limited
 
 #   This program is free software: you can redistribute it and/or modify
@@ -26,7 +27,7 @@ def convert_trie(Trie):
 
 def format(key,node,symbol):
     return f'{key} {node} {symbol}'
-    
+
 if __name__=='__main__':
     start = time.time()
     parser = argparse.ArgumentParser('....')
@@ -37,19 +38,19 @@ if __name__=='__main__':
         Trie = create_trie(['ATAGA', 'ATC', 'GAT'])
         for key,node,symbol in convert_trie(Trie):
             print (format(key,node,symbol))
-        
-    
+
+
 
     if args.rosalind:
         Input  = read_strings(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt')
- 
+
         Trie = create_trie(Input)
         with open(f'{os.path.basename(__file__).split(".")[0]}.txt','w') as f:
             for key,node,symbol in convert_trie(Trie):
                 print (format(key,node,symbol))
                 f.write(f'{format(key,node,symbol)}\n')
-                
+
     elapsed = time.time() - start
     minutes = int(elapsed/60)
     seconds = elapsed - 60*minutes
-    print (f'Elapsed Time {minutes} m {seconds:.2f} s')    
+    print (f'Elapsed Time {minutes} m {seconds:.2f} s')

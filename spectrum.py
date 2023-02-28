@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 #    Copyright (C) 2019 Greenweaves Software Limited
 #
 #    This is free software: you can redistribute it and/or modify
@@ -61,7 +62,7 @@ def linearSpectrum(peptide):
         for i in range(len(peptide)):
             spectrum.add(sum(peptide[:i]))
             spectrum.add(sum(peptide[i:]))
-     
+
         return sorted(list(spectrum))
     return getSpectrum( [integer_masses[p] for p in peptide]) if peptide.isalpha() else getSpectrum(peptide)
 
@@ -95,12 +96,12 @@ def DecodeIdealSpectrum(Spectrum):
         generated_spectrum = linearSpectrum(peptide)
         if generated_spectrum[1:]==Spectrum:
             return peptide
- 
+
     return None
 
 # CreatePeptideVector
 #
-# Convert a Peptide into a Peptide Vector 
+# Convert a Peptide into a Peptide Vector
 #
 # Convert a peptide into a binary peptide vector.
 #
@@ -152,9 +153,9 @@ def CreatePeptide(vector):
 #
 # Comparing Spectraclick to collapse
 #
-# Suppose you have two mass spectra, and you want to check if they both were obtained from the same protein; 
+# Suppose you have two mass spectra, and you want to check if they both were obtained from the same protein;
 # you will need some notion of spectra similarity. The simplest possible metric would be to count the number
-# of peaks in the mass spectrum that the spectra share, called the shared peaks count; 
+# of peaks in the mass spectrum that the spectra share, called the shared peaks count;
 # its analogue for simplified spectra is the number of masses that the two spectra have in common.
 
 # The shared peaks count can be useful in the simplest cases, but it does not help us if, for example,
@@ -168,7 +169,7 @@ def CreatePeptide(vector):
 #
 # The size of each multiset is at most 200.
 
-# Return: The largest multiplicity of S1- S2, as well as the absolute value of the number x 
+# Return: The largest multiplicity of S1- S2, as well as the absolute value of the number x
 # maximizing (S1-S2)(x) (you may return any such value if multiple solutions exist).
 
 def conv(S,T,eps=0.001):
@@ -176,7 +177,7 @@ def conv(S,T,eps=0.001):
     accumulated    = []
     latest         = minkowski_diff[0]
     count          = 1
-    
+
     for term in minkowski_diff[1:]+[666]:
         if abs(term-latest)<eps:
             count+=1
@@ -184,9 +185,9 @@ def conv(S,T,eps=0.001):
             accumulated.append((count,latest))
             latest = term
             count  = 1
-            
+
     return accumulated[argmax([i for i,_ in accumulated])]
-    
+
 #   create_lookup
 #
 #   Creates a lookup table for amino acid masses
@@ -196,7 +197,7 @@ def create_lookup(amino_acids=amino_acids):
                    key =lambda x:x[1])
     pairs.append(('?',sys.float_info.max))
     masses = [mass for (_,mass) in pairs]
-    return masses,pairs    
+    return masses,pairs
 
 #  get_abbrev
 #
@@ -221,23 +222,23 @@ def get_abbrev(diff,masses,pairs):
 #    which aims to measure the mass-to-charge ratio of a particle or a molecule. In a mass spectrometer,
 #    a sample is vaporized (turned into gas), and then particles from the sample are ionized. The resulting
 #    ions are placed into an electromagnetic field, which separates them based on their charge and mass.
-#    The output of the mass spectrometer is a mass spectrum, or a plot of ions' possible mass-to-charge ratio 
+#    The output of the mass spectrometer is a mass spectrum, or a plot of ions' possible mass-to-charge ratio
 #    values with the intensity (actual observed frequency) of ions having these mass-to-charge values.
 #
 #    For the moment, we will ignore charge and consider a list of the ions' monoisotopic masses as a
 #    simplified spectrum. Researchers do not possess cheap technology to go in and examine a protein one
 #    amino acid at a time (molecules are too submicroscopic). Instead, to determine a protein's structure,
-#    we will split several copies of the protein into smaller pieces, then weigh the resulting fragments. 
-#    To do this, we assume that each cut (breakage point) occurs between two amino acids and that we can 
+#    we will split several copies of the protein into smaller pieces, then weigh the resulting fragments.
+#    To do this, we assume that each cut (breakage point) occurs between two amino acids and that we can
 #    measure the mass of the resulting pieces for all possible cuts.
 #
 #    For example, the (unknown) protein "PRTEIN" can be cut in five possible ways:
 #    "P" and "RTEIN"; "PR" and "TEIN"; "PRT" and "EIN"; "PRTE" and "IN"; "PRTEI" and "N".
 #    We then can measure the masses of all fragments, including the entire string. The "left" end of
-#    a protein is called its N-terminus, and the ions corresponding to the protein string's prefixes 
+#    a protein is called its N-terminus, and the ions corresponding to the protein string's prefixes
 #    (P, PR, PRT, PRTE, PRTEI) are called b-ions. The "right" end of the protein is called its C-terminus,
-#    and the ions corresponding to the string's suffixes (N, IN, EIN, TEIN, RTEIN) are called y-ions. 
-#    The difference in the masses of two adjacent b-ions (or y-ions) gives the mass of one amino acid residue; 
+#    and the ions corresponding to the string's suffixes (N, IN, EIN, TEIN, RTEIN) are called y-ions.
+#    The difference in the masses of two adjacent b-ions (or y-ions) gives the mass of one amino acid residue;
 #    for example, the difference between the masses of "PRT" and "PR" must be the mass of "T." By extension,
 #    knowing the masses of every b-ion of a protein allows us to deduce the protein's identity.
 #
@@ -249,8 +250,8 @@ def get_abbrev(diff,masses,pairs):
 # you may output any one of them). Consult the monoisotopic mass table.
 
 def spectrum2protein(ms):
-    masses,pairs = create_lookup() 
-    return ''.join([get_abbrev(diff,masses,pairs) for diff in [m1-m0 for m0,m1 in zip(ms[:-1],ms[1:])]])   
+    masses,pairs = create_lookup()
+    return ''.join([get_abbrev(diff,masses,pairs) for diff in [m1-m0 for m0,m1 in zip(ms[:-1],ms[1:])]])
 
 def complete_spectrum(P):
     def spectrum(S):
@@ -268,12 +269,12 @@ def complete_spectrum(P):
 # Searching the Protein Database
 #
 # Many proteins have already been identified for a wide variety of organisms. Accordingly,
-# there are a large number of protein databases available, and so the first step after 
+# there are a large number of protein databases available, and so the first step after
 # creating a mass spectrum for an unidentified protein is to search through these databases
-# for a known protein with a highly similar spectrum. In this manner, many similar proteins 
+# for a known protein with a highly similar spectrum. In this manner, many similar proteins
 # found in different species have been identified, which aids researchers in determining protein function.
 #
-# In "Comparing Spectra with the Spectral Convolution", we introduced the spectral convolution 
+# In "Comparing Spectra with the Spectral Convolution", we introduced the spectral convolution
 # and used it to measure the similarity of simplified spectra. In this problem, we would like
 # to extend this idea to find the most similar protein in a database to a spectrum taken from
 # an unknown protein. Our plan is to use the spectral convolution to find the largest possible
@@ -284,7 +285,7 @@ def complete_spectrum(P):
 # of positive numbers (corresponding to the complete spectrum of some unknown protein string).
 
 # Return: The maximum multiplicity of R-S[sk]
-# taken over all strings sk, followed by the string sk for which this 
+# taken over all strings sk, followed by the string sk for which this
 # maximum multiplicity occurs (you may output any such value if multiple solutions exist).
 
 def prsm(s,R):
@@ -293,43 +294,43 @@ def prsm(s,R):
     m = 0
     i = 0
     Ss = [(P,complete_spectrum(P)) for P in s]
- 
+
     Cs = [(P,conv(R,S1,eps=0.00001)) for (P,S1) in Ss]
 
     index = argmax([count(c) for c in Cs])
 
     _,(b,_) = Cs[index]
-    
+
     return b,s[index]
 
 #    full
 #
 #    Inferring Peptide from Full Spectrum
 #
-#    Inputs : A list L containing 2n+3 positive real numbers (n<=100). 
-#             The first number in L is the parent mass of a peptide P, and all 
+#    Inputs : A list L containing 2n+3 positive real numbers (n<=100).
+#             The first number in L is the parent mass of a peptide P, and all
 #             other numbers represent the masses of some b-ions and y-ions of P
-#             (in no particular order). You may assume that if the mass of a b-ion is present, 
+#             (in no particular order). You may assume that if the mass of a b-ion is present,
 #             then so is that of its complementary y-ion, and vice-versa.
 #
 #    Return: A protein string t
 #            of length n for which there exist two positive real numbers w1 and w2
 #            such that for every prefix p and suffix s of t, each of w(p)+w1 and w(s)+w2
 #            is equal to an element of L.
-#            (In other words, there exists a protein string whose t-prefix and 
+#            (In other words, there exists a protein string whose t-prefix and
 #            t-suffix weights correspond to the non-parent mass values of L.)
 #            If multiple solutions exist, you may output any one.
 
 def full(L,epsilon=0.000001):
-    
+
     # get_n
     #
     # Get n, and verify that it is odd
     def get_n():
         n = (len(L)-3)//2
         assert(2*n+3==len(L))
-        return n 
-    
+        return n
+
     # extract
     #
     # Extract prefixes or suffixes
@@ -337,7 +338,7 @@ def full(L,epsilon=0.000001):
     #         candidates
     #
     # Returns: prefixes or suffixes
-    
+
     def extract(seq,candidates):
         while True:
             key = seq[-1]
@@ -345,18 +346,18 @@ def full(L,epsilon=0.000001):
                 return seq
             succs = candidates[key]
             _,j,_,_,_,_,_ = succs[0]
-            seq.append(j)  
-            
+            seq.append(j)
+
     masses,pairs   = create_lookup()
     n              = get_n()
-    
+
     # Idea: L = prefixes + suffixes, and each of prefexes and suffixes will have many elements whose
     #           differences are equal to the mass of one amino acid. Start by compouting all differences
-    
+
     diffs          = [(i,j,L[i],L[j],abs(L[i] - L[j])) for i in range(1,len(L)) for j in range(i+1,len(L))]
-    
+
     # Now compute a collection of candidates, i.e. differences that are close to the mass py one amino acid.
-    
+
     candidates     = {}
     for i,j,l1,l2,diff in diffs:
         abbrev    = get_abbrev(diff,masses,pairs)
@@ -365,23 +366,23 @@ def full(L,epsilon=0.000001):
             if not i in candidates:
                 candidates[i]=[]
             candidates[i].append((i,j,l1,l2,diff,candidate,abs(diff-amino_acids[abbrev].mon_mass)))
-            
+
     # Now support the data so that they are organized in ascending order by difference from nearest amino acid
     for key in candidates:
         candidates[key]= sorted(candidates[key],key=lambda x:x[6])
-    
+
     prefixes = extract( [min(candidates.keys())],candidates)
     suffixes = extract([min([r for r in candidates.keys() if not r in prefixes])],candidates)
     # Our algorithm is a bit greedy, so there may be some overlap between prefixes and suffices
     # Thius must be fixed!
-    
+
     while len(prefixes)>len(suffixes):
         for r in suffixes:
             if r in prefixes:
                 ii = prefixes.index(r)
                 prefixes = prefixes[:ii] + prefixes[ii+1:]
- 
-    return ''.join([candidates[l][0][5] for l in prefixes][:-1])  
+
+    return ''.join([candidates[l][0][5] for l in prefixes][:-1])
 
 # sgra
 #
@@ -397,7 +398,7 @@ def full(L,epsilon=0.000001):
 # NB: we want the longest path trough the spectrum graph
 #
 def sgra(L,Alphabet=amino_acids,epsilon=0.001):
-    
+
     # create_spectrum_graph
     #
     # For a weighted alphabet A and a collection L of positive real numbers, the spectrum graph of L
@@ -405,7 +406,7 @@ def sgra(L,Alphabet=amino_acids,epsilon=0.001):
     # Then, connect a pair of nodes with a directed edge (u,v) if v>u and v-u is equal to the weight of a single symbol in A
     #
     # We may then label the edge with this symbol.
-    
+
     def create_spectrum_graph():
         masses,pairs = create_lookup()
         G            = {}
@@ -416,12 +417,12 @@ def sgra(L,Alphabet=amino_acids,epsilon=0.001):
                     if abs(v-u-amino_acids[abbrev].mon_mass)<epsilon:
                         if not u in G:
                             G[u]=[]
-                        G[u].append((abbrev,v))            
+                        G[u].append((abbrev,v))
         return G
     # dfs
     #
     # Depth first search to build up peptides
-    
+
     def dfs(key,G,path):
         Runs.append(path)
         if key in Outs: return
@@ -429,15 +430,15 @@ def sgra(L,Alphabet=amino_acids,epsilon=0.001):
         for amino_acid,mass in G[key]:
             dfs(mass,G,path+[amino_acid])
             Outs.add(mass)
-            
+
     G    = create_spectrum_graph()
     Outs = set()     # Used by dfs to determine whter it has already processed node
     Runs = []        # The peptids string that are being built by dfs
-    
+
     for key in sorted(G.keys()):
         dfs(key,G,[])
- 
-    return ''.join(Runs[argmax([len(run) for run in Runs])])       
+
+    return ''.join(Runs[argmax([len(run) for run in Runs])])
 
 #   Turnpike
 #
@@ -446,7 +447,7 @@ def sgra(L,Alphabet=amino_acids,epsilon=0.001):
 # Solve the Turnpike Problem
 # Parameters:
 #   D     The differences
-#   check Indicates whether differences are to be checked 
+#   check Indicates whether differences are to be checked
 #
 # Based Mark Weiss's treatment
 # https://users.cs.fiu.edu/~weiss/cop3337_f99/assignments/turnpike.pdf
@@ -484,9 +485,9 @@ def Turnpike(D,check=False):
                     return None
             while i<len(D):
                 set_diffs.append(D[i])
-                i+=1 
+                i+=1
             return set_diffs
-        
+
         def explore(candidate,X,first,last):
             '''
             Explore lower levels of tree
@@ -500,13 +501,13 @@ def Turnpike(D,check=False):
                 return X
             else:
                 return find_remaining_points(X,set_diffs,first,last)
-        
+
         # There are two cases to consider: either the largest remaining unprocessed value in D
         # is part of the solution, or it isn't. We will explore these two cases separately.
         # We maintain a tree of data structures, so we can explore the tree of solutions
         # see https://users.cs.fiu.edu/~weiss/cop3337_f99/assignments/turnpike.pdf for details
         x_max=D[-1]
-        XX=X[:]           # Clone this so the 
+        XX=X[:]           # Clone this so the
         XX[last-1]=x_max  # Add candidate at end
         trial_solution=explore(x_max,XX,first,last-1) #process level below - one fewer unknown at end
         if trial_solution==None:  # largest remaining unprocessed value was a false lead
@@ -515,7 +516,7 @@ def Turnpike(D,check=False):
             return explore(X[-1]-x_max,XX,first+1,last) #process level below - one fewer unknown at start
         else:
             return trial_solution
-    
+
     def check_diffs(reconstruction):
         '''
         Verify that a particular reconstruction does indeed give rise to original differences
@@ -529,38 +530,38 @@ def Turnpike(D,check=False):
             if a!=b:
                 mismatches+=1
                 print (a,b)
-       
+
         if mismatches>0:
             raise RosalindException ('Found {0} mismatches'.format(mismatches))
         return diffs
-     
+
     # Start by initializing array of points. We know that its length
-    # must be the square root of the array of differences.   
+    # must be the square root of the array of differences.
     len_D=len (D)
     len_X=int(sqrt(len_D))
-    X=[float('nan')]*len_X    #We fill in all values as "unknown" 
+    X=[float('nan')]*len_X    #We fill in all values as "unknown"
     X[0]=0                    #Actually we are given the first value, zero
     X[-1]=D[-1]               # We also know that the last point must match the last difference.
     reconstruction= find_remaining_points(X,[d for d in D[:-1] if d>0],0,-1)
     if check:
         check_diffs(reconstruction)
     return reconstruction
-    
+
 if __name__=='__main__':
     import unittest
-    
+
     class TestSpectrum(unittest.TestCase):
-        
+
         def test_spec(self):
             self.assertEqual('WMQS',
                              spectrum2protein([3524.8542,3710.9335,3841.974,3970.0326,4057.0646]))
-            
+
         def test_conv(self):
             m,x=conv([186.07931, 287.12699 ,548.20532 ,580.18077 ,681.22845, 706.27446, 782.27613 ,968.35544, 968.35544],
                  [101.04768, 158.06914 ,202.09536 ,318.09979 ,419.14747, 463.17369])
             self.assertEqual(3,m)
             self.assertAlmostEqual(85.03163,x,places=5)
-            
+
         def test_prsm(self):
             m,s_max = prsm(['GSDMQS',
                             'VWICN',
@@ -575,11 +576,11 @@ if __name__=='__main__':
                            )
             self.assertEqual(3,m)
             self.assertEqual('GSDMQS',s_max)
-            
+
         def test_full(self):
             self.assertEqual('KEKEP',
                              full([
-                                1988.21104821, 
+                                1988.21104821,
                                 610.391039105,
                                 738.485999105,
                                 766.492149105,
@@ -593,7 +594,7 @@ if __name__=='__main__':
                                 1249.7250491,
                                 1377.8200091
                              ]))
-            
+
         def test_sgra(self):
             self.assertEqual('WMSPG',sgra([
                 3524.8542,
@@ -604,9 +605,9 @@ if __name__=='__main__':
                 3970.0326,
                 4026.05879,
                 4057.0646,
-                4083.08025        
+                4083.08025
             ]))
-            
+
         def test_ba4M(self):
             self.assertEqual([0, 3, 6, 8, 10],
                               Turnpike(
@@ -618,12 +619,12 @@ if __name__=='__main__':
                                   check=True))
             # Data from rosalind_ba4m_5_output - my submission dated Sept. 20, 2017, 11:38 a.m.
             self.assertEqual([0, 9, 12, 27, 36, 43, 46, 60, 63, 82, 94, 97, 100, 115, 134, 141, 158, 171, 185, 193,
-                              200, 211, 230, 235, 243, 260, 276, 294, 305, 314, 319, 335, 351, 355, 368, 370, 380, 
-                              385, 395, 403, 412, 415, 429, 432, 449, 466, 471, 488, 491, 509, 527, 532, 540, 548, 
-                              561, 571, 579, 591, 598, 608, 621, 636, 646, 661, 673, 675, 690, 696, 701, 706, 717, 
+                              200, 211, 230, 235, 243, 260, 276, 294, 305, 314, 319, 335, 351, 355, 368, 370, 380,
+                              385, 395, 403, 412, 415, 429, 432, 449, 466, 471, 488, 491, 509, 527, 532, 540, 548,
+                              561, 571, 579, 591, 598, 608, 621, 636, 646, 661, 673, 675, 690, 696, 701, 706, 717,
                               721, 738, 739, 748, 766, 782, 787, 796, 804, 807, 816, 823, 836, 855, 873, 876, 891,
-                              905, 907, 924, 937, 952, 969, 973, 992, 1008, 1011, 1024, 1029, 1039, 1057, 1062, 1067, 
-                              1070, 1078, 1079, 1089, 1106, 1111, 1121, 1136, 1144, 1151, 1170, 1176, 1185, 1190, 
+                              905, 907, 924, 937, 952, 969, 973, 992, 1008, 1011, 1024, 1029, 1039, 1057, 1062, 1067,
+                              1070, 1078, 1079, 1089, 1106, 1111, 1121, 1136, 1144, 1151, 1170, 1176, 1185, 1190,
                               1192, 1199, 1201, 1210, 1228, 1231, 1234, 1239, 1245, 1258, 1265],
                              Turnpike([
                                  -1265,-1258,-1256,-1253,-1249,-1246,-1245,-1239,-1238,-1236,-1234,-1233,
@@ -2014,5 +2015,5 @@ if __name__=='__main__':
                                      1222, 1222, 1225, 1227, 1228, 1229, 1230, 1231, 1231, 1233, 1234, 1236,
                                      1238, 1239, 1245, 1246, 1249, 1253, 1256, 1258, 1265
                                        ]))
-            
+
     unittest.main()

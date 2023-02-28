@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 '''
  Copyright (C) 2017 Greenweaves Software Pty Ltd
 
@@ -18,7 +19,7 @@
 
 import copy
 
-from rosalind import dbru,read_strings 
+from rosalind import dbru,read_strings
 
 def count_kmers(S):
     '''
@@ -50,11 +51,11 @@ def remove_unused_kmer(counts):
             removes.append(key)
     for key in removes:
         del counts[key]
-    return counts 
+    return counts
 
 def format(r):
     return ''.join([rr[0] for rr in r] + [r[-1][-1]])
-    
+
 def grep(S):
     '''
     GREP Genome Assembly with Perfect Coverage and Repeats
@@ -70,16 +71,16 @@ def grep(S):
     Runs=[[S[0]]]
     counts[S[0]]-=1
     counts=remove_unused_kmer(counts)
-    
+
     # We maintain a separate list of counts for each run, so we
     # know which symbols are available.
-    
+
     CountsForRuns=[counts]
 
     for n in range(len(S)-1): # Grow runs by one base each iteration
-        
+
         NewRuns=[]  # Stick extra runs on the end when we are done
-        
+
         for i in range(len(Runs)):
             run=Runs[i]
             counts=CountsForRuns[i]
@@ -106,11 +107,10 @@ def grep(S):
                         added=True
                 j+=1
         Runs = Runs + NewRuns
-        
+
     return [format(r)[:-1] for r in Runs if len(r)==len(S)]
 
 if __name__=='__main__':
-    
+
     for s in grep(read_strings('c:/Users/Weka/Downloads/rosalind_grep(1).txt')):
         print (s)
-        

@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 #    Copyright (C) 2019 Greenweaves Software Limited
 #
 #    This is free software: you can redistribute it and/or modify
@@ -27,5 +28,5 @@ if __name__=='__main__':
     d,s,t=highest_scoring_local_alignment(strings[0],strings[1])
     print(d)
     print (s.replace('-',''))
-    print (t.replace('-',''))    
+    print (t.replace('-',''))
     #print (highest_scoring_local_alignment('MEANLYPRTEINSTRING','PLEASANTLYEINSTEIN',sigma=5))

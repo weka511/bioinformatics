@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 '''
  GASM Genome Assembly Using Reads
 
@@ -23,7 +24,7 @@ def split(S,k):
     def split1(s):
         return[s[i:i+k] for i in range(len(s)-k+1)]
     if k==len(S[0]):
-        return S[:] 
+        return S[:]
     return[spl for s in S for spl in split1(s)]
 
 def get_run(E):
@@ -38,7 +39,7 @@ def get_run(E):
     while len(suffix)>0:
         R.append(suffix)
         E.remove((prefix,suffix))
-        prefix,suffix=search(suffix)      
+        prefix,suffix=search(suffix)
     return R,E
 def gasm(S):
     shortest_cycle=None
@@ -62,5 +63,5 @@ if __name__=='__main__':
     S=[]
     with open('c:/Users/Weka/Downloads/rosalind_gasm.txt') as f:
         for line in f:
-            S.append(line.strip())     
-    print (gasm(S))    
+            S.append(line.strip())
+    print (gasm(S))

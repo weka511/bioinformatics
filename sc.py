@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 #    Copyright (C) 2019 Greenweaves Software Limited
 #
 #    This is free software: you can redistribute it and/or modify
@@ -25,12 +26,12 @@ if __name__=='__main__':
        #[(3, 2),
         #(3 ,2),
         #(2, 1)],
-      
+
        #[(3, 2),
         #(3, 2),
-        #(1, 2)]   
+        #(1, 2)]
    #]
-   
+
    graphs = []
    edges = []
    for s in create_strings(ext=1):
@@ -43,6 +44,6 @@ if __name__=='__main__':
          if len(values)>1:
             edges.append(values)
    if len(edges)>0:
-      graphs.append(edges)            
+      graphs.append(edges)
 
-   print (' '.join([str(sc(g)) for g in graphs])) 
+   print (' '.join([str(sc(g)) for g in graphs]))

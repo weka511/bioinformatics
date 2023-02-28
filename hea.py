@@ -1,4 +1,4 @@
-#    Copyright (C) 2019 Greenweaves Software Limited
+#!/usr/bin/env python
 #
 #    This is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -29,7 +29,7 @@ def swap(i,j,A):
     y    = A[j]
     A[i] = y
     A[j] = x
- 
+
 def siftDown(start,end,A):
     root = start
     while leftChild(root)<=end:
@@ -54,13 +54,13 @@ def siftUp(start,end,A):
             child = par
         else:
             return
-        
-def hea(n,A):            
+
+def hea(n,A):
     start = parent(n - 1)
     while start >= 0:
         siftDown(start,n-1,A)
         start -=1
-        
+
     return A
 
 def heapsort(n,A):

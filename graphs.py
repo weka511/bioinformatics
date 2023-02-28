@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 #    Copyright (C) 2019-2021 Greenweaves Software Limited
 #
 #    This is free software: you can redistribute it and/or modify
@@ -36,29 +37,29 @@ from   deprecated import deprecated
 def bf(edges,
        s=1):    # Set to zero for nwc - see Ayaan Hossain's comment http://rosalind.info/problems/nwc/questions/
                 # For anyone having a problem solving this, observe that in the problem statement,
-                #unlike the Bellman-Ford Problem it has not been mentioned that you have to take 
+                #unlike the Bellman-Ford Problem it has not been mentioned that you have to take
                 #  vertex 1 as the source node. If you do take vertex 1 or any other vertex for that matter,
-                # as the source node and if there is no out-going edge from that vertex or 
-                # if the negative-weight cycle is unreachable from that vertex, then there 
+                # as the source node and if there is no out-going edge from that vertex or
+                # if the negative-weight cycle is unreachable from that vertex, then there
                 # will be no way to possibly detect the negative-weight cycle.
                 # In this case we have to come up with a strategy to ensure that our source node
                 # is a vertex from which there are out-going edges and that the negative-weight
                 # cycle is reachable from our source node. The simplest way to do this is to add
                 # a dummy "source_node" to our graph and add an edge from this "source_node"
-                # to every other vertex in the graph with cost/weight/length 0. 
+                # to every other vertex in the graph with cost/weight/length 0.
                 # Then if we begin our Bellman-Ford Algorithm on this "source_node", surely enough
                 # we will be able to detect any negative-weight cycle in the graph if it is present.
     n,_         = edges[0]
- 
+
     if s==0:
         for i in range(1,n):
             edges.append([0,i,0])
-            
+
     dist        = [float('inf') for i in range(n+1)]
     predecessor = [None for i in range(n+1)]
 
     dist[s]  = 0 # distance of source from itself is zero
-    
+
     # See https://stackoverflow.com/questions/28857918/bellman-ford-algorithm-explanation
     # Bellman--Ford has two relevant invariants that hold for all vertices u.
     # There exists a path from the source to u of length dist[u] (unless dist[u] is INT_MAX).
@@ -74,11 +75,11 @@ def bf(edges,
             if dist[u] + w     < dist[v]:
                 dist[v]        = dist[u] + w
                 predecessor[v] = u
-          
+
     return (max(1 if dist[u]+w<dist[v] else -1 for u,v,w in edges[1:]),
             dist[1:],
             predecessor[1:])
-        
+
 
 # bip
 #
@@ -91,7 +92,7 @@ def bf(edges,
 def bip(graph):
     red  = set()
     blue = set()
-    
+
     # colour
     #
     # Attempt to assign this node, and all reachable nodes, to one colour or t'other
@@ -106,20 +107,20 @@ def bip(graph):
         else:
             if node in blue: return False
             if node in red: return True
-            red.add(node)            
+            red.add(node)
         for link in adjacency[node]:
             if not colour(link,not isBlue): return False
         return True
-            
+
     _,_,adjacency = create_adjacency(graph,back=True,self=False)
-    
+
     # Purge isolated nodes
-    
+
     for k in [k for k,v in adjacency.items() if len(v)==0]:
         adjacency.pop(k)
 
     # Try to colour nodes
-    
+
     for node in adjacency.keys():
         if node in red or node in blue: continue
         red.add(node)
@@ -127,7 +128,7 @@ def bip(graph):
             coloured = colour(link,True)
             if not coloured:
                 return -1
-            
+
     return 1  # assume bipartite unless we fail
 
 # cc
@@ -138,16 +139,16 @@ def bip(graph):
 #
 # Return: The number of connected components in the graph.
 
-def cc(graph): 
+def cc(graph):
     def explore(a,adjacency,explored,component):
         explored.add(a)
         component.append(a)
         for b in adjacency[a]:
             if not b in explored:
                 explore(b,adjacency,explored,component)
-        return sorted(list(set(component)))    
+        return sorted(list(set(component)))
     m,_,adjacency = create_adjacency(graph)
-  
+
     explored   = set()
 
     components = {}  # The connected components, with one element as key
@@ -156,7 +157,7 @@ def cc(graph):
             component = explore(a,adjacency,explored,[])
             for c in component:
                 components[c]=component
-                    
+
     count = 0
     uniques = []
     duplicates = []
@@ -173,12 +174,12 @@ def cc(graph):
 #   a few sanity checks
 
     nodes = sorted(list(set([v for k,vs in components.items() for v in vs])))
-    assert len(nodes) ==m, '{0} not {1}'.format(len(nodes), m) 
+    assert len(nodes) ==m, '{0} not {1}'.format(len(nodes), m)
     v0=0
     for v in nodes:
         assert v == v0+1
         v0=v
-        
+
     return count,components
 
 # CTE Shortest Cycle Through a Given Edge
@@ -201,9 +202,9 @@ def cte(edges):
 
 
         return [(n,k-1)] + [transform (x,y,w) for (x,y,w) in edges[2:]]
-    
+
     n,k         = edges[0]
-    a,b,w       = edges[1]        
+    a,b,w       = edges[1]
     new_edges   = relabel(edges)
     path_length = dij(new_edges)[a-1]
     return path_length + w if path_length>-1 else -1
@@ -215,7 +216,7 @@ def cte(edges):
 # Output: 1 if graph acyclic, otherwise -1
 
 def dag(graph):
-    
+
     # explore: find cyclic path
     #
     # Input: node
@@ -223,7 +224,7 @@ def dag(graph):
     #
     # Output: True iff there is a cyclic path starting at node, and
     #         whole 1st elements coincide with path
-    
+
     def explore(node,path=[]):
         explored.add(node)
         linked = adjacency[node]
@@ -231,16 +232,16 @@ def dag(graph):
             if succ == node: continue
             if succ in path: return True
             if explore(succ,path+[node]): return True
-            
+
         return False
 
     m,_,adjacency = create_adjacency(graph,False)
     explored   = set()
-    
+
     for a,_ in adjacency.items():
         if not a in explored:
             if explore(a): return -1
-            
+
     return 1
 
 # ddeg
@@ -256,7 +257,7 @@ def ddeg(n,M,A):
     sums=[0 for a in range(n)]
     for (a,b) in A:
         sums[a-1]+=lookup[b-1]
-        sums[b-1]+=lookup[a-1]    
+        sums[b-1]+=lookup[a-1]
     return sums
 
 # deg
@@ -276,7 +277,7 @@ def deg(n,m,A):
     return degrees
 
 
-# DIJ  Dijkstra's Algorithm: compute single-source shortest distances 
+# DIJ  Dijkstra's Algorithm: compute single-source shortest distances
 #                            in a directed graph with positive edge weights.
 #
 #    I have followed the version described in Wikipedia -- https://en.wikipedia.org/wiki/Dijkstra's_algorithm
@@ -284,17 +285,17 @@ def deg(n,m,A):
 #    2. Assign to every node a tentative distance value: set it to zero for our initial node and to
 #       infinity for all other nodes. Set the initial node as current.
 #    3. For the current node, consider all of its unvisited neighbours and calculate their
-#    tentative distances through the current node. Compare the newly calculated tentative 
-#    distance to the current assigned value and assign the smaller one. For example, if the 
-#    current node A is marked with a distance of 6, and the edge connecting it with a neighbour 
+#    tentative distances through the current node. Compare the newly calculated tentative
+#    distance to the current assigned value and assign the smaller one. For example, if the
+#    current node A is marked with a distance of 6, and the edge connecting it with a neighbour
 #    B has length 2, then the distance to B through A will be 6 + 2 = 8. If B was previously
 #    marked with a distance greater than 8 then change it to 8. Otherwise, the current value will be kept.
 #    4. When we are done considering all of the unvisited neighbours of the current node,
-#       mark the current node as visited and remove it from the unvisited set. A visited 
+#       mark the current node as visited and remove it from the unvisited set. A visited
 #       node will never be checked again.
-#    5. If the destination node has been marked visited (when planning a route between 
+#    5. If the destination node has been marked visited (when planning a route between
 #       two specific nodes) or if the smallest tentative distance among the nodes in the
-#       unvisited set is infinity (when planning a complete traversal; occurs when there 
+#       unvisited set is infinity (when planning a complete traversal; occurs when there
 #       is no connection between the initial node and remaining unvisited nodes), then stop. The algorithm has finished.
 #    6. Otherwise, select the unvisited node that is marked with the smallest tentative distance,
 #       set it as the new "current node", and go back to step 3.
@@ -303,17 +304,17 @@ def dij(g):
     open_edges      = [edge for edge in g[1:]] # Edges that haven't been used
     D               = [float('inf')]*(n+1)     # Distance from 1 to each node
     D[1]            = 0
-    
+
     for _ in range(n):
         for a,b,w in open_edges:
-            if not isinf(D[a]): 
+            if not isinf(D[a]):
                 D[b] = min(D[b],D[a] + w)
-                
+
     return [d if not isinf(d) else -1 for d in D[1:]]
 
 # hdag
 #
-# Hamiltonian Path in DAG 
+# Hamiltonian Path in DAG
 #
 # Key idea: we can always form a topological sort of a DAG. Once a graphs has been
 #           sorted topologically, the only way it can fail to be Hamiltonian is if
@@ -338,30 +339,30 @@ def hdag(graph):
 #
 # Given: A positive integer k<=20 and k simple undirected graphs with n<=400 vertices in the edge list format.
 #
-# Return: For each graph, output 1 if it contains a simple cycle (that is, a cycle which doesn�t intersect
+# Return: For each graph, output 1 if it contains a simple cycle (that is, a cycle which doesn�t intersect
 # itself) of length 4 and -1 otherwise.
 
 def sq(g):
     def explore(node,path=[]):
         if len(path)>4: return -1
- 
+
         for next_node in adj[node]:
             if next_node==path[0] and len(path)==4:  return 1
             if next_node in path: continue
             if explore(next_node,path+[next_node])==1: return 1
         return -1
-        
+
     adj = {}
     for a,b in g[1:]:
         if not a in adj: adj[a]=[]
         adj[a].append(b)
         if not b in adj: adj[b]=[]
         adj[b].append(a)
-    
+
     for node in adj.keys():
         if explore(node,path=[node])==1:
             return 1
-        
+
     return -1
 
 # dfs
@@ -370,9 +371,9 @@ def sq(g):
 #
 # Inputs:    adj
 #            n
-#            sequence 
-#            previsit 
-#            postvisit  
+#            sequence
+#            previsit
+#            postvisit
 #            preexplore
 def dfs(adj          = None,
         n            = None,
@@ -390,7 +391,7 @@ def dfs(adj          = None,
             if not visited[u]:
                 explore(u)
 
-        postvisit(v)   
+        postvisit(v)
 
     visited = [False for v in range(n+1)]  # Zero element won't be used, but it does simplify indexing
 
@@ -432,7 +433,7 @@ def scc(edges):
         while True:
             yield count
             count+=1
-            
+
     def decreasing(post):
         pairs = sorted(zip(post,range(1,len(post)+1)),reverse=True)
         for a,b in pairs:
@@ -448,12 +449,12 @@ def scc(edges):
         ccnum[v-1]  = next(cc)
 
     n,_     = edges[0]
-    
+
     # Find sink nodes by looking for source nodes of the reversed graph
-    
+
     clock      = counter()
     pre        = [-1 for v in range(n+1)]   # Zero element won't be used, but it does simplify indexing
-    post       = [-1 for v in range(n+1)]   # Zero element won't be used, but it does simplify indexing 
+    post       = [-1 for v in range(n+1)]   # Zero element won't be used, but it does simplify indexing
     adj_R      = create_adj(edges,reverse=True)
     dfs(adj_R,n,
       sequence  = range(1,n+1),
@@ -461,7 +462,7 @@ def scc(edges):
       postvisit = incr_post)
 
     # construct components
-    
+
     cc       = counter()
     ccnum    = [-1 for v in range(n+1)]   # Zero element won't be used, but it does simplify indexing
     adj      = create_adj(edges)
@@ -469,7 +470,7 @@ def scc(edges):
       sequence    = decreasing(post[1:]),
       preexplore  = incr_ccnum)
 
-    return len([cc+1 for cc in ccnum if cc>-1]),adj,adj_R 
+    return len([cc+1 for cc in ccnum if cc>-1]),adj,adj_R
 
 #    sc
 #
@@ -485,23 +486,23 @@ def scc(edges):
 def sc(edges):
     n,_            = edges[0]
     ccnum,adj,adjr = scc(edges)  # Graph is semi connected iff the DAG of its strongly connected components is
-    
+
     pairs          = {}   # Build a structure of pairs of strongly connected components
     for i in range(len(ccnum)):
         for j in range(i+1,len(ccnum)):
             pairs[(ccnum[i],ccnum[j])] = False
-            
+
     for component in ccnum:
         for node in dfs(adj,n,sequence=(i for i in [component])):  # find links in one direction
             a,b = min(node,component),max(node,component),
             pairs[(a,b)]=True
         for node in dfs(adjr,n,sequence=(i for i in [component])): # now check t'other
             a,b = min(node,component),max(node,component),
-            pairs[(a,b)]=True 
-            
+            pairs[(a,b)]=True
+
     for k,v in pairs.items():  # Is any pair unlinked?
         if not v: return -1
-        
+
     return 1
 
 # gs
@@ -509,18 +510,18 @@ def sc(edges):
 # General Sink
 #
 # Input: a simple directed graphs with at most 1,000 vertices and 2,000 edges in the edge list format.
-# 
+#
 # Return: a vertex from which all other vertices are reachable (if such a vertex exists) and -1 otherwise.
 #
 #
 def gs(edges):
     n,_         = edges[0]
     ccnum,adj,_ = scc(edges) # We need test only one vertex from each simply connected component
-    
+
     for component in ccnum:
         if len(dfs(adj,n,sequence=(i for i in [component])))==n:
             return component
-        
+
     return -1
 
 # SDAG Shortest Paths in DAG
@@ -537,7 +538,7 @@ def sdag(m,adjacency,weights):
             else:
                 trial = D[i] +weights[(i,j)]
                 if trial < D[j]:
-                    D[j] = trial                 
+                    D[j] = trial
     return D[1:]
 
 # two_sat
@@ -545,7 +546,7 @@ def sdag(m,adjacency,weights):
 # 2SAT 2-Satisfiability
 #
 # Given: A positive integer k<=20 and k 2SAT formulas represented as follows.
-# The first line gives the number of variables n and the number of clauses m, 
+# The first line gives the number of variables n and the number of clauses m,
 # each of the following m lines gives a clause of length 2 by specifying two different literals.
 # Return: For each formula, output 0 if it cannot be satisfied or 1 followed by a satisfying assignment otherwise.
 #
@@ -553,10 +554,10 @@ def sdag(m,adjacency,weights):
 #
 # Aspvall, Bengt; Plass, Michael F.; Tarjan, Robert E. (1979),
 # "A linear-time algorithm for testing the truth of certain quantified boolean formulas"
-#  Information Processing Letters, 8 (3): 121�123, doi:10.1016/0020-0190(79)90002-4.
+#  Information Processing Letters, 8 (3): 121�123, doi:10.1016/0020-0190(79)90002-4.
 
 def two_sat(problem):
-    
+
     # create_assignment
     #
     # Assign values to variable, given the condensation of the implication graph,
@@ -575,13 +576,13 @@ def two_sat(problem):
 
     n,m,clauses = problem
     edges       = [(-a,b) for a,b in clauses] + [(-b,a) for a,b in clauses]
-    scc         = tarjan(create_adj([[n,len(edges)]] + edges)) 
+    scc         = tarjan(create_adj([[n,len(edges)]] + edges))
     for component in scc:
         for i in range(len(component)):
             for j in range(i+1,len(component)):
                 if component[i]==-component[j]:
-                    return 0,[] 
-    
+                    return 0,[]
+
     return 1,create_assignment(scc)
 
 # GRPH	Overlap Graphs
@@ -600,7 +601,7 @@ def two_sat(problem):
 # the strings is a directed graph Ok in which each string is represented by a node,
 # and string s is connected to string t with a directed edge when there is a
 # length k suffix of s that matches a length k prefix of t, as long as sÃ¢â€°Â t;
-# we demand sÃ¢â€°Â t to prevent directed loops in the overlap graph 
+# we demand sÃ¢â€°Â t to prevent directed loops in the overlap graph
 # (although directed cycles may be present).
 #
 # Input : A collection of DNA strings in FASTA format having total length at most 10 kbp.
@@ -613,24 +614,24 @@ def grph(fasta,k):
         for name_t,t in fasta:
             if s!=t and s[-k:]==t[:k]:
                 graph.append((name_s,name_t))
-            
+
     return graph
 
 #  SUFF Creating a Suffix Tree
 
 def createTrie(string):
-    
+
     class Node:
-        
+
         seq = 0
-        
+
         def __init__(self):
             self.seq       = Node.seq
             self.edges     = {}
             self.positions = {}
             self.label     = None
             Node.seq       += 1
-            
+
         def bfs(self,
                 path          = [],
                 propagatePath = lambda path,symbol: path,
@@ -645,9 +646,9 @@ def createTrie(string):
                              propagatePath,
                              visitInternal=visitInternal,
                              visitLeaf=visitLeaf)
-    
-        
- 
+
+
+
     Trie = Node()
     for i in range(len(string)):
         currentNode = Trie
@@ -663,14 +664,14 @@ def createTrie(string):
         if len(currentNode.edges)==0:
             currentNode.label = i
     return Trie
- 
+
 def convertToTree(Trie):
     Starts = []
     def identifyBranchPoints(node,symbol,position,prefix):
         if len(node.edges)>1:
             Starts.append(node)
             #print (symbol,position,node.seq,len(node.edges))
-    
+
     Trie.bfs(visitInternal=identifyBranchPoints)
 
     for node in Starts:
@@ -692,8 +693,8 @@ def convertToTree(Trie):
             node.positions[symbols] = positions[symbols]
             del node.edges[symbol]
             del node.positions[symbol]
-            
-def suff(string):             
+
+def suff(string):
     Trie = createTrie(string)
     convertToTree(Trie)
     Result = []
@@ -701,12 +702,12 @@ def suff(string):
             propagatePath = lambda path,symbol: path,
             visitLeaf     = lambda label,prefix:None,
             visitInternal = lambda node,symbol,position,prefix: Result.append(symbol))
-  
+
     return Result
 
 
 
-#    bfs 
+#    bfs
 
 #   Perform Breadth First search
 
@@ -735,14 +736,14 @@ def bfs(graph,                           # Graph to be searched
 # use breadth-first search to compute single-source shortest distances in an unweighted directed graph.
 
 def ShortestDistances(graph):
-    
+
     def update_distance(v,w):
         distances[w-1] = distances[v-1]+1
-    
+
     def start(v):
         if v>1: return
         distances[0] = 0
-        
+
     max_node,graph    = graph
     distances        = [-1]*max_node
     bfs(graph,1,visit=start,pre_visit=update_distance)
@@ -759,7 +760,7 @@ def ShortestDistances(graph):
 #         one_based Indicates whether numnering of nodes should start at 1 or zero
 #
 # Return: The adjacency list corresponding to the trie T
-#         for these patterns, in the following format. 
+#         for these patterns, in the following format.
 #         If T has n nodes, first label the root with 1 and then label the remaining nodes
 #         with the integers 2 through n in any order you like.
 #         Each edge of the adjacency list of T will be encoded by a triple
@@ -767,7 +768,7 @@ def ShortestDistances(graph):
 #         representing the edge's child node, and finally the symbol labeling the edge.
 @deprecated(reason="Use snp.create_tree instead")
 def trie(strings,one_based=True):
-   
+
     def find_string_in_adjacency_list(string, adjacency_list):
         index=0
         parent=0
@@ -783,7 +784,7 @@ def trie(strings,one_based=True):
                 else:
                     index+=1
         return (parent,path)
-    
+
     def create_suffix(parent,path,string,b):
         result=[]
         a = parent
@@ -793,14 +794,14 @@ def trie(strings,one_based=True):
             a=b
 
         return result
-    
+
     def merge_string_with_adjacency_list(adjacency_list,string):
         parent,path=find_string_in_adjacency_list(string, adjacency_list)
         return adjacency_list+create_suffix(parent,path,string,len(adjacency_list))
-    
+
     incr = 1 if one_based else 0
-    
+
     def increment_indices(adjacency_list):
-        return [(a+incr,b+incr,c) for (a,b,c) in adjacency_list] 
-    
+        return [(a+incr,b+incr,c) for (a,b,c) in adjacency_list]
+
     return increment_indices(reduce(merge_string_with_adjacency_list,strings,[]))

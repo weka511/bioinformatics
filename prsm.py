@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 #    Copyright (C) 2019 Greenweaves Software Limited
 #
 #    This is free software: you can redistribute it and/or modify
@@ -22,7 +23,7 @@ if __name__=='__main__':
     from helpers import create_strings
 
 
-    
+
     i = 0
     s = []
     R = []
@@ -34,9 +35,8 @@ if __name__=='__main__':
         else:
             R.append(float(ll))
         i+=1
-            
+
     m,s_max = prsm(s,R)
-    
+
     print (m)
-    print (s_max)    
-    
+    print (s_max)

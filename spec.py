@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 #    Copyright (C) 2019 Greenweaves Software Limited
 #
 #    This is free software: you can redistribute it and/or modify
@@ -15,7 +16,7 @@
 #
 #    spec Inferring Protein from Spectrum
 
-from spectrum import spectrum2protein 
+from spectrum import spectrum2protein
 
 if __name__=='__main__':
 
@@ -119,8 +120,8 @@ if __name__=='__main__':
         13745.0239464,
         13848.0331364,
         13905.0545964
-       
+
 ])
     with open('spec.txt','w') as o:
         print (pp)
-        o.write('{0}\n'.format(pp))    
+        o.write('{0}\n'.format(pp))

@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # snarfed from https://github.com/mutux/Ukkonen-s-Suffix-Tree-Algorithm/blob/master/suffixtree.py
 class Node:
@@ -54,8 +55,8 @@ class Node:
             total+= len(suffix)
             total += Node.__count__(linked,chars,v,ed=ed)
         return total
-        
-    
+
+
     @staticmethod
     def __draw__(rnode, chars, v, ed='#'):
         l = len(chars)
@@ -108,7 +109,7 @@ class Node:
     def count(root, chars, ed='#'):
         v = 0
         return Node.__count__(root, chars, v, ed)
-        
+
 def build(chars, regularize=False):
     root = Node(None, None, None)
     actnode = root

@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 '''
     PCOV Genome Assembly with Perfect Coverage
 
@@ -42,4 +43,3 @@ def pcov(S):
 
 if __name__=='__main__':
     print (pcov(read_strings('c:/Users/Weka/Downloads/rosalind_pcov.txt')))
-    

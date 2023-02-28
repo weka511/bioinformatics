@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 #    Copyright (C) 2019 Greenweaves Software Limited
 #
 #    This is free software: you can redistribute it and/or modify
@@ -20,24 +21,24 @@ from graphs import sq
 
 if __name__=='__main__':
     from helpers import create_strings
-    
+
     k=2
-    
+
     graphs = [[(4, 5),
                (3, 4),
                (4, 2),
                (3, 2),
                (3, 1),
                (1, 2)],
-    
+
               [(4, 4),
                 (1, 2),
                 (3, 4),
                 (2, 4),
-                (4, 1)]]    
+                (4, 1)]]
 
     print (' '.join([str(sq(g)) for g in graphs]))
-    
+
     gs = []
     g  = []
     for line in create_strings(ext=1):
@@ -50,12 +51,11 @@ if __name__=='__main__':
         if len(numbers)==1:
             continue
         elif len(numbers)==2:
-            
+
             g.append((numbers[0],numbers[1]))
 
     if len(g)>0:
-        gs.append(g)           
- 
-        
-    print (' '.join([str(sq(g)) for g in gs]))    
-  
+        gs.append(g)
+
+
+    print (' '.join([str(sq(g)) for g in gs]))

@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 #    Copyright (C) 2020 Simon Crase
 #
 #    This is free software: you can redistribute it and/or modify
@@ -34,7 +35,7 @@ if __name__=='__main__':
         print (score)
         print (len(s1),s1)
         print (len(t1),len('GCCGTCAGGCTGGTGTCCG'),t1)
-        
+
     if args.rosalind:
         Input       = read_strings(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt')
         fc          = FastaContent(Input)
@@ -45,11 +46,10 @@ if __name__=='__main__':
             print (f'{s1}')
             f.write(f'{s1}\n')
             print (f'{t1}')
-            f.write(f'{t1}\n')                
-                
+            f.write(f'{t1}\n')
+
     elapsed = time.time() - start
     minutes = int(elapsed/60)
     seconds = elapsed - 60*minutes
-    print (f'Elapsed Time {minutes} m {seconds:.2f} s')    
+    print (f'Elapsed Time {minutes} m {seconds:.2f} s')
 
-       

@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 # Copyright (C) 2017 Greenweaves Software Pty Ltd
 
 # This is free software: you can redistribute it and/or modify
@@ -33,4 +34,3 @@ with open ('c:/Users/Weka/Downloads/rosalind_ptra(2).txt') as f:
                     sys.exit()
                 print ('Not matched: '+ translated)
         i+=1
-       

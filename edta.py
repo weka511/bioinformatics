@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 #    Copyright (C) 2019-2021 Greenweaves Software Limited
 #
 #    This is free software: you can redistribute it and/or modify
@@ -29,13 +30,13 @@ if __name__=='__main__':
     parser.add_argument('--sample',   default=False, action='store_true', help='process sample dataset')
     parser.add_argument('--rosalind', default=False, action='store_true', help='process Rosalind dataset')
     args = parser.parse_args()
-    
+
     if args.sample:
         d,s,t=edta('PRETTY' ,'PRTTEIN')
         print(d)
         print (s)
         print (t)
-        
+
     if args.rosalind:
         inFile = open(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt','r')
         strings = []
@@ -49,8 +50,8 @@ if __name__=='__main__':
             f.write(f'{s}\n')
             print (t)
             f.write(f'{t}\n')
-        
+
     elapsed = time.time() - start
     minutes = int(elapsed/60)
     seconds = elapsed - 60*minutes
-    print (f'Elapsed Time {minutes} m {seconds:.2f} s')        
+    print (f'Elapsed Time {minutes} m {seconds:.2f} s')

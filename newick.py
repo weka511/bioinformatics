@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 #  Copyright (C) 2017-2020 Greenweaves Software Limited
 
 #  This is free software: you can redistribute it and/or modify
@@ -36,14 +37,14 @@ class Node:
         self.name   = '-'
         self.id     = Node.next_id
         self.parent = None
-        
+
         Node.next_id +=1
-        
+
     def add(self,node):
         #print ('Added {0}({1}) to {2}({3})'.format(node.id,node.level,self.id,self.level))
         self.nodes.append(node)
         node.parent = self
-        
+
     def iterate(self,path=[]):
         yield self,path
         new_path=path[:]
@@ -51,7 +52,7 @@ class Node:
         for node in self.nodes:
             for rn in node.iterate(new_path):
                 yield rn
-                
+
 class Tokenizer:
     UNDEFINED         = -2
     WHITESPACE        = -1
@@ -61,7 +62,7 @@ class Tokenizer:
     COMMA             = 3
     COLON             = 4
     NAME              = 5
-    NUMBER            = 6        
+    NUMBER            = 6
     def __init__(self):
         self.symbols={
             ';' : Tokenizer.SEMICOLON,
@@ -78,15 +79,15 @@ class Tokenizer:
             self.symbols[i] = Tokenizer.NUMBER
         for i in string.whitespace:
             self.symbols[i] = Tokenizer.WHITESPACE
-    
+
     def get_token(self,ch):
         try:
             return self.symbols[ch]
         except KeyError as e:
             print('Invalid character: {0} {1}'.format(ch,e))
             return Tokenizer.UNDEFINED
-        
-    def tokenize(self,text):        
+
+    def tokenize(self,text):
         def long_token(target,pos):
             start = pos-1
             token = target
@@ -102,7 +103,7 @@ class Tokenizer:
             token = self.get_token(ch)
             pos+=1
             if token==Tokenizer.UNDEFINED:
-                continue            
+                continue
             if token==Tokenizer.WHITESPACE:
                 continue
             elif token<Tokenizer.NAME:
@@ -120,23 +121,23 @@ class Tokenizer:
             return int(text)
         except ValueError:
             try:
-                return float(text)            
+                return float(text)
             except ValueError as e:
                 print ('Could not parse length: ',e)
-                
+
 class Parser():
-  
+
     def __init__(self,tokenizer):
         self.tokenizer=tokenizer
-        
-    def parse(self,text):        
+
+    def parse(self,text):
         ended   = False
         stack   = []
         current = None
         tree    = None
         lookup  = {}
         Node.next_id = 0
-        
+
         for token,start,pos,value in self.tokenizer.tokenize(text):
             if ended:
                 print ('Characters beyond end',token,start,pos,text[staself.symbolsrt:pos])
@@ -157,7 +158,7 @@ class Parser():
                 current=stack.pop()
                 current.end = pos
             elif token==Tokenizer.COMMA:
-                current=Node(len(stack),start)   
+                current=Node(len(stack),start)
                 stack[len(stack)-1].add(current)
             elif token==Tokenizer.COLON:
                 pass
@@ -188,20 +189,20 @@ def newick_to_adjacency_list(T,return_root=False):
             top = Stack.pop()
         elif token==Tokenizer.SEMICOLON:
             pass
-    
+
     if return_root:
         return Adj,root
     else:
         return Adj
-    
+
 if __name__=='__main__':
     def display(p):
         for (node,path) in p.iterate():
             spaces = ''.join(['-' for i in range(node.level)])
             print ('{5} {0}ID={1}, Name={2}, level={3}, length={4}'.format(spaces,node.id, node.name,node.level,node.length,path))
-            
+
     parser = Parser(Tokenizer())
-    
+
     s = '''
         ((raccoon:19.1.9959,bear:6.80041):0.84600,((sea_lion:11.99700, seal:12.00300):7.52973,
         ((monkey:100.85930,cat:47.14069):20.59201, weasel:18.87953):2.09460):3.87382,dog:25.46154);
@@ -236,5 +237,4 @@ if __name__=='__main__':
     #display(pp)
     #for node in pp.iterate():
         #spaces = ''.join(['-' for i in range(node.level)])
-        #print ('{0}{1} {2} {3}'.format(spaces,node.id, node.name,node.level))    
-   
+        #print ('{0}{1} {2} {3}'.format(spaces,node.id, node.name,node.level))

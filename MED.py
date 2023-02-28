@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 # Copyright (C) 2017 Greenweaves Software Pty Ltd
 
 # This is free software: you can redistribute it and/or modify
@@ -36,7 +37,7 @@ def selection(A,k):
         return v
     else:
         return selection(suffix, k-len(prefix)-len(mid))
-    
+
 #print (selection([2, 36, 5, 21, 8, 13, 11, 20, 5, 4 ,1],8))
 
 if __name__=='__main__':

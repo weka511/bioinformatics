@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 # Copyright (C) 2015-2020 Greenweaves Software Limited
 
 # This is free software: you can redistribute it and/or modify
@@ -63,7 +64,7 @@ integer_masses={
 
 # AminoAcid
 #
-# This class represents the aspects of amino acids that are relevant to 
+# This class represents the aspects of amino acids that are relevant to
 # Mass Spectroscopy
 
 #   Attributes:
@@ -74,14 +75,14 @@ integer_masses={
 #     average_mass Average mass (Daltons)
 
 class AminoAcid:
-    
+
     def __init__(self,name,short,abbrev,mon_mass,average_mass):
         self.name         = name
         self.short        = short
         self.abbrev       = abbrev
         self.mon_mass     = mon_mass
         self.average_mass = average_mass
-        
+
     def __str__(self):
         return '%(name)s %(short)s %(abbrev)s %(int_mass)d %(mon_mass)f %(average_mass)f'%\
                {
@@ -92,10 +93,10 @@ class AminoAcid:
                    'average_mass' : self.average_mass,
                    'int_mass'     : self.asInteger()
                }
-    
+
     def asInteger(self):
         return int(self.mon_mass)
- 
+
 # amino_acids
 #
 # Lookup table for amino acids, from
@@ -134,7 +135,7 @@ skew_step={
 }
 
 
- 
+
 
 # createSimpleDNASubst
 #
@@ -147,7 +148,7 @@ def createSimpleDNASubst(match=+1,subst=1,bases='ATGC'):
     weights={}
     for i in range(len(bases)):
         for j in range(len(bases)):
-            weights[(bases[i],bases[j])] = +match if i==j else -subst          
+            weights[(bases[i],bases[j])] = +match if i==j else -subst
     return weights
 
 # get_re_protein
@@ -158,10 +159,10 @@ def get_re_protein(min_length=1):
 
 if __name__=='__main__':
     import unittest
-    
+
     class Test_Amino_acids(unittest.TestCase):
         def test_match_integer(self):
             for key in integer_masses:
                 self.assertEqual(integer_masses[key],amino_acids[key].asInteger())
-                
+
     unittest.main()

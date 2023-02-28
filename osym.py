@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 #   Copyright (C) 2020 Greenweaves Software Limited
 
 #   This program is free software: you can redistribute it and/or modify
@@ -36,11 +37,11 @@ from   helpers import read_strings
 def osym(s,t, match=1,mismatch=-1):
   def get_score(a,b, match=1,mismatch=-1):
     return match if a==b else mismatch
-  
+
   def score_string(s,t):
-    return sum(get_score(a,b) for (a,b) in zip(s,t))   
+    return sum(get_score(a,b) for (a,b) in zip(s,t))
   return 0,0
- 
+
 if __name__=='__main__':
     start = time.time()
     parser = argparse.ArgumentParser('OSYM Isolating Symbols in Alignments')
@@ -49,19 +50,19 @@ if __name__=='__main__':
     args = parser.parse_args()
     if args.sample:
         print (osym('ATAGATA','ACAGGTA'))
-        
-    
+
+
 
     if args.rosalind:
         Input  = read_strings(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt')
- 
+
         Result = None
         print (Result)
         with open(f'{os.path.basename(__file__).split(".")[0]}.txt','w') as f:
             for line in Result:
                 f.write(f'{line}\n')
-                
+
     elapsed = time.time() - start
     minutes = int(elapsed/60)
     seconds = elapsed - 60*minutes
-    print (f'Elapsed Time {minutes} m {seconds:.2f} s')    
+    print (f'Elapsed Time {minutes} m {seconds:.2f} s')

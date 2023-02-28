@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 # Copyright (C) 2017 Greenweaves Software Pty Ltd
 
 # This is free software: you can redistribute it and/or modify
@@ -39,7 +40,7 @@ def kmp(s):
                 if s[j:k]==s[0:k-j]:
                     return k-j
         return 0
- 
+
     result=[]
     longest=-1
     for k in range(1,len(s)+1):
@@ -59,5 +60,4 @@ if __name__=='__main__':
     string=''.join(s for s in strings)
 
     print(' '.join(str(i) for i in kmp(string)))
-   
-                
+
