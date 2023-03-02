@@ -429,6 +429,67 @@ def ConstructProfileHMM(theta,Alphabet,Alignment,sigma=0):
     return create_transition(m,Paths), create_emission(m,n,Paths), [state_set.get_pair(i) for i in range(m)]
 
 
+class Node:
+    def __init__(self,state):
+        self.state = state
+
+    def __str__(self):
+        return str(self.state)
+
+    def get_function(self):
+        return self.state[0]
+
+class ViterbiGraph:
+
+    def __init__(self, Transition, States):
+        def f(state):
+            a,b = state
+            return f'{a}' if b==None else  f'{a}{b}'
+        self.Transition = Transition
+        self.m,_        = Transition.shape
+        self.k          = self.m//3 - 1
+        self.state_index = {f(state):i for i,state in enumerate(States)}
+        assert self.m == len(self.state_index)
+
+    def __getitem__(self,index):
+        i,j = index
+        if i%3==0:
+            return 'S' if j==0 else f'I{i//3}'
+        if i%3==1: return f'M{i//3+1}'
+        if i%3==2: return f'D{i//3+1}'
+
+    def get_successors(self,i,j):
+        state = self[i,j]
+        match state[0]:
+            case 'S':
+                yield 2,0 # I
+                yield 1,0 # M
+                yield 1,1 #D
+            case 'D':
+                if i<3*self.k -1:
+                    yield i+3,j #D
+                    yield i+1,j+1 # I
+                    yield i+2,j+1 # M
+                else:
+                    yield 0,j+1 # I
+            case 'M':
+                if i<3*self.k -2:
+                    yield i+3,j+1 #M
+                    yield i+2,j+1 # I
+                    yield i+4,j # D
+                else:
+                    yield i+2,j+1 # I
+
+            case 'I':
+                if i<3*self.k:
+                    yield i+2,j #D
+                    yield i,j+1 # I
+                    yield i+1,j+1 # M
+                else:
+                    yield 0,j+1 # I
+
+            case 'E':
+                pass
 
 def AlignSequenceWithProfileHMM(theta,s,Alphabet,Alignment,sigma=0):
     '''
@@ -455,6 +516,7 @@ def AlignSequenceWithProfileHMM(theta,s,Alphabet,Alignment,sigma=0):
         return product
 
     Transition, Emission,StateNames = ConstructProfileHMM(theta,Alphabet,Alignment,sigma=sigma)
+    viterbi                         = ViterbiGraph(Transition,StateNames)
     States                          = [StateSet.format(x) for x in StateNames]
     Path                            = Viterbi(s,Alphabet,States,Transition,Emission)   #FIXME
     return parse_state_string(Path)
@@ -634,6 +696,8 @@ if __name__=='__main__':
             self.assertAlmostEqual(0.333, Transition[7,9],places=2)
             self.assertAlmostEqual(0.01, Emission[2,1],places=3)
 
+
+
         def test_ba10g(self):
             '''
             BA10G   Sequence Alignment with Profile HMM Problem
@@ -668,5 +732,65 @@ if __name__=='__main__':
             self.assertAlmostEqual(1/3, Emissions[2,2])
 
 
+    class Test_10_Viterbi(TestCase):
+        '''
+        BA10G   Sequence Alignment with Profile HMM Problem
+        test the ViterbiGraph class
+        '''
+        def setUp(self):
+            Transition, Emission,StateNames = ConstructProfileHMM(0.35,
+                                                                  'ACDEF',
+                                                                  ['ACDEFACADF',
+                                                                   'AFDA---CCF',
+                                                                   'A--EFD-FDC',
+                                                                   'ACAEF--A-C',
+                                                                   'ADDEFAAADF'])
+            self.viterbi = ViterbiGraph(Transition,StateNames)
 
+        def test_I(self):
+            self.assertEqual('I0', self.viterbi[0,1])
+            successors = list(self.viterbi.get_successors(0,1))
+            self.assertEqual(3,len(successors))
+            self.assertEqual((2,1),successors[0])
+            self.assertEqual((0,2),successors[1])
+            self.assertEqual((1,2),successors[2])
+            self.assertEqual('I8', self.viterbi[8*3,1])
+            successors = list(self.viterbi.get_successors(8*3,1))
+            self.assertEqual(1,len(successors))
+            self.assertEqual((0,2),successors[0])
+        def test_S(self):
+            self.assertEqual('S',  self.viterbi[0,0])
+            successors = list(self.viterbi.get_successors(0,0))
+            self.assertEqual(3,len(successors))
+            self.assertEqual((2,0),successors[0])
+            self.assertEqual((1,0),successors[1])
+            self.assertEqual((1,1),successors[2])
+
+        def test_D(self):
+            self.assertEqual('D1', self.viterbi[2,0])
+
+            successors = list(self.viterbi.get_successors(2,0))
+            self.assertEqual(3,len(successors))
+            self.assertEqual((5,0),successors[0])
+            self.assertEqual((3,1),successors[1])
+            self.assertEqual((4,1),successors[2])
+            self.assertEqual('D1', self.viterbi[2,1])
+            self.assertEqual('D8', self.viterbi[2+7*3,1])
+            successors = list(self.viterbi.get_successors(2+7*3,1))
+            self.assertEqual(1,len(successors))
+            self.assertEqual((0,2),successors[0])
+            self.assertEqual('I0', self.viterbi[0,2])
+
+        def test_M(self):
+            self.assertEqual('M1', self.viterbi[1,1])
+            successors = list(self.viterbi.get_successors(1,1))
+            self.assertEqual(3,len(successors))
+            self.assertEqual((4,2),successors[0]) #M
+            self.assertEqual((3,2),successors[1]) #I
+            self.assertEqual((5,1),successors[2]) #D
+            self.assertEqual('M8', self.viterbi[1+7*3,0])
+            successors = list(self.viterbi.get_successors(1+7*3,0))
+            self.assertEqual(1,len(successors))
+            self.assertEqual((3+7*3,1),successors[0])
+            self.assertEqual('I8', self.viterbi[3+7*3,1])
     main()
