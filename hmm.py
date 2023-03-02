@@ -513,35 +513,19 @@ class ViterbiGraph:
         '''Used to establish last column of table'''
         self.n = n
 
-def AlignSequenceWithProfileHMM(theta,s,Alphabet,Alignment,sigma=0):
-    '''
-    AlignSequenceWithProfileHMM
+    def AlignSequenceWithProfileHMM(self,s,Alphabet):
+        '''
+        AlignSequenceWithProfileHMM
 
-    BA10G   Sequence Alignment with Profile HMM Problem
+        BA10G   Sequence Alignment with Profile HMM Problem
 
-    Given: A string Text, a multiple alignment Alignment, a threshold θ, and a pseudocount σ.
+        Given: A string Text, a multiple alignment Alignment, a threshold θ, and a pseudocount σ.
 
-    Return: An optimal hidden path emitting Text in HMM(Alignment,θ,σ).
-    '''
-    def parse_state_string(Path):
-        product = []
-        i = 0
-        while i<len(Path):
-            ch = Path[i]
-            i += 1
-            if ch in ['S','E']: product.append((ch,))
-            if ch in ['M','I','D']:
-                j = i
-                while i<len(Path) and Path[i].isdigit():
-                    i+= 1
-                product.append((ch,int(Path[j:i])))
-        return product
+        Return: An optimal hidden path emitting Text in HMM(Alignment,θ,σ).
+        '''
+        pass
 
-    Transition, Emission,StateNames = ConstructProfileHMM(theta,Alphabet,Alignment,sigma=sigma)
-    viterbi                         = ViterbiGraph(Transition,StateNames)
-    States                          = [StateSet.format(x) for x in StateNames]
-    Path                            = Viterbi(s,Alphabet,States,Transition,Emission)   #FIXME
-    return parse_state_string(Path)
+
 
 def EstimateParameters(s,Alphabet,path,States):
     '''BA10H 	Estimate the Parameters of an HMM'''
@@ -719,22 +703,6 @@ if __name__=='__main__':
             self.assertAlmostEqual(0.01, Emission[2,1],places=3)
 
 
-
-        def test_ba10g(self):
-            '''
-            BA10G   Sequence Alignment with Profile HMM Problem
-            '''
-            Path = AlignSequenceWithProfileHMM(0.4,
-                                                'AEFDFDC',
-                                                'ABCDEF',
-                                                ['ACDEFACADF',
-                                                 'AFDA---CCF',
-                                                 'A--EFD-FDC',
-                                                 'ACAEF--A-C',
-                                                 'ADDEFAAADF'],
-                                                sigma=0.01)
-            # self.assertEqual(9,len(Path))
-
         def test_ba10h(self):
             Transitions,Emissions = EstimateParameters('yzzzyxzxxx','xyz','BBABABABAB','ABC')
             self.assertEqual(1, Transitions[0,1])
@@ -845,4 +813,21 @@ if __name__=='__main__':
             self.assertEqual(1,len(successors))
             self.assertEqual((0,2),successors[0])
             self.assertEqual('E', self.viterbi[0,8])
+
+        def test_ba10g(self):
+            '''
+            BA10G   Sequence Alignment with Profile HMM Problem
+            '''
+            Transition, Emission,StateNames = ConstructProfileHMM(0.4,
+                                                                  'ABCDEF',
+                                                                  ['ACDEFACADF',
+                                                                   'AFDA---CCF',
+                                                                   'A--EFD-FDC',
+                                                                   'ACAEF--A-C',
+                                                                   'ADDEFAAADF'],
+                                                                  sigma=0.01)
+            viterbi                        = ViterbiGraph(Transition,StateNames)
+            Path                           = viterbi.AlignSequenceWithProfileHMM('AEFDFDC','ABCDEF')
+            self.assertEqual(9,len(Path))
+
     main()
