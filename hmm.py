@@ -449,47 +449,69 @@ class ViterbiGraph:
         self.m,_        = Transition.shape
         self.k          = self.m//3 - 1
         self.state_index = {f(state):i for i,state in enumerate(States)}
-        assert self.m == len(self.state_index)
+        self.n           = None
 
     def __getitem__(self,index):
+        '''
+        Implement mapping from rows and columns to states that is depicted in Figure 10.21
+        '''
         i,j = index
+        if self.n != None and j>self.n: return 'E'
         if i%3==0:
             return 'S' if j==0 else f'I{i//3}'
         if i%3==1: return f'M{i//3+1}'
         if i%3==2: return f'D{i//3+1}'
 
     def get_successors(self,i,j):
+        '''
+        Implement mapping from rows and columns to successors that is depicted in Figure 10.21
+        '''
+        def should_include(node):
+            i_1,j_1 = node
+            if self.n != None and j_1>self.n:
+                return False
+            return True
         state = self[i,j]
-        match state[0]:
-            case 'S':
-                yield 2,0 # I
-                yield 1,0 # M
-                yield 1,1 #D
-            case 'D':
-                if i<3*self.k -1:
-                    yield i+3,j #D
-                    yield i+1,j+1 # I
-                    yield i+2,j+1 # M
-                else:
-                    yield 0,j+1 # I
-            case 'M':
-                if i<3*self.k -2:
-                    yield i+3,j+1 #M
-                    yield i+2,j+1 # I
-                    yield i+4,j # D
-                else:
-                    yield i+2,j+1 # I
+        result = None
+        if self.n != None and j>self.n:
+            pass
+        else:
+            match state[0]:
+                case 'S':
+                    result = [(2,0), # I
+                              (1,0), # M
+                              (1,1)] #D
+                case 'D':
+                    if i<3*self.k -1:
+                        result = [(i+3,j), #D
+                                  (i+1,j+1), # I
+                                  (i+2,j+1)] # M
+                    else:
+                        result = [(0,j+1)] # I
+                case 'M':
+                    if i<3*self.k -2:
+                        result = [(i+3,j+1), #M
+                                  (i+2,j+1), # I
+                                  (i+4,j)] # D
+                    else:
+                        result = [(i+2,j+1)] # I
 
-            case 'I':
-                if i<3*self.k:
-                    yield i+2,j #D
-                    yield i,j+1 # I
-                    yield i+1,j+1 # M
-                else:
-                    yield 0,j+1 # I
+                case 'I':
+                    if i<3*self.k:
+                        result =[(i+2,j), #D
+                                (i,j+1), # I
+                                (i+1,j+1)] # M
+                    else:
+                        result = [(0,j+1)] # I
 
-            case 'E':
-                pass
+                case 'E':
+                    pass
+
+        return [node for node in result if should_include(node)]
+
+    def set_text_length(self,n):
+        '''Used to establish last column of table'''
+        self.n = n
 
 def AlignSequenceWithProfileHMM(theta,s,Alphabet,Alignment,sigma=0):
     '''
@@ -748,49 +770,79 @@ if __name__=='__main__':
             self.viterbi = ViterbiGraph(Transition,StateNames)
 
         def test_I(self):
+            '''From Figure 10.21'''
             self.assertEqual('I0', self.viterbi[0,1])
-            successors = list(self.viterbi.get_successors(0,1))
+            successors = self.viterbi.get_successors(0,1)
             self.assertEqual(3,len(successors))
             self.assertEqual((2,1),successors[0])
             self.assertEqual((0,2),successors[1])
             self.assertEqual((1,2),successors[2])
             self.assertEqual('I8', self.viterbi[8*3,1])
-            successors = list(self.viterbi.get_successors(8*3,1))
+            successors = self.viterbi.get_successors(8*3,1)
             self.assertEqual(1,len(successors))
             self.assertEqual((0,2),successors[0])
+
         def test_S(self):
+            '''From Figure 10.21'''
             self.assertEqual('S',  self.viterbi[0,0])
-            successors = list(self.viterbi.get_successors(0,0))
+            successors = self.viterbi.get_successors(0,0)
             self.assertEqual(3,len(successors))
             self.assertEqual((2,0),successors[0])
             self.assertEqual((1,0),successors[1])
             self.assertEqual((1,1),successors[2])
 
         def test_D(self):
+            '''From Figure 10.21'''
             self.assertEqual('D1', self.viterbi[2,0])
 
-            successors = list(self.viterbi.get_successors(2,0))
+            successors = self.viterbi.get_successors(2,0)
             self.assertEqual(3,len(successors))
             self.assertEqual((5,0),successors[0])
             self.assertEqual((3,1),successors[1])
             self.assertEqual((4,1),successors[2])
             self.assertEqual('D1', self.viterbi[2,1])
             self.assertEqual('D8', self.viterbi[2+7*3,1])
-            successors = list(self.viterbi.get_successors(2+7*3,1))
+            successors = self.viterbi.get_successors(2+7*3,1)
             self.assertEqual(1,len(successors))
             self.assertEqual((0,2),successors[0])
             self.assertEqual('I0', self.viterbi[0,2])
 
         def test_M(self):
+            '''From Figure 10.21'''
             self.assertEqual('M1', self.viterbi[1,1])
-            successors = list(self.viterbi.get_successors(1,1))
+            successors = self.viterbi.get_successors(1,1)
             self.assertEqual(3,len(successors))
             self.assertEqual((4,2),successors[0]) #M
             self.assertEqual((3,2),successors[1]) #I
             self.assertEqual((5,1),successors[2]) #D
             self.assertEqual('M8', self.viterbi[1+7*3,0])
-            successors = list(self.viterbi.get_successors(1+7*3,0))
+            successors = self.viterbi.get_successors(1+7*3,0)
             self.assertEqual(1,len(successors))
             self.assertEqual((3+7*3,1),successors[0])
             self.assertEqual('I8', self.viterbi[3+7*3,1])
+
+
+        def test_Last_Column(self):
+            '''From Figure 10.21'''
+            self.viterbi.set_text_length(7)
+            self.assertEqual('I0', self.viterbi[0,7])
+            successors = self.viterbi.get_successors(0,7)
+            self.assertEqual(1,len(successors))
+            self.assertEqual((2,7),successors[0])
+            self.assertEqual('M1', self.viterbi[1,7])
+            successors = self.viterbi.get_successors(1,7)
+            self.assertEqual(1,len(successors))
+            self.assertEqual((5,7),successors[0])
+            self.assertEqual('D2', self.viterbi[5,7])
+            self.assertEqual('D1', self.viterbi[2,7])
+            successors = self.viterbi.get_successors(2,7)
+            self.assertEqual(1,len(successors))
+            self.assertEqual((5,7),successors[0])
+            self.assertEqual('D2', self.viterbi[5,7])
+
+            self.assertEqual('I8', self.viterbi[8*3,1])
+            successors = self.viterbi.get_successors(8*3,1)
+            self.assertEqual(1,len(successors))
+            self.assertEqual((0,2),successors[0])
+            self.assertEqual('E', self.viterbi[0,8])
     main()
