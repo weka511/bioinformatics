@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-#    Copyright (C) 2019-2021 Greenweaves Software Limited
+#    Copyright (C) 2019-2023 Greenweaves Software Limited
 #
 #    This is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -13,26 +13,19 @@
 #
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>
-#
-#    Function to solve graphs problems from http://rosalind.info/problems/topics/graphs/
+
+''' Functions to solve graphs problems from http://rosalind.info/problems/topics/graphs/'''
 
 from   functools   import reduce
 from   helpers     import create_adjacency
 from   align       import topological_order
 from   collections import deque
 from   math        import isinf
-from   tarjan      import tarjan
+# from   tarjan      import tarjan
 from   deprecated import deprecated
+from unittest import TestCase, main
 
-# bf
-#
-# Bellman-Ford Algorithm
-#
-# Given: A simple directed graph with integer edge weights and fewer than 1,000 vertices in the edge list format.
-#
-# Return: neg    -1 if there is a negative cycle, else +1
-#         dists   distances from origin to each node
-#         pre     predecessor of each node
+
 
 def bf(edges,
        s=1):    # Set to zero for nwc - see Ayaan Hossain's comment http://rosalind.info/problems/nwc/questions/
@@ -49,6 +42,17 @@ def bf(edges,
                 # to every other vertex in the graph with cost/weight/length 0.
                 # Then if we begin our Bellman-Ford Algorithm on this "source_node", surely enough
                 # we will be able to detect any negative-weight cycle in the graph if it is present.
+    '''
+    bf
+
+    Bellman-Ford Algorithm
+
+    Given: A simple directed graph with integer edge weights and fewer than 1,000 vertices in the edge list format.
+
+    Return: neg    -1 if there is a negative cycle, else +1
+            dists   distances from origin to each node
+            pre     predecessor of each node
+    '''
     n,_         = edges[0]
 
     if s==0:
@@ -81,25 +85,28 @@ def bf(edges,
             predecessor[1:])
 
 
-# bip
-#
-# Input: a graph in edgelist form
-#
-# Output:  1 if graph is bipartite, otherwise -1
-#
-# Strategy: try to partition graph into two colours
-
 def bip(graph):
+    '''
+    bip
+
+    Input: a graph in edgelist form
+
+    Output:  1 if graph is bipartite, otherwise -1
+
+    Strategy: try to partition graph into two colours
+    '''
     red  = set()
     blue = set()
 
-    # colour
-    #
-    # Attempt to assign this node, and all reachable nodes, to one colour or t'other
-    #
-    # Inputs:  node    The node we are assigning
-    #          isBlue  Indicates whether we are trying Red or Blue
     def colour(node,isBlue):
+        '''
+        colour
+
+         Attempt to assign this node, and all reachable nodes, to one colour or t'other
+
+         Inputs:  node    The node we are assigning
+                  isBlue  Indicates whether we are trying Red or Blue
+        '''
         if isBlue:
             if node in red: return False
             if node in blue: return True
@@ -135,7 +142,7 @@ def bip(graph):
 #
 # Connected Components
 #
-# Input: A simple graph with fewere than 1,000 vertices in the edge list format.
+# Input: A simple graph with fewer than 1,000 vertices in the edge list format.
 #
 # Return: The number of connected components in the graph.
 
@@ -805,3 +812,39 @@ def trie(strings,one_based=True):
         return [(a+incr,b+incr,c) for (a,b,c) in adjacency_list]
 
     return increment_indices(reduce(merge_string_with_adjacency_list,strings,[]))
+
+if __name__=='__main__':
+    class Test_graphs(TestCase):
+
+        def test_bf(self):
+            edges = [(9, 13),
+                     (1, 2, 10),
+                     (3, 2, 1),
+                     (3, 4, 1),
+                     (4, 5, 3),
+                     (5, 6, -1),
+                     (7, 6, -1),
+                     (8, 7, 1),
+                     (1, 8, 8),
+                     (7, 2, -4),
+                     (2, 6, 2),
+                     (6, 3, -2),
+                     (9, 5 ,-10),
+                     (9, 4, 7)]
+            _,dists,_ = bf(edges)
+
+            self.assertEqual([0, 5, 5, 6, 9, 7, 9, 8],dists[:-1])
+            self.assertEqual(float('inf'),dists[-1])
+
+        def test_bip(self):
+            self.assertEqual(-1,bip([(3, 3),
+                                     (1, 2),
+                                     (3, 2),
+                                     (3, 1)]))
+
+            self.assertEqual(1,bip([(4, 3),
+                                    (1, 4),
+                                    (3, 1),
+                                    (1, 2)]))
+
+    main()
