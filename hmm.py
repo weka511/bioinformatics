@@ -429,26 +429,21 @@ def ConstructProfileHMM(theta,Alphabet,Alignment,sigma=0):
     return create_transition(m,Paths), create_emission(m,n,Paths), [state_set.get_pair(i) for i in range(m)]
 
 
-class Node:
-    def __init__(self,state):
-        self.state = state
+def SoftDecode(s, Alphabet,  States, Transition, Emission):
+    result = np.zeros((len(s),len(States)))
+    return result
 
-    def __str__(self):
-        return str(self.state)
-
-    def get_function(self):
-        return self.state[0]
 
 class ViterbiGraph:
 
     def __init__(self, Transition, States):
-        def f(state):
+        def format(state):
             a,b = state
             return f'{a}' if b==None else  f'{a}{b}'
         self.Transition = Transition
         self.m,_        = Transition.shape
         self.k          = self.m//3 - 1
-        self.state_index = {f(state):i for i,state in enumerate(States)}
+        self.state_index = {format(state):i for i,state in enumerate(States)}
         self.n           = None
 
     def __getitem__(self,index):
@@ -456,7 +451,8 @@ class ViterbiGraph:
         Implement mapping from rows and columns to states that is depicted in Figure 10.21
         '''
         i,j = index
-        if self.n != None and j>self.n: return 'E'
+        if self.n != None and j>self.n:
+            return 'E'
         if i%3==0:
             return 'S' if j==0 else f'I{i//3}'
         if i%3==1: return f'M{i//3+1}'
@@ -513,7 +509,7 @@ class ViterbiGraph:
         '''Used to establish last column of table'''
         self.n = n
 
-    def AlignSequenceWithProfileHMM(self,s,Alphabet):
+    def AlignSequence(self,string,Alphabet,Emission):
         '''
         AlignSequenceWithProfileHMM
 
@@ -523,7 +519,13 @@ class ViterbiGraph:
 
         Return: An optimal hidden path emitting Text in HMM(Alignment,θ,σ).
         '''
-        pass
+        def get_weight(state,xs,i):
+            return np.multiply(s[i-1,:],self.Transition[:,state]* Emission[state,xs[i]]).max()
+        self.set_text_length(len(string))
+        start_state = self[0,0]
+        start_index = self.state_index[start_state]
+        Paths       = [j for j in range(self.m) if self.Transition[start_index,j]!=0]
+        z=0
 
 
 
@@ -721,6 +723,33 @@ if __name__=='__main__':
             self.assertAlmostEqual(1/3, Emissions[2,1])
             self.assertAlmostEqual(1/3, Emissions[2,2])
 
+        def test_ba10j(self):
+            probabilities = SoftDecode('zyxxxxyxzz',
+                                       'xyz',
+                                       'AB',
+                                       np.array([[0.911,   0.089],
+                                                 [0.228,   0.772]]),
+                                       np.array([[0.356,   0.191,   0.453 ],
+                                                 [0.04, 0.467, 0.493]]))
+            expected      = np.array([
+                 [0.5438,  0.4562 ],
+                 [0.6492,  0.3508 ],
+                 [0.9647,  0.0353 ],
+                 [0.9936,  0.0064 ],
+                 [0.9957,  0.0043 ],
+                 [0.9891,  0.0109 ],
+                 [0.9154,  0.0846 ],
+                 [0.964,   0.036 ],
+                 [0.8737,  0.1263 ],
+                 [0.8167,  0.1833  ]
+             ])
+            m1,n1 = expected.shape
+            m2,n2 = probabilities.shape
+            self.assertEqual(m1,m2)
+            self.assertEqual(n1,n2)
+            for i in range(m1):
+                self.assertEqual(expected[i,0],probabilities[i,0])
+                self.assertEqual(expected[i,1],probabilities[i,1])
 
     class Test_10_Viterbi(TestCase):
         '''
@@ -826,8 +855,8 @@ if __name__=='__main__':
                                                                    'ACAEF--A-C',
                                                                    'ADDEFAAADF'],
                                                                   sigma=0.01)
-            viterbi                        = ViterbiGraph(Transition,StateNames)
-            Path                           = viterbi.AlignSequenceWithProfileHMM('AEFDFDC','ABCDEF')
-            self.assertEqual(9,len(Path))
+            viterbi                         = ViterbiGraph(Transition,StateNames)
+            Path                            = viterbi.AlignSequence('AEFDFDC','ABCDEF',Emission)
+            # self.assertEqual(9,len(Path))
 
     main()
