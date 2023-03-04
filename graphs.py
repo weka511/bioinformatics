@@ -16,15 +16,15 @@
 
 ''' Functions to solve graphs problems from http://rosalind.info/problems/topics/graphs/'''
 
-from   functools   import reduce
-from   helpers     import create_adjacency
-from   align       import topological_order
-from   collections import deque
-from   math        import isinf
+from functools   import reduce
+from helpers     import create_adjacency
+from align       import topological_order
+from collections import deque
+from math        import isinf
+from unittest    import TestCase, main
+
 # from   tarjan      import tarjan
 from   deprecated import deprecated
-from unittest import TestCase, main
-
 
 
 def bf(edges,
@@ -284,31 +284,34 @@ def deg(n,m,A):
     return degrees
 
 
-# DIJ  Dijkstra's Algorithm: compute single-source shortest distances
-#                            in a directed graph with positive edge weights.
-#
-#    I have followed the version described in Wikipedia -- https://en.wikipedia.org/wiki/Dijkstra's_algorithm
-#    1. Mark all nodes unvisited. Create a set of all the unvisited nodes called the unvisited set.
-#    2. Assign to every node a tentative distance value: set it to zero for our initial node and to
-#       infinity for all other nodes. Set the initial node as current.
-#    3. For the current node, consider all of its unvisited neighbours and calculate their
-#    tentative distances through the current node. Compare the newly calculated tentative
-#    distance to the current assigned value and assign the smaller one. For example, if the
-#    current node A is marked with a distance of 6, and the edge connecting it with a neighbour
-#    B has length 2, then the distance to B through A will be 6 + 2 = 8. If B was previously
-#    marked with a distance greater than 8 then change it to 8. Otherwise, the current value will be kept.
-#    4. When we are done considering all of the unvisited neighbours of the current node,
-#       mark the current node as visited and remove it from the unvisited set. A visited
-#       node will never be checked again.
-#    5. If the destination node has been marked visited (when planning a route between
-#       two specific nodes) or if the smallest tentative distance among the nodes in the
-#       unvisited set is infinity (when planning a complete traversal; occurs when there
-#       is no connection between the initial node and remaining unvisited nodes), then stop. The algorithm has finished.
-#    6. Otherwise, select the unvisited node that is marked with the smallest tentative distance,
-#       set it as the new "current node", and go back to step 3.
+
 def dij(g):
+    '''
+     DIJ  Dijkstra's Algorithm: compute single-source shortest distances
+    in a directed graph with positive edge weights.
+
+    I have followed the version described in Wikipedia -- https://en.wikipedia.org/wiki/Dijkstra's_algorithm
+    1. Mark all nodes unvisited. Create a set of all the unvisited nodes called the unvisited set.
+    2. Assign to every node a tentative distance value: set it to zero for our initial node and to
+       infinity for all other nodes. Set the initial node as current.
+    3. For the current node, consider all of its unvisited neighbours and calculate their
+        tentative distances through the current node. Compare the newly calculated tentative
+        distance to the current assigned value and assign the smaller one. For example, if the
+        current node A is marked with a distance of 6, and the edge connecting it with a neighbour
+        B has length 2, then the distance to B through A will be 6 + 2 = 8. If B was previously
+        marked with a distance greater than 8 then change it to 8. Otherwise, the current value will be kept.
+    4. When we are done considering all of the unvisited neighbours of the current node,
+       mark the current node as visited and remove it from the unvisited set. A visited
+       node will never be checked again.
+    5. If the destination node has been marked visited (when planning a route between
+       two specific nodes) or if the smallest tentative distance among the nodes in the
+       unvisited set is infinity (when planning a complete traversal; occurs when there
+       is no connection between the initial node and remaining unvisited nodes), then stop. The algorithm has finished.
+    6. Otherwise, select the unvisited node that is marked with the smallest tentative distance,
+       set it as the new "current node", and go back to step 3.
+    '''
     n,_             = g[0]                     # Number of nodes
-    open_edges      = [edge for edge in g[1:]] # Edges that haven't been used
+    open_edges      = [edge for edge in g[1:]] # Edges that haven't been used-FIXME (issue #112(
     D               = [float('inf')]*(n+1)     # Distance from 1 to each node
     D[1]            = 0
 
@@ -846,5 +849,50 @@ if __name__=='__main__':
                                     (1, 4),
                                     (3, 1),
                                     (1, 2)]))
+
+        def test_cc(self):
+            count,_ = cc([(12, 13),
+                          ( 1, 2),
+                          ( 1, 5),
+                          ( 5, 9),
+                          (5, 10),
+                          (9, 10),
+                          (3, 4),
+                          (3, 7),
+                          (3, 8),
+                          (4, 8),
+                          (7, 11),
+                          (8, 11),
+                          (11, 12),
+                          (8, 12)])
+            self.assertEqual(3,count)
+
+        def test_dij(self):
+            self.assertEqual([0, 3, 2, 5, 6, -1],
+                             dij([[6 ,10],
+                                  [1, 2, 4],
+                                  [1, 3, 2],
+                                  [2, 3, 3],
+                                  [6, 3, 2],
+                                  [3, 5, 5],
+                                  [5, 4, 1],
+                                  [3, 2, 1],
+                                  [2, 4, 2],
+                                  [2, 5, 3]]))
+
+        def test_nwc(self):
+            n1,_,_ =bf([[4, 5],
+                       [1, 4, 4],
+                       [4, 2, 3],
+                       [2, 3, 1],
+                       [3, 1, 6],
+                       [2, 1, -7]])
+            self.assertEqual(-1,n1)
+            n2,_,_ = bf([[3, 4],
+                         [1, 2, -8],
+                         [2, 3, 20],
+                         [3, 1, -1],
+                         [3, 2, -30]])
+            self.assertEqual(1,n2)
 
     main()

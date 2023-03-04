@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-#    Copyright (C) 2019 Greenweaves Software Limited
+#    Copyright (C) 2019-2023 Greenweaves Software Limited
 #
 #    This is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -14,19 +14,21 @@
 #    You should have received a copy of the GNU General Public License
 #    along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>
 
-# DIJ  Dijkstra's Algorithm: compute single-source shortest distances
-#                            in a directed graph with positive edge weights.
+'''
+DIJ  Dijkstra's Algorithm: compute single-source shortest distances
+                            in a directed graph with positive edge weights.
+'''
 
-import argparse
-import os
-import time
-from   helpers import read_strings
-from   graphs import dij
-from   helpers import create_list
+from argparse import ArgumentParser
+from os.path  import basename
+from time     import time
+from helpers  import read_strings
+from graphs   import dij
+from helpers  import create_list
 
 if __name__=='__main__':
-    start = time.time()
-    parser = argparse.ArgumentParser("DIJ  Dijkstra's Algorithm")
+    start = time()
+    parser = ArgumentParser("DIJ  Dijkstra's Algorithm")
     parser.add_argument('--sample',   default=False, action='store_true', help='process sample dataset')
     parser.add_argument('--rosalind', default=False, action='store_true', help='process Rosalind dataset')
     args = parser.parse_args()
@@ -43,12 +45,12 @@ if __name__=='__main__':
                    [2, 5, 3]]))
 
     if args.rosalind:
-        with open(f'{os.path.basename(__file__).split(".")[0]}.txt','w') as f:
+        with open(f'{basename(__file__).split(".")[0]}.txt','w') as f:
             Solution = ' '.join([str(i) for i in dij(create_list(path='./data'))])
             print (Solution)
             f.writelines(f'{Solution}\n')
 
-    elapsed = time.time()-start
+    elapsed = time()-start
     minutes = int(elapsed/60)
     seconds = elapsed-60*minutes
     print (f'Elapsed Time {minutes} m {seconds:.2f} s')
