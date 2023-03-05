@@ -238,7 +238,14 @@ def ProbabilityOutcomeGivenHiddenPath(string,alphabet,path,states,Emission):
 
     Solves: BA10B Compute the Probability of an Outcome Given a Hidden Path
 
-    Given: A string x, followed by the alphabet from which x was constructed, followed by a hidden path, followed by the states  and emission matrix Emission of an HMM.
+    Inputs: string
+            alphabet          from which x was constructed
+            path              hidden path
+            states
+            Emission
+
+    A string x, followed by the alphabet from which x was constructed, followed by a hidden path,
+    followed by the states  and emission matrix Emission of an HMM.
 
     Return: The conditional probability  that string x will be emitted by the HMM given the hidden path
     '''
@@ -430,8 +437,47 @@ def ConstructProfileHMM(theta,Alphabet,Alignment,sigma=0):
 
 
 def SoftDecode(s, Alphabet,  States, Transition, Emission):
-    result = np.zeros((len(s),len(States)))
-    return result
+    '''
+    BA10I Soft Decoding Problem
+
+    Parameters:
+        s           A String
+        Alphabet    Characters from which string constructed
+        States
+        Transition
+        Emission
+
+    Return: The probability that the HMM was in state k at step i (for each state k and each step i).
+    '''
+
+    def forward():
+        result = np.full((m,n),np.nan)
+        for k in range(m):               # positions
+            for i in range(n):           # states
+                if k==0:
+                    result[k,i] = 0.5* Emission[i,x[k]]
+                else:
+                    result[k,i] = np.dot(result[k-1,:], Transition[:,i]) * Emission[i,x[k]]
+
+
+        return result
+
+    def backward():
+        result = np.full((m,n),np.nan)
+        for k in range(m-1,-1,-1):               # positions
+            for i in range(n):           # states
+                if k==m-1:
+                    result[k,i] = 0.5* Emission[i,x[k]]
+                else:
+                    result[k,i] = np.dot(result[k+1,:], Transition[i,:]) * Emission[i,x[k]]
+        return result
+
+    m = len(s)
+    n = len(States)
+    x = get_indices(s,Alphabet)
+    p = np.multiply(forward(),backward())#/Likelihood(s,Alphabet,States,Transition,Emission)
+    Z = p.sum(axis=1)
+    return (p.T/Z).T
 
 
 class ViterbiGraph:
@@ -530,7 +576,19 @@ class ViterbiGraph:
 
 
 def EstimateParameters(s,Alphabet,path,States):
-    '''BA10H 	Estimate the Parameters of an HMM'''
+    '''
+    BA10H 	Estimate the Parameters of an HMM
+
+    Parameters:
+        s            A string
+        Alphabet     Characters from which string has been build
+        path         Path through HMM that generates string
+        States       States used by HMM
+
+    Returns:
+        Estimated transition and emission probabilities
+
+    '''
     def create_Transitions(path_indices,n):
         Transitions = np.zeros((len(States),len(States)))
         for i in range(1,n):
@@ -549,8 +607,8 @@ def EstimateParameters(s,Alphabet,path,States):
         return normalize_rows(Emissions)
 
     n = len(path)
-    assert n==len(s)
-    path_indices=get_indices(path,States)
+    assert n==len(s),f'String {s} and Path {path} should have the same length'
+    path_indices = get_indices(path,States)
     return create_Transitions(path_indices,n),create_Emissions(path_indices,n)
 
 
@@ -731,22 +789,23 @@ if __name__=='__main__':
                                                  [0.228,   0.772]]),
                                        np.array([[0.356,   0.191,   0.453 ],
                                                  [0.04, 0.467, 0.493]]))
-            expected      = np.array([
-                 [0.5438,  0.4562 ],
-                 [0.6492,  0.3508 ],
-                 [0.9647,  0.0353 ],
-                 [0.9936,  0.0064 ],
-                 [0.9957,  0.0043 ],
-                 [0.9891,  0.0109 ],
-                 [0.9154,  0.0846 ],
-                 [0.964,   0.036 ],
-                 [0.8737,  0.1263 ],
-                 [0.8167,  0.1833  ]
+            expected      = np.array([ [0.5438,  0.4562 ],
+                                       [0.6492,  0.3508 ],
+                                       [0.9647,  0.0353 ],
+                                       [0.9936,  0.0064 ],
+                                       [0.9957,  0.0043 ],
+                                       [0.9891,  0.0109 ],
+                                       [0.9154,  0.0846 ],
+                                       [0.964,   0.036 ],
+                                       [0.8737,  0.1263 ],
+                                       [0.8167,  0.1833  ]
              ])
             m1,n1 = expected.shape
             m2,n2 = probabilities.shape
             self.assertEqual(m1,m2)
             self.assertEqual(n1,n2)
+            for i in range(m1):
+                print (expected[i,0]/probabilities[i,0],expected[i,1]/probabilities[i,1])
             for i in range(m1):
                 self.assertEqual(expected[i,0],probabilities[i,0])
                 self.assertEqual(expected[i,1],probabilities[i,1])
