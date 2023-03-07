@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-#   Copyright (C) 2020 Greenweaves Software Limited
+#   Copyright (C) 2020-2023 Greenweaves Software Limited
 
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -15,27 +15,19 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-#  BA10J 	Solve the Soft Decoding Problem
+'''BA10J 	Solve the Soft Decoding Problem'''
 
-import argparse
-import os
-import time
-from   helpers import read_strings
-from   hmm     import float2str
+from argparse import ArgumentParser
+from os.path  import basename
+from time     import time
+from helpers  import create_hmm_from_strings, read_strings, format_list
+from hmm      import float2str, SoftDecode
 
-def SoftDecode(s,Alphabet,States,Transition,Emission):
-    def step(Ps):
-        Ps[0] +=0.01
-        Ps[1] -=0.01
-        return [p for p in Ps]
-    N = len(s)
-    K = len(States)
-    Ps = [1/K for _ in range(K)]
-    return [step(Ps) for i in range(N)]
+
 
 if __name__=='__main__':
-    start = time.time()
-    parser = argparse.ArgumentParser('BA10J 	Solve the Soft Decoding Problem ')
+    start = time()
+    parser = ArgumentParser(__doc__)
     parser.add_argument('--sample',   default=False, action='store_true', help='process sample dataset')
     parser.add_argument('--rosalind', default=False, action='store_true', help='process Rosalind dataset')
     parser.add_argument('--precision', default=4,                          help='Controls display of probabilities')
@@ -54,15 +46,18 @@ if __name__=='__main__':
 
 
     if args.rosalind:
-        Input  = read_strings(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt')
+        Input  = read_strings(f'data/rosalind_{basename(__file__).split(".")[0]}.txt')
+        xs,alphabet,States,Transition,Emission = create_hmm_from_strings(Input,sep='\t')
+        Result = SoftDecode(xs,alphabet,States,Transition,Emission)
 
-        Result = None
-        print (Result)
-        with open(f'{os.path.basename(__file__).split(".")[0]}.txt','w') as f:
+        with open(f'{basename(__file__).split(".")[0]}.txt','w') as f:
+            print (format_list(States))
+            f.write(f'{format_list(States)}\n')
             for line in Result:
-                f.write(f'{line}\n')
+                print (format_list(line))
+                f.write(f'{format_list(line)}\n')
 
-    elapsed = time.time() - start
+    elapsed = time() - start
     minutes = int(elapsed/60)
     seconds = elapsed - 60*minutes
     print (f'Elapsed Time {minutes} m {seconds:.2f} s')

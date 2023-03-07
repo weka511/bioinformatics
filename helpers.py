@@ -689,10 +689,10 @@ def create_hmm(problem=basename(argv[0]).split('.')[0],
     '''
     return create_hmm_from_strings(create_strings(problem=problem,path=path,ext=ext,name=name))
 
-def create_hmm_from_strings(strings):
+def create_hmm_from_strings(strings,sep=' '):
     xs         = strings[0]
-    alphabet   = strings[2].replace(' ','')
-    States     = strings[4].replace(' ','')
+    alphabet   = strings[2].replace(sep,'')
+    States     = strings[4].replace(sep,'')
     n          = len(States)
     m          = len(alphabet)
     Transition = np.zeros((n,n))
