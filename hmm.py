@@ -451,33 +451,42 @@ def SoftDecode(s, Alphabet,  States, Transition, Emission):
     '''
 
     def forward():
-        result = np.full((m,n),np.nan)
-        for k in range(m):               # positions
-            for i in range(n):           # states
-                if k==0:
-                    result[k,i] = 0.5* Emission[i,x[k]]
-                else:
-                    result[k,i] = np.dot(result[k-1,:], Transition[:,i]) * Emission[i,x[k]]
+        message      = np.full((m,n),np.nan)
+        message[0][:] = Emission[:, x[0]]
+        # message[0,:] = Transition.sum(axis=0)
+        for i in range(1, m):
+            for k in range(n):
+                message[i][k] = sum([message[i-1][kpre]*Transition[kpre, k]*Emission[k, x[i]] for kpre in range(n)])
+        # for k in range(1,m):               # positions
+            # for i in range(n):           # states
+                # # message[k,i] =  np.dot(message[k-1,:], Transition[:,i]) * Emission[i,x[k-1]]
+                # message[k,i] =  np.dot(message[k-1,:], Transition[:,i]) * Emission[i,x[k]]
 
 
-        return result
+        return message
 
     def backward():
-        result = np.full((m,n),np.nan)
-        for k in range(m-1,-1,-1):               # positions
-            for i in range(n):           # states
-                if k==m-1:
-                    result[k,i] = 0.5* Emission[i,x[k]]
-                else:
-                    result[k,i] = np.dot(result[k+1,:], Transition[i,:]) * Emission[i,x[k]]
-        return result
+        message = np.full((m,n),np.nan)
+        # for k in range(m):
+        message[m-1][:] = 1
+        for i in range(m-2, -1, -1):
+            for k in range(n):
+                message[i][k] = sum([message[i+1][kpre]*Transition[k, kpre]*Emission[kpre, x[i+1]] for kpre in range(n)])
+        # message[-1,:] = 1
+        # for k in range(m-2,-1,-1):       # positions
+            # for i in range(n):           # states
+                # message[k,i] =  np.dot(message[k+1,:], Transition[i,:]) * Emission[i,x[k+1]]
+                # message[k,i] = np.dot(message[k+1,:], Transition[i,:]) * Emission[i,x[k]]
+        return message
 
-    m = len(s)
-    n = len(States)
-    x = get_indices(s,Alphabet)
-    p = np.multiply(forward(),backward())#/Likelihood(s,Alphabet,States,Transition,Emission)
-    Z = p.sum(axis=1)
-    return (p.T/Z).T
+    m      = len(s)
+    n      = len(States)
+    # assert(all(Transition.sum(axis=1)==np.ones(())))
+    # assert(all(Emission.sum(axis=1)==np.ones(())))
+    x      = get_indices(s,Alphabet)
+    result = np.multiply(forward(),backward())
+    Z      = result.sum(axis=1)
+    return result/Z.reshape(-1,1)
 
 
 class ViterbiGraph:
@@ -781,34 +790,66 @@ if __name__=='__main__':
             self.assertAlmostEqual(1/3, Emissions[2,1])
             self.assertAlmostEqual(1/3, Emissions[2,2])
 
-        def test_ba10j(self):
+        def test_ba10j_sample(self):
             probabilities = SoftDecode('zyxxxxyxzz',
                                        'xyz',
                                        'AB',
                                        np.array([[0.911,   0.089],
                                                  [0.228,   0.772]]),
                                        np.array([[0.356,   0.191,   0.453 ],
-                                                 [0.04, 0.467, 0.493]]))
-            expected      = np.array([ [0.5438,  0.4562 ],
-                                       [0.6492,  0.3508 ],
-                                       [0.9647,  0.0353 ],
-                                       [0.9936,  0.0064 ],
-                                       [0.9957,  0.0043 ],
-                                       [0.9891,  0.0109 ],
-                                       [0.9154,  0.0846 ],
-                                       [0.964,   0.036 ],
-                                       [0.8737,  0.1263 ],
-                                       [0.8167,  0.1833  ]
+                                                 [0.04,    0.467,   0.493]]))
+            expected      = np.array([[0.5438,  0.4562 ],
+                                      [0.6492,  0.3508 ],
+                                      [0.9647,  0.0353 ],
+                                      [0.9936,  0.0064 ],
+                                      [0.9957,  0.0043 ],
+                                      [0.9891,  0.0109 ],
+                                      [0.9154,  0.0846 ],
+                                      [0.964,   0.036  ],
+                                      [0.8737,  0.1263 ],
+                                      [0.8167,  0.1833 ]
              ])
             m1,n1 = expected.shape
             m2,n2 = probabilities.shape
             self.assertEqual(m1,m2)
             self.assertEqual(n1,n2)
+            # for i in range(m1):
+                # print (f'{expected[i,0]:.4}({probabilities[i,0]:.4}), {expected[i,1]:.4}({probabilities[i,1]:.4})')
             for i in range(m1):
-                print (expected[i,0]/probabilities[i,0],expected[i,1]/probabilities[i,1])
-            for i in range(m1):
-                self.assertEqual(expected[i,0],probabilities[i,0])
-                self.assertEqual(expected[i,1],probabilities[i,1])
+                self.assertAlmostEqual(expected[i,0],probabilities[i,0],places=4)
+                self.assertAlmostEqual(expected[i,1],probabilities[i,1],places=4)
+
+        # def test_ba10j_extra(self):
+            # probabilities = SoftDecode('xyyzxzyxyy',
+                                       # 'xyz',
+                                       # 'ABCD',
+                                       # np.array([[0.401,	0.009,	0.195,	0.396		],
+                                                 # [0.375,	0.237,	0.269,	0.119	],
+                                                 # [0.283,	0.25,	0.259,	0.207	],
+                                                 # [0.108,	0.529,	0.107,	0.256	]]),
+                                       # np.array([[0.414,	0.335,	0.251	 ],
+                                                 # [0.233,	0.172,	0.596	],
+                                                 # [0.284,	0.355,	0.361	],
+                                                 # [0.028,	0.638,	0.334]]))
+            # expected      = np.array([[0.5003,	0.2114,	0.2662,	0.0220],
+                                      # [0.3648,	0.053,	0.1909,	0.3913	],
+                                      # [0.1511,	0.1251,	0.1553,	0.5685],
+                                      # [0.1297,	0.5359,	0.1542,	0.1802	],
+                                      # [0.4414,	0.2628,	0.2673,	0.0285],
+                                      # [0.3031,	0.2213,	0.2339,	0.2417	],
+                                      # [0.2789,	0.1536,	0.2139,	0.3537],
+                                      # [0.5088,	0.269,	0.1975,	0.0247	],
+                                      # [0.3695,	0.0578,	0.1978,	0.3748],
+                                      # [0.2231,	0.1356,	0.1658,	0.4755]
+             # ])
+            # m1,n1 = expected.shape
+            # m2,n2 = probabilities.shape
+            # self.assertEqual(m1,m2)
+            # self.assertEqual(n1,n2)
+
+            # for i in range(m1):
+                # self.assertEqual(expected[i,0],probabilities[i,0])
+                # self.assertEqual(expected[i,1],probabilities[i,1])
 
     class Test_10_Viterbi(TestCase):
         '''
