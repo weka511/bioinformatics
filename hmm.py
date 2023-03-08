@@ -343,7 +343,7 @@ def ConstructProfileHMM(theta,Alphabet,Alignment,sigma=0):
 
     Parameters:
         theta      Threshold: exclude columns from an alignment if the fraction of spaces is greater than or equal to theta
-        Alphabet   Symbols sed for Alignment
+        Alphabet   Symbols used for Alignment
         Alignment  A list of strings representing aligned proteins
         sigma      Minimum probability assigned to legal transitions
    '''
@@ -443,15 +443,16 @@ def SoftDecode(s, Alphabet,  States, Transition, Emission):
     Parameters:
         s           A String
         Alphabet    Characters from which string constructed
-        States
-        Transition
-        Emission
+        States      States for HMM
+        Transition  Transition probabilities
+        Emission    Probabilties of symbols being emitted in each state
 
-    Return: The probability that the HMM was in state k at step i (for each state k and each step i).
+    Return:
+        The probability that the HMM was in state k at step i (for each state k and each step i).
     '''
 
     def forward():
-        message      = np.full((m,n),np.nan)
+        message       = np.full((m,n),np.nan)
         message[0][:] = Emission[:, x[0]]
         for i in range(1, m):
             for k in range(n):
@@ -460,8 +461,8 @@ def SoftDecode(s, Alphabet,  States, Transition, Emission):
         return message
 
     def backward():
-        message = np.full((m,n),np.nan)
-        message[m-1][:] = 1
+        message        = np.full((m,n),np.nan)
+        message[-1][:] = 1
         for i in range(m-2, -1, -1):
             for k in range(n):
                 message[i][k] = (message[i+1,:]*Transition[k, :]*Emission[:, x[i+1]]).sum()
@@ -470,10 +471,9 @@ def SoftDecode(s, Alphabet,  States, Transition, Emission):
 
     m      = len(s)
     n      = len(States)
-
     x      = get_indices(s,Alphabet)
     result = np.multiply(forward(),backward())
-    Z      = result.sum(axis=1)
+    Z      = result.sum(axis=1)     #Partition function
     return result/Z.reshape(-1,1)
 
 

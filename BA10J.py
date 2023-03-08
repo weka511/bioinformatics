@@ -23,8 +23,6 @@ from time     import time
 from helpers  import create_hmm_from_strings, read_strings, format_list
 from hmm      import float2str, SoftDecode
 
-
-
 if __name__=='__main__':
     start = time()
     parser = ArgumentParser(__doc__)
@@ -46,14 +44,14 @@ if __name__=='__main__':
 
 
     if args.rosalind:
-        Input  = read_strings(f'data/rosalind_{basename(__file__).split(".")[0]}.txt')
-        xs,alphabet,States,Transition,Emission = create_hmm_from_strings(Input,sep='\t')
-        Result = SoftDecode(xs,alphabet,States,Transition,Emission)
+        Input                                  = read_strings(f'data/rosalind_{basename(__file__).split(".")[0]}.txt')
+        xs,alphabet,States,Transition,Emission = create_hmm_from_strings(Input,
+                                                                         sep = '\t')
 
         with open(f'{basename(__file__).split(".")[0]}.txt','w') as f:
             print (format_list(States))
             f.write(f'{format_list(States)}\n')
-            for line in Result:
+            for line in SoftDecode(xs,alphabet,States,Transition,Emission):
                 print (format_list(line))
                 f.write(f'{format_list(line)}\n')
 
