@@ -21,7 +21,7 @@
 from unittest import TestCase, main
 
 import numpy as np
-
+from numpy.testing import assert_array_almost_equal
 
 class StateSet:
     '''
@@ -476,6 +476,11 @@ def SoftDecode(s, Alphabet,  States, Transition, Emission):
     Z      = result.sum(axis=1)     #Partition function
     return result/Z.reshape(-1,1)
 
+def BaumWelch(s, Alphabet,  States, Transition, Emission):
+    m      = len(s)
+    n      = len(States)
+    x      = get_indices(s,Alphabet)
+    return Transition, Emission
 
 class ViterbiGraph:
 
@@ -839,6 +844,23 @@ if __name__=='__main__':
                 self.assertAlmostEqual(expected[i,1],probabilities[i,1],places=3)
                 self.assertAlmostEqual(expected[i,2],probabilities[i,2],places=3)
                 self.assertAlmostEqual(expected[i,3],probabilities[i,3],places=3)
+
+        def test_ba10k_sample(self):
+            Transition, Emission = BaumWelch('xzyyzyzyxy',
+                                       'xyz',
+                                       'AB',
+                                       np.array([[0.019 ,  0.981],
+                                                 [ 0.668,   0.332 ]]),
+                                       np.array([[ 0.175,   0.003,   0.821  ],
+                                                 [ 0.196,   0.512 ,  0.293]]))
+
+            assert_array_almost_equal( np.array([[0.000, 1.000],
+                                                 [0.786,   0.214]]),
+                                       Transition)
+
+            assert_array_almost_equal( np.array([[0.242,   0.000,   0.758],
+                                                 [0.172,   0.828,  0.000]]),
+                                       Emission)
 
     class Test_10_Viterbi(TestCase):
         '''

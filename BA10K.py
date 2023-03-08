@@ -18,11 +18,12 @@
 '''  BA10K 	Implement Baum-Welch Learning'''
 
 from argparse import ArgumentParser
-from os.path.basename import os
+from os.path import basename
 from time import time
 
 from helpers import read_strings
 
+from hmm import BaumWelch
 
 if __name__=='__main__':
     start = time()
