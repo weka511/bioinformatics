@@ -217,7 +217,7 @@ I have written this code in Python 3, generally with the most recent release at 
 |BA10F|BA10F.py hmm.py| [Construct a Profile HMM with Pseudocounts](http://rosalind.info/problems/ba10f/)|
 |BA10G|BA10G.py hmm.py| [Perform a Multiple Sequence Alignment with a Profile HMM ](http://rosalind.info/problems/ba10g/) [WIP](https://github.com/weka511/bioinformatics/issues/85)|
 |BA10H|BA10H.py hmm.py| [Estimate the Parameters of an HMM ](http://rosalind.info/problems/ba10h/) |
-|BA10I|BA10I.py hmm.py| [Implement Viterbi Learning ](http://rosalind.info/problems/ba10i/) [WIP](https://github.com/weka511/bioinformatics/issues/87)|
+|BA10I|BA10I.py hmm.py| [Implement Viterbi Learning ](http://rosalind.info/problems/ba10i/) |
 |BA10J|BA10J.py hmm.py| [Solve the Soft Decoding Problem ](http://rosalind.info/problems/ba10j/) [WIP](https://github.com/weka511/bioinformatics/issues/88)|
 |BA10K|BA10K.py hmm.py| [Implement Baum-Welch Learning](http://rosalind.info/problems/ba10k/) [WIP](https://github.com/weka511/bioinformatics/issues/89)|
 
