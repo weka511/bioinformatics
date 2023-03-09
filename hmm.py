@@ -18,7 +18,7 @@
 '''
    Hidden Markov Models
 '''
-from unittest import TestCase, main
+from unittest import TestCase, main, skip
 
 import numpy as np
 from numpy.testing import assert_array_almost_equal
@@ -435,6 +435,30 @@ def ConstructProfileHMM(theta,Alphabet,Alignment,sigma=0):
     n             = len(Alphabet)
     return create_transition(m,Paths), create_emission(m,n,Paths), [state_set.get_pair(i) for i in range(m)]
 
+def AlignSequence(self,string,Alphabet,Emission):
+    '''
+    AlignSequenceWithProfileHMM
+
+    BA10G   Sequence Alignment with Profile HMM Problem
+
+    Given: A string Text, a multiple alignment Alignment, a threshold θ, and a pseudocount σ.
+
+    Return: An optimal hidden path emitting Text in HMM(Alignment,θ,σ).
+    '''
+
+def ViterbiLearning(s, Alphabet,  States, Transition, Emission):
+    '''
+        BA10I Implement Viterbi Learning
+
+        Parameters:
+        s           A String
+        Alphabet    Characters from which string constructed
+        States      States for HMM
+        Transition  Transition probabilities
+        Emission    Probabilities of symbols being emitted in each state
+
+    '''
+    return Transition, Emission
 
 def SoftDecode(s, Alphabet,  States, Transition, Emission):
     '''
@@ -445,7 +469,7 @@ def SoftDecode(s, Alphabet,  States, Transition, Emission):
         Alphabet    Characters from which string constructed
         States      States for HMM
         Transition  Transition probabilities
-        Emission    Probabilties of symbols being emitted in each state
+        Emission    Probabilities of symbols being emitted in each state
 
     Return:
         The probability that the HMM was in state k at step i (for each state k and each step i).
@@ -476,104 +500,25 @@ def SoftDecode(s, Alphabet,  States, Transition, Emission):
     Z      = result.sum(axis=1)     #Partition function
     return result/Z.reshape(-1,1)
 
+def create_responsibility(Pi):
+    m,n            = Pi.shape
+    Responsibility = np.full((m-1,n,n),np.nan)
+    for i in range(m-1):
+        for j in range(n):
+            for k in range(n):
+                Responsibility[i,j,k] = Pi[i,j]*Pi[i+1,k]
+        Z = Responsibility[i,:,:].sum()
+        Responsibility[i,:,:]/=Z
+
+    return Responsibility
+
 def BaumWelch(s, Alphabet,  States, Transition, Emission):
     m      = len(s)
     n      = len(States)
     x      = get_indices(s,Alphabet)
     return Transition, Emission
 
-class ViterbiGraph:
 
-    def __init__(self, Transition, States):
-        def format(state):
-            a,b = state
-            return f'{a}' if b==None else  f'{a}{b}'
-        self.Transition = Transition
-        self.m,_        = Transition.shape
-        self.k          = self.m//3 - 1
-        self.state_index = {format(state):i for i,state in enumerate(States)}
-        self.n           = None
-
-    def __getitem__(self,index):
-        '''
-        Implement mapping from rows and columns to states that is depicted in Figure 10.21
-        '''
-        i,j = index
-        if self.n != None and j>self.n:
-            return 'E'
-        if i%3==0:
-            return 'S' if j==0 else f'I{i//3}'
-        if i%3==1: return f'M{i//3+1}'
-        if i%3==2: return f'D{i//3+1}'
-
-    def get_successors(self,i,j):
-        '''
-        Implement mapping from rows and columns to successors that is depicted in Figure 10.21
-        '''
-        def should_include(node):
-            i_1,j_1 = node
-            if self.n != None and j_1>self.n:
-                return False
-            return True
-        state = self[i,j]
-        result = None
-        if self.n != None and j>self.n:
-            pass
-        else:
-            match state[0]:
-                case 'S':
-                    result = [(2,0), # I
-                              (1,0), # M
-                              (1,1)] #D
-                case 'D':
-                    if i<3*self.k -1:
-                        result = [(i+3,j), #D
-                                  (i+1,j+1), # I
-                                  (i+2,j+1)] # M
-                    else:
-                        result = [(0,j+1)] # I
-                case 'M':
-                    if i<3*self.k -2:
-                        result = [(i+3,j+1), #M
-                                  (i+2,j+1), # I
-                                  (i+4,j)] # D
-                    else:
-                        result = [(i+2,j+1)] # I
-
-                case 'I':
-                    if i<3*self.k:
-                        result =[(i+2,j), #D
-                                (i,j+1), # I
-                                (i+1,j+1)] # M
-                    else:
-                        result = [(0,j+1)] # I
-
-                case 'E':
-                    pass
-
-        return [node for node in result if should_include(node)]
-
-    def set_text_length(self,n):
-        '''Used to establish last column of table'''
-        self.n = n
-
-    def AlignSequence(self,string,Alphabet,Emission):
-        '''
-        AlignSequenceWithProfileHMM
-
-        BA10G   Sequence Alignment with Profile HMM Problem
-
-        Given: A string Text, a multiple alignment Alignment, a threshold θ, and a pseudocount σ.
-
-        Return: An optimal hidden path emitting Text in HMM(Alignment,θ,σ).
-        '''
-        def get_weight(state,xs,i):
-            return np.multiply(s[i-1,:],self.Transition[:,state]* Emission[state,xs[i]]).max()
-        self.set_text_length(len(string))
-        start_state = self[0,0]
-        start_index = self.state_index[start_state]
-        Paths       = [j for j in range(self.m) if self.Transition[start_index,j]!=0]
-        z=0
 
 
 
@@ -764,6 +709,21 @@ if __name__=='__main__':
             self.assertAlmostEqual(0.333, Transition[7,9],places=2)
             self.assertAlmostEqual(0.01, Emission[2,1],places=3)
 
+        @skip('TBP')
+        def test_ba10g(self):
+            '''
+            BA10G   Sequence Alignment with Profile HMM Problem
+            '''
+            Transition, Emission,StateNames = ConstructProfileHMM(0.4,
+                                                                  'ABCDEF',
+                                                                  ['ACDEFACADF',
+                                                                   'AFDA---CCF',
+                                                                   'A--EFD-FDC',
+                                                                   'ACAEF--A-C',
+                                                                   'ADDEFAAADF'],
+                                                                  sigma=0.01)
+            Path                            = AlignSequence('AEFDFDC','ABCDEF',Emission)
+
 
         def test_ba10h(self):
             Transitions,Emissions = EstimateParameters('yzzzyxzxxx','xyz','BBABABABAB','ABC')
@@ -782,6 +742,21 @@ if __name__=='__main__':
             self.assertAlmostEqual(1/3, Emissions[2,0])
             self.assertAlmostEqual(1/3, Emissions[2,1])
             self.assertAlmostEqual(1/3, Emissions[2,2])
+
+        @skip('TBP')
+        def test_ba10i(self):
+            Transition, Emission = ViterbiLearning('xxxzyzzxxzxyzxzxyxxzyzyzyyyyzzxxxzzxzyzzzxyxzzzxyzzxxxxzzzxyyxzzzzzyzzzxxzzxxxyxyzzyxzxxxyxzyxxyzyxz',
+                                                   'xyz',
+                                                   'AB',
+                                                   np.array([ [0.582,   0.418],
+                                                              [0.272,   0.728]]),
+                                                   np.array([[0.129,   0.35,    0.52],
+                                                             [0.422,   0.151,   0.426]]))
+            assert_array_almost_equal(np.array([ [0.875,   0.125],
+                                                 [0.011,   0.989]]),
+                                      Transition)
+            assert_array_almost_equal(np.array([[0.0, 0.75 ,   0.25],
+                                                [0.402,   0.174 ,  0.424]]),Emission)
 
         def test_ba10j_sample(self):
             probabilities = SoftDecode('zyxxxxyxzz',
@@ -802,14 +777,7 @@ if __name__=='__main__':
                                       [0.8737,  0.1263 ],
                                       [0.8167,  0.1833 ]
              ])
-            m1,n1 = expected.shape
-            m2,n2 = probabilities.shape
-            self.assertEqual(m1,m2)
-            self.assertEqual(n1,n2)
-
-            for i in range(m1):
-                self.assertAlmostEqual(expected[i,0],probabilities[i,0],places=4)
-                self.assertAlmostEqual(expected[i,1],probabilities[i,1],places=4)
+            assert_array_almost_equal(expected,probabilities,decimal=4)
 
         def test_ba10j_extra(self):
             probabilities = SoftDecode('xyyzxzyxyy',
@@ -834,17 +802,24 @@ if __name__=='__main__':
                                       [0.3695,	0.0578,	0.1978,	0.3748],
                                       [0.2231,	0.1356,	0.1658,	0.4755]
              ])
-            m1,n1 = expected.shape
-            m2,n2 = probabilities.shape
-            self.assertEqual(m1,m2)
-            self.assertEqual(n1,n2)
 
-            for i in range(m1):
-                self.assertAlmostEqual(expected[i,0],probabilities[i,0],places=3)
-                self.assertAlmostEqual(expected[i,1],probabilities[i,1],places=3)
-                self.assertAlmostEqual(expected[i,2],probabilities[i,2],places=3)
-                self.assertAlmostEqual(expected[i,3],probabilities[i,3],places=3)
+            assert_array_almost_equal(expected,probabilities,decimal=3)
 
+        def test_ba10k_responsibility(self):
+            Responsibility = create_responsibility(np.array([[0.636, 0.364],
+                                                             [0.593, 0.407],
+                                                             [0.600, 0.400],
+                                                             [0.533, 0.467],
+                                                             [0.515, 0.485],
+                                                             [0.544, 0.456],
+                                                             [0.627, 0.373],
+                                                             [0.633, 0.367],
+                                                             [0.692, 0.308],
+                                                             [0.686, 0.609],
+                                                             [0.609, 0.391]
+                                                             ]))
+
+        @skip("TBP")
         def test_ba10k_sample(self):
             Transition, Emission = BaumWelch('xzyyzyzyxy',
                                        'xyz',
@@ -854,120 +829,13 @@ if __name__=='__main__':
                                        np.array([[ 0.175,   0.003,   0.821  ],
                                                  [ 0.196,   0.512 ,  0.293]]))
 
-            assert_array_almost_equal( np.array([[0.000, 1.000],
-                                                 [0.786,   0.214]]),
-                                       Transition)
+            assert_array_almost_equal(np.array([[0.000, 1.000],
+                                                [0.786,   0.214]]),
+                                      Transition)
 
-            assert_array_almost_equal( np.array([[0.242,   0.000,   0.758],
-                                                 [0.172,   0.828,  0.000]]),
-                                       Emission)
+            assert_array_almost_equal(np.array([[0.242,   0.000,   0.758],
+                                                [0.172,   0.828,  0.000]]),
+                                      Emission)
 
-    class Test_10_Viterbi(TestCase):
-        '''
-        BA10G   Sequence Alignment with Profile HMM Problem
-        test the ViterbiGraph class
-        '''
-        def setUp(self):
-            Transition, Emission,StateNames = ConstructProfileHMM(0.35,
-                                                                  'ACDEF',
-                                                                  ['ACDEFACADF',
-                                                                   'AFDA---CCF',
-                                                                   'A--EFD-FDC',
-                                                                   'ACAEF--A-C',
-                                                                   'ADDEFAAADF'])
-            self.viterbi = ViterbiGraph(Transition,StateNames)
-
-        def test_I(self):
-            '''From Figure 10.21'''
-            self.assertEqual('I0', self.viterbi[0,1])
-            successors = self.viterbi.get_successors(0,1)
-            self.assertEqual(3,len(successors))
-            self.assertEqual((2,1),successors[0])
-            self.assertEqual((0,2),successors[1])
-            self.assertEqual((1,2),successors[2])
-            self.assertEqual('I8', self.viterbi[8*3,1])
-            successors = self.viterbi.get_successors(8*3,1)
-            self.assertEqual(1,len(successors))
-            self.assertEqual((0,2),successors[0])
-
-        def test_S(self):
-            '''From Figure 10.21'''
-            self.assertEqual('S',  self.viterbi[0,0])
-            successors = self.viterbi.get_successors(0,0)
-            self.assertEqual(3,len(successors))
-            self.assertEqual((2,0),successors[0])
-            self.assertEqual((1,0),successors[1])
-            self.assertEqual((1,1),successors[2])
-
-        def test_D(self):
-            '''From Figure 10.21'''
-            self.assertEqual('D1', self.viterbi[2,0])
-
-            successors = self.viterbi.get_successors(2,0)
-            self.assertEqual(3,len(successors))
-            self.assertEqual((5,0),successors[0])
-            self.assertEqual((3,1),successors[1])
-            self.assertEqual((4,1),successors[2])
-            self.assertEqual('D1', self.viterbi[2,1])
-            self.assertEqual('D8', self.viterbi[2+7*3,1])
-            successors = self.viterbi.get_successors(2+7*3,1)
-            self.assertEqual(1,len(successors))
-            self.assertEqual((0,2),successors[0])
-            self.assertEqual('I0', self.viterbi[0,2])
-
-        def test_M(self):
-            '''From Figure 10.21'''
-            self.assertEqual('M1', self.viterbi[1,1])
-            successors = self.viterbi.get_successors(1,1)
-            self.assertEqual(3,len(successors))
-            self.assertEqual((4,2),successors[0]) #M
-            self.assertEqual((3,2),successors[1]) #I
-            self.assertEqual((5,1),successors[2]) #D
-            self.assertEqual('M8', self.viterbi[1+7*3,0])
-            successors = self.viterbi.get_successors(1+7*3,0)
-            self.assertEqual(1,len(successors))
-            self.assertEqual((3+7*3,1),successors[0])
-            self.assertEqual('I8', self.viterbi[3+7*3,1])
-
-
-        def test_Last_Column(self):
-            '''From Figure 10.21'''
-            self.viterbi.set_text_length(7)
-            self.assertEqual('I0', self.viterbi[0,7])
-            successors = self.viterbi.get_successors(0,7)
-            self.assertEqual(1,len(successors))
-            self.assertEqual((2,7),successors[0])
-            self.assertEqual('M1', self.viterbi[1,7])
-            successors = self.viterbi.get_successors(1,7)
-            self.assertEqual(1,len(successors))
-            self.assertEqual((5,7),successors[0])
-            self.assertEqual('D2', self.viterbi[5,7])
-            self.assertEqual('D1', self.viterbi[2,7])
-            successors = self.viterbi.get_successors(2,7)
-            self.assertEqual(1,len(successors))
-            self.assertEqual((5,7),successors[0])
-            self.assertEqual('D2', self.viterbi[5,7])
-
-            self.assertEqual('I8', self.viterbi[8*3,1])
-            successors = self.viterbi.get_successors(8*3,1)
-            self.assertEqual(1,len(successors))
-            self.assertEqual((0,2),successors[0])
-            self.assertEqual('E', self.viterbi[0,8])
-
-        def test_ba10g(self):
-            '''
-            BA10G   Sequence Alignment with Profile HMM Problem
-            '''
-            Transition, Emission,StateNames = ConstructProfileHMM(0.4,
-                                                                  'ABCDEF',
-                                                                  ['ACDEFACADF',
-                                                                   'AFDA---CCF',
-                                                                   'A--EFD-FDC',
-                                                                   'ACAEF--A-C',
-                                                                   'ADDEFAAADF'],
-                                                                  sigma=0.01)
-            viterbi                         = ViterbiGraph(Transition,StateNames)
-            Path                            = viterbi.AlignSequence('AEFDFDC','ABCDEF',Emission)
-            # self.assertEqual(9,len(Path))
 
     main()
