@@ -118,11 +118,11 @@ class StateSet:
 
     @classmethod
     def format(cls,s):
-        code,index = s
+        code= s
         if code in ['S','E']:
             return code
         else:
-            return f'{code}{index}'
+            return f'{code}'
 
 
 def get_indices(S,Alphabet='AB'):
@@ -542,7 +542,7 @@ def EstimateParameters(s,Alphabet,path,States):
         Transitions = np.zeros((len(States),len(States)))
         for i in range(1,n):
             Transitions[path_indices[i-1],path_indices[i]]+= 1
-        if Transitions[-1,:].sum()==0:
+        if Transitions[-1,:].sum()==0:   # This is a hack, to prevent lines of all zeros
             Transitions[-1,:] = 1
 
         return normalize_rows(Transitions)
@@ -552,7 +552,7 @@ def EstimateParameters(s,Alphabet,path,States):
         Emissions   = np.zeros((len(States),len(Alphabet)))
         for i in range(n):
             Emissions[path_indices[i],str_indices[i]]+= 1
-        if Emissions[-1,:].sum()==0:
+        if Emissions[-1,:].sum()==0:                        # This is a hack, to prevent lines of all zeros
             Emissions[-1,:] = 1
 
         return normalize_rows(Emissions)
