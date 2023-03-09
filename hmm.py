@@ -446,7 +446,7 @@ def AlignSequence(self,string,Alphabet,Emission):
     Return: An optimal hidden path emitting Text in HMM(Alignment,θ,σ).
     '''
 
-def ViterbiLearning(s, Alphabet,  States, Transition, Emission):
+def ViterbiLearning(s, Alphabet,  States, Transition, Emission,N=3):
     '''
         BA10I Implement Viterbi Learning
 
@@ -458,6 +458,12 @@ def ViterbiLearning(s, Alphabet,  States, Transition, Emission):
         Emission    Probabilities of symbols being emitted in each state
 
     '''
+
+    for k in range(N):
+        Path                   = Viterbi(s, Alphabet,  States, Transition, Emission)
+        Transition1, Emission1 = EstimateParameters(s, Alphabet, Path, States)
+        Transition = Transition1.copy()
+        Emission   = Emission1.copy()
     return Transition, Emission
 
 def SoftDecode(s, Alphabet,  States, Transition, Emission):
@@ -518,17 +524,13 @@ def BaumWelch(s, Alphabet,  States, Transition, Emission):
     x      = get_indices(s,Alphabet)
     return Transition, Emission
 
-
-
-
-
 def EstimateParameters(s,Alphabet,path,States):
     '''
     BA10H 	Estimate the Parameters of an HMM
 
     Parameters:
         s            A string
-        Alphabet     Characters from which string has been build
+        Alphabet     Characters from which string has been built
         path         Path through HMM that generates string
         States       States used by HMM
 
@@ -540,7 +542,8 @@ def EstimateParameters(s,Alphabet,path,States):
         Transitions = np.zeros((len(States),len(States)))
         for i in range(1,n):
             Transitions[path_indices[i-1],path_indices[i]]+= 1
-        Transitions[-1,:] = 1
+        if Transitions[-1,:].sum()==0:
+            Transitions[-1,:] = 1
 
         return normalize_rows(Transitions)
 
@@ -549,7 +552,8 @@ def EstimateParameters(s,Alphabet,path,States):
         Emissions   = np.zeros((len(States),len(Alphabet)))
         for i in range(n):
             Emissions[path_indices[i],str_indices[i]]+= 1
-        Emissions[-1,:] = 1
+        if Emissions[-1,:].sum()==0:
+            Emissions[-1,:] = 1
 
         return normalize_rows(Emissions)
 
@@ -743,8 +747,8 @@ if __name__=='__main__':
             self.assertAlmostEqual(1/3, Emissions[2,1])
             self.assertAlmostEqual(1/3, Emissions[2,2])
 
-        @skip('TBP')
-        def test_ba10i(self):
+
+        def test_ba10i_sample(self):
             Transition, Emission = ViterbiLearning('xxxzyzzxxzxyzxzxyxxzyzyzyyyyzzxxxzzxzyzzzxyxzzzxyzzxxxxzzzxyyxzzzzzyzzzxxzzxxxyxyzzyxzxxxyxzyxxyzyxz',
                                                    'xyz',
                                                    'AB',
@@ -754,11 +758,49 @@ if __name__=='__main__':
                                                              [0.422,   0.151,   0.426]]))
             assert_array_almost_equal(np.array([ [0.875,   0.125],
                                                  [0.011,   0.989]]),
-                                      Transition)
+                                      Transition,
+                                      decimal = 2)
             assert_array_almost_equal(np.array([[0.0, 0.75 ,   0.25],
-                                                [0.402,   0.174 ,  0.424]]),Emission)
+                                                [0.402,   0.174 ,  0.424]]),
+                                      Emission,
+                                      decimal = 2)
 
-        def test_ba10j_sample(self):
+
+        def test_ba10i_sample(self):
+            Transition, Emission = ViterbiLearning('xxxzyzzxxzxyzxzxyxxzyzyzyyyyzzxxxzzxzyzzzxyxzzzxyzzxxxxzzzxyyxzzzzzyzzzxxzzxxxyxyzzyxzxxxyxzyxxyzyxz',
+                                                   'xyz',
+                                                   'AB',
+                                                   np.array([ [0.582,   0.418],
+                                                              [0.272,   0.728]]),
+                                                   np.array([[0.129,   0.35,    0.52],
+                                                             [0.422,   0.151,   0.426]]))
+            assert_array_almost_equal(np.array([ [0.875,   0.125],
+                                                 [0.011,   0.989]]),
+                                      Transition,
+                                      decimal = 2)
+            assert_array_almost_equal(np.array([[0.0, 0.75 ,   0.25],
+                                                [0.402,   0.174 ,  0.424]]),
+                                      Emission,
+                                      decimal = 2)
+
+        def test_ba10i_extra(self):
+            Transition, Emission = ViterbiLearning('zzzyyxyzzzxyxzxxzzyxxzzzzzzyzxyzxxxzxxxzyzzxzxzzzxyzyyyxxxxzxyyyyyxzzzyxyzzxxzxxzxyxyxyzxzxzxzyxyzzz',
+                                                   'xyz',
+                                                   'AB',
+                                                   np.array([ [0.436,	0.564],
+                                                              [0.953,	0.047]]),
+                                                   np.array([[0.367,	0.248,	0.385],
+                                                             [0.401,	0.361,	0.238]]))
+            assert_array_almost_equal(np.array([ [0,   1],
+                                                 [1,   0]]),
+                                      Transition,
+                                      decimal = 2)
+            assert_array_almost_equal(np.array([[0.36	,0.14,	0.5 ],
+                                                [0.34,	0.34,	0.32]]),
+                                      Emission,
+                                      decimal = 2)
+
+        def test_ba10j_extra(self):
             probabilities = SoftDecode('zyxxxxyxzz',
                                        'xyz',
                                        'AB',
