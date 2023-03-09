@@ -128,6 +128,7 @@ class StateSet:
 def get_indices(S,Alphabet='AB'):
     '''
     Used to convert a string into integers representing the position of each character in the alphabet.
+    It can also be used to convert a string of states into state indices.
 
     Parameters:
        S         String to be converrted
@@ -255,54 +256,71 @@ def ProbabilityOutcomeGivenHiddenPath(string,alphabet,path,states,Emission):
                                                        get_indices(string,Alphabet=alphabet))]))
 
 
-def Viterbi(xs,alphabet,States,Transition,Emission):
+def Viterbi(x,Alphabet,States,Transition,Emission):
     '''
     Viterbi
 
     Solve:    BA10C Implement the Viterbi Algorithm
 
-    Input: A string x, followed by the alphabet from which x was constructed,
-        followed by the states States, transition matrix Transition,
-        and emission matrix Emission of an HMM.
+    Input:
+        x           A string
+        Alphabet    alphabet from which s was constructed,
+        States      states of HMM
+        Transition  transition matrix ,
+        Emission    emission matrix
 
-    Return: A path that maximizes the (unconditional) probability Pr(x, p) over all possible paths p
+    Return:
+        A path that maximizes the (unconditional) probability Pr(x, p) over all possible paths p
     '''
 
     def create_weights(s_source = 1):
         '''
-        calculateproduct_weights
+        create_weights
 
         Calculate array of weights by position in string and state
 
         '''
-        def get_weight(state,xs,i):
-            return np.multiply(s[i-1,:],Transition[:,state]* Emission[state,xs[i]]).max()
+        def get_max_weight(state,i):
+            '''
+            Calculate weight-- see textbook "The Viterbi algorithm
 
-        m         = len(xs)
+            Parameters:
+                state     A state
+                i         An index used to iterate through string x
+
+            Returns:
+                The maximum weight of all transitions from a possible state at position i-1 to i,
+                where the weight is the product of the transion probability and emission probability
+                of the character at position i.
+            '''
+            return np.multiply(s[i-1,:],Transition[:,state]* Emission[state,x_indices[i]]).max()
+
+        m         = len(x)
         n         = len(States)
-        x_indices = get_indices(xs,alphabet)
-        s         = np.zeros((m,n))
+        x_indices = get_indices(x,Alphabet)
+        s         = np.zeros((m,n))         # Product weights - see textbook "The Viterbi algorithm"
         s[0,:]    = s_source  * Emission[:,x_indices[0]] / n
         for i in range(1,len(x_indices)):
-            s[i,:] = np.array([get_weight(state,x_indices,i) for state in range(n)])
+            s[i,:] = np.array([get_max_weight(state,i) for state in range(n)])
 
         return s
 
     def find_most_likely_path(s):
         '''
-        backtrack
+        find_most_likely_path
 
-        Find most likely path through state space by backtracking
+        Find most likely path through state space by backtracking.
+
+        We start with last position, build backwards, and then reverse.
 
         '''
         m,_    = s.shape
         m     -= 1
-        state = np.argmax(s[m])
-        path  = [States[state]]
+        index_most_likely_state  = np.argmax(s[m])
+        path   = [States[index_most_likely_state]]
         for i in range(m-1,-1,-1):
-            ps    = [s[i,j] * Transition[j,state]  for j in range(len(States))]
-            state = np.argmax(ps)
-            path.append(States[state])
+            index_most_likely_state = np.argmax([s[i,j] * Transition[j,index_most_likely_state]  for j in range(len(States))])
+            path.append(States[index_most_likely_state])
         return path[::-1]
 
     return ''.join(find_most_likely_path(create_weights()))
@@ -346,6 +364,14 @@ def ConstructProfileHMM(theta,Alphabet,Alignment,sigma=0):
         Alphabet   Symbols used for Alignment
         Alignment  A list of strings representing aligned proteins
         sigma      Minimum probability assigned to legal transitions
+
+    Returns:
+        Transition    transition matrix
+        Emission      emission matrix
+        States        A list of states, e.g. [
+                      ('S', None), ('I', 0), ('M', 1), ('D', 1), ('I', 1), ..., ('E', None)], so row 0 of each
+                      matrix refers to ('S', None), etc.
+
    '''
 
     def create_mask():
@@ -356,7 +382,7 @@ def ConstructProfileHMM(theta,Alphabet,Alignment,sigma=0):
         def get_count(i):
             '''
             Returns:
-                Number of spacen in column i
+                Number of spaces in column i
             '''
             return sum([is_space(c) for s in Alignment for c in s[i]])
 
@@ -364,7 +390,7 @@ def ConstructProfileHMM(theta,Alphabet,Alignment,sigma=0):
         return [fraction<theta for fraction in fractions]
 
 
-    def create_transition(m,Paths):
+    def create_transition():
         '''
         Create matrix of transition probabilities
         '''
@@ -400,7 +426,7 @@ def ConstructProfileHMM(theta,Alphabet,Alignment,sigma=0):
         return normalize_rows(product)
 
 
-    def create_emission(m,n,Paths):
+    def create_emission():
         '''
         Create matrix of emission probabilities
         '''
@@ -433,7 +459,7 @@ def ConstructProfileHMM(theta,Alphabet,Alignment,sigma=0):
     m             = 3 * (sum([1 for m in mask if m]) + 1)
     state_set     = StateSet(m)
     n             = len(Alphabet)
-    return create_transition(m,Paths), create_emission(m,n,Paths), [state_set.get_pair(i) for i in range(m)]
+    return create_transition(), create_emission(), [state_set.get_pair(i) for i in range(m)]
 
 def AlignSequence(self,string,Alphabet,Emission):
     '''
@@ -445,6 +471,7 @@ def AlignSequence(self,string,Alphabet,Emission):
 
     Return: An optimal hidden path emitting Text in HMM(Alignment,θ,σ).
     '''
+    raise Exception('not implemented')
 
 def ViterbiLearning(s, Alphabet,  States, Transition, Emission,N=3):
     '''
@@ -573,7 +600,8 @@ if __name__=='__main__':
             self.assertAlmostEqual(5.01732865318,
                                         1e19*ProbabilityHiddenPath('AABBBAABABAAAABBBBAABBABABBBAABBAAAABABAABBABABBAB',
                                              'AB',
-                                             np.array([[ 0.194,   0.806],[ 0.273,   0.727]])),
+                                             np.array([[ 0.194, 0.806],
+                                                       [ 0.273, 0.727]])),
                                         places=5)
 
         def test_ba10b(self):
@@ -583,8 +611,8 @@ if __name__=='__main__':
                                                                           'xyz',
                                                                           'BBBAAABABABBBBBBAAAAAABAAAABABABBBBBABAABABABABBBB',
                                                                           'AB',
-                                                                          np.array([[0.612,   0.314,   0.074 ],
-                                                                                   [0.346,   0.317 ,  0.336]])),
+                                                                          np.array([[0.612, 0.314, 0.074 ],
+                                                                                    [0.346, 0.317, 0.336]])),
                                    places=5)
 
         def test_ba10c(self):
@@ -649,7 +677,14 @@ if __name__=='__main__':
         def test_ba10e2(self): #BA10E Construct a Profile HMM
             Transition, Emission,StateNames = ConstructProfileHMM(0.289,
                                                                   'ABCDE',
-                                                                  ['EBA', 'EBD', 'EB-', 'EED', 'EBD', 'EBE', 'E-D','EBD'])
+                                                                  ['EBA',
+                                                                   'EBD',
+                                                                   'EB-',
+                                                                   'EED',
+                                                                   'EBD',
+                                                                   'EBE',
+                                                                   'E-D',
+                                                                   'EBD'])
             m1,m2 = Transition.shape
             m,n   = Emission.shape
             self.assertEqual(5,n)
