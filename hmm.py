@@ -493,22 +493,24 @@ def ViterbiLearning(s, Alphabet,  States, Transition, Emission,N=3):
         Emission   = Emission1.copy()
     return Transition, Emission
 
-def SoftDecode(s, Alphabet,  States, Transition, Emission):
+def SoftDecode(s, Alphabet,  States, Transition, Emission,forward_backward=False):
     '''
     BA10I Soft Decoding Problem
 
     Parameters:
-        s           A String
-        Alphabet    Characters from which string constructed
-        States      States for HMM
-        Transition  Transition probabilities
-        Emission    Probabilities of symbols being emitted in each state
+        s                A String
+        Alphabet         Characters from which string constructed
+        States           States for HMM
+        Transition       Transition probabilities
+        Emission         Probabilities of symbols being emitted in each state
+        forward_backward Return foward and backward matrices also
 
     Return:
-        The probability that the HMM was in state k at step i (for each state k and each step i).
+        The probability that the HMM was in state k at step i (for each state k and each step i) and
+        optionally, the forward and backward matrices
     '''
 
-    def forward():
+    def get_forward():
         message       = np.full((m,n),np.nan)
         message[0][:] = Emission[:, x[0]]
         for i in range(1, m):
@@ -517,7 +519,7 @@ def SoftDecode(s, Alphabet,  States, Transition, Emission):
 
         return message
 
-    def backward():
+    def get_backward():
         message        = np.full((m,n),np.nan)
         message[-1][:] = 1
         for i in range(m-2, -1, -1):
@@ -526,30 +528,29 @@ def SoftDecode(s, Alphabet,  States, Transition, Emission):
 
         return message
 
-    m      = len(s)
-    n      = len(States)
-    x      = get_indices(s,Alphabet)
-    result = np.multiply(forward(),backward())
-    Z      = result.sum(axis=1)     #Partition function
-    return result/Z.reshape(-1,1)
+    m        = len(s)
+    n        = len(States)
+    x        = get_indices(s,Alphabet)
+    forward  = get_forward()
+    backward = get_backward()
+    result   = np.multiply(forward,backward)
+    result  /= result.sum(axis=1).reshape(-1,1)       # Normalize
+    return (result,forward,backward) if forward_backward else result
 
-def create_responsibility(Pi):
-    m,n            = Pi.shape
-    Responsibility = np.full((m-1,n,n),np.nan)
-    for i in range(m-1):
-        for j in range(n):
-            for k in range(n):
-                Responsibility[i,j,k] = Pi[i,j]*Pi[i+1,k]
-        Z = Responsibility[i,:,:].sum()
-        Responsibility[i,:,:]/=Z
+def get_weight(i,l,k,x, Path, Transition,Emission):
+    return Transition[Path[i-1],Path[i]] * Emission[Path[i],x[i]]  #page 192
 
-    return Responsibility
 
-def BaumWelch(s, Alphabet,  States, Transition, Emission):
-    m      = len(s)
-    n      = len(States)
-    x      = get_indices(s,Alphabet)
+
+def BaumWelch(s, Alphabet,  States, Transition, Emission,N=3):
+    m,n = Emission.shape
+    for k in range(N):
+        Path                   = Viterbi(s, Alphabet,  States, Transition, Emission)
+        Ti = np.zeros((len(s),m,m))
+        for i in range():
+            pass
     return Transition, Emission
+
 
 def EstimateParameters(s,Alphabet,path,States):
     '''
@@ -882,29 +883,57 @@ if __name__=='__main__':
 
             assert_array_almost_equal(expected,probabilities,decimal=3)
 
+
         def test_ba10k_responsibility(self):
-            Responsibility = create_responsibility(np.array([[0.636, 0.364],
-                                                             [0.593, 0.407],
-                                                             [0.600, 0.400],
-                                                             [0.533, 0.467],
-                                                             [0.515, 0.485],
-                                                             [0.544, 0.456],
-                                                             [0.627, 0.373],
-                                                             [0.633, 0.367],
-                                                             [0.692, 0.308],
-                                                             [0.686, 0.609],
-                                                             [0.609, 0.391]
-                                                             ]))
+            '''
+            This test has been written to understand the responsibility matrices introduced on page 224
+            '''
+            Transition               = np.array([[9/10, 1/10],
+                                                 [1/10, 9/10]])
+            Emission                 = np.array([[1/2, 1/2],
+                                                 [3/4,1/4]])
+            x                        = 'THTHHHTHTTH'
+            Alphabet                 = 'HT'
+            States                   = 'FB'
+            xindices                 = get_indices(x,Alphabet=Alphabet)
+            Path                     = Viterbi(x,Alphabet, States,Transition,Emission)
+            path_indices             = get_indices(Path,Alphabet=States)
+            Pi_star,forward,backward = SoftDecode(x,Alphabet, States,Transition,Emission,forward_backward=True)
+            Pi_star_star             = np.full((len(forward-1),2,2),np.nan)
+            for i in range(0,len(forward)-1):
+                for l in range(2):
+                    for k in range(2):
+                        # weight = Transition[path_indices[i-1],path_indices[i]] * Emission[path_indices[i],xindices[i]]
+                        weight = Transition[l,k] * Emission[k,xindices[i]]
+                        # weight = get_weight(i,l,k, get_indices(x,Alphabet), get_indices(Path,States), Transition, Emission)
+                        Pi_star_star[i,l,k] = forward[i,l] * weight * backward[i+1,k]
+
+                Pi_star_star[i,:,:] /= Pi_star_star[i,:,:].sum()
+
+            assert_array_almost_equal(np.array([[0.636, 0.364],
+                                                [0.593, 0.407],
+                                                [0.600, 0.400],
+                                                [0.533, 0.467],
+                                                [0.515, 0.485],
+                                                [0.544, 0.456],
+                                                [0.627, 0.373],
+                                                [0.633, 0.367],
+                                                [0.692, 0.308],
+                                                [0.686, 0.314],
+                                                [0.609, 0.391]
+                                                ]),
+                                      Pi_star,
+                                      decimal = 3)
 
         @skip("TBP")
         def test_ba10k_sample(self):
             Transition, Emission = BaumWelch('xzyyzyzyxy',
-                                       'xyz',
-                                       'AB',
-                                       np.array([[0.019 ,  0.981],
-                                                 [ 0.668,   0.332 ]]),
-                                       np.array([[ 0.175,   0.003,   0.821  ],
-                                                 [ 0.196,   0.512 ,  0.293]]))
+                                             'xyz',
+                                             'AB',
+                                             np.array([[0.019 ,  0.981],
+                                                       [ 0.668,   0.332 ]]),
+                                             np.array([[ 0.175,   0.003,   0.821  ],
+                                                       [ 0.196,   0.512 ,  0.293]]))
 
             assert_array_almost_equal(np.array([[0.000, 1.000],
                                                 [0.786,   0.214]]),
