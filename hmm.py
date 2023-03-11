@@ -542,7 +542,7 @@ def SoftDecode(s, Alphabet,  States, Transition, Emission):
 
 def get_edge_responsibilities(forward,backward, Transition, Emission, xindices):
     m,_ = Transition.shape
-    edge_responsibilities = np.full((len(forward)-1,2,2),np.nan)
+    edge_responsibilities = np.full((len(forward)-1,m,m),np.nan)
     for i in range(0,len(forward)-1):
         for l in range(m):
             for k in range(m):
@@ -553,6 +553,7 @@ def get_edge_responsibilities(forward,backward, Transition, Emission, xindices):
     return edge_responsibilities
 
 def BaumWelch(s, Alphabet,  States, Transition, Emission, N = 5):
+    '''  BA10K 	Implement Baum-Welch Learning'''
     m,n = Emission.shape
     for k in range(N):
         decoded                           = SoftDecode(s,Alphabet, States,Transition,Emission)
@@ -959,6 +960,34 @@ if __name__=='__main__':
 
             assert_array_almost_equal(np.array([[0.242,   0.000,   0.758],
                                                 [0.172,   0.828,  0.000]]),
+                                      Emission,
+                                      decimal = 3)
+
+        def test_ba10k_extra(self):
+            Transition, Emission = BaumWelch('yzzxzzzyxyxzyxzzyyzzxxzyzyyyyyyxzyxxyzzzyzxyxxxxyxzzzzyzxyxxzyyyyxyzyxzzyzyxyxzzxyxxxzxyxyyxzxxyzxzz',
+                                             'xyz',
+                                             'ABCD',
+                                             np.array([[0.056,	0.443,	0.334,	0.167	],
+                                                       [0.826,	0.052,	0.011,	0.111	 ],
+                                                       [0.022,	0.163,	0.811,	0.004	],
+                                                       [0.141,	0.696,	0.055,	0.108	]]),
+                                             np.array([[0.340,	0.084,	0.576	  ],
+                                                       [ 0.196,	0.592,	0.212	],
+                                                       [0.344,	0.609,	0.047	],
+                                                       [0.320,	0.487,	0.193]]),
+                                             N=100)
+
+            assert_array_almost_equal(np.array([[0.000,	0.384,	0.186,	0.430],
+                                                [0.989,	0.000,	0.000,	0.011],
+                                                [0.000,	0.000,	0.596,	0.404	],
+                                                [0.403,	0.596,	0.000,	0.001	]]),
+                                      Transition,
+                                      decimal = 3)
+
+            assert_array_almost_equal(np.array([[0.447,	0.000,	0.553],
+                                                [0.032,	0.648,	0.321	],
+                                                [0.000,	1.000,	0.000	],
+                                                [0.714,	0.000,	0.286]]),
                                       Emission,
                                       decimal = 3)
 
