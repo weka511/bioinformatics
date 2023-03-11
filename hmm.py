@@ -552,8 +552,21 @@ def get_edge_responsibilities(forward,backward, Transition, Emission, xindices):
         edge_responsibilities[i,:,:] /= edge_responsibilities[i,:,:].sum()
     return edge_responsibilities
 
-def BaumWelch(s, Alphabet,  States, Transition, Emission, N = 5):
-    '''  BA10K 	Implement Baum-Welch Learning'''
+def BaumWelch(s, Alphabet,  States, Transition, Emission, N = 100):
+    '''  BA10K 	Implement Baum-Welch Learning
+
+       Parameters:
+           s          A String
+           Alphabet   Characters from which string constructed
+           States     States for HMM
+           Transition Transition probabilities
+           Emission   Probabilities of symbols being emitted in each state
+           N          Number of iterations. My experience is that this needs to be large, say 100
+
+       Returns:
+           Transition Transition probabilities updated
+           Emission   Probabilities of symbols being emitted in each state updated
+    '''
     m,n = Emission.shape
     for k in range(N):
         decoded                           = SoftDecode(s,Alphabet, States,Transition,Emission)

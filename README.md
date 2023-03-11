@@ -219,7 +219,7 @@ I have written this code in Python 3, generally with the most recent release at 
 |BA10H|BA10H.py hmm.py| [Estimate the Parameters of an HMM ](http://rosalind.info/problems/ba10h/) |
 |BA10I|BA10I.py hmm.py| [Implement Viterbi Learning ](http://rosalind.info/problems/ba10i/) |
 |BA10J|BA10J.py hmm.py| [Solve the Soft Decoding Problem ](http://rosalind.info/problems/ba10j/) |
-|BA10K|BA10K.py hmm.py| [Implement Baum-Welch Learning](http://rosalind.info/problems/ba10k/) [WIP](https://github.com/weka511/bioinformatics/issues/89)|
+|BA10K|BA10K.py hmm.py| [Implement Baum-Welch Learning](http://rosalind.info/problems/ba10k/)|
 
 ### 11.  Was T.rex just a big chicken?
 

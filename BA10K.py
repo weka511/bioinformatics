@@ -21,27 +21,35 @@ from argparse import ArgumentParser
 from os.path import basename
 from time import time
 
-from helpers import read_strings
+from  helpers import read_strings, create_hmm_from_strings
 
-from hmm import BaumWelch
+from hmm import BaumWelch,formatEmission,formatTransition
 
 if __name__=='__main__':
     start = time()
     parser = ArgumentParser(__doc__)
     parser.add_argument('--sample',   default=False, action='store_true', help='process sample dataset')
     parser.add_argument('--rosalind', default=False, action='store_true', help='process Rosalind dataset')
+    parser.add_argument('--precision', default=4,                          help='Controls display of probabilities')
     args = parser.parse_args()
     if args.sample:
         pass
 
     if args.rosalind:
         Input  = read_strings(f'data/rosalind_{basename(__file__).split(".")[0]}.txt')
+        xs,alphabet,States,Transition,Emission = create_hmm_from_strings(Input[2:],sep='\t')
 
-        Result = None
-        print (Result)
+        Transitions,Emissions = BaumWelch(xs,alphabet,States,Transition,Emission,N=100)
+
         with open(f'{basename(__file__).split(".")[0]}.txt','w') as f:
-            for line in Result:
-                f.write(f'{line}\n')
+            for row in formatTransition(Transitions,Input[6].split(),precision=args.precision):
+                print (row)
+                f.write(f'{row}\n')
+            print ('--------')
+            f.write('--------\n')
+            for row in formatEmission(Emissions,Input[6].split(), alphabet,precision=args.precision):
+                print (row)
+                f.write(f'{row}\n')
 
     elapsed = time() - start
     minutes = int(elapsed/60)

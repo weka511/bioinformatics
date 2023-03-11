@@ -51,7 +51,7 @@ if __name__=='__main__':
         with open(f'{basename(__file__).split(".")[0]}.txt','w') as f:
             print (format_list(States))
             f.write(f'{format_list(States)}\n')
-            for line in SoftDecode(xs,alphabet,States,Transition,Emission):
+            for line in SoftDecode(xs,alphabet,States,Transition,Emission).probabilities:
                 print (format_list(line))
                 f.write(f'{format_list(line)}\n')
 
