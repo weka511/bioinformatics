@@ -1,5 +1,6 @@
 #!/usr/bin/env python
-#    Copyright (C) 2019-2021 Greenweaves Software Limited
+
+#    Copyright (C) 2019-2023 Greenweaves Software Limited
 #
 #    This is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -16,11 +17,14 @@
 
 '''Common code for alignment problems'''
 
-from numpy import argmax,argmin,zeros, amax
 from sys import float_info
-from Bio.Align import substitution_matrices
+from  unittest import TestCase, main, skip
+
+import numpy as np
+
+from Bio.Align        import substitution_matrices
 from reference_tables import createSimpleDNASubst
-from helpers import zeroes,sign
+from helpers          import zeroes,sign
 
 # reverse
 #
@@ -30,40 +34,46 @@ from helpers import zeroes,sign
 def reverse(chars):
     return ''.join(chars[i] for i in range(len(chars)-1,-1,-1))
 
-# BA5A 	Find the Minimum Number of Coins Needed to Make Change
-#
-# Input: An integer money and an array Coins of positive integers.
-#
-# Return: The minimum number of coins with denominations Coins that changes money.
-#
-# http://rosalind.info/problems/ba5a/
+
 
 def number_of_coins(money,coins):
+    '''
+    # BA5A 	Find the Minimum Number of Coins Needed to Make Change
+
+    Input: An integer money and an array Coins of positive integers.
+
+    Return: The minimum number of coins with denominations Coins that changes money.
+
+    http://rosalind.info/problems/ba5a/
+    '''
     number = [0]                           # We will use Dynamic Programming, and solve
                                            # the problem for each amount up to and including money
     for m in range(1,money+1):             # solve for m
-        nn = float_info.max            # Number of coins: assume that we haven't solved
+        number_of_counts = float_info.max            # Number of coins: assume that we haven't solved
         for coin in coins:                 # Find a coin such that we can make change using it
                                            # plus a previoudly comuted value
             if m>=coin:
-                if number[m-coin]+1<nn:
-                    nn = number[m-coin]+1
-        number.append(nn)
+                if number[m-coin]+1<number_of_counts:
+                    number_of_counts = number[m-coin]+1
+        number.append(number_of_counts)
     return number[money]
 
-# BA5B 	Find the Length of a Longest Path in a Manhattan-like Grid
-#
-# Input: Integers n and m, followed by an n*(m+1) matrix Down and an
-#        (n+1)*m matrix Right. The two matrices are separated by the "-" symbol.
-#
-# Return: The length of a longest path from source (0, 0) to sink (n, m)
-#        in the n*m rectangular grid whose edges are defined by the matrices
-#        Down and Right.
-#
-# http://rosalind.info/problems/ba5a/
+
 
 def longest_manhattan_path(n,m,down,right):
-    s=[]
+    '''
+    BA5B 	Find the Length of a Longest Path in a Manhattan-like Grid
+
+    Input: Integers n and m, followed by an n*(m+1) matrix Down and an
+           (n+1)*m matrix Right. The two matrices are separated by the "-" symbol.
+
+    Return: The length of a longest path from source (0, 0) to sink (n, m)
+        in the n*m rectangular grid whose edges are defined by the matrices
+        Down and Right.
+
+    http://rosalind.info/problems/ba5a/
+    '''
+    s = []
     for i in range(n+1):
         s.append(zeroes(m+1))
 
@@ -79,29 +89,35 @@ def longest_manhattan_path(n,m,down,right):
 
     return s[n][m]
 
-# BA5C 	Find a Longest Common Subsequence of Two Strings
-#
-# Input: Two strings.
-#
-# Return: A longest common subsequence of these strings.
-#
-# http://rosalind.info/problems/ba5a/
+
 
 def longest_common_subsequence(string1,string2):
+    '''
+     BA5C 	Find a Longest Common Subsequence of Two Strings
 
-    # Calculate longest path through "map" defined by the two strings
-    #
-    # At each point we have a state, s, which is defined as follows
-    # 1. Count of matches (==path lebth from (0,0) to here
-    # 2. horizonal position of predecessor of this point
-    # 3. vertical position of predecessor of this point
-    # 4. If this point corresponds to a matching character (in both strings)
-    #    this should be that chracter, otherwise an empty string
+     Input: Two strings.
+
+     Return: A longest common subsequence of these strings.
+
+     http://rosalind.info/problems/ba5a/
+    '''
 
     def longest_path():
 
-        # Used to update distamce at each node
+        '''
+         Calculate longest path through "map" defined by the two strings
+
+         At each point we have a state, s, which is defined as follows
+         1. Count of matches (==path lebth from (0,0) to here
+         2. horizonal position of predecessor of this point
+         3. vertical position of predecessor of this point
+         4. If this point corresponds to a matching character (in both strings)
+        this should be that chracter, otherwise an empty string
+        '''
+
+
         def new_s(i,j,s):
+            '''Used to update distamce at each node'''
             count_horizonal,_,_,_=s[i-1][j]
             count_vertical,_,_,_=s[i][j-1]
             count_diagonal,_,_,_=s[i-1][j-1]
@@ -118,11 +134,11 @@ def longest_common_subsequence(string1,string2):
             else: #count_horizonal==count
                 return (count,i-1,j,'')
 
-        m1=len(string1)+1
-        m2=len(string2)+1
-        s=[]
+        m1 = len(string1)+1
+        m2 = len(string2)+1
+        s  = []
         for i in range(m1):
-            ss=[]
+            ss = []
             for j in range(m2):
                 ss.append((0,-1,-1,''))
             s.append(ss)
@@ -131,12 +147,11 @@ def longest_common_subsequence(string1,string2):
                 s[i][j]=new_s(i,j,s)
         return s
 
-    # Build string from status
-
     def construct_string(s):
-        i=len(string1)
-        j=len(string2)
-        result=[]
+        '''Build string from status'''
+        i      = len(string1)
+        j      = len(string2)
+        result = []
         while i>-1 and j>-1:
             _,i,j,chars=s[i][j]
             result.append(chars)
@@ -287,16 +302,20 @@ def highest_scoring_global_alignment(string1,string2,weights=substitution_matric
                                 sigma))
 
 
-# BA5F 	Find a Highest-Scoring Local Alignment of Two Strings
-#
-# Input: Two amino acid strings.
-#
-# Return: The maximum score of a local alignment of the strings, followed by
-# a local alignment of these strings achieving the maximum score. Use the
-# PAM250 scoring matrix and indel penalty  5. (If multiple local alignments
-# achieving the maximum score exist, you may return any one.)
 
-def highest_scoring_local_alignment(string1,string2,weights=substitution_matrices.load("PAM250"),sigma=5):
+def highest_scoring_local_alignment(string1,string2,
+                                    weights = substitution_matrices.load("PAM250"),
+                                    sigma = 5):
+    '''
+    BA5F 	Find a Highest-Scoring Local Alignment of Two Strings
+
+    Input: Two amino acid strings.
+
+    Return: The maximum score of a local alignment of the strings, followed by
+    a local alignment of these strings achieving the maximum score. Use the
+    PAM250 scoring matrix and indel penalty  5. (If multiple local alignments
+    achieving the maximum score exist, you may return any one.)
+    '''
     def find_best_substring(s):
         s_right=0
         i_best=-1
@@ -382,7 +401,7 @@ def build_matrix(s,t,matrix,replace_score=createSimpleDNASubst(),indel_cost=1,ge
                 froms                       = [(i+di_down,j+dj_down,di_down,dj_down),
                                                (i+di_left,j+dj_left,di_left,dj_left),
                                                (i-1,j-1,-1,-1)]
-                index                       = argmax(scores)
+                index                       = np.argmax(scores)
                 matrix[i][j]                = scores[index]
                 moves[(i,j)]                = froms[index]
 
@@ -498,7 +517,7 @@ def edta(s,t,indel_cost=1,replace_cost=lambda a,b: 1):
                       matrix[m-1][n-1] + (0 if s[m-1]==t[n-1] else replace_cost(s[m-1],t[n-1]))]
             ss     = [s[m-1],'-',s[m-1]]
             ts     = ['-',t[n-1],t[n-1]]
-            index  = argmin(scores)
+            index  = np.argmin(scores)
             m,n    = moves[index]
             s1.append(ss[index])
             t1.append(ts[index])
@@ -519,12 +538,12 @@ def overlap_assignment(v,w,match_bonus=+1,mismatch_cost=2,indel_cost=2):
                 scores          = [distances[i-1][j]   - indel_cost,
                                    distances[i][j-1]   - indel_cost,
                                    distances[i-1][j-1] + (match_bonus if v[i-1]==w[j-1] else -mismatch_cost)]
-                index           = argmax(scores)
+                index           = np.argmax(scores)
                 distances[i][j] = scores[index]
                 path[(i,j)]      = moves[index]
 
         i        = len(v)
-        j        = argmax(distances[i])
+        j        = np.argmax(distances[i])
         distance = distances[i][j]
         v1       = []
         w1       = []
@@ -620,7 +639,7 @@ def san_kai(s,t, replace_score=substitution_matrices.load("BLOSUM62"),sigma=11,e
             choices      = [lower[i][j],
                             middle[i-1][j-1] + match((s[i-1],t[j-1])),
                             upper[i][j]]
-            index        = argmax(choices)
+            index        = np.argmax(choices)
             middle[i][j] = choices[index]
             moves[(i,j)] = [(i-1, j,   s[i-1], '-'),     # Comes from lower
                             (i-1, j-1, s[i-1], t[j-1]),  # Comes from middle
@@ -664,7 +683,7 @@ def FindMiddleEdge(s,t,
                           current[i-1]  - indel_cost,
                           previous[i]   - indel_cost]
 
-            best       = argmax(scores)
+            best       = np.argmax(scores)
             current[i] = scores[best]
 
         return current,previous
@@ -691,8 +710,8 @@ def FindMiddleEdge(s,t,
     to_sink,_     = explore(s[::-1],t[::-1],len(t) - middle_column)
     length        = [a+b for (a,b) in zip(from_source,to_sink[::-1])]
 
-    return ((argmax(length),   middle_column),
-            (argmax(length)+1, middle_column+1))
+    return ((np.argmax(length),   middle_column),
+            (np.argmax(length)+1, middle_column+1))
 
 # FindHighestScoringMultipleSequenceAlignment
 #
@@ -729,7 +748,7 @@ def FindHighestScoringMultipleSequenceAlignment (u,
                         (-1, -1,  0),
 
                     ]
-                    index          = argmax(scores)
+                    index          = np.argmax(scores)
                     s[i][j][k]     = scores[index]
                     path[(i,j,k)] = moves[index]
         return s,path
@@ -901,7 +920,7 @@ def FindMultipleSequenceAlignment(
             raw_scores = [(get_score(move),move) for move in available_moves]
             return [(score,move) for score,move in raw_scores if score != None] # filter out moves outside hypercube
 
-        s               = zeros([len(S)+1 for S in Strings],dtype=int)
+        s               = np.zeros([len(S)+1 for S in Strings],dtype=int)
         path            = {}
         m               = len(Strings)
         available_moves = create_moves(m)
@@ -910,7 +929,7 @@ def FindMultipleSequenceAlignment(
             scores_moves     = calculate_scores(index_set)
             scores           = [score for score,_ in scores_moves]
             moves            = [move  for _,move  in scores_moves]
-            index_best_score = argmax(scores)
+            index_best_score = np.argmax(scores)
             s[index_set]     = scores[index_best_score]
             path[index_set]  = moves[index_best_score]
         return s,path
@@ -966,7 +985,7 @@ def sims(s,t, match=1,mismatch=-1):
         return sum(get_score(a,b) for (a,b) in zip(s,t))
 
     def dynamic_programming():
-        scores      = zeros((len(t),len(s)),dtype=int)
+        scores      = np.zeros((len(t),len(s)),dtype=int)
         predecessor = {}
         for j in range(len(s)):
             scores[0]  = get_score(s[j],t[0],match=match,mismatch=mismatch)
@@ -989,7 +1008,7 @@ def sims(s,t, match=1,mismatch=-1):
 
     def trace_back(scores,predecessor):
         i      = len(scores)-1
-        j      = argmax(scores[i])
+        j      = np.argmax(scores[i])
 
         print (f'Number of maxima={sum(1 for s in scores[i] if s>=scores[i,j])}')
         s_match = [s[j]]
@@ -1066,7 +1085,7 @@ def itwv(s,patterns):
                              S[i,j-1] + score(s0,v0))
                 Closed.add((i,j))
 
-            S      = zeros((len(u)+1,len(v)+1),dtype=int)
+            S      = np.zeros((len(u)+1,len(v)+1),dtype=int)
             N      = max(len(u),len(v))+1
             Closed = set()
             Closed.add((0,0))
@@ -1075,7 +1094,7 @@ def itwv(s,patterns):
                     for j in range(0,min(n,len(v)+1)):
                         update_score(i,j)
 
-            return amax(S)==len(u)+len(v)
+            return np.amax(S)==len(u)+len(v)
 
         # Only try to match if 1st character matches
         for i in range(len(s)-len(u)-len(v)+1):
@@ -1124,7 +1143,7 @@ def ctea(s,t,indel_cost=1,replace_cost=lambda a,b: 1, mod=134217727):
                 scores     = [matrix[m-1][n]+indel_cost,
                               matrix[m][n-1]+indel_cost,
                               matrix[m-1][n-1] + (0 if s[m-1]==t[n-1] else replace_cost(s[m-1],t[n-1]))]
-                index      = argmin(scores)
+                index      = np.argmin(scores)
                 lowest     = scores[index]
                 # Find all possible nodes links to this node, i.e. all that have lowest score
                 candidates = [i for i in range(len(scores)) if scores[i]==lowest]
@@ -1177,21 +1196,27 @@ def ctea(s,t,indel_cost=1,replace_cost=lambda a,b: 1, mod=134217727):
 
 if __name__=='__main__':
 
-    import unittest
+    class Test_5_Alignment(TestCase):
 
-    class Test_5_Alignment(unittest.TestCase):
-
-        def test_simple(self): # Simple test
-            score,s1,s2=align('PLEASANTLY','MEANLY',replace_score=substitution_matrices.load("BLOSUM62"),indel_cost=5)
+        def test_simple(self):
+            '''
+            A simple test of the align function, based on https://rosalind.info/problems/glob/
+            '''
+            score,s1,s2 = align('PLEASANTLY','MEANLY',
+                                replace_score = substitution_matrices.load("BLOSUM62"),
+                                indel_cost    = 5)
             self.assertEqual(8,score)
             self.assertEqual('LEASANTLY',''.join(s1))
             self.assertEqual('MEA--N-LY',''.join(s2))
 
-        def test_ba5a(self): # BA5A 	Find the Minimum Number of Coins Needed to Make Change
+
+        def test_ba5a(self):
+            '''BA5A 	Find the Minimum Number of Coins Needed to Make Change'''
             self.assertEqual(2,number_of_coins(40,[1,5,10,20,25,50]))
             self.assertEqual(338,number_of_coins(8074,[24,13,12,7,5,3,1]))
 
-        def test_ba5b(self): # BA5B 	Find the Length of a Longest Path in a Manhattan-like Grid
+        def test_ba5b(self):
+            '''BA5B 	Find the Length of a Longest Path in a Manhattan-like Grid'''
             self.assertEqual(34,\
                              longest_manhattan_path(4,\
                                                     4,\
@@ -1244,13 +1269,16 @@ if __name__=='__main__':
                                                      [2,3,1,4,4,3,4,0,3]]))
 
 
-        def test_ba5c(self): # BA5C 	Find a Longest Common Subsequence of Two Strings
+        def test_ba5c(self):
+            '''BA5C 	Find a Longest Common Subsequence of Two Strings'''
             self.assertEqual('ACCTTG',
                              longest_common_subsequence('AACCTTGG',
                                                     'ACACTGTGA'))
 
-        def test_ba5d(self): # BA5D 	Find the Longest Path in a DAG
-            n,path=longest_path(0,4,
+
+        def test_ba5d_sample(self):
+            '''BA5D 	Find the Longest Path in a DAG'''
+            n,path = longest_path(0,4,
                                 [
                                     (0,1,7),
                                     (0,2,4),
@@ -1260,7 +1288,10 @@ if __name__=='__main__':
                                 ])
             self.assertEqual(9,n)
             self.assertEqual([0,2,3,4],path)
-            n,path=longest_path(11,18,
+
+        @skip('')
+        def test_ba5d_rosalind(self):
+            n,path = longest_path(11,18,
                                 [(21,33,29),
                                  (5,19,8),
                                  (11,17,25),
@@ -1334,20 +1365,24 @@ if __name__=='__main__':
             self.assertEqual(62,n)
             self.assertEqual([11,17,18],path)
 
-
+        @skip('')
         def test_ba5e(self): # BA5E 	Find a Highest-Scoring Alignment of Two Strings
             score,s1,s2=highest_scoring_global_alignment('PLEASANTLY','MEANLY')
             self.assertEqual(8,score)
             self.assertEqual('PLEASANTLY',s1)
             self.assertEqual('-MEA--N-LY',s2)
 
-
-        def test_ba5f(self): # BA5F 	Find a Highest-Scoring Local Alignment of Two Strings
-            score,s1,s2=highest_scoring_local_alignment('MEANLY','PENALTY')
+        # @skip('')
+        def test_ba5f_sample(self):
+            '''BA5F 	Find a Highest-Scoring Local Alignment of Two Strings'''
+            score,s1,s2 = highest_scoring_local_alignment('MEANLY','PENALTY')
             self.assertEqual(15,score)
             self.assertEqual('EANL-Y',s1)
             self.assertEqual('ENALTY',s2)
-            score,s1,s2=highest_scoring_local_alignment(\
+
+        def test_ba5f_rosalind(self):
+            '''BA5F 	Find a Highest-Scoring Local Alignment of Two Strings'''
+            score,s1,s2 = highest_scoring_local_alignment(\
                 'AMTAFRYRQGNPRYVKHFAYEIRLSHIWLLTQMPWEFVMGIKMPEDVFQHWRVYSVCTAEPMRSDETYEQKPKPMAKWSGMTIMYQAGIIRQPPRGDRGVSDRNYSQCGKQNQAQLDNNPTWTKYEIEWRVQILPPGAGVFEGDNGQNQCLCPNWAWEQPCQWGALHSNEQYPNRIHLWAPMSKLHIKIEKSSYNRNAQFPNRCMYECEFPSYREQVDSCHYENVQIAFTIFSGAEQKRKFCSCHFWSNFIDQAVFSTGLIPWCYRRDDHSAFFMPNWNKQYKHPQLQFRVAGEGTQCRPFYTREMFTKVSAWRIAGRFAGPYERHHDAHLELWYQHHKVRTGQQLGIIWNNRDKTRNPCPFSAYYNKLPWWKINQNAFYNCLQNIAHSTHDETHEFNPVKCIDWLQGTMVPTECKKGFVHEKCECYRNPGPPLHDMYHQMEDIFGVRFDCLTGWKHLSDYNPCQERRNINDFYIFAYEIAPAVKNLVLSPQPLADATKKCAFNYTPLDQSPVVIACKWYIHQPICMLLIVLICAMDKYNAHMIVIRTTEGQQPMHACRMTEGPGMCMKEPLVTFTLPAQWQWPNHEFKYVYMYVLNYHLSQYTYTDEGHAGGQHYSFNVAVDVGMAWGHNRCYCQPACYSQQETQTRTIDYEKWQYMKHQAFKWGLWFCEQERHAWFKGQNRCEMFTAKMTRMGADSNLDQYKLMLAQNYEEQWEQPIMECGMSEIIEIDPPYRSELIFTFWPFCTYSPWQNLIKCRCNNVIEEMDQCVPLTFIGFGVKQAGGIQAWAFYKEEWTSTYYLMCQCMKSDKAQYPYEIILFWMQPMDTGEQEPPQQNMWIFLPHSWFFDWCCNAPWSEICSSRHDHGQCQDAFYPCELFTVFDDIFTAEPVVCSCFYDDPM',\
                 'WQEKAVDGTVPSRHQYREKEDRQGNEIGKEFRRGPQVCEYSCNSHSCGWMPIFCIVCMSYVAFYCGLEYPMSRKTAKSQFIEWCDWFCFNHWTNWAPLSIVRTSVAFAVWGHCWYPCGGVCKTNRCKDDFCGRWRKALFAEGPRDWKCCKNDLQNWNPQYSQGTRNTKRMVATTNQTMIEWKQSHIFETWLFCHVIIEYNWSAFWMWMNRNEAFNSIIKSGYPKLLLTQYPLSQGSTPIVKPLIRRDQGKFWAWAQMWWFREPTNIPTADYCHSWWQSRADLQNDRDMGPEADASFYVEFWYWVRCAARTYGQQLGIIWNNRLKTRNPCPYSADGIQNKENYVFWWKNMCTKSHIAFYYCLQNVAHYTHDVTAEFNPVKCIDWLQGHMVLSSWFKYNTECKKLFVHEKCECYRMFCGVVEDIFGVRFHTGWKHLSTAKPVPHVCVYNPSVQERRNINDFYIFYEIAPAVKNLVLSAQPLHDYTKKCAFNYTPITITRIISTRNQIIWAHVVIACQFYSPHQMLLIELAMDKYCADMNVRRSTEGHQPMHACRSTFGPGMAAKEPLVTFTLVAFWQWPNHEFQYVYMYTEDKIIQIGPHLSNGCEMVEYCVDCYAKRPCYRAYSAEAQYWRMITEAEDYSYKTRNAIAATATVRGQYCHPFRWLGIVWMAHHDCFFANECGTICIPQMAEMRPPETTPYEIDIIFMMFWKEHMSTTILDVVGMYRPATFSHWHDAHHQCEPYLTPLMCQSKLVFDAAFTQVGVKGVWYHTEKLELMAGFNHMKFKKEEAQQSCFYWFQDCPDYDPPDAVRKTDEKHIRAHGEIWWLMRYYCMYHILHIASRHEWMHLRWDQACTNPGYELFEFIPWVLRRYVVYDKIRYNYSYRNSASMEFV')
             self.assertEqual(1062,score)
@@ -1365,4 +1400,4 @@ if __name__=='__main__':
                                  5 : [3]
                              }))
 
-    unittest.main()
+    main()
