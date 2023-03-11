@@ -493,7 +493,7 @@ def ViterbiLearning(s, Alphabet,  States, Transition, Emission,N=3):
         Emission   = Emission1.copy()
     return Transition, Emission
 
-def SoftDecode(s, Alphabet,  States, Transition, Emission,forward_backward=False):
+def SoftDecode(s, Alphabet,  States, Transition, Emission):
     '''
     BA10I Soft Decoding Problem
 
@@ -503,12 +503,16 @@ def SoftDecode(s, Alphabet,  States, Transition, Emission,forward_backward=False
         States           States for HMM
         Transition       Transition probabilities
         Emission         Probabilities of symbols being emitted in each state
-        forward_backward Return foward and backward matrices also
 
     Return:
-        The probability that the HMM was in state k at step i (for each state k and each step i) and
-        optionally, the forward and backward matrices
+        A Result object comprising the probability that the HMM was in state k at step i
+        (for each state k and each step i) and the forward and backward matrices
     '''
+    class Result:
+        def __init__(self,probabilities,forward,backward):
+            self.probabilities = probabilities/probabilities.sum(axis=1).reshape(-1,1)
+            self.forward       = forward
+            self.backward      = backward
 
     def get_forward():
         message       = np.full((m,n),np.nan)
@@ -528,19 +532,13 @@ def SoftDecode(s, Alphabet,  States, Transition, Emission,forward_backward=False
 
         return message
 
-    m        = len(s)
-    n        = len(States)
-    x        = get_indices(s,Alphabet)
-    forward  = get_forward()
-    backward = get_backward()
-    result   = np.multiply(forward,backward)
-    result  /= result.sum(axis=1).reshape(-1,1)       # Normalize
-    return (result,forward,backward) if forward_backward else result
-
-def get_weight(i,l,k,x, Path, Transition,Emission):
-    return Transition[Path[i-1],Path[i]] * Emission[Path[i],x[i]]  #page 192
-
-
+    m             = len(s)
+    n             = len(States)
+    x             = get_indices(s,Alphabet)
+    forward       = get_forward()
+    backward      = get_backward()
+    probabilities = np.multiply(forward,backward)
+    return Result(probabilities,forward,backward)
 
 def BaumWelch(s, Alphabet,  States, Transition, Emission,N=3):
     m,n = Emission.shape
@@ -868,7 +866,7 @@ if __name__=='__main__':
                                        np.array([[0.414,	0.335,	0.251	 ],
                                                  [0.233,	0.172,	0.596	],
                                                  [0.284,	0.355,	0.361	],
-                                                 [0.028,	0.638,	0.334]]))
+                                                 [0.028,	0.638,	0.334]])).probabilities
             expected      = np.array([[0.5003,	0.2114,	0.2662,	0.0220],
                                       [0.3648,	0.053,	0.1909,	0.3913	],
                                       [0.1511,	0.1251,	0.1553,	0.5685],
@@ -886,31 +884,24 @@ if __name__=='__main__':
 
         def test_ba10k_responsibility(self):
             '''
-            This test has been written to understand the responsibility matrices introduced on page 224
+            This test has been written to help me understand the responsibility matrices introduced on page 224
             '''
-            Transition               = np.array([[9/10, 1/10],
+            def get_weight(i,l,k,x, Path, Transition,Emission):
+                return Transition[Path[i-1],Path[i]] * Emission[Path[i],x[i]]  #page 192
+            Transition               = np.array([[9/10, 1/10],   # Figure 10.5
                                                  [1/10, 9/10]])
-            Emission                 = np.array([[1/2, 1/2],
+            Emission                 = np.array([[1/2, 1/2],      # Figure 10.5
                                                  [3/4,1/4]])
-            x                        = 'THTHHHTHTTH'
-            Alphabet                 = 'HT'
-            States                   = 'FB'
+            x                        = 'THTHHHTHTTH'   # Figure 10.26
+            Alphabet                 = 'HT'    # Figure 10.5
+            States                   = 'FB'     # Figure 10.5
             xindices                 = get_indices(x,Alphabet=Alphabet)
             Path                     = Viterbi(x,Alphabet, States,Transition,Emission)
-            path_indices             = get_indices(Path,Alphabet=States)
-            Pi_star,forward,backward = SoftDecode(x,Alphabet, States,Transition,Emission,forward_backward=True)
-            Pi_star_star             = np.full((len(forward-1),2,2),np.nan)
-            for i in range(0,len(forward)-1):
-                for l in range(2):
-                    for k in range(2):
-                        # weight = Transition[path_indices[i-1],path_indices[i]] * Emission[path_indices[i],xindices[i]]
-                        weight = Transition[l,k] * Emission[k,xindices[i]]
-                        # weight = get_weight(i,l,k, get_indices(x,Alphabet), get_indices(Path,States), Transition, Emission)
-                        Pi_star_star[i,l,k] = forward[i,l] * weight * backward[i+1,k]
+            # path_indices             = get_indices(Path,Alphabet=States)
+            decoded                  = SoftDecode(x,Alphabet, States,Transition,Emission)
+            Pi_star,forward,backward = decoded.probabilities,decoded.forward,decoded.backward
 
-                Pi_star_star[i,:,:] /= Pi_star_star[i,:,:].sum()
-
-            assert_array_almost_equal(np.array([[0.636, 0.364],
+            assert_array_almost_equal(np.array([[0.636, 0.364],     # Figure 10.26
                                                 [0.593, 0.407],
                                                 [0.600, 0.400],
                                                 [0.533, 0.467],
@@ -924,6 +915,22 @@ if __name__=='__main__':
                                                 ]),
                                       Pi_star,
                                       decimal = 3)
+
+            Pi_star_star = np.full((len(forward)-1,2,2),np.nan)
+            for i in range(0,len(forward)-1):
+                for l in range(len(States)):
+                    for k in range(len(States)):
+                        # weight = Transition[path_indices[i-1],path_indices[i]] * Emission[path_indices[i],xindices[i]]
+                        weight = Transition[l,k] * Emission[k,xindices[i+1]]
+                        # weight = get_weight(i,l,k, get_indices(x,Alphabet), get_indices(Path,States), Transition, Emission)
+                        Pi_star_star[i,l,k] = forward[i,l] * weight * backward[i+1,k]
+
+                Pi_star_star[i,:,:] /= Pi_star_star[i,:,:].sum()
+
+            assert_array_almost_equal([[0.562,0.074],[0.031,0.333]],Pi_star_star[0,:,:],decimal=3)
+            assert_array_almost_equal([[0.523,0.022],[0.104,0.351]],Pi_star_star[5,:,:],decimal=3)
+            assert_array_almost_equal([[0.588,0.098],[0.022,0.293]],Pi_star_star[-1,:,:],decimal=3)
+
 
         @skip("TBP")
         def test_ba10k_sample(self):
