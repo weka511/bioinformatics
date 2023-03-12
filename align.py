@@ -96,7 +96,7 @@ def longest_manhattan_path(n,m,down,right):
 
 
 
-def longest_common_subsequence(v,w):
+def get_longest_common_subsequence(v,w):
     '''
      BA5C 	Find a Longest Common Subsequence of Two Strings
 
@@ -118,7 +118,7 @@ def longest_common_subsequence(v,w):
             index             = np.argmax(choices)
             s[i,j]            = choices[index]
             predecessors[i,j] = index
-    print (s)
+
     i       = m
     j       = n
     matches = []
@@ -253,9 +253,37 @@ def create_alignment(string1, string2,s_predecessors,
             ''.join(result2[::-1]))
 
 
+class BLOSUM62:
+    def __init__(self):
+        self.index = ['A', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'K', 'L', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'V', 'W', 'Y']
+        self.score = np.array([[4, 0, -2, -1, -2, 0, -2, -1, -1, -1, -1, -2, -1, -1, -1, 1, 0, 0, -3, -2],
+            [0, 9, -3, -4, -2, -3, -3, -1, -3, -1, -1, -3, -3, -3, -3, -1, -1, -1, -2, -2],
+            [-2, -3, 6, 2, -3, -1, -1, -3, -1, -4, -3, 1, -1, 0, -2, 0, -1, -3, -4, -3],
+            [-1, -4, 2, 5, -3, -2, 0, -3, 1, -3, -2, 0, -1, 2, 0, 0, -1, -2, -3, -2],
+            [-2, -2, -3, -3, 6, -3, -1, 0, -3, 0, 0, -3, -4, -3, -3, -2, -2, -1, 1, 3],
+            [0, -3, -1, -2, -3, 6, -2, -4, -2, -4, -3, 0, -2, -2, -2, 0, -2, -3, -2, -3],
+            [-2, -3, -1, 0, -1, -2, 8, -3, -1, -3, -2, 1, -2, 0, 0, -1, -2, -3, -2, 2],
+            [-1, -1, -3, -3, 0, -4, -3, 4, -3, 2, 1, -3, -3, -3, -3, -2, -1, 3, -3, -1],
+            [-1, -3, -1, 1, -3, -2, -1, -3, 5, -2, -1, 0, -1, 1, 2, 0, -1, -2, -3, -2],
+            [-1, -1, -4, -3, 0, -4, -3, 2, -2, 4, 2, -3, -3, -2, -2, -2, -1, 1, -2, -1],
+            [-1, -1, -3, -2, 0, -3, -2, 1, -1, 2, 5, -2, -2, 0, -1, -1, -1, 1, -1, -1],
+            [-2, -3, 1, 0, -3, 0, 1, -3, 0, -3, -2, 6, -2, 0, 0, 1, 0, -3, -4, -2],
+            [-1, -3, -1, -1, -4, -2, -2, -3, -1, -3, -2, -2, 7, -1, -2, -1, -1, -2, -4, -3],
+            [-1, -3, 0, 2, -3, -2, 0, -3, 1, -2, 0, 0, -1, 5, 1, 0, -1, -2, -2, -1],
+            [-1, -3, -2, 0, -3, -2, 0, -3, 2, -2, -1, 0, -2, 1, 5, -1, -1, -3, -3, -2],
+            [1, -1, 0, 0, -2, 0, -1, -2, 0, -2, -1, 1, -1, 0, -1, 4, 1, -2, -3, -2],
+            [0, -1, -1, -1, -2, -2, -2, -1, -1, -1, -1, 0, -1, -1, -1, 1, 5, 0, -2, -2],
+            [0, -1, -3, -2, -1, -3, -3, 3, -2, 1, 1, -3, -2, -2, -3, -2, 0, 4, -3, -1],
+            [-3, -2, -4, -3, 1, -2, -2, -3, -3, -2, -1, -4, -4, -2, -3, -3, -2, -3, 11, 2],
+            [-2, -2, -3, -2, 3, -3, 2, -1, -2, -1, -1, -2, -3, -1, -2, -2, -2, -1, 2, 7]])
 
-def highest_scoring_global_alignment(string1,string2,
-                                     weights = substitution_matrices.load('BLOSUM62'),
+    def get_score(self,a,b):
+        i = self.index.index(a)
+        j = self.index.index(b)
+        return self.score[i,j]
+
+def get_highest_scoring_global_alignment(v,w,
+                                     weights = BLOSUM62(),
                                      sigma   = 5):
     '''
     BA5E 	Find a Highest-Scoring Alignment of Two Strings
@@ -268,13 +296,54 @@ def highest_scoring_global_alignment(string1,string2,
             and indel penalty σ = 5. (If multiple alignments achieving the maximum
             score exist, you may return any one.)
     '''
-    return create_alignment(string1,
-                            string2,
-                            calculate_scores_for_alignment(np.zeros((len(string1)+1,len(string2)+1)),
-                                                           string1,
-                                                           string2,
-                                                           weights,
-                                                           sigma))
+
+    m            = len(v)
+    n            = len(w)
+    s            = np.zeros((m+1,n+1))
+    for i in range(1,m+1):
+        s[i,0] = -i*sigma
+    for j in range(1,n+1):
+        s[0,j] = -j*sigma
+    predecessors = -1 * np.ones_like(s)
+    for i in range(1,m+1):
+        for j in range(1,n+1):
+            choices           = [s[i,j-1]   - sigma,
+                                 s[i-1,j]   - sigma,
+                                 s[i-1,j-1] + weights.get_score(v[i-1],w[j-1])]
+
+            index             = np.argmax(choices)
+            s[i,j]            = choices[index]
+            predecessors[i,j] = index
+    print (s)
+    i       = m
+    j       = n
+    u1      = []
+    v1      = []
+    while i>0 and j > 0:
+        if predecessors[i,j]==0:
+            j -= 1
+            v1.append('-')
+            w1.append(w[j])
+        elif predecessors[i,j]==1:
+            i -= 1
+            u1.append(v[i])
+            v1.append('-')
+        elif predecessors[i,j]==2:
+            i -= 1
+            j -= 1
+            u1.append(v[i])
+            v1.append(w[j])
+        else:
+            raise Exception(f'Predecessors[{i},{j}] referenced, but not defined')
+    return s[m,n],''.join(u1[-1::-1]),''.join(v1[-1::-1])
+
+    # return create_alignment(string1,
+                            # string2,
+                            # calculate_scores_for_alignment(np.zeros((len(string1)+1,len(string2)+1)),
+                                                           # string1,
+                                                           # string2,
+                                                           # weights,
+                                                           # sigma))
 
 
 
@@ -1248,7 +1317,7 @@ if __name__=='__main__':
             so is a longest common subsequence.
             '''
             self.assertEqual('AACTTG',
-                             longest_common_subsequence(
+                             get_longest_common_subsequence(
                                  'AACCTTGG',
                                  'ACACTGTGA'))
         @skip('Slow test')
@@ -1349,10 +1418,10 @@ if __name__=='__main__':
             self.assertEqual(62,n)
             self.assertEqual([11,17,18],path)
 
-        @skip('')
+
         def test_ba5e(self):
             ''' BA5E 	Find a Highest-Scoring Alignment of Two Strings'''
-            score,s1,s2 = highest_scoring_global_alignment('PLEASANTLY','MEANLY')
+            score,s1,s2 = get_highest_scoring_global_alignment('PLEASANTLY','MEANLY')
             self.assertEqual(8,score)
             self.assertEqual('PLEASANTLY',s1)
             self.assertEqual('-MEA--N-LY',s2)
@@ -1386,3 +1455,6 @@ if __name__=='__main__':
                              }))
 
     main()
+
+
+
