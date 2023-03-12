@@ -17,44 +17,79 @@
 
 '''Common code for alignment problems'''
 
+from abc      import ABC
 from sys      import float_info
 from unittest import TestCase, main, skip
 
 import numpy as np
 
-from Bio.Align        import substitution_matrices
 from reference_tables import createSimpleDNASubst
 from helpers          import zeroes,sign
 
-class BLOSUM62:
+class ScoringMatrix(ABC):
+    '''
+    Abstract class representing scoring matrices
+    '''
+    def __init__(self,score,
+                 index=['A', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'K', 'L', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'V', 'W', 'Y']):
+        self.index = index
+        self.score = score
+    def get_score(self,a,b):
+        return self.score[self.index.index(a), self.index.index(b)]
+
+class BLOSUM62(ScoringMatrix):
     '''
     BLOSUM 62 scoring matrix as presented in Rosalind
     '''
     def __init__(self):
-        self.index = ['A', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'K', 'L', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'V', 'W', 'Y']
-        self.score = np.array([[4, 0, -2, -1, -2, 0, -2, -1, -1, -1, -1, -2, -1, -1, -1, 1, 0, 0, -3, -2],
-            [0, 9, -3, -4, -2, -3, -3, -1, -3, -1, -1, -3, -3, -3, -3, -1, -1, -1, -2, -2],
-            [-2, -3, 6, 2, -3, -1, -1, -3, -1, -4, -3, 1, -1, 0, -2, 0, -1, -3, -4, -3],
-            [-1, -4, 2, 5, -3, -2, 0, -3, 1, -3, -2, 0, -1, 2, 0, 0, -1, -2, -3, -2],
-            [-2, -2, -3, -3, 6, -3, -1, 0, -3, 0, 0, -3, -4, -3, -3, -2, -2, -1, 1, 3],
-            [0, -3, -1, -2, -3, 6, -2, -4, -2, -4, -3, 0, -2, -2, -2, 0, -2, -3, -2, -3],
-            [-2, -3, -1, 0, -1, -2, 8, -3, -1, -3, -2, 1, -2, 0, 0, -1, -2, -3, -2, 2],
-            [-1, -1, -3, -3, 0, -4, -3, 4, -3, 2, 1, -3, -3, -3, -3, -2, -1, 3, -3, -1],
-            [-1, -3, -1, 1, -3, -2, -1, -3, 5, -2, -1, 0, -1, 1, 2, 0, -1, -2, -3, -2],
-            [-1, -1, -4, -3, 0, -4, -3, 2, -2, 4, 2, -3, -3, -2, -2, -2, -1, 1, -2, -1],
-            [-1, -1, -3, -2, 0, -3, -2, 1, -1, 2, 5, -2, -2, 0, -1, -1, -1, 1, -1, -1],
-            [-2, -3, 1, 0, -3, 0, 1, -3, 0, -3, -2, 6, -2, 0, 0, 1, 0, -3, -4, -2],
-            [-1, -3, -1, -1, -4, -2, -2, -3, -1, -3, -2, -2, 7, -1, -2, -1, -1, -2, -4, -3],
-            [-1, -3, 0, 2, -3, -2, 0, -3, 1, -2, 0, 0, -1, 5, 1, 0, -1, -2, -2, -1],
-            [-1, -3, -2, 0, -3, -2, 0, -3, 2, -2, -1, 0, -2, 1, 5, -1, -1, -3, -3, -2],
-            [1, -1, 0, 0, -2, 0, -1, -2, 0, -2, -1, 1, -1, 0, -1, 4, 1, -2, -3, -2],
-            [0, -1, -1, -1, -2, -2, -2, -1, -1, -1, -1, 0, -1, -1, -1, 1, 5, 0, -2, -2],
-            [0, -1, -3, -2, -1, -3, -3, 3, -2, 1, 1, -3, -2, -2, -3, -2, 0, 4, -3, -1],
-            [-3, -2, -4, -3, 1, -2, -2, -3, -3, -2, -1, -4, -4, -2, -3, -3, -2, -3, 11, 2],
-            [-2, -2, -3, -2, 3, -3, 2, -1, -2, -1, -1, -2, -3, -1, -2, -2, -2, -1, 2, 7]])
+        super().__init__(
+                    np.array([[4,  0, -2, -1, -2, 0, -2, -1, -1, -1, -1, -2, -1, -1, -1, 1, 0, 0, -3, -2],
+                              [ 0,  9, -3, -4, -2, -3, -3, -1, -3, -1, -1, -3, -3, -3, -3, -1, -1, -1, -2, -2],
+                              [-2, -3, 6, 2, -3, -1, -1, -3, -1, -4, -3, 1, -1, 0, -2, 0, -1, -3, -4, -3],
+                              [-1, -4, 2, 5, -3, -2, 0, -3, 1, -3, -2, 0, -1, 2, 0, 0, -1, -2, -3, -2],
+                              [-2, -2, -3, -3, 6, -3, -1, 0, -3, 0, 0, -3, -4, -3, -3, -2, -2, -1, 1, 3],
+                              [ 0, -3, -1, -2, -3, 6, -2, -4, -2, -4, -3, 0, -2, -2, -2, 0, -2, -3, -2, -3],
+                              [-2, -3, -1, 0, -1, -2, 8, -3, -1, -3, -2, 1, -2, 0, 0, -1, -2, -3, -2, 2],
+                              [-1, -1, -3, -3, 0, -4, -3, 4, -3, 2, 1, -3, -3, -3, -3, -2, -1, 3, -3, -1],
+                              [-1, -3, -1, 1, -3, -2, -1, -3, 5, -2, -1, 0, -1, 1, 2, 0, -1, -2, -3, -2],
+                              [-1, -1, -4, -3, 0, -4, -3, 2, -2, 4, 2, -3, -3, -2, -2, -2, -1, 1, -2, -1],
+                              [-1, -1, -3, -2, 0, -3, -2, 1, -1, 2, 5, -2, -2, 0, -1, -1, -1, 1, -1, -1],
+                              [-2, -3, 1, 0, -3, 0, 1, -3, 0, -3, -2, 6, -2, 0, 0, 1, 0, -3, -4, -2],
+                              [-1, -3, -1, -1, -4, -2, -2, -3, -1, -3, -2, -2, 7, -1, -2, -1, -1, -2, -4, -3],
+                              [-1, -3, 0, 2, -3, -2, 0, -3, 1, -2, 0, 0, -1, 5, 1, 0, -1, -2, -2, -1],
+                              [-1, -3, -2, 0, -3, -2, 0, -3, 2, -2, -1, 0, -2, 1, 5, -1, -1, -3, -3, -2],
+                              [ 1, -1, 0, 0, -2, 0, -1, -2, 0, -2, -1, 1, -1, 0, -1, 4, 1, -2, -3, -2],
+                              [ 0, -1, -1, -1, -2, -2, -2, -1, -1, -1, -1, 0, -1, -1, -1, 1, 5, 0, -2, -2],
+                              [ 0, -1, -3, -2, -1, -3, -3, 3, -2, 1, 1, -3, -2, -2, -3, -2, 0, 4, -3, -1],
+                              [-3, -2, -4, -3, 1, -2, -2, -3, -3, -2, -1, -4, -4, -2, -3, -3, -2, -3, 11, 2],
+                              [-2, -2, -3, -2, 3, -3, 2, -1, -2, -1, -1, -2, -3, -1, -2, -2, -2, -1, 2, 7]]))
 
-    def get_score(self,a,b):
-        return self.score[self.index.index(a), self.index.index(b)]
+class PAM250(ScoringMatrix):
+    '''
+    BLOSUM 62 scoring matrix as presented in Rosalind
+    '''
+    def __init__(self):
+        super().__init__(
+                    np.array([[2, -2, 0, 0, -3, 1, -1, -1, -1, -2, -1, 0, 1, 0, -2, 1, 1, 0, -6, -3],
+                              [-2, 12, -5, -5, -4, -3, -3, -2, -5, -6, -5, -4, -3, -5, -4, 0, -2, -2, -8, 0],
+                              [0, -5, 4, 3, -6, 1, 1, -2, 0, -4, -3, 2, -1, 2, -1, 0, 0, -2, -7, -4],
+                              [0, -5, 3, 4, -5, 0, 1, -2, 0, -3, -2, 1, -1, 2, -1, 0, 0, -2, -7, -4],
+                              [-3, -4, -6, -5, 9, -5, -2, 1, -5, 2, 0, -3, -5, -5, -4, -3, -3, -1, 0, 7],
+                              [1, -3, 1, 0, -5, 5, -2, -3, -2, -4, -3, 0, 0, -1, -3, 1, 0, -1, -7, -5],
+                              [-1, -3, 1, 1, -2, -2, 6, -2, 0, -2, -2, 2, 0, 3, 2, -1, -1, -2, -3, 0],
+                              [-1, -2, -2, -2, 1, -3, -2, 5, -2, 2, 2, -2, -2, -2, -2, -1, 0, 4, -5, -1],
+                              [-1, -5, 0, 0, -5, -2, 0, -2, 5, -3, 0, 1, -1, 1, 3, 0, 0, -2, -3, -4],
+                              [-2, -6, -4, -3, 2, -4, -2, 2, -3, 6, 4, -3, -3, -2, -3, -3, -2, 2, -2, -1],
+                              [-1, -5, -3, -2, 0, -3, -2, 2, 0, 4, 6, -2, -2, -1, 0, -2, -1, 2, -4, -2],
+                              [0, -4, 2, 1, -3, 0, 2, -2, 1, -3, -2, 2, 0, 1, 0, 1, 0, -2, -4, -2],
+                              [1, -3, -1, -1, -5, 0, 0, -2, -1, -3, -2, 0, 6, 0, 0, 1, 0, -1, -6, -5],
+                              [0, -5, 2, 2, -5, -1, 3, -2, 1, -2, -1, 1, 0, 4, 1, -1, -1, -2, -5, -4],
+                              [-2, -4, -1, -1, -4, -3, 2, -2, 3, -3, 0, 0, 0, 1, 6, 0, -1, -2, 2, -4],
+                              [1, 0, 0, 0, -3, 1, -1, -1, 0, -3, -2, 1, 1, -1, 0, 2, 1, -1, -2, -3],
+                              [1, -2, 0, 0, -3, 0, -1, 0, 0, -2, -1, 0, 0, -1, -1, 1, 3, 0, -5, -3],
+                              [0, -2, -2, -2, -1, -1, -2, 4, -2, 2, 2, -2, -1, -2, -2, -1, 0, 4, -6, -2],
+                              [-6, -8, -7, -7, 0, -7, -3, -5, -3, -2, -4, -4, -6, -5, 2, -2, -5, -6, 17, 0],
+                              [-3, 0, -4, -4, 7, -5, 0, -1, -4, -1, -2, -2, -5, -4, -4, -3, -3, -2, 0, 10]]))
 
 def reverse(chars):
     '''
@@ -251,7 +286,7 @@ def calculate_scores_for_alignment(s,string1, string2, weights,sigma,
                     s[i,j]             = s_new
                     predecessors[(i,j)] = (0,-1,i,j-1)
                 if i>0:
-                    s_new = s[i-1,j-1]+score((string1[i-1],string2[j-1]),weights)
+                    s_new = s[i-1,j-1]+ weights.get_score(string1[i-1],string2[j-1])
                     if s_new>s[i,j]:
                         s[i,j]             = s_new
                         predecessors[(i,j)] = (-1,-1,i-1,j-1)
@@ -343,7 +378,7 @@ def get_highest_scoring_global_alignment(v,w,
             return s[m,n],''.join(u1[-1::-1]),''.join(v1[-1::-1])
 
 def highest_scoring_local_alignment(string1,string2,
-                                    weights = substitution_matrices.load("PAM250"),
+                                    weights = PAM250(),
                                     sigma = 5):
     '''
     BA5F 	Find a Highest-Scoring Local Alignment of Two Strings
@@ -398,11 +433,6 @@ def highest_scoring_local_alignment(string1,string2,
 def get_indel_cost(sigma,delta,i,j,di,dj,moves):
     return di,dj,sigma
 
-def score(pair,replace_score=substitution_matrices.load("BLOSUM62")):
-    def reverse(pair):
-        a,b=pair
-        return (b,a)
-    return replace_score[pair] if pair in replace_score else replace_score[reverse(pair)]
 
 def build_matrix(s,t,matrix,replace_score=createSimpleDNASubst(),indel_cost=1,get_indel_cost=get_indel_cost):
     def init_indel_costs():
@@ -429,8 +459,7 @@ def build_matrix(s,t,matrix,replace_score=createSimpleDNASubst(),indel_cost=1,ge
                 di_left,dj_left,cost_left   = get_indel_cost(sigma,delta,i,j,0,-1,moves)
                 scores                      = [matrix[i+di_down][j+dj_down]   - cost_down,
                                                matrix[i+di_left][j+dj_left]   - cost_left,
-                                               matrix[i-1][j-1]               + score((s[i-1],t[j-1]),
-                                                                                      replace_score=replace_score)]
+                                               matrix[i-1][j-1] + replace_score.get_score(s[i-1],t[j-1])]
                 froms                       = [(i+di_down,j+dj_down,di_down,dj_down),
                                                (i+di_left,j+dj_left,di_left,dj_left),
                                                (i-1,j-1,-1,-1)]
@@ -473,7 +502,10 @@ def align(s,t,
           showScores     = False,
           showPath       = False):
     distances = np.zeros((len(s)+1,len(t)+1))
-    distances,moves = build_matrix(s,t,distances,replace_score=replace_score,indel_cost=indel_cost,get_indel_cost=get_indel_cost)
+    distances,moves = build_matrix(s,t,distances,
+                                   replace_score  = replace_score,
+                                   indel_cost     = indel_cost,
+                                   get_indel_cost = get_indel_cost)
     if showScores:
         for row in distances:
             print (row)
@@ -635,7 +667,7 @@ def unwind_moves(moves,score,i,j):
         ts.append(t0)
     return score,ss[::-1],ts[::-1]
 
-def san_kai(s,t, replace_score=substitution_matrices.load("BLOSUM62"),sigma=11,epsilon=1,backtrack=unwind_moves):
+def san_kai(s,t, replace_score=BLOSUM62(),sigma=11,epsilon=1,backtrack=unwind_moves):
 
     def match(pair,replace_score=replace_score):
         def reverse(pair):
@@ -694,7 +726,7 @@ def san_kai(s,t, replace_score=substitution_matrices.load("BLOSUM62"),sigma=11,e
 #          where (i, j) connects to (k, l).
 
 def FindMiddleEdge(s,t,
-                   replace_score = substitution_matrices.load("BLOSUM62"),
+                   replace_score = BLOSUM62(),
                    indel_cost    = 5):
 
     # update
@@ -1236,7 +1268,7 @@ if __name__=='__main__':
             A simple test of the align function, based on https://rosalind.info/problems/glob/
             '''
             score,s1,s2 = align('PLEASANTLY','MEANLY',
-                                replace_score = substitution_matrices.load("BLOSUM62"),
+                                replace_score = BLOSUM62(),
                                 indel_cost    = 5)
             self.assertEqual(8,score)
             self.assertEqual('LEASANTLY',''.join(s1))
