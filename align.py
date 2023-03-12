@@ -300,11 +300,14 @@ def get_highest_scoring_global_alignment(v,w,
     m            = len(v)
     n            = len(w)
     s            = np.zeros((m+1,n+1))
+    predecessors = -1 * np.ones_like(s)
     for i in range(1,m+1):
         s[i,0] = -i*sigma
+        predecessors[i,0] = 1
     for j in range(1,n+1):
         s[0,j] = -j*sigma
-    predecessors = -1 * np.ones_like(s)
+        predecessors[0,j] = 0
+
     for i in range(1,m+1):
         for j in range(1,n+1):
             choices           = [s[i,j-1]   - sigma,
@@ -314,12 +317,12 @@ def get_highest_scoring_global_alignment(v,w,
             index             = np.argmax(choices)
             s[i,j]            = choices[index]
             predecessors[i,j] = index
-    print (s)
+    # print (s)
     i       = m
     j       = n
     u1      = []
     v1      = []
-    while i>0 and j > 0:
+    while True:
         if predecessors[i,j]==0:
             j -= 1
             v1.append('-')
@@ -334,18 +337,7 @@ def get_highest_scoring_global_alignment(v,w,
             u1.append(v[i])
             v1.append(w[j])
         else:
-            raise Exception(f'Predecessors[{i},{j}] referenced, but not defined')
-    return s[m,n],''.join(u1[-1::-1]),''.join(v1[-1::-1])
-
-    # return create_alignment(string1,
-                            # string2,
-                            # calculate_scores_for_alignment(np.zeros((len(string1)+1,len(string2)+1)),
-                                                           # string1,
-                                                           # string2,
-                                                           # weights,
-                                                           # sigma))
-
-
+            return s[m,n],''.join(u1[-1::-1]),''.join(v1[-1::-1])
 
 def highest_scoring_local_alignment(string1,string2,
                                     weights = substitution_matrices.load("PAM250"),
