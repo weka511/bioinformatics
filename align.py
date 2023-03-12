@@ -261,7 +261,7 @@ def longest_path(source,sink,graph):
             path.append(node)
         return path
 
-    s,predecessors=calculate_distances(topological_order(create_adjacency_list()))
+    s,predecessors=calculate_distances(create_topological_order(create_adjacency_list()))
 
     return (s[sink],create_path(predecessors)[::-1])
 
@@ -623,38 +623,38 @@ def overlap_assignment(v,w,match_bonus=+1,mismatch_cost=2,indel_cost=2):
     score,u1,v1=dynamic_programming([vv for vv in v],[ww for ww in w])
     return score,''.join(u1),''.join(v1)
 
+def create_topological_order(graph):
+    '''
+    BA5N   Find a Topological Ordering of a DAG
 
+    Input: The adjacency list of a graph (with nodes represented by integers).
 
-# BA5N 	Find a Topological Ordering of a DAG
-#
-# Input: The adjacency list of a graph (with nodes represented by integers).
-#
-# Return: A topological ordering of this graph.
+    Return: A topological ordering of this graph.
+    '''
+    def get_number_incoming(node):
+        '''
+        Find number of incoming edges to specified node
+        '''
+        return sum([node in out for out in mygraph.values()])
 
-def topological_order(graph):
-    def number_incoming(node):
-        n=0
-        for out in graph.values():
-            if node in out:
-                n+=1
-        return n
+    mygraph    = graph.copy() # To avoid destroying original graph - issue #105
+    product    = []
+    candidates = [node for node in mygraph.keys() if get_number_incoming(node)==0]
 
-    ordering=[]
-    candidates=[node for node in graph.keys() if number_incoming(node)==0]
-    while len(candidates)>0:
-        a=candidates.pop()
-        ordering.append(a)
-        if a in graph:
-            bs=[b for b in graph[a]]
-            del graph[a]
+    while len(candidates) > 0:
+        a = candidates.pop()
+        product.append(a)
+        if a in mygraph:
+            bs = [b for b in mygraph[a]]
+            del mygraph[a]
             for b in bs:
-                if number_incoming(b)==0:
+                if get_number_incoming(b)==0:
                     candidates.append(b)
 
-    if len(graph)>0:
-        raise RosalindException('Input graph is not a DAG')
+    if len(mygraph)>0:
+        raise Exception('Input graph is not a DAG')
 
-    return ordering
+    return product
 
 
 def unwind_moves(moves,score,i,j):
@@ -1241,7 +1241,7 @@ def ctea(s,t,indel_cost=1,replace_cost=lambda a,b: 1, mod=134217727):
     # to count paths through DAG
     def count_paths(Adj,Inverse,start=None):
         C  = {ground:1}
-        for node in topological_order(dict(Inverse)):
+        for node in create_topological_order(dict(Inverse)):
             if node == ground: continue
             C[node] = sum([C[x] for x in Adj[node]])
 
@@ -1472,13 +1472,40 @@ if __name__=='__main__':
             self.assertEqual('Y-P-MSRKTAKSQFIEWCDW-F--CFNHWTNWAPLSIVRTSVAFAV-W-GHCWYPCG-GVCKTNRCKDD-FCGRWRKALFAEGPRDWKCCKNDLQNWNPQYSQGTR--NTK-RMVATTNQTMIEWKQSHIFETW-LF-CHVIIEYNWSAF-W-MWMNRNEAFNSIIKSGYPKLLL-T-QY-P-L-SQG--STPIVKPL-IRRD-QGKFW-A-WAQMWWFREPT-NIPTA-D-Y-CHSW--WQ--SR-ADLQ-NDRDMGP-EADASFYVEFWYWVRCAARTYGQQLGIIWNNRLKTRNPCPYSADGIQNKENYVFWWKNMCTKSHIAFYYCLQNVAHYTHDVTAEFNPVKCIDWLQGHMVLSSWFKYNTECKKLFVHEKCECYRM----FCGV---VEDIFGVRFH--TGWKHLSTAKPVPHVCVYNPSVQERRNINDFYIF-YEIAPAVKNLVLSAQPLHDYTKKCAFNYTPITITRIISTRNQIIW-AHVVIACQFYSPHQMLLIELAMDKYCADMNVRRSTEGHQPMHACRSTFGPGMAAKEPLVTFTLVAFWQWPNHEFQYVYMYTED-KIIQIG-PHLSN-GCEMVEYCVDC-YAK-RPCYRAYSAEAQYWRMITEAEDYSYKTRNAIAATATVRGQ-YCHPFRWLGIVWM-AHHDC-FFANECGTICI-PQMAEMRPPETTPYEI--DIIFMMF-WKE--HMSTTIL-DVVGMYRP-ATFSHWHDAHH-QCEPYLTPL-MCQSKLVFDAAFT--QVG-VKGVW-YHTEKLELMAGFNHM-K-FKKEEAQ---QSCFYWFQDCPDYDPPDAVRKTDEKHIRAHGEIWWLMRYYCMYHILHI-ASRHEWMHLRWDQACTNPGY--ELFE-F',s2)
 
 
-        def test_ba5n(self):  # BA5N 	Find a Topological Ordering of a DAG
+        def test_ba5n_sample(self):  # BA5N 	Find a Topological Ordering of a DAG
             self.assertEqual([5, 4, 1, 2, 3],
-                             topological_order({
+                             create_topological_order({
                                  1 : [2],
                                  2 : [3],
                                  4 : [2],
                                  5 : [3]
+                             }))
+
+        def test_ba5n_rosalind(self):
+            self.assertEqual([5, 19, 11, 4, 22, 2, 6, 12, 0, 10, 1, 9, 7, 8, 20, 18, 14, 23, 21, 24, 3, 13, 25, 16, 15, 17],
+                             create_topological_order({
+                                 0 :[ 1,10,13,16,17,21],
+                                 1 :[ 13,15,3,7,8,9],
+                                 10 :[ 16,20,25],
+                                 11 :[ 13,15,23],
+                                 12 :[ 14,20,25],
+                                 13 :[ 16,17,25],
+                                 14 :[ 21,23],
+                                 15 :[ 17],
+                                 16 :[ 17],
+                                 18 :[ 21],
+                                 19 :[ 20,21],
+                                 2 :[ 12,15,16,20,3,6,7,9],
+                                 20 :[ 21],
+                                 21 :[ 24],
+                                 22 :[ 23],
+                                 3 :[ 13],
+                                 4 :[ 10,22,24,25],
+                                 5 :[ 11,19,21,23,7],
+                                 6 :[ 14,7],
+                                 7 :[ 14,18,20,23,25,8],
+                                 8 :[ 13],
+                                 9 :[ 17,20,21]
                              }))
 
     main()
