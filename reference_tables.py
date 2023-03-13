@@ -69,19 +69,20 @@ integer_masses={
     'W': 186
 }
 
-# AminoAcid
-#
-# This class represents the aspects of amino acids that are relevant to
-# Mass Spectroscopy
-
-#   Attributes:
-#     name         Name of amino acid, e.g. Alanine
-#     short        Single letter code, e.g. A for Alanine
-#     abbrev       Three digit code, e.g. Ala
-#     mon_mass     Monoisotpic mass (Daltons)
-#     average_mass Average mass (Daltons)
-
 class AminoAcid:
+    '''
+    AminoAcid
+
+    This class represents the aspects of amino acids that are relevant to
+    Mass Spectroscopy
+
+    Attributes:
+        name         Name of amino acid, e.g. Alanine
+        short        Single letter code, e.g. A for Alanine
+        abbrev       Three digit code, e.g. Ala
+        mon_mass     Monoisotpic mass (Daltons)
+        average_mass Average mass (Daltons)
+    '''
 
     def __init__(self,name,short,abbrev,mon_mass,average_mass):
         self.name         = name
@@ -175,6 +176,7 @@ class ScoringMatrix(ABC):
                  index=['A', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'K', 'L', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'V', 'W', 'Y']):
         self.index = index
         self.score = score
+
     def get_score(self,a,b):
         '''
         Determins score when a is matched with b
