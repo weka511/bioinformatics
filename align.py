@@ -24,7 +24,7 @@ from unittest import TestCase, main, skip
 import numpy as np
 
 from reference_tables import createSimpleDNASubst
-from helpers          import zeroes,sign
+from helpers          import sign
 
 class ScoringMatrix(ABC):
     '''
@@ -203,67 +203,86 @@ def get_longest_common_subsequence(v,w):
 
 
 
-# BA5D 	Find the Longest Path in a DAG
-#
-# Input: An integer representing the source node of a graph, followed by an integer
-#        representing the sink node of the graph, followed by an edge-weighted graph.
-#        The graph is represented by a modified adjacency list in which the notation "0->1:7"
-#        indicates that an edge connects node 0 to node 1 with weight 7.
-#
-# Return: The length of a longest path in the graph, followed by a longest path.
-#         (If multiple longest paths exist, you may return any one.)
-#
-# http://rosalind.info/problems/ba5d/
+def get_longest_path(source,sink,graph):
+    '''
+    BA5D 	Find the Longest Path in a DAG
 
-def longest_path(source,sink,graph):
-    def initialize_s():
-        s={}
-        for a,b,_ in graph:
-            s[a]=-float_info.max
-            s[b]=-float_info.max
-        s[source]=0
-        return s
+    Input:
+        source An integer representing the source node of a graph
+        sink   an integer representing the sink node of the graph
+        graph  an edge-weighted graph of triples (a,b,w) indicating that a connects to be with weight w
+
+    Return:
+        The length of a longest path in the graph, followed by a longest path.
+
+
+    http://rosalind.info/problems/ba5d/
+    '''
 
     def create_adjacency_list():
-        adjacency_list={}
-        for a,b,w in graph:
-            if not a in adjacency_list:
-                adjacency_list[a]=[]
-            adjacency_list[a].append(b)
-        return adjacency_list
+        '''
+        Convert graph (list of tuples) to an adjacency list, ignoring weights
+        '''
+        product  = {}
+        for a,b,_ in graph:
+            if not a in product:
+                product[a] = []
+            product[a].append(b)
 
-    def create_weights():
-        weights={}
-        for a,b,w in graph:
-            weights[(a,b)]=w
-        return weights
+        return product
 
-    def calculate_distances(ordering):
-        s=initialize_s()
-        weights=create_weights()
-        predecessors={}
-        for b in ordering:
-            for a in ordering:
-                if a==b:
-                    break
+    def create_reverse_adjacency_list(relevant):
+        '''
+        Convert graph (list of tuples) to an adjacency list, ignoring weights
 
-                new_s=max(s[b],s[a]+(weights[(a,b)] if (a,b) in weights else 0))
-                if new_s>s[b]:
-                    s[b]=new_s
-                    predecessors[b]=a
-        return (s,predecessors)
+        Parameters:
+            relevant   Used to restrict the set of nodes that are to be extracted
+        '''
+        product = {}
+        for a,b,_ in graph:
+            if a in relevant and b in relevant:
+                if b not in product:
+                    product[b] = []
+                product[b].append(a)
+        return product
 
-    def create_path(predecessors):
-        path=[sink]
-        node=sink
-        while node in predecessors:
-            node=predecessors[node]
-            path.append(node)
-        return path
+    def crop(ordered):
+        '''
+        We want only the data between source and sink
+        '''
+        pos1 = 0
+        while ordered[pos1] != source: pos1+=1
+        pos2 = len(ordered)-1
+        while ordered[pos2] != sink: pos2 -= 1
+        return ordered[pos1:pos2+1]
 
-    s,predecessors=calculate_distances(create_topological_order(create_adjacency_list()))
+    def backtrack(s,predecessors):
+        '''
+        Used when to construct solution by backtracking through array of distances from source to each node
+        '''
+        path = [sink]
+        while True:
+            if path[-1] in predecessors:
+                path.append(predecessors[path[-1]])
+            else:
+                return s[-1],path[-1::-1]
 
-    return (s[sink],create_path(predecessors)[::-1])
+    nodes        = crop(create_topological_order(create_adjacency_list()))
+    index          = {nodes[i]:i for i in range(len(nodes))}
+    weights        = {(a,b):w for a,b,w in graph if a in nodes and b in nodes}
+    backward       = create_reverse_adjacency_list(nodes)
+    s              =  np.full((len(nodes)),-float_info.max)
+    s[0]           = 0
+    assert index[source]==0
+    predecessors   = {}
+    for i,b in enumerate(nodes):
+        if b in backward:
+            candidates            = [(a,s[index[a]] + weights[(a,b)]) for a in backward[b]]
+            predecessors[b], s[i] = candidates[np.argmax([score for _,score in candidates])]
+
+    return backtrack(s,predecessors)
+
+
 
 # BA5F 	Find a Highest-Scoring Local Alignment of Two Strings
 #
@@ -1358,20 +1377,119 @@ if __name__=='__main__':
 
         def test_ba5d_sample(self):
             '''BA5D 	Find the Longest Path in a DAG'''
-            n,path = longest_path(0,4,
-                                [
-                                    (0,1,7),
-                                    (0,2,4),
-                                    (2,3,2),
-                                    (1,4,1),
-                                    (3,4,3)
+            n,path = get_longest_path(0,4,
+                                [(0,1,7),
+                                 (0,2,4),
+                                 (2,3,2),
+                                 (1,4,1),
+                                 (3,4,3)
                                 ])
             self.assertEqual(9,n)
             self.assertEqual([0,2,3,4],path)
 
-        @skip('')
+        def test_ba5d_extra(self):
+            '''BA5D 	Find the Longest Path in a DAG'''
+            n,path = get_longest_path(0, 44,
+                                      [[6, 26, 32],
+                                       [10, 39, 30],
+                                       [26, 28, 24],
+                                       [3, 16, 19],
+                                       [10, 35, 35],
+                                       [10, 37, 19],
+                                       [10, 31, 36],
+                                       [10, 33, 32],
+                                       [10, 32, 4],
+                                       [15, 23, 0],
+                                       [15, 21, 0],
+                                       [22, 24, 0],
+                                       [22, 27, 31],
+                                       [1, 3, 36],
+                                       [5, 43, 37],
+                                       [8, 30, 23],
+                                       [19, 34, 11],
+                                       [12, 13, 38],
+                                       [39, 40, 35],
+                                       [12, 15, 29],
+                                       [27, 29, 13],
+                                       [1, 42, 31],
+                                       [24, 25, 2],
+                                       [1, 10, 4],
+                                       [4, 30, 11],
+                                       [13, 35, 17],
+                                       [24, 28, 2],
+                                       [23, 25, 37],
+                                       [31, 43, 7],
+                                       [31, 40, 17],
+                                       [3, 28, 2],
+                                       [5, 12, 39],
+                                       [5, 11, 37],
+                                       [3, 4, 4],
+                                       [2, 31, 23],
+                                       [14, 29, 13],
+                                       [19, 27, 21],
+                                       [27, 36, 20],
+                                       [31, 33, 23],
+                                       [30, 40, 27],
+                                       [28, 42, 29],
+                                       [21, 35, 33],
+                                       [21, 37, 5],
+                                       [20, 37, 24],
+                                       [2, 9, 38],
+                                       [0, 14, 19],
+                                       [4, 20, 0],
+                                       [1, 41, 8],
+                                       [8, 14, 28],
+                                       [19, 20, 13],
+                                       [4, 43, 3],
+                                       [14, 31, 25],
+                                       [14, 30, 22],
+                                       [13, 41, 19],
+                                       [13, 40, 32],
+                                       [14, 35, 10],
+                                       [10, 11, 5],
+                                       [14, 38, 23],
+                                       [2, 23, 9],
+                                       [2, 25, 1],
+                                       [24, 40, 37],
+                                       [12, 38, 38],
+                                       [20, 23, 34],
+                                       [20, 21, 29],
+                                       [12, 30, 10],
+                                       [12, 37, 12],
+                                       [29, 44, 30],
+                                       [33, 35, 15],
+                                       [33, 37, 22],
+                                       [0, 36, 8],
+                                       [37, 38, 17],
+                                       [10, 29, 13],
+                                       [17, 44, 11],
+                                       [6, 14, 5],
+                                       [10, 22, 8],
+                                       [22, 37, 19],
+                                       [22, 34, 3],
+                                       [32, 43, 4],
+                                       [15, 36, 28],
+                                       [11, 35, 20],
+                                       [2, 16, 27],
+                                       [7, 10, 22],
+                                       [11, 31, 19],
+                                       [16, 41, 24],
+                                       [15, 30, 25],
+                                       [32, 37, 29],
+                                       [0, 27, 9],
+                                       [0, 28, 7],
+                                       [32, 38, 0],
+                                       [12, 43, 5],
+                                       [22, 35, 37],
+                                       [24, 30, 7],
+                                       [24, 32, 19],
+                                       [24, 38, 38] ])
+            self.assertEqual(62,n)
+            self.assertEqual([0, 14, 29, 44],path)
+
+
         def test_ba5d_rosalind(self):
-            n,path = longest_path(11,18,
+            n,path = get_longest_path(11,18,
                                 [(21,33,29),
                                  (5,19,8),
                                  (11,17,25),
