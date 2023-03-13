@@ -18,7 +18,7 @@
 #    BA5H Find a Highest-Scoring Fitting Alignment of Two Strings
 
 from reference_tables import createSimpleDNASubst
-from align import align,highest_scoring_global_alignment
+from align import align,get_highest_scoring_global_alignment
 import numpy as np
 from helpers import create_strings
 
