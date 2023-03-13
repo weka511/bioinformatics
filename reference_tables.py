@@ -1,5 +1,6 @@
 #!/usr/bin/env python
-# Copyright (C) 2015-2020 Greenweaves Software Limited
+
+# Copyright (C) 2015-2023 Greenweaves Software Limited
 
 # This is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -14,10 +15,16 @@
 # You should have received a copy of the GNU General Public License
 # along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>
 
-# This file contains a collection of functions to solve the problems
-# at rosalind.info.
+'''
+This file contains a reference data, such as scoring masses and codon tables,
+to solve the problems at rosalind.info.
+'''
 
-import re
+from abc      import ABC
+from re       import compile
+from unittest import TestCase, main
+import numpy  as np
+
 bases='ACGT'
 
 codon_table={
@@ -102,7 +109,7 @@ class AminoAcid:
 # Lookup table for amino acids, from
 # https://en.wikipedia.org/wiki/Proteinogenic_amino_acid#Mass_spectrometry
 
-amino_acids={
+amino_acids = {
     'A': AminoAcid('Alanine',        'A', 'Ala',  71.03711,  71.0788),
     'C': AminoAcid('Cysteine',       'C', 'Cys', 103.00919, 103.1388),
     'D': AminoAcid('Aspartic acid',  'D', 'Asp', 115.02694, 115.0886),
@@ -134,35 +141,104 @@ skew_step={
     'T': 0
 }
 
-
-
-
-# createSimpleDNASubst
-#
-# Populate a simple scoring table
-
-# Inputs:   match    Reward for matching
-#           subst    Penalty for a mismatch
-#           bases    Replace with 'AUGC' for RNA
 def createSimpleDNASubst(match=+1,subst=1,bases='ATGC'):
+    '''
+    createSimpleDNASubst
+
+    Populate a simple scoring table
+
+    Inputs:
+        match    Reward for matching
+        subst    Penalty for a mismatch
+        bases    Replace with 'AUGC' for RNA
+    '''
     weights={}
     for i in range(len(bases)):
         for j in range(len(bases)):
             weights[(bases[i],bases[j])] = +match if i==j else -subst
     return weights
 
-# get_re_protein
-# Produce a regular expression to recognize a straing of amino acids
 
 def get_re_protein(min_length=1):
-    return re.compile('[A,C-IK-WY]{'+str(min_length)+',}')
+    '''
+    get_re_protein
+    Produce a regular expression to recognize a straing of amino acids
+    '''
+    return compile('[A,C-IK-WY]{'+str(min_length)+',}')
+
+
+class ScoringMatrix(ABC):
+    '''
+    Abstract class representing scoring matrices
+    '''
+    def __init__(self,score,
+                 index=['A', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'K', 'L', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'V', 'W', 'Y']):
+        self.index = index
+        self.score = score
+    def get_score(self,a,b):
+        '''
+        Determins score when a is matched with b
+        '''
+        return self.score[self.index.index(a), self.index.index(b)]
+
+class BLOSUM62(ScoringMatrix):
+    '''
+    BLOSUM 62 scoring matrix as presented in Rosalind
+    '''
+    def __init__(self):
+        super().__init__(
+                    np.array([[4,  0, -2, -1, -2, 0, -2, -1, -1, -1, -1, -2, -1, -1, -1, 1, 0, 0, -3, -2],
+                              [ 0,  9, -3, -4, -2, -3, -3, -1, -3, -1, -1, -3, -3, -3, -3, -1, -1, -1, -2, -2],
+                              [-2, -3, 6, 2, -3, -1, -1, -3, -1, -4, -3, 1, -1, 0, -2, 0, -1, -3, -4, -3],
+                              [-1, -4, 2, 5, -3, -2, 0, -3, 1, -3, -2, 0, -1, 2, 0, 0, -1, -2, -3, -2],
+                              [-2, -2, -3, -3, 6, -3, -1, 0, -3, 0, 0, -3, -4, -3, -3, -2, -2, -1, 1, 3],
+                              [ 0, -3, -1, -2, -3, 6, -2, -4, -2, -4, -3, 0, -2, -2, -2, 0, -2, -3, -2, -3],
+                              [-2, -3, -1, 0, -1, -2, 8, -3, -1, -3, -2, 1, -2, 0, 0, -1, -2, -3, -2, 2],
+                              [-1, -1, -3, -3, 0, -4, -3, 4, -3, 2, 1, -3, -3, -3, -3, -2, -1, 3, -3, -1],
+                              [-1, -3, -1, 1, -3, -2, -1, -3, 5, -2, -1, 0, -1, 1, 2, 0, -1, -2, -3, -2],
+                              [-1, -1, -4, -3, 0, -4, -3, 2, -2, 4, 2, -3, -3, -2, -2, -2, -1, 1, -2, -1],
+                              [-1, -1, -3, -2, 0, -3, -2, 1, -1, 2, 5, -2, -2, 0, -1, -1, -1, 1, -1, -1],
+                              [-2, -3, 1, 0, -3, 0, 1, -3, 0, -3, -2, 6, -2, 0, 0, 1, 0, -3, -4, -2],
+                              [-1, -3, -1, -1, -4, -2, -2, -3, -1, -3, -2, -2, 7, -1, -2, -1, -1, -2, -4, -3],
+                              [-1, -3, 0, 2, -3, -2, 0, -3, 1, -2, 0, 0, -1, 5, 1, 0, -1, -2, -2, -1],
+                              [-1, -3, -2, 0, -3, -2, 0, -3, 2, -2, -1, 0, -2, 1, 5, -1, -1, -3, -3, -2],
+                              [ 1, -1, 0, 0, -2, 0, -1, -2, 0, -2, -1, 1, -1, 0, -1, 4, 1, -2, -3, -2],
+                              [ 0, -1, -1, -1, -2, -2, -2, -1, -1, -1, -1, 0, -1, -1, -1, 1, 5, 0, -2, -2],
+                              [ 0, -1, -3, -2, -1, -3, -3, 3, -2, 1, 1, -3, -2, -2, -3, -2, 0, 4, -3, -1],
+                              [-3, -2, -4, -3, 1, -2, -2, -3, -3, -2, -1, -4, -4, -2, -3, -3, -2, -3, 11, 2],
+                              [-2, -2, -3, -2, 3, -3, 2, -1, -2, -1, -1, -2, -3, -1, -2, -2, -2, -1, 2, 7]]))
+
+class PAM250(ScoringMatrix):
+    '''
+    BLOSUM 62 scoring matrix as presented in Rosalind
+    '''
+    def __init__(self):
+        super().__init__(
+                    np.array([[2, -2, 0, 0, -3, 1, -1, -1, -1, -2, -1, 0, 1, 0, -2, 1, 1, 0, -6, -3],
+                              [-2, 12, -5, -5, -4, -3, -3, -2, -5, -6, -5, -4, -3, -5, -4, 0, -2, -2, -8, 0],
+                              [0, -5, 4, 3, -6, 1, 1, -2, 0, -4, -3, 2, -1, 2, -1, 0, 0, -2, -7, -4],
+                              [0, -5, 3, 4, -5, 0, 1, -2, 0, -3, -2, 1, -1, 2, -1, 0, 0, -2, -7, -4],
+                              [-3, -4, -6, -5, 9, -5, -2, 1, -5, 2, 0, -3, -5, -5, -4, -3, -3, -1, 0, 7],
+                              [1, -3, 1, 0, -5, 5, -2, -3, -2, -4, -3, 0, 0, -1, -3, 1, 0, -1, -7, -5],
+                              [-1, -3, 1, 1, -2, -2, 6, -2, 0, -2, -2, 2, 0, 3, 2, -1, -1, -2, -3, 0],
+                              [-1, -2, -2, -2, 1, -3, -2, 5, -2, 2, 2, -2, -2, -2, -2, -1, 0, 4, -5, -1],
+                              [-1, -5, 0, 0, -5, -2, 0, -2, 5, -3, 0, 1, -1, 1, 3, 0, 0, -2, -3, -4],
+                              [-2, -6, -4, -3, 2, -4, -2, 2, -3, 6, 4, -3, -3, -2, -3, -3, -2, 2, -2, -1],
+                              [-1, -5, -3, -2, 0, -3, -2, 2, 0, 4, 6, -2, -2, -1, 0, -2, -1, 2, -4, -2],
+                              [0, -4, 2, 1, -3, 0, 2, -2, 1, -3, -2, 2, 0, 1, 0, 1, 0, -2, -4, -2],
+                              [1, -3, -1, -1, -5, 0, 0, -2, -1, -3, -2, 0, 6, 0, 0, 1, 0, -1, -6, -5],
+                              [0, -5, 2, 2, -5, -1, 3, -2, 1, -2, -1, 1, 0, 4, 1, -1, -1, -2, -5, -4],
+                              [-2, -4, -1, -1, -4, -3, 2, -2, 3, -3, 0, 0, 0, 1, 6, 0, -1, -2, 2, -4],
+                              [1, 0, 0, 0, -3, 1, -1, -1, 0, -3, -2, 1, 1, -1, 0, 2, 1, -1, -2, -3],
+                              [1, -2, 0, 0, -3, 0, -1, 0, 0, -2, -1, 0, 0, -1, -1, 1, 3, 0, -5, -3],
+                              [0, -2, -2, -2, -1, -1, -2, 4, -2, 2, 2, -2, -1, -2, -2, -1, 0, 4, -6, -2],
+                              [-6, -8, -7, -7, 0, -7, -3, -5, -3, -2, -4, -4, -6, -5, 2, -2, -5, -6, 17, 0],
+                              [-3, 0, -4, -4, 7, -5, 0, -1, -4, -1, -2, -2, -5, -4, -4, -3, -3, -2, 0, 10]]))
 
 if __name__=='__main__':
-    import unittest
-
-    class Test_Amino_acids(unittest.TestCase):
+    class Test_Amino_acids(TestCase):
         def test_match_integer(self):
             for key in integer_masses:
                 self.assertEqual(integer_masses[key],amino_acids[key].asInteger())
 
-    unittest.main()
+    main()
