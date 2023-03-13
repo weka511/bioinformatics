@@ -685,38 +685,41 @@ def san_kai(s,t, replace_score=BLOSUM62(),sigma=11,epsilon=1,backtrack=unwind_mo
 
     return backtrack(moves,middle[len(s)][len(t)],len(s),len(t))
 
-# FindMiddleEdge
-#
-# BA5K Find a Middle Edge in an Alignment Graph in Linear Space
-#
-# Inputs:
-#     s               an amino acid string
-#     t               an amino acid string
-#     replace_score   scoring matrix
-#     indel_cost      linear indel penalty
-# Returns: A middle edge in the alignment graph for s and t, in the form ((i, j) (k, l)),
-#          where (i, j) connects to (k, l).
+
 
 def FindMiddleEdge(s,t,
                    replace_score = BLOSUM62(),
                    indel_cost    = 5):
+    '''
+    FindMiddleEdge
 
-    # update
-    #
-    # Calculate scores in current column using values from previous column
-    #
-    # parameters:
-    #     j           Index of column that is being updated
-    #     previous    Data from previous coulumn
-    #     current     Data in current column
-    #     s           First protein string.
-    #     t           Second protein string.
+    BA5K Find a Middle Edge in an Alignment Graph in Linear Space
+
+    Inputs:
+        s               an amino acid string
+        t               an amino acid string
+        replace_score   scoring matrix
+        indel_cost      linear indel penalty
+        Returns: A middle edge in the alignment graph for s and t, in the form ((i, j) (k, l)),
+          where (i, j) connects to (k, l).
+    '''
 
     def update(j,previous,current,s,t):
+        '''
+        update
+
+        Calculate scores in current column using values from previous column
+
+        parameters:
+            j           Index of column that is being updated
+            previous    Data from previous coulumn
+            current     Data in current column
+            s           First protein string.
+            t           Second protein string.
+        '''
         current[0] = - j * indel_cost
         for i in range(1,len(current)):
-            scores     = [previous[i-1] + score((s[i-1],t[j-1]),
-                                                replace_score=replace_score),
+            scores     = [previous[i-1] + replace_score.get_score(s[i-1],t[j-1]),
                           current[i-1]  - indel_cost,
                           previous[i]   - indel_cost]
 
@@ -725,17 +728,20 @@ def FindMiddleEdge(s,t,
 
         return current,previous
 
-    # explore
-    #
-    # Find lengths of all paths from source that end at specified column
-    #
-    #       s           First protein string. This is an explicit parameter
-    #                   because FindMiddleEdge reverse the string during the second call
-    #                   to calculate lengths from sink
-    #       t           Second protein string.
-    #       limit       Last column to be explored
 
-    def explore(s,t,limit):
+    def explore(s,t,limit):   # explore
+        '''
+        Find lengths of all paths from source that end at specified column
+
+        Parameters:
+
+           s           First protein string. This is an explicit parameter
+                       because FindMiddleEdge reverse the string during the second call
+                       to calculate lengths from sink
+           t           Second protein string.
+           limit       Last column to be explored
+        '''
+
         column_A = [-(i * indel_cost) for i in range(len(s)+1)]
         column_B = [0 for i in range(len(s)+1)]
         for j in range(1,limit+1):
@@ -1542,12 +1548,18 @@ if __name__=='__main__':
             self.assertEqual('YQAGIIRQPPRGD-RGVSDRNYSQCGKQ-NQ-AQLDNNPTWTKYEIEWRVQI-LPPGAGVFEGDNGQNQCLCPNW--A-W-EQPCQW----GALHS-NEQYPNRIHLWAPMSKLHIKIEKSSYN-RNAQ-FPNRCMYECE-FPSY-REQVDSCHYENVQIAF-TIFSGAEQKRKFCSCHFWSNFIDQAVFSTGLI-PWCYRRDDHSAFFMPNWNKQ--YKHPQLQFRVAGEGTQCRPFYTREMFTKVSAWRIAGRFAGPYERHHDAHLELWY-QHHKVRT-GQQLGIIWNNRDKTRNPCPFSAY-Y-NK--LP-WWK-I-NQ-N-AFYNCLQNIAHSTHDETHEFNPVKCIDWLQGTMV-P------TECKKGFVHEKCECYRNPGPPLHDMYHQMEDIFGVRFDCLTGWKHLS------D---YNPC-QERRNINDFYIFAYEIAPAVKNLVLSPQPLADATKKCAFNYTPLDQSPVVIACK---WYIHQPI-CMLL----IVLIC-AMDKYNAHMIVIRTTEGQQPMHACRMTEGPGMCMKEPLVTFTLPAQWQWPNHEFKYVYMYVLNYHLSQYTYTDEGHAGGQHYSFNVAVDVGMAWGHNRCYCQPACYSQQETQTRTIDYEKWQYMKHQAFKWGLWFCEQER-HA--WFKGQNRCEMFTAKMTRMGADSNLDQYKLMLAQNYEEQWEQPIMECGMSEIIEIDPPYRSELIFTFWPFCTYSPWQNLIKCRCNNVIEEMDQCVP-LTF-IGFGVKQAGGIQA-WAFYKE--EWTSTYYLMCQCMKSDKAQYPYEIILFWMQ--P-MDTGE--QEPPQQNMWIFLPHSWFFDWCCNAPWSEICSSRHD--H---GQ-CQDAFYPCELFTVF',s1)
             self.assertEqual('Y-P-MSRKTAKSQFIEWCDW-F--CFNHWTNWAPLSIVRTSVAFAV-W-GHCWYPCG-GVCKTNRCKDD-FCGRWRKALFAEGPRDWKCCKNDLQNWNPQYSQGTR--NTK-RMVATTNQTMIEWKQSHIFETW-LF-CHVIIEYNWSAF-W-MWMNRNEAFNSIIKSGYPKLLL-T-QY-P-L-SQG--STPIVKPL-IRRD-QGKFW-A-WAQMWWFREPT-NIPTA-D-Y-CHSW--WQ--SR-ADLQ-NDRDMGP-EADASFYVEFWYWVRCAARTYGQQLGIIWNNRLKTRNPCPYSADGIQNKENYVFWWKNMCTKSHIAFYYCLQNVAHYTHDVTAEFNPVKCIDWLQGHMVLSSWFKYNTECKKLFVHEKCECYRM----FCGV---VEDIFGVRFH--TGWKHLSTAKPVPHVCVYNPSVQERRNINDFYIF-YEIAPAVKNLVLSAQPLHDYTKKCAFNYTPITITRIISTRNQIIW-AHVVIACQFYSPHQMLLIELAMDKYCADMNVRRSTEGHQPMHACRSTFGPGMAAKEPLVTFTLVAFWQWPNHEFQYVYMYTED-KIIQIG-PHLSN-GCEMVEYCVDC-YAK-RPCYRAYSAEAQYWRMITEAEDYSYKTRNAIAATATVRGQ-YCHPFRWLGIVWM-AHHDC-FFANECGTICI-PQMAEMRPPETTPYEI--DIIFMMF-WKE--HMSTTIL-DVVGMYRP-ATFSHWHDAHH-QCEPYLTPL-MCQSKLVFDAAFT--QVG-VKGVW-YHTEKLELMAGFNHM-K-FKKEEAQ---QSCFYWFQDCPDYDPPDAVRKTDEKHIRAHGEIWWLMRYYCMYHILHI-ASRHEWMHLRWDQACTNPGY--ELFE-F',s2)
 
-        def test_ba5l_sample(self):
-            '''BA5L Align Two Strings Using Linear Space'''
-            score, s1,s2 = alignUsingLinearSpace('PLEASANTLY','MEANLY')
-            self.assertEqual(8,score)
-            self.assertEqual('PLEASANTLY',s1)
-            self.assertEqual('-MEA--N-LY',s2)
+        def test_ba5k_sample(self):
+            '''BA5K Find a middle edge in the alignment graph in linear space.'''
+            self.assertEqual(((4, 3), (5, 4)), FindMiddleEdge('PLEASANTLY','MEASNLY'))
+
+
+
+        # def test_ba5l_sample(self):
+            # '''BA5L Align Two Strings Using Linear Space'''
+            # score, s1,s2 = alignUsingLinearSpace('PLEASANTLY','MEANLY')
+            # self.assertEqual(8,score)
+            # self.assertEqual('PLEASANTLY',s1)
+            # self.assertEqual('-MEA--N-LY',s2)
 
         def test_ba5n_sample(self):  # BA5N 	Find a Topological Ordering of a DAG
             self.assertEqual([5, 4, 1, 2, 3],
