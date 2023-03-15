@@ -299,9 +299,47 @@ def edit(s,t,
                 matrix[i,j-1]   + indel_cost,
                 matrix[i-1,j-1] + (0 if s[i-1]==t[j-1] else replace_cost(s[i-1],t[j-1])))
 
-    return matrix[m,n]
+    return matrix[m,n],matrix
 
+def edta(s,t,
+         indel_cost   = 1,
+         replace_cost = lambda a,b: 1):
+    '''
+    EDTA Edit Distance Alignment http://rosalind.info/problems/edta/
 
+    Given: Two protein strings s and t (with each string having length at most 1000 aa).
+
+    Return: The edit distance dE(s,t) followed by two augmented strings s' and t' representing an optimal alignment of s and t.
+
+    Most of the work is already done by EDIT; we merely need to backtrack through
+    the matrix and to construct the alignment.
+    '''
+    def backtrack():
+        m,n = matrix.shape
+        m  -=1
+        n  -=1
+        s1 = []
+        t1  = []
+        while m>0 and n>0:
+            moves  = [(m-1,n), (m,n-1), (m-1,n-1)]
+            scores = [matrix[m-1,n]   + indel_cost,
+                      matrix[m,n-1]   + indel_cost,
+                      matrix[m-1,n-1] + (0 if s[m-1]==t[n-1] else replace_cost(s[m-1],t[n-1]))]
+            ss     = [s[m-1],'-',s[m-1]]
+            ts     = ['-',t[n-1],t[n-1]]
+            index  = np.argmin(scores)
+            m,n    = moves[index]
+            s1.append(ss[index])
+            t1.append(ts[index])
+        s1.reverse()
+        t1.reverse()
+        return ''.join(s1),''.join(t1)
+
+    dist,matrix = edit(s,t,indel_cost,replace_cost)
+    s1,t1       = backtrack()
+    return (dist,s1,t1)
+
+#-------------------------- Everything above this line has neen refactored
 
 def alignUsingLinearSpace(v,w,
                           replace_score = BLOSUM62,
@@ -526,56 +564,6 @@ def align(s,t,
 
 
 
-# edta
-
-# EDTA Edit Distance Alignment http://rosalind.info/problems/edta/
-#
-# An alignment of two strings s and t is defined by two strings s' and t' satisfying the following three conditions:
-# 1. s' and t' must be formed from adding gap symbols "-" to each of s and t, respectively;
-#    as a result, s and t will form subsequences of s' and t'.
-# 2. s' and t' must have the same length.
-# 3. Two gap symbols may not be aligned; that is, if s'[j] is a gap symbol, then t'[j] cannot be a gap symbol, and vice-versa.
-#
-# We say that s' and t' augment s and t. Writing s' directly over t' so that symbols are aligned
-# provides us with a scenario for transforming s into t. Mismatched symbols from s and t
-# correspond to symbol substitutions; a gap symbol s'[j] aligned with a non-gap symbol t'[j]
-# implies the insertion of this symbol into t; a gap symbol t'[j] aligned with a non-gap
-# symbol s'[j] implies the deletion of this symbol from s.
-#
-# Thus, an alignment represents a transformation of s into t via edit operations.
-# We define the corresponding edit alignment score of s' and t' as dH(s',t')
-# (Hamming distance is used because the gap symbol has been introduced for insertions and deletions).
-# It follows that dE(s,t)=min s',t' dH(s',t'), where the minimum is taken over all alignments of s and t.
-#
-# We call such a minimum score alignment an optimal alignment (with respect to edit distance).
-
-# Given: Two protein strings s and t in FASTA format (with each string having length at most 1000 aa).
-
-# Return: The edit distance dE(s,t) followed by two augmented strings s' and t' representing an optimal alignment of s and t.
-
-def edta(s,t,indel_cost=1,replace_cost=lambda a,b: 1):
-    def extract(s,t,matrix):
-        m  = len(matrix)-1
-        n  = len(matrix[0])-1
-        s1 = []
-        t1 = []
-        while m>0 and n>0:
-            moves  = [(m-1,n),(m,n-1),(m-1,n-1)]
-            scores = [matrix[m-1][n]+indel_cost,
-                      matrix[m][n-1]+indel_cost,
-                      matrix[m-1][n-1] + (0 if s[m-1]==t[n-1] else replace_cost(s[m-1],t[n-1]))]
-            ss     = [s[m-1],'-',s[m-1]]
-            ts     = ['-',t[n-1],t[n-1]]
-            index  = np.argmin(scores)
-            m,n    = moves[index]
-            s1.append(ss[index])
-            t1.append(ts[index])
-        s1.reverse()
-        t1.reverse()
-        return ''.join(s1),''.join(t1)
-    d,matrix = edit(s,t,indel_cost,replace_cost)
-    s1,t1    = extract([s0 for s0 in s], [t0 for t0 in t],matrix)
-    return (d,s1,t1)
 
 def overlap_assignment(v,w,match_bonus=+1,mismatch_cost=2,indel_cost=2):
     def dynamic_programming(v,w):
@@ -1639,12 +1627,12 @@ if __name__=='__main__':
 
         def test_edit_sample(self):
             '''EDIT Edit Distance'''
-            self.assertEqual(5,
-                             edit('PLEASANTLY','MEANLY'))
+            dist,_ = edit('PLEASANTLY','MEANLY')
+            self.assertEqual(5,dist)
 
         def test_edit_rosalind(self):
             '''EDIT Edit Distance'''
-            self.assertEqual(376,edit('IAEWFANIDRHKMCSFDSPNEVPNSWIWQWYRVEYFRMHWDYSSFACDYAPKTRTLQGDH'
+            dist,_ = edit('IAEWFANIDRHKMCSFDSPNEVPNSWIWQWYRVEYFRMHWDYSSFACDYAPKTRTLQGDH'
                                       'RYMMANKEENEVTGVSVWNVEETYLCPFDLSRPHVMPKFTGEDNRLERMDRKYLPQCSAI'
                                       'GKDLCMVFEFNSDTSIREAIVDAAVFHRAGHGGNSNKEARHQTAHFNDTAWYELGNCEVI'
                                       'GRITNDGKTSKHRYMGVLCWECCLEYGPPSHHFEVATKIWPPTGQWHTIKSVTNPHPKSF'
@@ -1670,6 +1658,48 @@ if __name__=='__main__':
                                       'YNIGSYFCPKCFWRCPEQNWSPACPPVYDNLWHWRCPFCWATPMDVMHSTTNDTTMWKTM'
                                       'MVVEPCTDESIPRVGSYSWMIQEFMIYMVRPPVGCVPGHAIWFAQGRRICDQMYIVGRDV'
                                       'SWQTMMHDYHKRCDPRCVSNLEVADFVYFEAEAQAQSQMYAENGWMDCMKHGPIIGDTQT'
-                                      'TTDVRWGGKIIGDARQDWPFIHNDKRWKDPMSIHWNDALAKYFGAAWVCQEHSISL'))
+                                      'TTDVRWGGKIIGDARQDWPFIHNDKRWKDPMSIHWNDALAKYFGAAWVCQEHSISL')
+            self.assertEqual(376,dist)
 
+        def test_edta_sample(self):
+            '''EDTA Edit Distance Alignment'''
+            dist,s,t= edta('PRETTY','PRTTEIN')
+            self.assertEqual(4,dist)
+            self.assertEqual('PRETTY--',s)
+            self.assertEqual('PR-TTEIN',t)
+
+        def test_edta_rosalind(self):
+            '''EDTA Edit Distance Alignment'''
+            dist,s,t= edta('MEIPNQCTYTMNNGERMLKMDNKYADNMGVRQEENKQHREDISRWDDWGQFTTCEGFTRW'
+                           'FKLHHLNAHQISPCLLRMPTWLQCKMTFAQMDLAIDPPTCHTFPMFTMHSHCIFDPSFYA'
+                           'ARRCHMNKVCQFRYDHQIHCSMMQSGTTWWYMYNGCETMSWDYLVEMAVGWWVYRNRHNG'
+                           'MMSYVDHGDDDCWHRGHHSSLPWKLDAYSALYCVHGFEYCSAYFKVDAFNLTCERPDITN'
+                           'TQCRCEKPTEGPAYFNYTKTMSKGPEEWEYNCPCVYYEEVEGLANNRESSIPCSKMSNRC'
+                           'RMRCLGHKWFSILPEMHKYNAQSQVKTREKAGRSYNWGNQPLVKFDSLEPMWFHRQHCQS'
+                           'RLETWSTDPPSQDWQFFHICNTQKDAINSTWAGGRIFWTENDSRRKVCCMENKNKNLFRR'
+                           'GWISGIDITMHYHLTSSHGQFGICDPEVHIVPCHMLGLTTFMQERNNLGQCPMVAIFEHH'
+                           'QLPPPCEGYVLQKVHPSWHMSMMKKNEFDRPWAPVFARDAEHMQPCEPMIAPHIKFWNYC'
+                           'HKKSGMCLGGQGGIDFHGYMYQNYHLCLFCTYKAMKFLVQDTFEDLISGEKYPMEATMTE'
+                           'TFAWVCMTVFTTMRTFIVFWGDPYRIHELYMFSCAAHGYLRTADRSCKWTNKPHLSYGCH'
+                           'LSKTYCSCKMIDAPMVCRCLMWIDHPFVHYPHMVWCMNYCCYNTTCRMHEPTFWHLALVF'
+                           'CPCLYWQQNLEINEIRQGSLGHVGQSEMLQMTIMKKYMQPCMMWDCGFHCCGTYWDAMGE'
+                           'TSGTEGIVTTRTRVTPCYRWQHLKKEGHALANTVPKMDLYQMRHHGLMGPVLDRAPKPCH'
+                           'AQTEVDLVNIVPYNWES',
+                           'SEIPNQCNEFMYMNYTVRIIYHPNNGERMHEQSDNHHFTAPMDNYHGILLRQRMGVRQEE'
+                           'NRDIDLQCIVNHSYLREDISRWDDWDRAQFTTCEGFTRWFRYPKHLSEQLHHLNADQISP'
+                           'CLLCMGTWLQCKMTFARFTMIWQHWMDLAIPPYTCHTNHSHCIFDPSFYLARKVLQFCSM'
+                           'MQSGTTWGQQLVEMAPGWWVYRNRHNGMMSLAYVLTDVDHYDQMQHDDDDCWHRGHHSSA'
+                           'PWKLDAYSHGFEYFSAYRFVDAFNLTCERDDTNTQCREGPAYFNYTSQNNPLHDFEMSKG'
+                           'PEIAMWQEVIPCSKMSNRKRWRCLGNKIKSGDVGGKTASVSYNWGNQPLVKFDSIEMTFH'
+                           'KQHCQSRLETWQQKDAINSTWAGGFRFWTECWNKNAYEHTVPWFMLFRCLAGGHGWISGA'
+                           'TMHYHLTSSHIQFGICDPEMHIKLCFMLSYESNNLGQCPMVAIPPPCEGHPSGNMSMMKK'
+                           'NEFTRPWAPFEARYAEHMQPCIPGFCQMREYRKSGMCLGGQGGIDFHGLMYQNYHLCLFC'
+                           'TGKFMKFLGQDTFEYPMEMTESFAKVSMEVFTTMRTFIVFWGDYYKLFYRITELYMFDEV'
+                           'DTDNNWHGYLRTAQKWECHLSYGCHLSKTYCSPMVCIDPFVHYPNGACELHVWCMAYVHR'
+                           'TCCCYNTAWRMHEFCPCLYWQQNLEINELGHQNEMLQMQPCMFYEFMGKLQHCCGPYGET'
+                           'ATEFFGTCSTCAIVTTTDCYRWQHLKKEGFKPSALQAHNTVPKMDLYQMRHHGLMGPVLD'
+                           'RAPKPCHAQKFVIRDAVWHLVNIVPYNWES')
+            self.assertEqual(406,dist)
+            self.assertEqual('MEIPNQCT---Y---TM------NNGERMLKM-DNKY--A--DN---------MGVRQEENK----Q----H---REDISRWDDWG--QFTTCEGFTRWF---K-L----HHLNAHQISPCLLRMPTWLQCKMTFA------Q--MDLAIDPP-TCHTFPMFTMHSHCIFDPSFYAARRCHMNKVCQFRYDHQIHCSMMQSGTTWWYMYNGCETMSWDYLVEMAVGWWVYRNRHNGMMS--YV--D--HGD----DD--CWHRGHHSSLPWKLDAYSALYCVHGFEYCSAY-FKVDAFNLTCERPDITNTQCRCEKPTEGPAYFNYTKTMSKGPEEWEYNCPCVYYEEVEGL--ANNRESSIPCSKMSNRCRMRCLGHKWFSILPEMHKYNAQSQVKTREKAGRSYNWGNQPLVKFDSLEPMWFHRQHCQSRLETWSTDPPSQDWQFFHICNTQKDAINSTWAGG-RIFWTENDSRRKVCCMENKNKNLFRR--G---WISGIDITMHYHLTSSHGQFGICDPEVHIVPCHMLGLTTFMQERNNLGQCPMVAIFEHHQLPPPCEGYVLQKVHPSWHMSMMKKNEFDRPWAPVF-ARDAEHMQPCEPMIAPHIKFWNYCHKKSGMCLGGQGGIDFHGYMYQNYHLCLFCTYKAMKFLVQDTFEDLISGEKYPMEATMTETFAWVCMTVFTTMRTFIVFWGDPY----RIHELYMFSCAA-----HGYLRTADRSCKWTNKPHLSYGCHLSKTYCSCKMIDAPMVCRCLMWIDHPFVHYP------HMVWCMNY----CC-YNTTCRMHEPTFWHLALVFCPCLYWQQNLEINEIRQGSLGHVGQSEMLQMTI-MKKYMQPCMMWDCGFHCCGTYWD-AMGETSGTEG---IVTTRTRVTPCYRWQHLKKEGH---AL-A-NTVPKMDLYQMRHHGLMGPVLDRAPKPCHAQTEV--D----LVNIVPYNWES',s)
+            self.assertEqual('SEIPNQCNEFMYMNYTVRIIYHPNNGERMHEQSDNHHFTAPMDNYHGILLRQRMGVRQEENRDIDLQCIVNHSYLREDISRWDDWDRAQFTTCEGFTRWFRYPKHLSEQLHHLNADQISPCLLCMGTWLQCKMTFARFTMIWQHWMDLAI-PPYTCHTN-----HSHCIFDPSFYLAR-----KVLQF-------CSMMQSGTTW-----GQQ------LVEMAPGWWVYRNRHNGMMSLAYVLTDVDHYDQMQHDDDDCWHRGHHSSAPWKLDAYS-----HGFEYFSAYRF-VDAFNLTCERDD-TNTQCR-E----GPAYFNYT---SQN------N-PLHDFEMSKGPEIAMWQEV-IPCSKMSNRKRWRCLGNKIKSGDVGG-KT-A-S-V--------SYNWGNQPLVKFDSIE-MTFHKQHCQSRLETW------Q--Q--------KDAINSTWAGGFR-FWTECWNKNAYEHTVPWFM-LFRCLAGGHGWISGA--TMHYHLTSSHIQFGICDPEMHIKLCFMLSY-----ESNNLGQCPMVAI------PPPCEG------HPSGNMSMMKKNEFTRPWAP-FEARYAEHMQPCIPGFCQMRE---YR-K-SGMCLGGQGGIDFHGLMYQNYHLCLFCTGKFMKFLGQDTFE-------YPME--MTESFAKVSMEVFTTMRTFIVFWGDYYKLFYRITELYMFDEVDTDNNWHGYLRTAQ---KWEC--HLSYGCHLSKTYCS------PMVC-----ID-PFVHYPNGACELH-VWCMAYVHRTCCCYNTAWRMHE--F-------CPCLYWQQNLEINE-----LGH--QNEMLQMQPCMF-YEF--MGKLQ--HCCGPYGETAT-EFFGTCSTCAIVTT-TD---CYRWQHLKKEGFKPSALQAHNTVPKMDLYQMRHHGLMGPVLDRAPKPCHAQKFVIRDAVWHLVNIVPYNWES',t)
     main()
