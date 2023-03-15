@@ -26,18 +26,6 @@ from reference_tables import createSimpleDNASubst,  BLOSUM62, PAM250
 from helpers          import sign
 
 
-def reverse(chars):
-    '''
-    reverse
-
-    Input:    a string,
-    Return:   new string with characters in reverse order
-    '''
-
-    return chars[-1::-1]
-
-
-
 def get_number_of_coins(money,coins):
     '''
     BA5A 	Find the Minimum Number of Coins Needed to Make Change
@@ -136,8 +124,6 @@ def get_longest_common_subsequence(v,w):
             raise Exception(f'Predecessors[{i},{j}] referenced, but not defined')
     return ''.join(matches[-1::-1])
 
-
-
 def get_longest_path(source,sink,graph):
     '''
     BA5D 	Find the Longest Path in a DAG
@@ -166,7 +152,7 @@ def get_longest_path(source,sink,graph):
 
         return product
 
-    def create_reverse_adjacency_list(relevant):
+    def create_nodes_adjacency_list(relevant):
         '''
         Convert graph (list of tuples) to an adjacency list, ignoring weights
 
@@ -205,7 +191,7 @@ def get_longest_path(source,sink,graph):
     nodes        = crop(create_topological_order(create_adjacency_list()))
     index          = {nodes[i]:i for i in range(len(nodes))}
     weights        = {(a,b):w for a,b,w in graph if a in nodes and b in nodes}
-    backward       = create_reverse_adjacency_list(nodes)
+    backward       = create_nodes_adjacency_list(nodes)
     s              =  np.full((len(nodes)),-float_info.max)
     s[0]           = 0
     assert index[source]==0
@@ -217,6 +203,103 @@ def get_longest_path(source,sink,graph):
 
     return backtrack(s,predecessors)
 
+
+def get_highest_scoring_alignment(v,w,
+                                     weights = BLOSUM62(),
+                                     sigma   = 5,
+                                     local    = False):
+    '''
+    BA5E 	Find a Highest-Scoring Alignment of Two Strings
+    BA5F 	Find a Highest-Scoring Local Alignment of Two Strings
+    Find the highest-scoring alignment between two strings using a scoring matrix.
+
+    Input: v         an amino acid string
+           w         another amino acid string
+           weights   The matrix to us for scoring matches
+           sigma     Indel penalty
+           local     If true perform local alignment, otherwise global
+
+    Return: The maximum alignment score of these strings followed by an
+            alignment achieving this maximum score. Use the BLOSUM62 scoring matrix
+            and indel penalty σ = 5. (If multiple alignments achieving the maximum
+            score exist, you may return any one.)
+    '''
+
+    m            = len(v)
+    n            = len(w)
+    s            = np.zeros((m+1,n+1),dtype=int)
+    s[0,0]       = 0
+    predecessors = -1 * np.ones_like(s,dtype=int)
+    if not local:
+        for i in range(1,m+1):
+            s[i,0] = -i*sigma
+            predecessors[i,0] = 1
+        for j in range(1,n+1):
+            s[0,j] = -j*sigma
+            predecessors[0,j] = 0
+
+    for i in range(1,m+1):
+        for j in range(1,n+1):
+            choices           = [s[i,j-1]   - sigma,
+                                 s[i-1,j]   - sigma,
+                                 s[i-1,j-1] + weights.get_score(v[i-1],w[j-1])]
+            if local:
+                choices.append(0)
+
+            predecessors[i,j] = np.argmax(choices)
+            s[i,j]            = choices[ predecessors[i,j]]
+
+    i,j       = np.unravel_index(np.argmax(s), s.shape)
+    s_max     = s[i,j]
+    v1      = []
+    w1      = []
+    while True:
+        if predecessors[i,j]==0:
+            j -= 1
+            v1.append('-')
+            w1.append(w[j])
+        elif predecessors[i,j]==1:
+            i -= 1
+            v1.append(v[i])
+            w1.append('-')
+        elif predecessors[i,j]==2:
+            i -= 1
+            j -= 1
+            v1.append(v[i])
+            w1.append(w[j])
+        else:
+            return s_max,''.join(v1[-1::-1]),''.join(w1[-1::-1])
+
+
+def edit(s,t,
+         indel_cost   = 1,
+         replace_cost = lambda a,b: 1):
+    '''
+    EDIT 	Edit Distance http://rosalind.info/problems/edit/
+
+    Parameters:
+        s            A string
+        t            A string
+        indel_cost   Cost of insertion/deletion
+        replace_cost Cost of replacing a symbol
+
+    Returns: the edit distance between s and t
+
+    '''
+    m           = len(s)
+    n           = len(t)
+    matrix      = np.full((m+1,n+1),np.nan)
+    matrix[0,:] = list(range(n+1))
+    matrix[:,0] = list(range(m+1))
+
+    for i in range(1,len(s)+1):
+        for j in range(1,len(t)+1):
+            matrix[i,j] = min(
+                matrix[i-1,j]   + indel_cost,
+                matrix[i,j-1]   + indel_cost,
+                matrix[i-1,j-1] + (0 if s[i-1]==t[j-1] else replace_cost(s[i-1],t[j-1])))
+
+    return matrix[m,n]
 
 
 
@@ -291,72 +374,17 @@ def create_alignment(string1, string2,s_predecessors,
 
 
 
-
-def get_highest_scoring_alignment(v,w,
-                                     weights = BLOSUM62(),
-                                     sigma   = 5,
-                                     local    = False):
+@deprecated
+def reverse(chars):
     '''
-    BA5E 	Find a Highest-Scoring Alignment of Two Strings
-    BA5F 	Find a Highest-Scoring Local Alignment of Two Strings
-    Find the highest-scoring alignment between two strings using a scoring matrix.
+    reverse
 
-    Input: v         an amino acid string
-           w         another amino acid string
-           weights   The matrix to us for scoring matches
-           sigma     Indel penalty
-           local     If true perform local alignment, otherwise global
-
-    Return: The maximum alignment score of these strings followed by an
-            alignment achieving this maximum score. Use the BLOSUM62 scoring matrix
-            and indel penalty σ = 5. (If multiple alignments achieving the maximum
-            score exist, you may return any one.)
+    Input:    a string,
+    Return:   new string with characters in reverse order
     '''
 
-    m            = len(v)
-    n            = len(w)
-    s            = np.zeros((m+1,n+1),dtype=int)
-    s[0,0]       = 0
-    predecessors = -1 * np.ones_like(s,dtype=int)
-    if not local:
-        for i in range(1,m+1):
-            s[i,0] = -i*sigma
-            predecessors[i,0] = 1
-        for j in range(1,n+1):
-            s[0,j] = -j*sigma
-            predecessors[0,j] = 0
+    return chars[-1::-1]
 
-    for i in range(1,m+1):
-        for j in range(1,n+1):
-            choices           = [s[i,j-1]   - sigma,
-                                 s[i-1,j]   - sigma,
-                                 s[i-1,j-1] + weights.get_score(v[i-1],w[j-1])]
-            if local:
-                choices.append(0)
-
-            predecessors[i,j] = np.argmax(choices)
-            s[i,j]            = choices[ predecessors[i,j]]
-
-    i,j       = np.unravel_index(np.argmax(s), s.shape)
-    s_max     = s[i,j]
-    v1      = []
-    w1      = []
-    while True:
-        if predecessors[i,j]==0:
-            j -= 1
-            v1.append('-')
-            w1.append(w[j])
-        elif predecessors[i,j]==1:
-            i -= 1
-            v1.append(v[i])
-            w1.append('-')
-        elif predecessors[i,j]==2:
-            i -= 1
-            j -= 1
-            v1.append(v[i])
-            w1.append(w[j])
-        else:
-            return s_max,''.join(v1[-1::-1]),''.join(w1[-1::-1])
 
 @deprecated
 def get_highest_scoring_local_alignment(string1,string2,
@@ -495,34 +523,8 @@ def align(s,t,
             print (k,v)
     return backtrack(s,t,distances,moves,showPath=showPath)
 
-# EDIT 	Edit Distance http://rosalind.info/problems/edit/
 
-def edit(s,t,indel_cost=1,replace_cost=lambda a,b: 1,show_matrix=False):
 
-    def dynamic_programming(s,t):
-        matrix=[[0 for j in range(len(t)+1)] for i in range(len(s)+1)]
-
-        for j in range(len(t)+1):
-            matrix[0][j]=j
-        for i in range(len(s)+1):
-            matrix[i][0]=i
-
-        for i in range(1,len(s)+1):
-            for j in range(1,len(t)+1):
-                matrix[i][j] = min(
-                    matrix[i-1][j]   + indel_cost,
-                    matrix[i][j-1]   + indel_cost,
-                    matrix[i-1][j-1] + (0 if s[i-1]==t[j-1] else replace_cost(s[i-1],t[j-1])))
-
-        if show_matrix:
-            for i in range(0,len(s)+1):
-                ii = len(matrix)-i-1
-                print (s[ii] if i>0 else '#',matrix[ii])
-            print (' ',['#']+t)
-
-        return matrix[len(s)][len(t)],matrix
-
-    return dynamic_programming([s0 for s0 in s], [t0 for t0 in t])
 
 # edta
 
@@ -1598,7 +1600,8 @@ if __name__=='__main__':
             # self.assertEqual('PLEASANTLY',s1)
             # self.assertEqual('-MEA--N-LY',s2)
 
-        def test_ba5n_sample(self):  # BA5N 	Find a Topological Ordering of a DAG
+        def test_ba5n_sample(self):
+            '''BA5N 	Find a Topological Ordering of a DAG'''
             self.assertEqual([5, 4, 1, 2, 3],
                              create_topological_order({
                                  1 : [2],
@@ -1634,5 +1637,39 @@ if __name__=='__main__':
                                  9 :[ 17,20,21]
                              }))
 
+        def test_edit_sample(self):
+            '''EDIT Edit Distance'''
+            self.assertEqual(5,
+                             edit('PLEASANTLY','MEANLY'))
+
+        def test_edit_rosalind(self):
+            '''EDIT Edit Distance'''
+            self.assertEqual(376,edit('IAEWFANIDRHKMCSFDSPNEVPNSWIWQWYRVEYFRMHWDYSSFACDYAPKTRTLQGDH'
+                                      'RYMMANKEENEVTGVSVWNVEETYLCPFDLSRPHVMPKFTGEDNRLERMDRKYLPQCSAI'
+                                      'GKDLCMVFEFNSDTSIREAIVDAAVFHRAGHGGNSNKEARHQTAHFNDTAWYELGNCEVI'
+                                      'GRITNDGKTSKHRYMGVLCWECCLEYGPPSHHFEVATKIWPPTGQWHTIKSVTNPHPKSF'
+                                      'RTDSCVNNRYNSMWTESGKVASTIAVLYKQYYIQVCKRDWNMMSRNHVTLTSLNKTMFAS'
+                                      'FFWFRSCNTHSLHHHHMGECDWSEPMRPCWISMYPYCATHSQVNDTHIYVEHGARMKEST'
+                                      'EDTQGKGVGGIAGDARRYNSQTLTITWFIKISKWKPVHGNPFRPPWVETHEYAYWHQKVI'
+                                      'NGFVRRCGIKDHHKNCAYYITTEFVLNGLFKDANSPSYLDADYYDVQHGGGPFRVHTGTW'
+                                      'MNAIITHFFLPSVPDCQAWLCAPKRNSLVTREVHCWNGRQYYPATLWHMVLIKGPYNAYN'
+                                      'IGSMFCAWRCPEFNWSPACPCVYNNLWHWCCCCPQRLKMPFCWATPMPKMHSTFNDTTCE'
+                                      'PCMRVGAWTEIITMNYCYGHDSFTGVFMIYMVRFVTQGRIPPRGCVPFHAIWFAQNRRIC'
+                                      'DQMEDVSWQTMMHDYSKRCDPRQTTNNCVSNLEGQAQESKQFPHVQMPAEFTHHENGWMD'
+                                      'CMYQKHGPIIGDPQTTTDVRWGREKCMEDIGSARQDWPFIHNDNRWKDPMSICSAHGIND'
+                                      'ALAKYKGAAWISH',
+                                      'IANQPPKSLYHWFINIPRQINGFTSFDFPNEFVYAHWEITDRHWYRVEYFRAHWDYSSFF'
+                                      'CMYAPDYHYWWVTRELQGDHRYMMANKDEEVIRVPPSKVSVWNVEEGPFCLSRPHSHKGL'
+                                      'MMPKFTGEDNLTTWWYVYAKYLPPHAIGKDLCMVTSSREAIVDVSVFDCAQWRAGHDGAL'
+                                      'SNKEARWQTAHSCDLRNGLRAWYEWVVAHNCEVIGRITNDGKTWEHRYMGVLWKSECPQA'
+                                      'GVVDVATKIWHTIKSVTPHPKSCVNNNSMWTGKVWCTIAVLYKQYYIQWNNMWADRVVTL'
+                                      'HSLNKTMFASFFWFRDHSKHHHRMGEHDDWSEKIAEYMCWISMYPYCATHAQVNDTHIYV'
+                                      'EHGARLVWGGKISTHEGDDTQGKGMEWHYILLCGGIMGDARRYNITDAGFIKIHGPMAKW'
+                                      'KPVHHTHEYAYVHQKVINGWVRRCFPRISKDHHYYITTLSNTWDYYDVQHGGGTGTWMNA'
+                                      'IQTHFFLPSVRHTWCVCVMYLVAIPCHLEFEVHCWNSATLWHMVQMGQRKPHDAKGPYNA'
+                                      'YNIGSYFCPKCFWRCPEQNWSPACPPVYDNLWHWRCPFCWATPMDVMHSTTNDTTMWKTM'
+                                      'MVVEPCTDESIPRVGSYSWMIQEFMIYMVRPPVGCVPGHAIWFAQGRRICDQMYIVGRDV'
+                                      'SWQTMMHDYHKRCDPRCVSNLEVADFVYFEAEAQAQSQMYAENGWMDCMKHGPIIGDTQT'
+                                      'TTDVRWGGKIIGDARQDWPFIHNDKRWKDPMSIHWNDALAKYFGAAWVCQEHSISL'))
 
     main()
