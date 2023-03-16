@@ -1,5 +1,6 @@
 #!/usr/bin/env python
-#    Copyright (C) 2019 Greenweaves Software Limited
+
+#    Copyright (C) 2019-2023 Simon Crase
 #
 #    This is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -13,13 +14,16 @@
 #
 #    You should have received a copy of the GNU General Public License
 #    along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>
-#
-#    Utilities for mass spectroscopy
+
+'''    Code for Chapter 4 and utilities for mass spectroscopy'''
+
+from   unittest import TestCase, main, skip
+import numpy as np
 
 from reference_tables import integer_masses,amino_acids
-from bisect import bisect
-from numpy import argmax, isnan
-from math import sqrt
+from bisect           import bisect
+from rosalind         import convolution, cycloSpectrum1, countMatchesInSpectra, get_mass, prot, dna_to_rna, revc
+
 
 # SpectrumGraph
 #
@@ -56,15 +60,15 @@ def SpectrumGraph(spectrum):
         add(i)
     return product
 
-def linearSpectrum(peptide):
-    def getSpectrum(peptide):
-        spectrum = set()
-        for i in range(len(peptide)):
-            spectrum.add(sum(peptide[:i]))
-            spectrum.add(sum(peptide[i:]))
+# def linearSpectrum(peptide):
+    # def getSpectrum(peptide):
+        # spectrum = set()
+        # for i in range(len(peptide)):
+            # spectrum.add(sum(peptide[:i]))
+            # spectrum.add(sum(peptide[i:]))
 
-        return sorted(list(spectrum))
-    return getSpectrum( [integer_masses[p] for p in peptide]) if peptide.isalpha() else getSpectrum(peptide)
+        # return sorted(list(spectrum))
+    # return getSpectrum( [integer_masses[p] for p in peptide]) if peptide.isalpha() else getSpectrum(peptide)
 
 # DecodeIdealSpectrum
 #
@@ -186,7 +190,7 @@ def conv(S,T,eps=0.001):
             latest = term
             count  = 1
 
-    return accumulated[argmax([i for i,_ in accumulated])]
+    return accumulated[np.argmax([i for i,_ in accumulated])]
 
 #   create_lookup
 #
@@ -297,7 +301,7 @@ def prsm(s,R):
 
     Cs = [(P,conv(R,S1,eps=0.00001)) for (P,S1) in Ss]
 
-    index = argmax([count(c) for c in Cs])
+    index = np.argmax([count(c) for c in Cs])
 
     _,(b,_) = Cs[index]
 
@@ -438,7 +442,7 @@ def sgra(L,Alphabet=amino_acids,epsilon=0.001):
     for key in sorted(G.keys()):
         dfs(key,G,[])
 
-    return ''.join(Runs[argmax([len(run) for run in Runs])])
+    return ''.join(Runs[np.argmax([len(run) for run in Runs])])
 
 #   Turnpike
 #
@@ -493,7 +497,7 @@ def Turnpike(D,check=False):
             Explore lower levels of tree
             '''
             # Constuct set of differences between candidate and known members of X
-            diffs=[abs(candidate-x) for x in X if not isnan(x) and x!=candidate]
+            diffs=[abs(candidate-x) for x in X if not np.isnan(x) and x!=candidate]
             set_diffs=get_set_diffs(diffs)
             if set_diffs==None:
                 return None
@@ -538,7 +542,7 @@ def Turnpike(D,check=False):
     # Start by initializing array of points. We know that its length
     # must be the square root of the array of differences.
     len_D=len (D)
-    len_X=int(sqrt(len_D))
+    len_X=int(np.sqrt(len_D))
     X=[float('nan')]*len_X    #We fill in all values as "unknown"
     X[0]=0                    #Actually we are given the first value, zero
     X[-1]=D[-1]               # We also know that the last point must match the last difference.
@@ -547,10 +551,339 @@ def Turnpike(D,check=False):
         check_diffs(reconstruction)
     return reconstruction
 
-if __name__=='__main__':
-    import unittest
+def linearSpectrum(peptide):
+    def get_pairs():
+        return [(i,j) for i in range(len(peptide)) for j in range(len(peptide)+1) if i<j]
+    result=[sum(peptide[i:j]) for (i,j) in get_pairs()]
+    result.append(0)
+    result.sort()
+    return result
 
-    class TestSpectrum(unittest.TestCase):
+    # BA4B	Find Substrings of a Genome Encoding a Given Amino Acid String
+    #
+    # There are three different ways to divide a DNA string into codons for
+    # translation, one starting at each of the first three starting positions of
+    # the string. These different ways of dividing a DNA string into codons are
+    # called reading frames. Since DNA is double-stranded, a genome has six reading
+    # frames (three on each strand).
+    #
+    # We say that a DNA string Pattern encodes an amino acid string Peptide if
+    # the RNA string transcribed from either Pattern or its reverse complement
+    # Pattern translates into Peptide.
+    #
+    # Input: A DNA string Text and an amino acid string Peptide.
+    #
+    # Return: All substrings of Text encoding Peptide (if any such substrings exist)
+
+def findEncodings(text,peptide):
+    def encodes(dna):
+        try:
+            return prot(dna_to_rna(dna))==peptide
+        except KeyError:
+            return False
+    candidates=[text[i:i+3*len(peptide)] for i in range(len(text)-3)]
+    return [rna for rna in candidates if encodes(rna) or encodes(revc(rna))]
+
+    # BA4C	Generate the Theoretical Spectrum of a Cyclic Peptide
+    #
+    # The workhorse of peptide sequencing is the mass spectrometer, an expensive
+    # molecular scale that shatters molecules into pieces and then weighs the
+    # resulting fragments. The mass spectrometer measures the mass of a molecule
+    # in daltons (Da); 1 Da is approximately equal to the mass of a single nuclear
+    # particle (i.e., a proton or neutron).
+    #
+    # We will approximate the mass of a molecule by simply adding the number of
+    # protons and neutrons found in the molecule’s constituent atoms, which yields
+    # the molecule’s integer mass. For example, the amino acid "Gly", which has
+    # chemical formula C2H3ON, has an integer mass of 57,
+    # since 2·12 + 3·1 + 1·16 + 1·14 = 57. Yet 1 Da is not exactly equal to the mass
+    # of a proton/neutron, and we may need to account for different naturally
+    # occurring isotopes of each atom when weighing a molecule. As a result,
+    # amino acids typically have non-integer masses (e.g., "Gly" has total mass
+    # equal to approximately 57.02 Da); for simplicity, however, we will work with
+    # the integer mass table given in Figure 1.
+    #
+    # The theoretical spectrum of a cyclic peptide Peptide, denoted
+    # Cyclospectrum(Peptide), is the collection of all of the masses of its
+    # subpeptides, in addition to the mass 0 and the mass of the entire peptide.
+    # We will assume that the theoretical spectrum can contain duplicate elements,
+    # as is the case for "NQEL", where "NQ" and "EL" have the same mass.
+    #
+    # Input: An amino acid string Peptide (1 char abbreviations).
+    #
+    # Return: Cyclospectrum(Peptide).
+
+def cycloSpectrum(peptide,mass=integer_masses):
+
+    # get_pairs
+    #
+    # Inputs: index_range
+    #
+    # Return:  Pairs of indices delimiting sublists of peptide
+
+    def get_pairs(index_range):
+        return [(i,j) for i in index_range for j in range(i,i+len(index_range)) if j!=i]
+
+    augmented_peptide = peptide+peptide   # allows easy extraction of substrings
+                                          # fromcyclic peptide
+    spectrum          = [get_mass(augmented_peptide[a:b],mass) for (a,b) in get_pairs(range(len(peptide)))]
+    spectrum.append(get_mass('',mass))
+    spectrum.append(get_mass(peptide,mass))
+    spectrum.sort()
+    return spectrum
+
+def count_peptides_linear(total_mass):
+    '''
+    BA4D	Compute the Number of Peptides of Given Total Mass
+
+     In Generate the Theoretical Spectrum of a Cyclic Peptide, we generated the
+     theoretical spectrum of a known cyclic peptide. Although this task is
+     relatively easy, our aim in mass spectrometry is to solve the reverse problem:
+     we must reconstruct an unknown peptide from its experimental spectrum.
+     We will start by assuming that a biologist is lucky enough to generate an
+     ideal experimental spectrum Spectrum, which is one coinciding with the
+     peptide’s theoretical spectrum. Can we reconstruct a peptide whose
+     theoretical spectrum is Spectrum?
+
+     Denote the total mass of an amino acid string Peptide as Mass(Peptide).
+     In mass spectrometry experiments, whereas the peptide that generated a
+     spectrum is unknown, the peptide’s mass is typically known and is denoted
+     ParentMass(Spectrum). Of course, given an ideal experimental spectrum,
+     Mass(Peptide) is given by the largest mass in the spectrum.
+
+     A brute force approach to reconstructing a peptide from its theoretical
+     spectrum would generate all possible peptides whose mass is equal to
+     ParentMass(Spectrum) and then check which of these peptides has theoretical
+     spectra matching Spectrum. However, we should be concerned about the running
+     time of such an approach: how many peptides are there having mass equal
+     to ParentMass(Spectrum)?
+
+     Input: An integer m.
+
+     Return: The number of linear peptides having integer mass m.
+
+     NB, treat peptide as a vector of masses, so amino acids with the same
+     mass are the same
+    '''
+    cache=[]
+    masses=list(set(integer_masses.values()))
+    for target_mass in range(total_mass+1):
+        total=0
+        for amino_acid_mass in masses:
+            residual_mass=target_mass-amino_acid_mass
+            if residual_mass==0:
+                total+=1
+            elif residual_mass>0:
+                total+=cache[residual_mass]
+        cache.append(total)
+
+    return total
+
+
+def get_weight(peptide):
+    '''
+     Input:  peptide   List of amino acids
+
+     Return:  Monoisotopic mass of peptide
+    '''
+    return sum(amino_acids[amino_acid].mon_mass for amino_acid in peptide)
+
+def expand(peptides,masses):
+    return [peptide+[mass] for peptide in peptides for mass in masses]
+
+def mass(peptide):
+    return sum([weight for weight in peptide])
+
+def parentMass(spectrum):
+    return max(spectrum)
+
+
+
+def find_cyclopeptide_sequence(spectrum):
+    '''
+    BA4E 	Find a Cyclic Peptide with Theoretical Spectrum Matching an Ideal Spectrum
+
+     Input: A collection of (possibly repeated) integers Spectrum corresponding
+           to an ideal experimental spectrum.
+
+     Return: An amino acid string Peptide such that Cyclospectrum(Peptide) =
+            Spectrum (if such a string exists).
+    '''
+    # isConsistent
+    #
+    # Determine whether peptide is consistent with spectrum
+    def isConsistent(peptide):
+        # count
+        #
+        # Determine number of items in spect that match specified element
+
+        def count(element,spect):
+            return len ([s for s in spect if s==element])
+
+        peptide_spectrum = linearSpectrum(peptide)
+
+        for element in peptide_spectrum:
+            if count(element,peptide_spectrum)>count(element,spectrum):
+                return False
+        return True
+
+    # cycloSpectrum
+    #
+    # Compute spectrum for cyclic peptide
+    #
+    # Inputs:  peptide   Peptide represented as a list of masses
+    #
+    # Returns: spectrum of peptide
+
+    def cycloSpectrum(peptide):
+
+        # get_pairs
+        #
+        # Inputs: index_range
+        #
+        # Return:  Pairs of indices delimiting sublists of peptide
+
+        def get_pairs(index_range):
+            return [(i,j) for i in index_range for j in range(i,i+len(index_range)) if j!=i]
+
+        augmented_peptide = peptide+peptide
+        result            = [sum(augmented_peptide[a:b]) for (a,b) in get_pairs(range(len(peptide)))]
+        result.append(0)
+        result.append(sum(peptide))
+        result.sort()
+        return result
+
+    peptides = [[]]
+    output   = []
+    masses   = list(set(integer_masses.values()))
+
+    while len(peptides)>0:
+        next_peptides=[]
+        for peptide in expand(peptides,masses):
+            if mass(peptide) == parentMass(spectrum):
+                if cycloSpectrum(peptide) == spectrum:
+                    output.append(peptide)
+            else:
+                if isConsistent(peptide):
+                    next_peptides.append(peptide)
+        peptides=next_peptides
+
+    return output
+
+
+
+def score(peptide,spectrum,spect_from_peptide=cycloSpectrum):
+    '''BA4F 	Compute the Score of a Cyclic Peptide Against a Spectrum'''
+    return countMatchesInSpectra(spect_from_peptide(peptide),spectrum)
+
+def leaderPeptide(n,
+                  spectrum,
+                  masses=list(set(integer_masses.values())),
+                  spect1=linearSpectrum,
+                  spect2=linearSpectrum):
+    '''BA4G 	Implement LeaderboardCyclopeptideSequencing'''
+    leaderPeptide=[]
+    leaderBoard=[leaderPeptide]
+
+    while len(leaderBoard)>0:
+        newBoard=[]
+        for peptide in expand(leaderBoard,masses):
+            if mass(peptide)==parentMass(spectrum):
+                if score(peptide,spectrum,spect2)>\
+                   score(leaderPeptide,spectrum,spect2):
+                    leaderPeptide=peptide
+                newBoard.append(peptide)
+            elif mass(peptide)>parentMass(spectrum):
+                pass #peptide will be dropped from leader board
+            else:
+                newBoard.append(peptide)
+        leaderBoard=trim(newBoard, spectrum, n,spect1)
+    return leaderPeptide
+
+def convolution_expanded(spectrum):
+    ''' BA4H 	Generate the Convolution of a Spectrum'''
+    return [diff for (diff,count) in convolution (spectrum) for i in range(count) ]
+
+
+def convolutionCyclopeptideSequencing(m,n,spectrum,low_mass=57,high_mass=200):
+    '''
+     BA4I 	Implement ConvolutionCyclopeptideSequencing
+
+     Given: An integer M, an integer N, and a collection of
+     (possibly repeated) integers Spectrum.
+
+     Return: A cyclic peptide LeaderPeptide with amino acids taken only from the
+     top M elements (and ties) of the convolution of Spectrum that fall between
+     57 and 200, and where the size of Leaderboard is restricted to the top N (and ties).
+
+     NB: I had to sort spectrum to pass the testcase in the textbook.
+    '''
+    def get_masses_from_spectrum():
+        masses     = []
+        last_count = 0
+        for mass,count in convolution(spectrum):
+            if low_mass<=mass and mass<=high_mass:
+                if len(masses)<m:
+                    masses.append(mass)
+                    last_count=count
+                else:
+                    if count==last_count:
+                        masses.append(mass)
+                    else:
+                        return masses
+        return masses
+
+    return leaderPeptide(n,spectrum,get_masses_from_spectrum(),spect2=cycloSpectrum1)
+
+
+def linearSpectrumFromString(peptide):
+    '''BA4J 	Generate the Theoretical Spectrum of a Linear Peptide'''
+    return linearSpectrum([integer_masses[a] for a in peptide])
+
+def linearScore(peptide,spectrum):
+    '''BA4K 	Compute the Score of a Linear Peptide'''
+    return countMatchesInSpectra(linearSpectrumFromString(peptide),spectrum)
+
+
+
+def trim(leaderBoard, spectrum,n,spectrum_generator=linearSpectrum):
+    '''
+    BA4L 	Trim a Peptide Leaderboard
+
+    Input: A leaderboard of linear peptides Leaderboard, a linear spectrum
+    Spectrum, and an integer N.
+
+    Return: The top N peptides from Leaderboard scored against Spectrum.
+    Remember to use LinearScore.
+    '''
+    if len(leaderBoard)<n:
+        return leaderBoard
+    peptides_with_scores=[\
+        (score(peptide,spectrum,spectrum_generator),peptide)\
+        for peptide in leaderBoard]
+    peptides_with_scores.sort(reverse=True)
+    (cutoff,_)= peptides_with_scores[n-1]
+    return [peptide                                     \
+            for (score,peptide) in peptides_with_scores \
+            if score>=cutoff]
+
+def trim_for_strings(leaderBoard, spectrum,n,
+                     spectrum_generator=linearSpectrum,
+                     masses=integer_masses):
+    '''BA4L Adapter for 'trim', so it will work with peptides as strings'''
+
+    numeric_peptides=[]
+    trans={}
+    for peptide in leaderBoard:
+        num=[masses[amino_acid] for amino_acid in peptide]
+        numeric_peptides.append(num)
+        trans[tuple(num)]=peptide
+    trimmed=trim(numeric_peptides, spectrum,n,spectrum_generator)
+    return [trans [tuple(peptide)] for peptide in trimmed]
+
+if __name__=='__main__':
+
+    class TestSpectrum(TestCase):
 
         def test_spec(self):
             self.assertEqual('WMQS',
@@ -608,7 +941,88 @@ if __name__=='__main__':
                 4083.08025
             ]))
 
-        def test_ba4M(self):
+
+        def test_ba4b(self):
+            '''BA4B	Find Substrings of a Genome Encoding a Given Amino Acid String'''
+            encodings=findEncodings('ATGGCCATGGCCCCCAGAACTGAGATCAATAGTACCCGTATTAACGGGTGA','MA')
+            self.assertEqual(3,len(encodings))
+            self.assertIn('ATGGCC',encodings)
+            self.assertIn('GGCCAT',encodings)
+            self.assertIn('ATGGCC',encodings)
+
+        def test_ba4c(self):
+            '''BA4C	Generate the Theoretical Spectrum of a Cyclic Peptide'''
+            self.assertEqual([0,113,114,128,129,227,242,242,257,355,356,370,371,484],
+                             cycloSpectrum('LEQN'))
+
+
+        def test_ba4d(self):
+            self.assertEqual(14712706211,count_peptides_linear(1024))
+
+
+        def test_chain(self):
+            self.assertAlmostEqual(821.392,get_weight('SKADYEK'),places=3)
+
+        def test_ba4e(self):
+            '''BA4E 	Find a Cyclic Peptide with Theoretical Spectrum Matching an Ideal Spectrum'''
+            seq=find_cyclopeptide_sequence([0,113,128,186,241,299,314,427])
+            self.assertEqual(6,len(seq))
+            self.assertIn([186,128,113],seq)
+            self.assertIn([186,113,128],seq)
+            self.assertIn([128,186,113],seq)
+            self.assertIn([128,113,186],seq)
+            self.assertIn([113,186,128],seq)
+            self.assertIn([113,128,186],seq)
+
+        def test_ba4f(self):
+            ''' BA4F 	Compute the Score of a Cyclic Peptide Against a Spectrum'''
+            self.assertEqual(
+                11,
+                score(
+                    'NQEL',
+                    [0, 99, 113, 114, 128, 227, 257, 299, 355, 356, 370, 371, 484]))
+
+        def test_ba4g(self):
+            '''BA4G 	Implement LeaderboardCyclopeptideSequencing'''
+            self.assertEqual([129, 71, 147, 113],
+                             leaderPeptide(
+                                 10,
+                                 [0, 71, 113, 129, 147, 200, 218,\
+                                  260, 313, 331, 347, 389, 460]))
+
+        def test_ba4h(self):
+            ''' BA4H 	Generate the Convolution of a Spectrum'''
+            self.assertEqual(
+                [137, 137, 186, 186, 49, 323],
+                convolution_expanded([0, 137, 186, 323]))
+
+        def test_ba4i(self):
+            '''BA4I 	Implement ConvolutionCyclopeptideSequencing'''
+            self.assertEqual([99,71,137,57,72,57],
+                             convolutionCyclopeptideSequencing(
+                                 20,
+                                 60,
+                                 [57, 57, 71, 99, 129, 137,\
+                                  170, 186, 194, 208, 228,\
+                                  265, 285, 299, 307, 323,\
+                                  356, 364, 394, 422, 493]))
+
+
+        def test_ba4j(self):
+            '''BA4J 	Generate the Theoretical Spectrum of a Linear Peptide'''
+            self.assertEqual(
+                [0, 113, 114, 128, 129, 242, 242, 257, 370, 371, 484],
+                linearSpectrumFromString('NQEL'))
+
+
+        def test_ba4l(self):
+            '''BA4L 	Trim a Peptide Leaderboard'''
+            self.assertEqual(['LAST', 'ALST'],
+                             trim_for_strings(['LAST', 'ALST', 'TLLT', 'TQAS'],
+                                  [0,71,87,101,113,158,184,188,259,271,372],
+                                  2))
+
+        def test_ba4m(self):
             self.assertEqual([0, 3, 6, 8, 10],
                               Turnpike(
                                   [-10, -8, -7, -6, -5,
@@ -2016,4 +2430,4 @@ if __name__=='__main__':
                                      1238, 1239, 1245, 1246, 1249, 1253, 1256, 1258, 1265
                                        ]))
 
-    unittest.main()
+    main()
