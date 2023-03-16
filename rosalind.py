@@ -18,10 +18,11 @@
 ''' Rosalind utilities and simple problems from chapters 1 through 4'''
 
 
-from math   import log10, ceil, sqrt
-from random import randint, random
-from re     import compile
-from sys    import float_info
+from math     import log10, ceil, sqrt
+from random   import randint, random
+from re       import compile
+from sys      import float_info
+from unittest import main, skip, TestCase
 
 import numpy as np
 
@@ -1873,7 +1874,7 @@ def reconstruct_from_kmers(k,patterns):
 
 # BA3I 	Find a k-Universal Circular String
 # something off - I have taken this out of tests, even though the
-# website accepts may answers. A small test case appears to give differnt
+# website accepts my answers. A small test case appears to give different
 # answers on successive runs - maybe iterating through dict is not deterministic?
 
 def k_universal_circular_string(k):
@@ -2337,9 +2338,9 @@ def convolution_expanded(spectrum):
 
 if __name__=='__main__':
 
-    import unittest
 
-    class TestRosalind(unittest.TestCase):
+
+    class TestRosalind(TestCase):
 
         def test_fib(self):
             self.assertEqual(19,fib(5,3))
@@ -2530,24 +2531,25 @@ if __name__=='__main__':
                  0, 2, 1, 1],
                 r)
 
-        #def test_rear(self):
-            #self.assertEqual([9, 4, 5, 7, 0],
-                        #rear([
-                            #([1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-                            #[3, 1, 5, 2, 7, 4, 9, 6, 10, 8]),
+        @skip('#122')
+        def test_rear(self):
+            self.assertEqual([9, 4, 5, 7, 0],
+                        rear([
+                            ([1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+                            [3, 1, 5, 2, 7, 4, 9, 6, 10, 8]),
 
-                            #([3, 10, 8, 2, 5, 4, 7, 1, 6, 9],
-                            #[5, 2, 3, 1, 7, 4, 10, 8, 6, 9]),
+                            ([3, 10, 8, 2, 5, 4, 7, 1, 6, 9],
+                            [5, 2, 3, 1, 7, 4, 10, 8, 6, 9]),
 
-                            #([8, 6, 7, 9, 4, 1, 3, 10, 2, 5],
-                            #[8, 2, 7, 6, 9, 1, 5, 3, 10, 4]),
+                            ([8, 6, 7, 9, 4, 1, 3, 10, 2, 5],
+                            [8, 2, 7, 6, 9, 1, 5, 3, 10, 4]),
 
-                            #([3, 9, 10, 4, 1, 8, 6, 7, 5, 2],
-                            #[2, 9, 8, 5, 1, 7, 3, 4, 6, 10]),
+                            ([3, 9, 10, 4, 1, 8, 6, 7, 5, 2],
+                            [2, 9, 8, 5, 1, 7, 3, 4, 6, 10]),
 
-                            #([1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-                            #[1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
-                        #]))
+                            ([1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+                            [1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
+                        ]))
 
         def test_tran(self):
             string='''>Rosalind_0209
@@ -2667,7 +2669,7 @@ if __name__=='__main__':
 
     ### Where in the Genome does DNA replication begin? ###
 
-    class Test_1_Replication(unittest.TestCase):
+    class Test_1_Replication(TestCase):
         def test_ba1b(self):
             most_frequent_words=find_most_frequent_words('ACGTTGCATGTCGCATGATGCATGAGAGCT',4)
             self.assertIn('CATG',most_frequent_words)
@@ -2741,7 +2743,7 @@ if __name__=='__main__':
             self.assertIn('ACT', neighbours)
             self.assertIn('ACG', neighbours)
 
-    class Test_2_Sequence(unittest.TestCase):
+    class Test_2_Sequence(TestCase):
 
         def test_ba2a(self): # BA2A 	Implement MotifEnumeration
             self.assertEqual('ATA ATT GTT TTT',
@@ -2844,7 +2846,7 @@ if __name__=='__main__':
 
 ### 3. How do we assemble genomes?
 
-    class Test_3_Assembly(unittest.TestCase):
+    class Test_3_Assembly(TestCase):
         def test_ba3a(self):
             kmers = kmer_composition(5,'CAATCCAAC')
             self.assertEqual(5,len(kmers))
@@ -2958,47 +2960,49 @@ if __name__=='__main__':
                                   'GCTT',
                                   'TTAC']))
 
-# BA3I 	Find a k-Universal Circular String
-        #def test_ba3i(self):
-            #self.assertEqual('0110010100001111',k_universal_circular_string(4))
+        @skip('#17')
+        def test_ba3i(self):
+            ''' BA3I 	Find a k-Universal Circular String'''
+            self.assertEqual('0110010100001111',k_universal_circular_string(4))
 
-# BA3J 	Reconstruct a String from its Paired Composition
-            #def test_ba3j(self):
-                #self.assertEqual("GTGGTCGTGAGATGTTGA",
-                                 #reconstruct_from_paired_kmers(
-                                     #4,
-                                     #2,
-                                    #['GAGA|TTGA',
-                                    #'TCGT|GATG',
-                                    #'CGTG|ATGT',
-                                    #'TGGT|TGAG',
-                                    #'GTGA|TGTT',
-                                    #'GTGG|GTGA',
-                                    #'TGAG|GTTG',
-                                    #'GGTC|GAGA',
-                                    #'GTCG|AGAT']))
-                #self.assertEqual('CACCGATACTGATTCTGAAGCTT',
-                                 #reconstruct_from_paired_kmers(3,
-                                               #1,
-                                               #[
-                                                  #'ACC|ATA', #(ACC|ATA)
-                                                  #'ACT|ATT', #(ACT|ATT)
-                                                  #'ATA|TGA', #(ATA|TGA)
-                                                  #'ATT|TGA', #(ATT|TGA)
-                                                  #'CAC|GAT', #(CAC|GAT)
-                                                  #'CCG|TAC', #(CCG|TAC)
-                                                  #'CGA|ACT', #(CGA|ACT)
-                                                  #'CTG|AGC', #(CTG|AGC)
-                                                  #'CTG|TTC', #(CTG|TTC)
-                                                  #'GAA|CTT', #(GAA|CTT)
-                                                  #'GAT|CTG', #(GAT|CTG)
-                                                  #'GAT|CTG', #(GAT|CTG)
-                                                  #'TAC|GAT', #(TAC|GAT)
-                                                  #'TCT|AAG', #(TCT|AAG)
-                                                  #'TGA|GCT', #(TGA|GCT)
-                                                  #'TGA|TCT', #(TGA|TCT)
-                                                  #'TTC|GAA'  #(TTC|GAA)
-                                               #]))
+        @skip('#18')
+        def test_ba3j(self):
+            '''BA3J 	Reconstruct a String from its Paired Composition'''
+            self.assertEqual("GTGGTCGTGAGATGTTGA",
+                             reconstruct_from_paired_kmers(
+                                 4,
+                                 2,
+                                ['GAGA|TTGA',
+                                'TCGT|GATG',
+                                'CGTG|ATGT',
+                                'TGGT|TGAG',
+                                'GTGA|TGTT',
+                                'GTGG|GTGA',
+                                'TGAG|GTTG',
+                                'GGTC|GAGA',
+                                'GTCG|AGAT']))
+            self.assertEqual('CACCGATACTGATTCTGAAGCTT',
+                             reconstruct_from_paired_kmers(3,
+                                           1,
+                                           [
+                                              'ACC|ATA', #(ACC|ATA)
+                                              'ACT|ATT', #(ACT|ATT)
+                                              'ATA|TGA', #(ATA|TGA)
+                                              'ATT|TGA', #(ATT|TGA)
+                                              'CAC|GAT', #(CAC|GAT)
+                                              'CCG|TAC', #(CCG|TAC)
+                                              'CGA|ACT', #(CGA|ACT)
+                                              'CTG|AGC', #(CTG|AGC)
+                                              'CTG|TTC', #(CTG|TTC)
+                                              'GAA|CTT', #(GAA|CTT)
+                                              'GAT|CTG', #(GAT|CTG)
+                                              'GAT|CTG', #(GAT|CTG)
+                                              'TAC|GAT', #(TAC|GAT)
+                                              'TCT|AAG', #(TCT|AAG)
+                                              'TGA|GCT', #(TGA|GCT)
+                                              'TGA|TCT', #(TGA|TCT)
+                                              'TTC|GAA'  #(TTC|GAA)
+                                           ]))
 
 # BA3K 	Generate Contigs from a Collection of Reads
         def test_ba3k(self):
@@ -3047,7 +3051,7 @@ if __name__=='__main__':
             self.assertIn([6,7,6 ],paths)
             self.assertEqual(4,len(paths))
 
-    class Test_4_SequenceAntibodies(unittest.TestCase):
+    class Test_4_SequenceAntibodies(TestCase):
 # BA4B	Find Substrings of a Genome Encoding a Given Amino Acid String
         def test_ba4b(self):
             encodings=findEncodings('ATGGCCATGGCCCCCAGAACTGAGATCAATAGTACCCGTATTAACGGGTGA','MA')
@@ -3132,4 +3136,4 @@ if __name__=='__main__':
 
 
 
-    unittest.main()
+    main()
