@@ -1,5 +1,6 @@
 #!/usr/bin/env python
-#   (C) 2017-2020 Greenweaves Software Limited
+
+#   (C) 2017-2023 Greenweaves Software Limited
 
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -14,22 +15,30 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-# Rosalind utilities
+''' Rosalind utilities and simple problems from chapters 1 through 4'''
 
 
+from math   import log10, ceil, sqrt
+from random import randint, random
+from re     import compile
+from sys    import float_info
 
-import functools
-import math
-import numpy
-import random
-import re
-import sys
+import numpy as np
 
-from helpers import count_subset,create_frequency_table,best,triplets,binomial_coefficients
-from helpers import prod,zeroes,k_mers,iterate_markov,create_wf_initial_probabilites,create_wf_transition_matrix
+from helpers import count_subset,create_frequency_table,triplets,binomial_coefficients
+from helpers import zeroes,k_mers,iterate_markov,create_wf_initial_probabilites,create_wf_transition_matrix
 from helpers import create_binomial,binomial_index,rotate,linearSpectrum,countMatchesInSpectra,cycloSpectrum1,get_mass
 from fasta import FastaContent
 from reference_tables import codon_table,skew_step,bases,integer_masses,amino_acids
+
+def grph(fasta,k):
+    graph=[]
+    for name_s,s in fasta:
+        for name_t,t in fasta:
+            if s!=t and s[-k:]==t[:k]:
+                graph.append((name_s,name_t))
+
+    return graph
 
 def revc(dna):
     return dna.translate({
@@ -190,8 +199,8 @@ class LabelledTree(Tree):
                     return index
             return None
 
-        T=LabelledTree(bidirectional=bidirectional)
-        pattern=re.compile('(([0-9]+)|([{0}]+))->(([0-9]+)|([{0}]+))'.format(letters))
+        T       = LabelledTree(bidirectional=bidirectional)
+        pattern = compils('(([0-9]+)|([{0}]+))->(([0-9]+)|([{0}]+))'.format(letters))
 
         for line in lines:
             m=pattern.match(line)
@@ -669,21 +678,23 @@ def generate_dNeighborhood(pattern,d):
         return list(set(start+neighbourhood))
 
 
-# GC	Computing GC Content
-#
-#       The GC-content of a DNA string is given by the percentage of symbols in the string
-#       that are 'C' or 'G'. For example, the GC-content of "AGCTATAG" is 37.5%.
-#       Note that the reverse complement of any DNA string has the same GC-content.
-#
-#       Input: At most 10 DNA strings in FASTA format (of length at most 1 kbp each).
-#
-#       Return: The ID of the string having the highest GC-content, followed by
-#       the GC-content of that string.
 
 def gc(fasta):
-    return best(\
-        [(k,100*float(sum(count_subset(s,'GC')))/len(s)) for (k,s) in fasta]\
-    )
+    '''
+     GC	Computing GC Content
+
+       The GC-content of a DNA string is given by the percentage of symbols in the string
+       that are 'C' or 'G'. For example, the GC-content of "AGCTATAG" is 37.5%.
+       Note that the reverse complement of any DNA string has the same GC-content.
+
+       Input: At most 10 DNA strings in FASTA format (of length at most 1 kbp each).
+
+       Return: The ID of the string having the highest GC-content, followed by
+       the GC-content of that string.
+    '''
+    gcs = [(k,100*float(sum(count_subset(s,'GC')))/len(s)) for (k,s) in fasta]
+    return gcs[np.argmax([gc_content for _,gc_content in gcs])]
+
 
 #SSEQ  Finding a spliced motif
 # Input: Two DNA strings s and t (each of length at most 1 kbp) in FASTA format.
@@ -842,24 +853,27 @@ def lia(k,n):
         probability+=counts[nn]*(1-prob_individual)**n1*prob_individual**nn
     return probability
 
-# RSTR 	Matching Random Motifs
-#
-# Given: A positive integer N<100000, a number x between 0 and 1, and
-# a DNA string s of length at most 10 bp.
-#
-# Return: The probability that if N random DNA strings having the same length
-# as s are constructed with GC-content x (see Introduction to Random Strings),
-# then at least one of the strings equals s. We allow for the same random
-# string to be created more than once.
-#
-# NB "GC-content x" is interpreted as P(G)=P(C)=0.5*x, and similarly for A &T
+
 
 def rstr(n,x,string):
+    '''
+    RSTR 	Matching Random Motifs
+
+    Given: A positive integer N<100000, a number x between 0 and 1, and
+    a DNA string s of length at most 10 bp.
+
+    Return: The probability that if N random DNA strings having the same length
+    as s are constructed with GC-content x (see Introduction to Random Strings),
+    then at least one of the strings equals s. We allow for the same random
+    string to be created more than once.
+
+    NB "GC-content x" is interpreted as P(G)=P(C)=0.5*x, and similarly for A &T
+   '''
 
     def prob_char(c):
         return 0.5*x if c in ['C','G'] else 0.5*(1-x)
-    probability=prod([prob_char(c) for c in string])
-    return 1-(1-probability)**n
+    probability = np.exp(sum([np.log(prob_char(c)) for c in string]))
+    return 1- (1-probability)**n
 
 # CONS	Consensus and Profile
 #
@@ -978,10 +992,10 @@ def revp(fasta,len1=4,len2=12):
 def random_genome(s,a):
     def log_probability(prob_gc):
         log_prob={
-            'G' : math.log10(0.5*prob_gc),
-            'C' : math.log10(0.5*prob_gc),
-            'A' : math.log10(0.5*(1-prob_gc)),
-            'T' : math.log10(0.5*(1-prob_gc))
+            'G' : log10(0.5*prob_gc),
+            'C' : log10(0.5*prob_gc),
+            'A' : log10(0.5*(1-prob_gc)),
+            'T' : log10(0.5*(1-prob_gc))
         }
         return sum([log_prob[ch] for ch in s])
     return [log_probability(prob_gc) for prob_gc in a]
@@ -1018,7 +1032,7 @@ def longestIncreasingSubsequence(N,X):
             lo = 1
             hi = L
             while lo<=hi:
-                mid = math.ceil((lo+hi)/2)
+                mid = ceil((lo+hi)/2)
                 if ordered(X[M[mid]],X[i]):
                     lo = mid+1
                 else:
@@ -1175,12 +1189,12 @@ def indc(n):
         return c[binomial_index(2*n,k)]
     def p_cumulative(k):
         return sum(p(kk) for kk in range(k,2*n+1))*mult
-    return [math.log10(p_cumulative(k+1)) for k in range(2*n)]
+    return [log10(p_cumulative(k+1)) for k in range(2*n)]
 
 # AFRQ 	Counting Disease Carriers
 def afrq(ps):
     def p_recessive(p):
-        return 2*math.sqrt(p)-p
+        return 2*sqrt(p)-p
     return [p_recessive(p) for p in ps]
 
 
@@ -1221,7 +1235,7 @@ def foun(N,m,A):
         return final[0]
     result=[]
     for i in range(m):
-        result.append([math.log10(prob(i+1,a))  for a in A])
+        result.append([log10(prob(i+1,a))  for a in A])
     return result
 
 # SEXL 	Sex-Linked Inheritance
@@ -1238,14 +1252,15 @@ def sign(n):
         return [expanded(binary(i,n)) for i in range(2**n)]
     return flatten([expand(p) for p in perm(n)])
 
-# EVAL 	Expected Number of Restriction Sites
-
 def eval (n,s,A):
-    mult=n-len(s)+1
+    '''
+    EVAL 	Expected Number of Restriction Sites
+    '''
+    mult = n - len(s) + 1
     def probability_of_match(a):
         def prob_match(c):
             return 0.5*(a if c=='C' or c=='G' else 1-a)
-        return prod([prob_match(c) for c in s])
+        return np.exp(sum([np.log(prob_match(c)) for c in s]))
     return [mult*probability_of_match(a) for a in A]
 
 #PERM	Enumerating Gene Orders
@@ -1362,7 +1377,7 @@ def enumerateMotifs(k,d,dna):
 
 def medianString(k,dna):
     def findClosest(d):
-        distance=sys.float_info.max
+        distance=float_info.max
         closest=None
         for k_mer in k_mers(k):
             if distance>d(k_mer,dna):
@@ -1414,7 +1429,7 @@ def greedyMotifSearch(k,t,dna,pseudo_counts=False):
     # each base at each position, summed over all motifs
     def count_occurrences_of_bases(
         motifs,\
-        initialise_counts=numpy.ones if pseudo_counts else numpy.zeros
+        initialise_counts=np.ones if pseudo_counts else np.zeros
         ):
         matrix = initialise_counts((len(bases),k),dtype=int)
         for kmer in motifs:
@@ -1454,7 +1469,7 @@ def randomized_motif_search(k,t,dna,eps=1):
     def score(k,motifs):
         total=0
         for j in range(k):
-            counts=numpy.zeros(len(bases),dtype=numpy.int32)
+            counts=np.zeros(len(bases),dtype=np.int32)
             for motif in motifs:
                 i=bases.find(motif[j])
                 counts[i]+=1
@@ -1469,7 +1484,7 @@ def randomized_motif_search(k,t,dna,eps=1):
                     total+=counts[i]
         return total
     def counts(motifs):
-        matrix=numpy.ones((len(bases),k),dtype=int)
+        matrix=np.ones((len(bases),k),dtype=int)
         for i in range(len(bases)):
             for j in range(k):
                 matrix[i,j]*=eps
@@ -1502,14 +1517,14 @@ def randomized_motif_search(k,t,dna,eps=1):
         return motifs
     def Profile(motifs):
         matrix=counts(motifs)
-        probabilities=numpy.zeros((len(bases),k),dtype=float)
+        probabilities=np.zeros((len(bases),k),dtype=float)
         for i in range(len(bases)):
             for j in range(k):
                 probabilities[i,j]=matrix[i,j]/float(len(motifs))
         return probabilities
 
     def random_kmer(string):
-        i=random.randint(0,len(string)-k)
+        i=randint(0,len(string)-k)
         return string[i:i+k]
 
     motifs=[]
@@ -1526,7 +1541,7 @@ def randomized_motif_search(k,t,dna,eps=1):
             return (score(k,bestMotifs),bestMotifs)
 
 def randomized_motif_search_driver(k,t,dna,N=1000):
-    best=sys.float_info.max
+    best=float_info.max
     mm=[]
     for i in range(N):
         (sc,motifs) =randomized_motif_search(k,t,dna)
@@ -1552,7 +1567,7 @@ def gibbs(k,t,n,dna,eps=1):
     def score(k,motifs):
         total=0
         for j in range(k):
-            counts=numpy.zeros(len(bases),dtype=numpy.int32)
+            counts=np.zeros(len(bases),dtype=np.int32)
             for motif in motifs:
                 i=bases.find(motif[j])
                 counts[i]+=1
@@ -1566,13 +1581,16 @@ def gibbs(k,t,n,dna,eps=1):
                 if i!=ii:
                     total+=counts[i]
         return total
+
     def random_kmer(string):
-        i=random.randint(0,len(string)-k)
+        i=randint(0,len(string)-k)
         return string[i:i+k]
+
     def dropOneMotif(motifs,i):
         return [motifs[j] for j in range(len(motifs)) if j!=i]
+
     def counts(motifs):
-        matrix=numpy.ones((len(bases),k),dtype=int)
+        matrix=np.ones((len(bases),k),dtype=int)
         for i in range(len(bases)):
             for j in range(k):
                 matrix[i,j]*=eps
@@ -1581,9 +1599,10 @@ def gibbs(k,t,n,dna,eps=1):
                 i=bases.find(kmer[j])
                 matrix[i,j]+=1
         return matrix
+
     def Profile(motifs):
         matrix=counts(motifs)
-        probabilities=numpy.zeros((len(bases),k),dtype=float)
+        probabilities=np.zeros((len(bases),k),dtype=float)
         for i in range(len(bases)):
             for j in range(k):
                 probabilities[i,j]=matrix[i,j]/float(len(motifs))
@@ -1606,7 +1625,7 @@ def gibbs(k,t,n,dna,eps=1):
 
     def generate(probabilities):
         accumulated=accumulate(probabilities)
-        rr=accumulated[len(accumulated)-1]*random.random()
+        rr=accumulated[len(accumulated)-1]*random()
         i=0
         while accumulated[i]<=rr:
             i+=1
@@ -1619,9 +1638,9 @@ def gibbs(k,t,n,dna,eps=1):
     bestMotifs=motifs
 
     trace=[]
-    best_score=sys.float_info.max
+    best_score=float_info.max
     for j in range(n):
-        i=random.randint(0,t-1)
+        i=randint(0,t-1)
         profile=Profile(dropOneMotif(motifs,i))
         motif_index=generate([probability(dna[i][ll:ll+k],profile)\
                               for ll in range(len(dna[i])-k)])
@@ -2346,6 +2365,7 @@ if __name__=='__main__':
             self.assertEqual('ACCGGGTTTT',revc('AAAACCCGGT'))
 
         def test_gc(self):
+            ''' GC	Computing GC Content'''
             string='''>Rosalind_6404
             CCTGCGGAAGATCGGCACTAGAATAGCCAGAACCGTTTCTCTGAGGCTTCCGGCCTTCCC
             TCCCACTAATAATTCTGAGG
@@ -2412,7 +2432,10 @@ if __name__=='__main__':
             self.assertAlmostEqual(0.684,lia(2,1),places=3)
 
         def test_rstr(self):
-            self.assertAlmostEqual(0.689,rstr(90000, 0.6,'ATAGCCGA'),places=3) # RSTR 	Matching Random Motifs
+            ''' RSTR 	Matching Random Motifs'''
+            self.assertAlmostEqual(0.689,
+                                   rstr(90000, 0.6,'ATAGCCGA'),
+                                   places=3)
 
         def test_cons(self):
             string='''>Rosalind_1
@@ -2614,9 +2637,11 @@ if __name__=='__main__':
             self.assertAlmostEqual(0.5,B[1],3)
             self.assertAlmostEqual(0.32,B[2],3)
 
-# EVAL 	Expected Number of Restriction Sites
         def test_eval(self):
-            B=eval(10,'AG',[0.25, 0.5, 0.75])
+            '''
+             EVAL 	Expected Number of Restriction Sites
+            '''
+            B = eval(10,'AG',[0.25, 0.5, 0.75])
             self.assertAlmostEqual(0.422,B[0],3)
             self.assertAlmostEqual(0.563,B[1],3)
             self.assertAlmostEqual(0.422,B[2],3)
