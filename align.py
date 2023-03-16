@@ -322,7 +322,7 @@ def edta(s,t,
         t1  = []
         while m>0 and n>0:
             moves  = [(m-1,n), (m,n-1), (m-1,n-1)]
-            scores = [matrix[m-1,n]   + indel_cost,
+            scores = [matrix[m-1,n]+indel_cost,
                       matrix[m,n-1]   + indel_cost,
                       matrix[m-1,n-1] + (0 if s[m-1]==t[n-1] else replace_cost(s[m-1],t[n-1]))]
             ss     = [s[m-1],'-',s[m-1]]
@@ -339,7 +339,69 @@ def edta(s,t,
     s1,t1       = backtrack()
     return (dist,s1,t1)
 
-#-------------------------- Everything above this line has neen refactored
+def  FindHighestScoringFittingAlignment(s,t,
+                                        replace_score  = createSimpleDNASubst(),
+                                        indel_cost     = 1                                        ):
+    '''
+    BA5H Find a Highest-Scoring Fitting Alignment of Two Strings
+    '''
+    def build_matrix():
+        matrix = np.zeros((len(s)+1,len(t)+1))
+        moves = {}
+        for i in range(len(s)+1):
+            for j in range(len(t)+1):
+                if i==0 and j==0: pass
+                elif i==0:
+                    matrix[i,j] = 0
+                    moves[(i,j)] = (0,0,0,-1)
+                elif j==0:
+                    matrix[i,j] = 0
+                    moves[(i,j)]  =(0,0,-1,0)
+                else:
+                    scores       = [matrix[i-1,j]   - indel_cost,
+                                    matrix[i,j-1]   - indel_cost,
+                                    matrix[i-1,j-1] + replace_score[(s[i-1],t[j-1])]]
+                    froms        = [(i-1, j,   -1,  0),
+                                              (i,   j-1,  0, -1),
+                                              (i-1, j-1, -1, -1)]
+                    index        = np.argmax(scores)
+                    matrix[i,j]  = scores[index]
+                    moves[(i,j)] = froms[index]
+
+        return matrix,moves
+
+    def backtrack(matrix,moves):
+
+        score = max([matrix[i,-1] for i in range(len(s)+1)])
+        i     = -1
+        j     = len(t)
+        for k in range(len(s)-1,-1,-1):
+            if matrix[k,-1]==score:
+                i = k
+                break
+        s1    = []
+        t1    = []
+        while i>0 or j>0:
+            i,j,di,dj = moves[(i,j)]
+            if di==0:
+                s1.append('-')
+                t1.append(t[j])
+            elif dj==0:
+                s1.append(s[i])
+                t1.append('-')
+            else:
+                s1.append(s[i])
+                t1.append(t[j])
+
+        return score,s1[:-1][::-1],t1[:-1][::-1]
+
+    distances,moves = build_matrix()
+
+    dist,s1,t1 = backtrack(distances,moves)
+
+    return (dist,''.join(s1),''.join(t1))
+
+#-------------------------- Everything above this line has been refactored
 
 def alignUsingLinearSpace(v,w,
                           replace_score = BLOSUM62,
@@ -1568,6 +1630,13 @@ if __name__=='__main__':
             self.assertEqual(3272,score)
             # self.assertEqual('EANL-Y',s1)
             # self.assertEqual('ENALTY',s2)
+
+        def test_ba5h_sample(self):
+            ''' BA5H Find a Highest-Scoring Fitting Alignment of Two Strings '''
+            score, s1,s2 = FindHighestScoringFittingAlignment('GTAGGCTTAAGGTTA','TAGATA')
+            self.assertEqual(2,score)
+            # self.assertEqual('TAGGCTTA',s1)
+            # self.assertEqual('TAGA--TA',s2)
 
         def test_ba5k_sample(self):
             '''BA5K Find a middle edge in the alignment graph in linear space.'''
