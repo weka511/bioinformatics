@@ -66,18 +66,18 @@ I have written this code in Python 3, generally with the most recent release at 
 
 | # | Location | Description |
 | ---- | --------------- | ------------------------------------------------|
-|BA4A|rosalind.py|[Translate an RNA String into an Amino Acid String](http://rosalind.info/problems/ba4a/) |
-|BA4B|rosalind.py|[Find Substrings of a Genome Encoding a Given Amino Acid String](http://rosalind.info/problems/ba4b/) |
-|BA4C|rosalind.py|[Generate the Theoretical Spectrum of a Cyclic Peptide](http://rosalind.info/problems/ba4c/) |
-|BA4D|rosalind.py|[Compute the Number of Peptides of Given Total Mass](http://rosalind.info/problems/ba4d/) |
-|BA4E|rosalind.py|[Find a Cyclic Peptide with Theoretical Spectrum Matching an Ideal Spectrum](http://rosalind.info/problems/ba4e/) |
-|BA4F|rosalind.py|[Compute the Score of a Cyclic Peptide Against a Spectrum](http://rosalind.info/problems/ba4f/) |
-|BA4G|rosalind.py|[Implement LeaderboardCyclopeptideSequencing ](http://rosalind.info/problems/ba4g/) |
-|BA4H|rosalind.py|[Generate the Convolution of a Spectrum ](http://rosalind.info/problems/ba4h/) |
-|BA4I|rosalind.py|[Implement ConvolutionCyclopeptideSequencing](http://rosalind.info/problems/ba4i/) |
-|BA4J|rosalind.py|[Generate the Theoretical Spectrum of a Linear Peptide](http://rosalind.info/problems/ba4j/) |
-|BA4K|rosalind.py|[Compute the Score of a Linear Peptide ](http://rosalind.info/problems/ba4k/) |
-|BA4L|rosalind.py|[Trim a Peptide Leaderboard](http://rosalind.info/problems/ba4l/) |
+|BA4A|spectrum.py|[Translate an RNA String into an Amino Acid String](http://rosalind.info/problems/ba4a/) |
+|BA4B|spectrum.py|[Find Substrings of a Genome Encoding a Given Amino Acid String](http://rosalind.info/problems/ba4b/) |
+|BA4C|spectrum.py|[Generate the Theoretical Spectrum of a Cyclic Peptide](http://rosalind.info/problems/ba4c/) |
+|BA4D|spectrum.py|[Compute the Number of Peptides of Given Total Mass](http://rosalind.info/problems/ba4d/) |
+|BA4E|spectrum.py|[Find a Cyclic Peptide with Theoretical Spectrum Matching an Ideal Spectrum](http://rosalind.info/problems/ba4e/) |
+|BA4F|spectrum.py|[Compute the Score of a Cyclic Peptide Against a Spectrum](http://rosalind.info/problems/ba4f/) |
+|BA4G|spectrum.py|[Implement LeaderboardCyclopeptideSequencing ](http://rosalind.info/problems/ba4g/) |
+|BA4H|spectrum.py|[Generate the Convolution of a Spectrum ](http://rosalind.info/problems/ba4h/) |
+|BA4I|spectrum.py|[Implement ConvolutionCyclopeptideSequencing](http://rosalind.info/problems/ba4i/) |
+|BA4J|spectrum.py|[Generate the Theoretical Spectrum of a Linear Peptide](http://rosalind.info/problems/ba4j/) |
+|BA4K|spectrum.py|[Compute the Score of a Linear Peptide ](http://rosalind.info/problems/ba4k/) |
+|BA4L|spectrum.py|[Trim a Peptide Leaderboard](http://rosalind.info/problems/ba4l/) |
 |BA4M|ba4m.py spectrum.py| [Solve the Turnpike Problem](http://rosalind.info/problems/ba4m/) |
 |-|tyrocidine.py| Challenge Problems from [Bioinformatics Algorithms](http://bioinformaticsalgorithms.com/): sequence Tyrocidine from supplied spectrum (WIP)|
 |conv|conv.py+spectrum.py|[Comparing Spectra with the Spectral Convolution](http://rosalind.info/problems/conv/)|

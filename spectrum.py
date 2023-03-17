@@ -17,22 +17,29 @@
 
 '''    Code for Chapter 4 and utilities for mass spectroscopy'''
 
+from sys import float_info
 from   unittest import TestCase, main, skip
 import numpy as np
 
-from reference_tables import integer_masses,amino_acids
+from reference_tables import integer_masses,amino_acids, integer_masses, codon_table
 from bisect           import bisect
-from rosalind         import convolution, cycloSpectrum1, countMatchesInSpectra, get_mass, prot, dna_to_rna, revc
+from rosalind         import dna_to_rna, revc, triplets
+
+def get_mass(peptide,mass=integer_masses):
+    '''Total mass of amino acids in peptide'''
+    return sum([mass[amino_acid] for amino_acid in peptide])
 
 
-# SpectrumGraph
-#
-# Construct the Graph of a Spectrum
-# Input: A space-delimited list of integers Spectrum.
-#
-# Return: Graph(Spectrum)
 
 def invert(masses):
+    '''
+    SpectrumGraph
+
+    Construct the Graph of a Spectrum
+    Input: A space-delimited list of integers Spectrum.
+
+    Return: Graph(Spectrum)
+    '''
     inverted={}
     for k,v in masses.items():
         if not v in inverted:
@@ -60,25 +67,17 @@ def SpectrumGraph(spectrum):
         add(i)
     return product
 
-# def linearSpectrum(peptide):
-    # def getSpectrum(peptide):
-        # spectrum = set()
-        # for i in range(len(peptide)):
-            # spectrum.add(sum(peptide[:i]))
-            # spectrum.add(sum(peptide[i:]))
-
-        # return sorted(list(spectrum))
-    # return getSpectrum( [integer_masses[p] for p in peptide]) if peptide.isalpha() else getSpectrum(peptide)
-
-# DecodeIdealSpectrum
-#
-# Reconstruct a peptide from its ideal spectrum.
-#
-# Input: A  list of integers, Spectrum.
-#
-# Return: An amino acid string with an ideal spectrum that matches Spectrum.
 
 def DecodeIdealSpectrum(Spectrum):
+    '''
+    DecodeIdealSpectrum
+
+    Reconstruct a peptide from its ideal spectrum.
+
+     Input: A  list of integers, Spectrum.
+
+     Return: An amino acid string with an ideal spectrum that matches Spectrum.
+    '''
     def bfs(adj,paths = [[(0,'')]]):
         closed_paths = []
         while True:
@@ -103,28 +102,6 @@ def DecodeIdealSpectrum(Spectrum):
 
     return None
 
-# CreatePeptideVector
-#
-# Convert a Peptide into a Peptide Vector
-#
-# Convert a peptide into a binary peptide vector.
-#
-# Given an amino acid string Peptide = a1 . . . an of length n, we will represent its
-# prefix masses using a binary peptide vector Peptide' with mass(Peptide) coordinates.
-# This vector contains a 1 at each of the n prefix coordinates
-#
-# mass(a1), mass(a1 a2), . . . , mass(a1 a2 . . . an ) ,
-# and it contains a 0 in each of the remaining noise coordinates.
-#
-# Input: A peptide P.
-#
-# Return: The peptide vector of P.
-#
-# Note: In this chapter, all dataset problems implicitly use the standard integer-valued mass
-# table for the regular twenty amino acids. Examples sometimes use imaginary amino
-# acids X and Z having respective integer masses 4 and 5.
-
-import sys
 
 def create_extended():
     extended_masses = {'X':4,'Z':5}
@@ -132,6 +109,28 @@ def create_extended():
     return extended_masses
 
 def CreatePeptideVector(peptide):
+    '''
+    CreatePeptideVector
+
+     Convert a Peptide into a Peptide Vector
+
+     Convert a peptide into a binary peptide vector.
+
+     Given an amino acid string Peptide = a1 . . . an of length n, we will represent its
+     prefix masses using a binary peptide vector Peptide' with mass(Peptide) coordinates.
+     This vector contains a 1 at each of the n prefix coordinates
+
+     mass(a1), mass(a1 a2), . . . , mass(a1 a2 . . . an ) ,
+     and it contains a 0 in each of the remaining noise coordinates.
+
+     Input: A peptide P.
+
+     Return: The peptide vector of P.
+
+     Note: In this chapter, all dataset problems implicitly use the standard integer-valued mass
+     table for the regular twenty amino acids. Examples sometimes use imaginary amino
+     acids X and Z having respective integer masses 4 and 5.
+    '''
     extended_masses = create_extended()
     masses          = [extended_masses[p] for p in peptide]
     result          = []
@@ -140,43 +139,49 @@ def CreatePeptideVector(peptide):
         result.append(1)
     return result
 
-# CreatePeptide
-#
-# Convert a Peptide Vector into a Peptide
-#
+
 def CreatePeptide(vector):
+    '''
+    CreatePeptide
+
+    Convert a Peptide Vector into a Peptide
+
+    '''
     extended_masses = create_extended()
     masses_offset   = [i+1 for i in range(len(vector)) if vector[i]>0]
     masses          = [b-a for (a,b) in zip([0]+masses_offset[:-1],masses_offset)]
     inverted_masses = invert(extended_masses)
     return ''.join( [str(inverted_masses[m][0]) for m in masses])
 
-# conv
-#
-# Comparing Spectra with the Spectral Convolution
-#
-# Comparing Spectraclick to collapse
-#
-# Suppose you have two mass spectra, and you want to check if they both were obtained from the same protein;
-# you will need some notion of spectra similarity. The simplest possible metric would be to count the number
-# of peaks in the mass spectrum that the spectra share, called the shared peaks count;
-# its analogue for simplified spectra is the number of masses that the two spectra have in common.
 
-# The shared peaks count can be useful in the simplest cases, but it does not help us if, for example,
-# one spectrum corresponds to a peptide contained inside of another peptide from which the second
-# spectrum was obtained. In this case, the two spectra are very similar, but the shared peaks count
-# will be very small. However, if we shift one spectrum to the right or left, then shared peaks will align.
-# In the case of simplified spectra, this means that there is some shift value `x` such that adding
-# x to the weight of every element in one spectrum should create a large number of matches in the other spectrum.
-#
-# Inputs: Two multisets of positive real numbers S1 and S2
-#
-# The size of each multiset is at most 200.
-
-# Return: The largest multiplicity of S1- S2, as well as the absolute value of the number x
-# maximizing (S1-S2)(x) (you may return any such value if multiple solutions exist).
 
 def conv(S,T,eps=0.001):
+    '''
+    conv
+
+     Comparing Spectra with the Spectral Convolution
+
+     Comparing Spectraclick to collapse
+
+     Suppose you have two mass spectra, and you want to check if they both were obtained from the same protein;
+     you will need some notion of spectra similarity. The simplest possible metric would be to count the number
+     of peaks in the mass spectrum that the spectra share, called the shared peaks count;
+     its analogue for simplified spectra is the number of masses that the two spectra have in common.
+
+     The shared peaks count can be useful in the simplest cases, but it does not help us if, for example,
+     one spectrum corresponds to a peptide contained inside of another peptide from which the second
+     spectrum was obtained. In this case, the two spectra are very similar, but the shared peaks count
+     will be very small. However, if we shift one spectrum to the right or left, then shared peaks will align.
+     In the case of simplified spectra, this means that there is some shift value `x` such that adding
+     x to the weight of every element in one spectrum should create a large number of matches in the other spectrum.
+
+     Inputs: Two multisets of positive real numbers S1 and S2
+
+     The size of each multiset is at most 200.
+
+     Return: The largest multiplicity of S1- S2, as well as the absolute value of the number x
+     maximizing (S1-S2)(x) (you may return any such value if multiple solutions exist).
+    '''
     minkowski_diff = sorted([s-t for s in S for t in T])
     accumulated    = []
     latest         = minkowski_diff[0]
@@ -192,14 +197,15 @@ def conv(S,T,eps=0.001):
 
     return accumulated[np.argmax([i for i,_ in accumulated])]
 
-#   create_lookup
-#
-#   Creates a lookup table for amino acid masses
-
 def create_lookup(amino_acids=amino_acids):
+    '''
+    create_lookup
+
+    Creates a lookup table for amino acid masses
+    '''
     pairs = sorted([(abbrev,value.mon_mass) for abbrev,value in amino_acids.items()],
                    key =lambda x:x[1])
-    pairs.append(('?',sys.float_info.max))
+    pairs.append(('?',float_info.max))
     masses = [mass for (_,mass) in pairs]
     return masses,pairs
 
@@ -551,13 +557,28 @@ def Turnpike(D,check=False):
         check_diffs(reconstruction)
     return reconstruction
 
-def linearSpectrum(peptide):
-    def get_pairs():
-        return [(i,j) for i in range(len(peptide)) for j in range(len(peptide)+1) if i<j]
-    result=[sum(peptide[i:j]) for (i,j) in get_pairs()]
-    result.append(0)
-    result.sort()
-    return result
+
+    # BA4A	Translate an RNA String into an Amino Acid String
+    # PROT Translating RNA into Protein
+    #
+    # The 20 commonly occurring amino acids are abbreviated by using 20 letters from
+    # the Roman alphabet (all letters except for B, J, O, U, X, and Z). Protein strings
+    # are constructed from these 20 symbols. Henceforth, the term genetic string will
+    # incorporate protein strings along with DNA strings and RNA strings.
+    #
+    # The RNA codon table dictates the details regarding the encoding of specific
+    # codons into the amino acid alphabet.
+    #
+    # Input: An RNA string s corresponding to a strand of mRNA (of length at most 10 kbp).
+    #
+    # Return: The protein string encoded by s.
+    #
+    # NB: I have allowed an extra parameter to deal with alternatives, such as the
+    # Mitochundrial codes (http://www.ncbi.nlm.nih.gov/Taxonomy/Utils/wprintgc.cgi)
+
+def prot(rna,table=codon_table):
+    return ''.join([table[codon] for codon in triplets(rna) if table[codon]!=';'])
+
 
     # BA4B	Find Substrings of a Genome Encoding a Given Amino Acid String
     #
@@ -631,6 +652,17 @@ def cycloSpectrum(peptide,mass=integer_masses):
     spectrum.append(get_mass(peptide,mass))
     spectrum.sort()
     return spectrum
+
+def cycloSpectrum1(peptide):
+    def get_pairs(index_range):
+        n=len(index_range)
+        return [(i,j) for i in index_range for j in range(i,i+n) if j!=i]
+    augmented_peptide=peptide+peptide
+    result=[sum(augmented_peptide[a:b]) for (a,b) in get_pairs(range(len(peptide)))]
+    result.append(0)
+    result.append(sum(peptide))
+    result.sort()
+    return result
 
 def count_peptides_linear(total_mass):
     '''
@@ -771,10 +803,34 @@ def find_cyclopeptide_sequence(spectrum):
     return output
 
 
+def countMatchesInSpectra(spect1,spect2):
+    i1=0
+    i2=0
+    count=0
+    while i1<len(spect1) and i2<len(spect2):
+        diff=spect1[i1]-spect2[i2]
+        if diff==0:
+            count+=1
+            i1+=1
+            i2+=1
+        elif diff<0:
+            i1+=1
+        else:
+            i2+=1
+    return count
 
 def score(peptide,spectrum,spect_from_peptide=cycloSpectrum):
     '''BA4F 	Compute the Score of a Cyclic Peptide Against a Spectrum'''
     return countMatchesInSpectra(spect_from_peptide(peptide),spectrum)
+
+def linearSpectrum(peptide):
+    '''BA4J 	Generate the Theoretical Spectrum of a Linear Peptide'''
+    def get_pairs():
+        return [(i,j) for i in range(len(peptide)) for j in range(len(peptide)+1) if i<j]
+    result = [sum(peptide[i:j]) for (i,j) in get_pairs()]
+    result.append(0)
+    result.sort()
+    return result
 
 def leaderPeptide(n,
                   spectrum,
@@ -799,6 +855,22 @@ def leaderPeptide(n,
                 newBoard.append(peptide)
         leaderBoard=trim(newBoard, spectrum, n,spect1)
     return leaderPeptide
+
+def convolution (spectrum):
+    '''BA4H 	Generate the Convolution of a Spectrum'''
+    def create_counts(diffs):
+        counts={}
+        for diff in diffs:
+            if not diff in counts:
+                counts[diff]=0
+            counts[diff]+=1
+        return counts
+    diffs=[abs(spectrum[i]-spectrum[j])  \
+           for i in range(len(spectrum))  \
+           for j in range(i+1,len(spectrum)) if spectrum[i]!=spectrum[j]]
+    return sorted([(diff,count)                                      \
+                   for diff,count in create_counts(diffs).items()],  \
+                  key=lambda x: (-x[1], x[0]))
 
 def convolution_expanded(spectrum):
     ''' BA4H 	Generate the Convolution of a Spectrum'''
@@ -836,6 +908,7 @@ def convolutionCyclopeptideSequencing(m,n,spectrum,low_mass=57,high_mass=200):
     return leaderPeptide(n,spectrum,get_masses_from_spectrum(),spect2=cycloSpectrum1)
 
 
+
 def linearSpectrumFromString(peptide):
     '''BA4J 	Generate the Theoretical Spectrum of a Linear Peptide'''
     return linearSpectrum([integer_masses[a] for a in peptide])
@@ -843,8 +916,6 @@ def linearSpectrumFromString(peptide):
 def linearScore(peptide,spectrum):
     '''BA4K 	Compute the Score of a Linear Peptide'''
     return countMatchesInSpectra(linearSpectrumFromString(peptide),spectrum)
-
-
 
 def trim(leaderBoard, spectrum,n,spectrum_generator=linearSpectrum):
     '''
@@ -858,13 +929,13 @@ def trim(leaderBoard, spectrum,n,spectrum_generator=linearSpectrum):
     '''
     if len(leaderBoard)<n:
         return leaderBoard
-    peptides_with_scores=[\
-        (score(peptide,spectrum,spectrum_generator),peptide)\
+    peptides_with_scores=[
+        (score(peptide,spectrum,spectrum_generator),peptide)
         for peptide in leaderBoard]
     peptides_with_scores.sort(reverse=True)
     (cutoff,_)= peptides_with_scores[n-1]
-    return [peptide                                     \
-            for (score,peptide) in peptides_with_scores \
+    return [peptide
+            for (score,peptide) in peptides_with_scores
             if score>=cutoff]
 
 def trim_for_strings(leaderBoard, spectrum,n,
@@ -957,6 +1028,7 @@ if __name__=='__main__':
 
 
         def test_ba4d(self):
+            '''BA4D	Compute the Number of Peptides of Given Total Mass'''
             self.assertEqual(14712706211,count_peptides_linear(1024))
 
 
@@ -965,7 +1037,7 @@ if __name__=='__main__':
 
         def test_ba4e(self):
             '''BA4E 	Find a Cyclic Peptide with Theoretical Spectrum Matching an Ideal Spectrum'''
-            seq=find_cyclopeptide_sequence([0,113,128,186,241,299,314,427])
+            seq = find_cyclopeptide_sequence([0,113,128,186,241,299,314,427])
             self.assertEqual(6,len(seq))
             self.assertIn([186,128,113],seq)
             self.assertIn([186,113,128],seq)
