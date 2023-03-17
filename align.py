@@ -472,7 +472,74 @@ def create_alignment(string1, string2,s_predecessors,
             ''.join(result1[::-1]),       \
             ''.join(result2[::-1]))
 
+def FindMiddleEdge(s,t,
+                   replace_score = BLOSUM62(),
+                   indel_cost    = 5):
+    '''
+    FindMiddleEdge
 
+    BA5K Find a Middle Edge in an Alignment Graph in Linear Space
+
+    Inputs:
+        s               an amino acid string
+        t               an amino acid string
+        replace_score   scoring matrix
+        indel_cost      linear indel penalty
+        Returns: A middle edge in the alignment graph for s and t, in the form ((i, j) (k, l)),
+                 where (i, j) connects to (k, l).
+    '''
+
+    def update(j,previous,current,s,t):
+        '''
+        update
+
+        Calculate scores in current column using values from previous column
+
+        parameters:
+            j           Index of column that is being updated
+            previous    Data from previous coulumn
+            current     Data in current column
+            s           First protein string.
+            t           Second protein string.
+        '''
+        current[0] = - j * indel_cost
+        for i in range(1,len(current)):
+            scores     = [previous[i-1] + replace_score.get_score(s[i-1],t[j-1]),
+                          current[i-1]  - indel_cost,
+                          previous[i]   - indel_cost]
+
+            best       = np.argmax(scores)
+            current[i] = scores[best]
+
+        return current,previous
+
+
+    def explore(s,t,limit):   # explore
+        '''
+        Find lengths of all paths from source that end at specified column
+
+        Parameters:
+
+           s           First protein string. This is an explicit parameter
+                       because FindMiddleEdge reverse the string during the second call
+                       to calculate lengths from sink
+           t           Second protein string.
+           limit       Last column to be explored
+        '''
+
+        column_A = [-(i * indel_cost) for i in range(len(s)+1)]
+        column_B = [0 for i in range(len(s)+1)]
+        for j in range(1,limit+1):
+            scores,previous = update(j,column_A,column_B,s,t) if j%2 ==1 else update(j,column_B,column_A,s,t)
+        return scores,previous
+
+    middle_column = len(t)//2
+    from_source,_ = explore(s,t,middle_column)
+    to_sink,_     = explore(s[::-1],t[::-1],len(t) - middle_column)
+    length        = [a+b for (a,b) in zip(from_source,to_sink[::-1])]
+
+    return ((np.argmax(length),   middle_column),
+            (np.argmax(length)+1, middle_column+1))
 
 @deprecated
 def reverse(chars):
@@ -749,74 +816,7 @@ def san_kai(s,t, replace_score=BLOSUM62(),sigma=11,epsilon=1,backtrack=unwind_mo
 
 
 
-def FindMiddleEdge(s,t,
-                   replace_score = BLOSUM62(),
-                   indel_cost    = 5):
-    '''
-    FindMiddleEdge
 
-    BA5K Find a Middle Edge in an Alignment Graph in Linear Space
-
-    Inputs:
-        s               an amino acid string
-        t               an amino acid string
-        replace_score   scoring matrix
-        indel_cost      linear indel penalty
-        Returns: A middle edge in the alignment graph for s and t, in the form ((i, j) (k, l)),
-          where (i, j) connects to (k, l).
-    '''
-
-    def update(j,previous,current,s,t):
-        '''
-        update
-
-        Calculate scores in current column using values from previous column
-
-        parameters:
-            j           Index of column that is being updated
-            previous    Data from previous coulumn
-            current     Data in current column
-            s           First protein string.
-            t           Second protein string.
-        '''
-        current[0] = - j * indel_cost
-        for i in range(1,len(current)):
-            scores     = [previous[i-1] + replace_score.get_score(s[i-1],t[j-1]),
-                          current[i-1]  - indel_cost,
-                          previous[i]   - indel_cost]
-
-            best       = np.argmax(scores)
-            current[i] = scores[best]
-
-        return current,previous
-
-
-    def explore(s,t,limit):   # explore
-        '''
-        Find lengths of all paths from source that end at specified column
-
-        Parameters:
-
-           s           First protein string. This is an explicit parameter
-                       because FindMiddleEdge reverse the string during the second call
-                       to calculate lengths from sink
-           t           Second protein string.
-           limit       Last column to be explored
-        '''
-
-        column_A = [-(i * indel_cost) for i in range(len(s)+1)]
-        column_B = [0 for i in range(len(s)+1)]
-        for j in range(1,limit+1):
-            scores,previous = update(j,column_A,column_B,s,t) if j%2 ==1 else update(j,column_B,column_A,s,t)
-        return scores,previous
-
-    middle_column = len(t)//2
-    from_source,_ = explore(s,t,middle_column)
-    to_sink,_     = explore(s[::-1],t[::-1],len(t) - middle_column)
-    length        = [a+b for (a,b) in zip(from_source,to_sink[::-1])]
-
-    return ((np.argmax(length),   middle_column),
-            (np.argmax(length)+1, middle_column+1))
 
 # FindHighestScoringMultipleSequenceAlignment
 #
@@ -1656,6 +1656,14 @@ if __name__=='__main__':
             # self.assertEqual(8,score)
             # self.assertEqual('PLEASANTLY',s1)
             # self.assertEqual('-MEA--N-LY',s2)
+
+        def test_ba5m_sample(self):
+            '''BA5M Find a Highest-Scoring Multiple Sequence Alignment'''
+            s,u,v,w = FindHighestScoringMultipleSequenceAlignment('ATATCCG','TCCGA','ATGTACTG')
+            self.assertEqual(3,s)
+            self.assertEqual('ATATCC-G-',u)
+            self.assertEqual('---TCC-GA',v)
+            self.assertEqual('ATGTACTG-',w)
 
         def test_ba5n_sample(self):
             '''BA5N 	Find a Topological Ordering of a DAG'''
