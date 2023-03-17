@@ -394,30 +394,36 @@ def full(L,epsilon=0.000001):
 
     return ''.join([candidates[l][0][5] for l in prefixes][:-1])
 
-# sgra
-#
-# In this problem, we say that a weighted string s=s1s2...sn
-# matches L if there is some increasing sequence of positive real numbers (w1,w2,,,,,wn+1)
-# in L such that w(s1)=w2-w1, w(s2)=w3-w2, ..., and w(sn)=wn+1-wn
-#
-# Input: A list L (of length at most 100) containing positive real numbers.
-#
-# Return: The longest protein string that matches the spectrum graph of L (if multiple solutions exist,
-#  you may output any one of them). Consult the monoisotopic mass table.
-#
-# NB: we want the longest path trough the spectrum graph
-#
-def sgra(L,Alphabet=amino_acids,epsilon=0.001):
 
-    # create_spectrum_graph
-    #
-    # For a weighted alphabet A and a collection L of positive real numbers, the spectrum graph of L
-    # is a digraph constructed in the following way. First, create a node for every real number in L.
-    # Then, connect a pair of nodes with a directed edge (u,v) if v>u and v-u is equal to the weight of a single symbol in A
-    #
-    # We may then label the edge with this symbol.
+def sgra(L,Alphabet=amino_acids,epsilon=0.001):
+    '''
+     sgra
+
+     Using the Spectrum Graph to Infer Peptides
+
+     In this problem, we say that a weighted string s=s1s2...sn
+     matches L if there is some increasing sequence of positive real numbers (w1,w2,,,,,wn+1)
+     in L such that w(s1)=w2-w1, w(s2)=w3-w2, ..., and w(sn)=wn+1-wn
+
+     Input: A list L (of length at most 100) containing positive real numbers.
+
+     Return: The longest protein string that matches the spectrum graph of L (if multiple solutions exist,
+      you may output any one of them). Consult the monoisotopic mass table.
+
+     NB: we want the longest path trough the spectrum graph
+
+    '''
 
     def create_spectrum_graph():
+        ''''
+        create_spectrum_graph
+
+        For a weighted alphabet A and a collection L of positive real numbers, the spectrum graph of L
+        is a digraph constructed in the following way. First, create a node for every real number in L.
+        Then, connect a pair of nodes with a directed edge (u,v) if v>u and v-u is equal to the weight of a single symbol in A
+
+        We may then label the edge with this symbol.
+        '''
         masses,pairs = create_lookup()
         G            = {}
         for u in L:
@@ -429,11 +435,14 @@ def sgra(L,Alphabet=amino_acids,epsilon=0.001):
                             G[u]=[]
                         G[u].append((abbrev,v))
         return G
-    # dfs
-    #
-    # Depth first search to build up peptides
 
     def dfs(key,G,path):
+        '''
+        dfs
+
+        Depth first search to build up peptides
+
+        '''
         Runs.append(path)
         if key in Outs: return
         if not key in G: return
@@ -450,19 +459,22 @@ def sgra(L,Alphabet=amino_acids,epsilon=0.001):
 
     return ''.join(Runs[np.argmax([len(run) for run in Runs])])
 
-#   Turnpike
-#
-#    BA4M 	Solve the Turnpike Problem
-#
-# Solve the Turnpike Problem
-# Parameters:
-#   D     The differences
-#   check Indicates whether differences are to be checked
-#
-# Based Mark Weiss's treatment
-# https://users.cs.fiu.edu/~weiss/cop3337_f99/assignments/turnpike.pdf
 
 def Turnpike(D,check=False):
+    '''
+       Turnpike
+
+    BA4M 	Solve the Turnpike Problem
+
+    Solve the Turnpike Problem
+    Parameters:
+        D     The differences
+        check Indicates whether differences are to be checked
+
+    Based Mark Weiss's treatment
+        https://users.cs.fiu.edu/~weiss/cop3337_f99/assignments/turnpike.pdf
+
+    '''
 
     def find_remaining_points(X,D,first,last):
         '''
@@ -516,10 +528,10 @@ def Turnpike(D,check=False):
         # is part of the solution, or it isn't. We will explore these two cases separately.
         # We maintain a tree of data structures, so we can explore the tree of solutions
         # see https://users.cs.fiu.edu/~weiss/cop3337_f99/assignments/turnpike.pdf for details
-        x_max=D[-1]
-        XX=X[:]           # Clone this so the
-        XX[last-1]=x_max  # Add candidate at end
-        trial_solution=explore(x_max,XX,first,last-1) #process level below - one fewer unknown at end
+        x_max          = D[-1]
+        XX             = X[:]           # Clone this so the
+        XX[last-1]     = x_max  # Add candidate at end
+        trial_solution = explore(x_max,XX,first,last-1) #process level below - one fewer unknown at end
         if trial_solution==None:  # largest remaining unprocessed value was a false lead
             XX=X[:]
             XX[first+1]=X[-1]-x_max # Added new candiate at beginning
@@ -558,45 +570,48 @@ def Turnpike(D,check=False):
     return reconstruction
 
 
-    # BA4A	Translate an RNA String into an Amino Acid String
-    # PROT Translating RNA into Protein
-    #
-    # The 20 commonly occurring amino acids are abbreviated by using 20 letters from
-    # the Roman alphabet (all letters except for B, J, O, U, X, and Z). Protein strings
-    # are constructed from these 20 symbols. Henceforth, the term genetic string will
-    # incorporate protein strings along with DNA strings and RNA strings.
-    #
-    # The RNA codon table dictates the details regarding the encoding of specific
-    # codons into the amino acid alphabet.
-    #
-    # Input: An RNA string s corresponding to a strand of mRNA (of length at most 10 kbp).
-    #
-    # Return: The protein string encoded by s.
-    #
-    # NB: I have allowed an extra parameter to deal with alternatives, such as the
-    # Mitochundrial codes (http://www.ncbi.nlm.nih.gov/Taxonomy/Utils/wprintgc.cgi)
+
 
 def prot(rna,table=codon_table):
+    '''
+     BA4A	Translate an RNA String into an Amino Acid String
+     PROT Translating RNA into Protein
+
+     The 20 commonly occurring amino acids are abbreviated by using 20 letters from
+     the Roman alphabet (all letters except for B, J, O, U, X, and Z). Protein strings
+     are constructed from these 20 symbols. Henceforth, the term genetic string will
+     incorporate protein strings along with DNA strings and RNA strings.
+
+     The RNA codon table dictates the details regarding the encoding of specific
+     codons into the amino acid alphabet.
+
+     Input: An RNA string s corresponding to a strand of mRNA (of length at most 10 kbp).
+
+     Return: The protein string encoded by s.
+
+     NB: I have allowed an extra parameter to deal with alternatives, such as the
+     Mitochondrial codes (http://www.ncbi.nlm.nih.gov/Taxonomy/Utils/wprintgc.cgi)
+     '''
     return ''.join([table[codon] for codon in triplets(rna) if table[codon]!=';'])
 
-
-    # BA4B	Find Substrings of a Genome Encoding a Given Amino Acid String
-    #
-    # There are three different ways to divide a DNA string into codons for
-    # translation, one starting at each of the first three starting positions of
-    # the string. These different ways of dividing a DNA string into codons are
-    # called reading frames. Since DNA is double-stranded, a genome has six reading
-    # frames (three on each strand).
-    #
-    # We say that a DNA string Pattern encodes an amino acid string Peptide if
-    # the RNA string transcribed from either Pattern or its reverse complement
-    # Pattern translates into Peptide.
-    #
-    # Input: A DNA string Text and an amino acid string Peptide.
-    #
-    # Return: All substrings of Text encoding Peptide (if any such substrings exist)
-
 def findEncodings(text,peptide):
+    '''
+    BA4B	Find Substrings of a Genome Encoding a Given Amino Acid String
+
+     There are three different ways to divide a DNA string into codons for
+     translation, one starting at each of the first three starting positions of
+     the string. These different ways of dividing a DNA string into codons are
+     called reading frames. Since DNA is double-stranded, a genome has six reading
+     frames (three on each strand).
+
+     We say that a DNA string Pattern encodes an amino acid string Peptide if
+     the RNA string transcribed from either Pattern or its reverse complement
+     Pattern translates into Peptide.
+
+     Input: A DNA string Text and an amino acid string Peptide.
+
+     Return: All substrings of Text encoding Peptide (if any such substrings exist)
+    '''
     def encodes(dna):
         try:
             return prot(dna_to_rna(dna))==peptide
@@ -1000,6 +1015,7 @@ if __name__=='__main__':
                              ]))
 
         def test_sgra(self):
+            '''SGRA Using the Spectrum Graph to Infer Peptides '''
             self.assertEqual('WMSPG',sgra([
                 3524.8542,
                 3623.5245,
