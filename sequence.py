@@ -86,55 +86,51 @@ def medianString(k,dna):
     return findClosest(distanceBetweenPatternAndStrings)
 
 
-# BA2C 	Find a Profile-most Probable k-mer in a String
-#
-# Input: A string Text, an integer k, and a 4 × k matrix Profile.
-#
-# Return: A Profile-most probable k-mer in Text.
+
 
 def mostProbable(text,n,profile):
-    # probability of kmer given profile
-    def prob(kmer):
-        p=1
-        for j in range(n):
-            i=bases.find(kmer[j])
-            p*=profile[i][j]
-        return p
+    '''
+     BA2C 	Find a Profile-most Probable k-mer in a String
+
+     Input: A string Text, an integer k, and a 4 × k matrix Profile.
+
+     Return: A Profile-most probable k-mer in Text.
+    '''
+    def log_prob(kmer):
+        '''log(probability of kmer given profile)'''
+        return sum([np.log(profile[bases.find(kmer[j])][j]) for j in range(n)])
 
     def findMostProbable():
-        probability=-1
-        best=[]
-        for i in range(len(text)-n+1):
-            p=prob(text[i:i+n])
-            if probability<p:
-                probability=p
-                best=text[i:i+n]
-        return best
+        kmers = [text[i:i+n] for i in range(len(text)-n+1)]
+        return kmers[np.argmax( [log_prob(s) for s in kmers])]
 
     return findMostProbable()
 
-# BA2D 	Implement GreedyMotifSearch
-# BA2E 	Implement GreedyMotifSearch with Pseudocounts
-#
-# Input: Integers k and t, followed by a collection of strings Dna.
-#        Optional parameter pseudo_counts specifies whether pseudo counts are to be used
-#
-# Return: A collection of strings BestMotifs resulting from running
-# GreedyMotifSearch(Dna, k, t). If at any step you find more than one
-# Profile-most probable k-mer in a given string, use the one occurring first.
-def greedyMotifSearch(k,t,dna,pseudo_counts=False):
 
-    # Create an array containing the count of occurences of
-    # each base at each position, summed over all motifs
-    def count_occurrences_of_bases(
-        motifs,\
-        initialise_counts=np.ones if pseudo_counts else np.zeros
-        ):
-        matrix = initialise_counts((len(bases),k),dtype=int)
+def greedyMotifSearch(k,t,dna,pseudo_counts=False):
+    '''
+    BA2D 	Implement GreedyMotifSearch
+    BA2E 	Implement GreedyMotifSearch with Pseudocounts
+
+    Input: Integers k and t, followed by a collection of strings Dna.
+           Optional parameter pseudo_counts specifies whether pseudo counts are to be used
+
+    Return: A collection of strings BestMotifs resulting from running
+    GreedyMotifSearch(Dna, k, t). If at any step you find more than one
+    Profile-most probable k-mer in a given string, use the one occurring first.
+    '''
+
+
+    def count_occurrences_of_bases(motifs):
+        '''
+        Create an array containing the count of occurences of
+        each base at each position, summed over all motifs
+        '''
+        matrix = np.ones((len(bases),k),dtype=int) if pseudo_counts else np.zeros((len(bases),k),dtype=int)
         for kmer in motifs:
             for j in range(k):
-                i=bases.find(kmer[j])
-                matrix[i,j]+=1
+                i = bases.find(kmer[j])
+                matrix[i,j] += 1
         return matrix
 
     def profile(motifs):
@@ -162,9 +158,10 @@ def greedyMotifSearch(k,t,dna,pseudo_counts=False):
 
 
 
-# BA2F 	Implement RandomizedMotifSearch
+
 
 def randomized_motif_search(k,t,dna,eps=1):
+    '''BA2F 	Implement RandomizedMotifSearch'''
     def score(k,motifs):
         total=0
         for j in range(k):
@@ -254,15 +251,16 @@ def randomized_motif_search_driver(k,t,dna,N=1000):
     return (best,mm)
 
 
-# BA2G 	Implement GibbsSampler
-#
-# Input: Integers k, t, and N, followed by a collection of strings Dna.
-#
-# Return: The strings BestMotifs resulting from running
-# GibbsSampler(Dna, k, t, N) with 20 random starts.
-# Remember to use pseudocounts!
-
 def gibbs(k,t,n,dna,eps=1):
+    '''
+    BA2G 	Implement GibbsSampler
+
+     Input: Integers k, t, and N, followed by a collection of strings Dna.
+
+     Return: The strings BestMotifs resulting from running
+     GibbsSampler(Dna, k, t, N) with 20 random starts.
+     Remember to use pseudocounts
+    '''
     def score(k,motifs):
         total=0
         for j in range(k):
@@ -353,11 +351,13 @@ def gibbs(k,t,n,dna,eps=1):
     return (score(k,bestMotifs),bestMotifs,trace)
 
 
-# BA2H 	Implement DistanceBetweenPatternAndStrings
-
 def distanceBetweenPatternAndStrings (pattern,dna):
-    # Extend Hamming distance to work with string of unequal length
+    '''
+    BA2H 	Implement DistanceBetweenPatternAndStrings
+    '''
+
     def hamming(pattern,genome):
+        '''Extend Hamming distance to work with string of unequal length'''
         return min([hamm(pattern,genome[i:i+len(pattern)])
                     for i in range(len(genome)-len(pattern)+1)])
     return sum([hamming(pattern,motif) for motif in dna])
@@ -365,18 +365,18 @@ def distanceBetweenPatternAndStrings (pattern,dna):
 if __name__=='__main__':
     class Test_2_Sequence(TestCase):
 
-        def test_ba2a(self): # BA2A 	Implement MotifEnumeration
+        def test_ba2a(self):
+            '''BA2A 	Implement MotifEnumeration'''
             self.assertEqual('ATA ATT GTT TTT',
                              enumerateMotifs(3,
                                              1,
-                                   ['ATTTGGC',
-                                    'TGCCTTA',
-                                    'CGGTATC',
-                                    'GAAAATT']))
-
-# BA2B 	Find a Median String
+                                             ['ATTTGGC',
+                                            'TGCCTTA',
+                                            'CGGTATC',
+                                            'GAAAATT']))
 
         def test_ba2b(self):
+            '''BA2B 	Find a Median String'''
             self.assertEqual('GAC',
                              medianString(3,[
                                  'AAATTGACGCAT',
@@ -387,9 +387,8 @@ if __name__=='__main__':
                              ]))
 
 
-
-# BA2C 	Find a Profile-most Probable k-mer in a String
         def test_ba2c(self):
+            '''BA2C 	Find a Profile-most Probable k-mer in a String'''
             self.assertEqual(
                 'CCGAG',
                 mostProbable(
@@ -400,8 +399,8 @@ if __name__=='__main__':
                      [0.3, 0.3, 0.5, 0.2, 0.4],
                      [0.1, 0.2, 0.1, 0.1, 0.2]]))
 
-# BA2D 	Implement GreedyMotifSearch
         def test_ba2d(self):
+            ''' BA2D 	Implement GreedyMotifSearch'''
             motifs=greedyMotifSearch(3,
                                      5,
                                      [
@@ -414,8 +413,8 @@ if __name__=='__main__':
             self.assertEqual(['CAA','CAA','CAA','CAG','CAG'],sorted(motifs))
 
 
-# BA2E 	Implement GreedyMotifSearch with Pseudocounts
         def test_ba2e(self):
+            '''BA2E 	Implement GreedyMotifSearch with Pseudocounts'''
             motifs=greedyMotifSearch(3,
                                      5,
                                      [
@@ -428,23 +427,24 @@ if __name__=='__main__':
                                      pseudo_counts=True)
             self.assertEqual(['ATC','ATC','TTC','TTC','TTC'],sorted(motifs))
 
-# BA2F 	Implement RandomizedMotifSearch
-        #def test_ba2f(self):
-            #(c,x)=randomized_motif_search_driver(8, 5,[
-                #'CGCCCCTCTCGGGGGTGTTCAGTAAACGGCCA',
-                #'GGGCGAGGTATGTGTAAGTGCCAAGGTGCCAG',
-                #'TAGTACCGAGACCGAAAGAAGTATACAGGCGT',
-                #'TAGATCAAGTTTCAGGTGCACGTCGGTGAACC',
-                #'AATCCACCAGCTCCACGTGCAATGTTGGCCTA'],100000)
-            #print (c)
-            #self.assertIn('TCTCGGGG',x)
-            #self.assertIn('CCAAGGTG',x)
-            #self.assertIn('TACAGGCG',x)
-            #self.assertIn('TTCAGGTG',x)
-            #self.assertIn('TCCACGTG',x)
+        @skip('#124')
+        def test_ba2f(self):
+            '''BA2F 	Implement RandomizedMotifSearch'''
+            (c,x)=randomized_motif_search_driver(8, 5,[
+                'CGCCCCTCTCGGGGGTGTTCAGTAAACGGCCA',
+                'GGGCGAGGTATGTGTAAGTGCCAAGGTGCCAG',
+                'TAGTACCGAGACCGAAAGAAGTATACAGGCGT',
+                'TAGATCAAGTTTCAGGTGCACGTCGGTGAACC',
+                'AATCCACCAGCTCCACGTGCAATGTTGGCCTA'],100000)
 
-# BA2G 	Implement GibbsSampler
+            self.assertIn('TCTCGGGG',x)
+            self.assertIn('CCAAGGTG',x)
+            self.assertIn('TACAGGCG',x)
+            self.assertIn('TTCAGGTG',x)
+            self.assertIn('TCCACGTG',x)
+
         def test_ba2g(self):
+            '''BA2G 	Implement GibbsSampler'''
             x=gibbs(8, 5, 100,[
                 'CGCCCCTCTCGGGGGTGTTCAGTAAACGGCCA',
                 'GGGCGAGGTATGTGTAAGTGCCAAGGTGCCAG',
@@ -452,8 +452,9 @@ if __name__=='__main__':
                 'TAGATCAAGTTTCAGGTGCACGTCGGTGAACC',
                 'AATCCACCAGCTCCACGTGCAATGTTGGCCTA'])
 
-# BA2H 	Implement DistanceBetweenPatternAndStrings
+
         def test_ba2h(self):
+            '''BA2H 	Implement DistanceBetweenPatternAndStrings'''
             self.assertEqual(
                 5,
                 distanceBetweenPatternAndStrings('AAA',
