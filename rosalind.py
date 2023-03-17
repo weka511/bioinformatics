@@ -25,11 +25,12 @@ from sys      import float_info
 from unittest import main, skip, TestCase
 
 import numpy as np
+from deprecated       import deprecated
 
-from helpers import count_subset,create_frequency_table,triplets,binomial_coefficients
-from helpers import zeroes,k_mers,iterate_markov,create_wf_initial_probabilites,create_wf_transition_matrix
-from helpers import create_binomial,binomial_index,rotate,linearSpectrum,countMatchesInSpectra,cycloSpectrum1,get_mass
-from fasta import FastaContent
+from helpers          import count_subset,create_frequency_table,triplets,binomial_coefficients
+from helpers          import zeroes,k_mers,iterate_markov,create_wf_initial_probabilites,create_wf_transition_matrix
+from helpers          import create_binomial,binomial_index,rotate,linearSpectrum,countMatchesInSpectra,cycloSpectrum1,get_mass
+from fasta            import FastaContent
 from reference_tables import codon_table,skew_step,bases,integer_masses,amino_acids
 
 def grph(fasta,k):
@@ -2021,6 +2022,7 @@ def non_branching_paths(graph):
 #
 # Return: All substrings of Text encoding Peptide (if any such substrings exist)
 
+@deprecated('Moved to spectrum: kept as placeholder')
 def findEncodings(text,peptide):
     def encodes(dna):
         try:
@@ -2059,6 +2061,7 @@ def findEncodings(text,peptide):
 #
 # Return: Cyclospectrum(Peptide).
 
+@deprecated('Moved to spectrum: kept as placeholder')
 def cycloSpectrum(peptide,mass=integer_masses):
 
     # get_pairs
@@ -2109,6 +2112,7 @@ def cycloSpectrum(peptide,mass=integer_masses):
 # NB, treat peptide as a vector of masses, so amino acids with the same
 # mass are the same
 
+@deprecated('Moved to spectrum: kept as placeholder')
 def count_peptides_linear(total_mass):
     cache=[]
     masses=list(set(integer_masses.values()))
@@ -2129,7 +2133,7 @@ def count_peptides_linear(total_mass):
 # Input:  peptide   List of amino acids
 #
 # Return:  Monoisotopic mass of peptide
-
+@deprecated('Moved to spectrum: kept as placeholder')
 def get_weight(peptide):
     return sum(amino_acids[amino_acid].mon_mass for amino_acid in peptide)
 
@@ -2149,7 +2153,7 @@ def parentMass(spectrum):
 #
 # Return: An amino acid string Peptide such that Cyclospectrum(Peptide) =
 #        Spectrum (if such a string exists).
-
+@deprecated('Moved to spectrum: kept as placeholder')
 def find_cyclopeptide_sequence(spectrum):
 
     # isConsistent
@@ -2214,9 +2218,11 @@ def find_cyclopeptide_sequence(spectrum):
     return output
 
 # BA4F 	Compute the Score of a Cyclic Peptide Against a Spectrum
+@deprecated('Moved to spectrum: kept as placeholder')
 def score(peptide,spectrum,spect_from_peptide=cycloSpectrum):
     return countMatchesInSpectra(spect_from_peptide(peptide),spectrum)
 
+@deprecated('Moved to spectrum: kept as placeholder')
 # BA4G 	Implement LeaderboardCyclopeptideSequencing
 def leaderPeptide(n,                                            \
                   spectrum,                                     \
@@ -2244,6 +2250,7 @@ def leaderPeptide(n,                                            \
     return leaderPeptide
 
 # BA4H 	Generate the Convolution of a Spectrum
+@deprecated('Moved to spectrum: kept as placeholder')
 def convolution (spectrum):
     def create_counts(diffs):
         counts={}
@@ -2270,6 +2277,7 @@ def convolution (spectrum):
 #
 # NB: I had to sort spectrum to pass the testcase in the textbook.
 
+@deprecated('Moved to spectrum: kept as placeholder')
 def convolutionCyclopeptideSequencing(m,n,spectrum,low_mass=57,high_mass=200):
     def get_masses_from_spectrum():
         masses=[]
@@ -2296,6 +2304,7 @@ def convolutionCyclopeptideSequencing(m,n,spectrum,low_mass=57,high_mass=200):
 # Return: The top N peptides from Leaderboard scored against Spectrum.
 # Remember to use LinearScore.
 
+@deprecated('Moved to spectrum: kept as placeholder')
 def trim(leaderBoard, spectrum,n,spectrum_generator=linearSpectrum):
     if len(leaderBoard)<n:
         return leaderBoard
@@ -2309,7 +2318,7 @@ def trim(leaderBoard, spectrum,n,spectrum_generator=linearSpectrum):
             if score>=cutoff]
 
 # Adapter for 'trim', so it will work with peptides as strings
-
+@deprecated('Moved to spectrum: kept as placeholder')
 def trim_for_strings(leaderBoard, spectrum,n,\
                      spectrum_generator=linearSpectrum,\
                      masses=integer_masses):
@@ -2326,6 +2335,7 @@ def trim_for_strings(leaderBoard, spectrum,n,\
 
 
 # BA4J 	Generate the Theoretical Spectrum of a Linear Peptide
+@deprecated('Moved to spectrum: kept as placeholder')
 def linearSpectrumFromString(peptide):
     return linearSpectrum([integer_masses[a] for a in peptide])
 
@@ -3051,8 +3061,10 @@ if __name__=='__main__':
             self.assertIn([6,7,6 ],paths)
             self.assertEqual(4,len(paths))
 
+    @skip('Moved to spectrum: kept as placeholder')
     class Test_4_SequenceAntibodies(TestCase):
 # BA4B	Find Substrings of a Genome Encoding a Given Amino Acid String
+
         def test_ba4b(self):
             encodings=findEncodings('ATGGCCATGGCCCCCAGAACTGAGATCAATAGTACCCGTATTAACGGGTGA','MA')
             self.assertEqual(3,len(encodings))
