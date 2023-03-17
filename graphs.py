@@ -17,15 +17,15 @@
 ''' Functions to solve graphs problems from http://rosalind.info/problems/topics/graphs/'''
 
 from functools   import reduce
-from helpers     import create_adjacency
-from align       import topological_order
 from collections import deque
 from math        import isinf
 from unittest    import TestCase, main
 
 # from   tarjan      import tarjan
 from   deprecated import deprecated
-
+from helpers     import create_adjacency
+from align       import create_topological_order
+from rosalind    import grph
 
 def bf(edges,
        s=1):    # Set to zero for nwc - see Ayaan Hossain's comment http://rosalind.info/problems/nwc/questions/
@@ -337,7 +337,7 @@ def hdag(graph):
             copy[k]=v
         return copy
     _,_,adj = create_adjacency(graph,back=False,self=False)
-    ordered = topological_order(clone(adj)) # use clone because topological_order destroys its parameter
+    ordered = get_topological_order(adj)
     for a,b in zip(ordered[:-1],ordered[1:]):
         if not b in adj[a]:
             return (-1,[])
@@ -595,37 +595,9 @@ def two_sat(problem):
 
     return 1,create_assignment(scc)
 
-# GRPH	Overlap Graphs
-#
-# A graph whose nodes have all been labeled can be represented by an adjacency list,
-# in which each row of the list contains the two node labels corresponding to a unique edge.
-#
-# A directed graph (or digraph) is a graph containing directed edges, each of
-# which has an orientation. That is, a directed edge is represented by an arrow
-# instead of a line segment; the starting and ending nodes of an edge form its
-# tail and head, respectively. The directed edge with tail v and head w is
-# represented by (v,w) (but not by (w,v)). A directed loop is a directed edge
-# of the form (v,v).
-#
-# For a collection of strings and a positive integer k, the overlap graph for
-# the strings is a directed graph Ok in which each string is represented by a node,
-# and string s is connected to string t with a directed edge when there is a
-# length k suffix of s that matches a length k prefix of t, as long as sÃ¢â€°Â t;
-# we demand sÃ¢â€°Â t to prevent directed loops in the overlap graph
-# (although directed cycles may be present).
-#
-# Input : A collection of DNA strings in FASTA format having total length at most 10 kbp.
-#
-# Return: The adjacency list corresponding to O3. You may return edges in any order.
 
-def grph(fasta,k):
-    graph=[]
-    for name_s,s in fasta:
-        for name_t,t in fasta:
-            if s!=t and s[-k:]==t[:k]:
-                graph.append((name_s,name_t))
 
-    return graph
+
 
 #  SUFF Creating a Suffix Tree
 
