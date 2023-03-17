@@ -14,8 +14,9 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>
 #
-# fragile.py # code for Chapter 6 - Are there fragile regions in the human genome?
+'''code for Chapter 6 - Are there fragile regions in the human genome?'''
 
+from unittest import TestCase, main, skip
 from helpers import create_frequency_table
 from rosalind import revc,subs
 
@@ -505,9 +506,7 @@ def bergeron(s):
 
 if __name__=='__main__':
 
-    import unittest
-
-    class Test_6_Fragile(unittest.TestCase):
+    class Test_6_Fragile(TestCase):
         def test_ba6e(self):
             pairs=find_shared_kmers(3,'AAACTCATC','TTTCAAATC')
             self.assertIn((0, 4),pairs)
@@ -515,4 +514,24 @@ if __name__=='__main__':
             self.assertIn((4, 2),pairs)
             self.assertIn((6, 6),pairs)
 
-    unittest.main()
+        @skip('#122')
+        def test_rear(self):
+            self.assertEqual([9, 4, 5, 7, 0],
+                        leaderBoardSort([
+                            ([1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+                            [3, 1, 5, 2, 7, 4, 9, 6, 10, 8]),
+
+                            ([3, 10, 8, 2, 5, 4, 7, 1, 6, 9],
+                            [5, 2, 3, 1, 7, 4, 10, 8, 6, 9]),
+
+                            ([8, 6, 7, 9, 4, 1, 3, 10, 2, 5],
+                            [8, 2, 7, 6, 9, 1, 5, 3, 10, 4]),
+
+                            ([3, 9, 10, 4, 1, 8, 6, 7, 5, 2],
+                            [2, 9, 8, 5, 1, 7, 3, 4, 6, 10]),
+
+                            ([1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+                            [1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
+                        ]))
+
+    main()
