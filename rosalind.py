@@ -404,26 +404,6 @@ def fibd(n,m):
     return sum(state)
 
 
-# SPLC	RNA Splicing
-#
-# After identifying the exons and introns of an RNA string, we only need to
-# delete the introns and concatenate the exons to form a new string
-# ready for translation.
-#
-# Input: A DNA string s (of length at most 1 kbp) and a collection of substrings
-#        of s acting as introns. All strings are given in FASTA format.
-#
-# Return: A protein string resulting from transcribing and translating the
-#         exons of s. (Note: Only one solution will exist for the dataset provided.)
-
-def splc(fasta):
-    (_,dna)=fasta[0]
-    for i in range(1,len(fasta)):
-        (l,intron)=fasta[i]
-        fragments=dna.split(intron)
-        if len(fragments)>1:
-            dna=''.join(fragments)
-    return prot(dna_to_rna(dna))
 
 # DNA	  Counting DNA Nucleotides
 #
@@ -768,26 +748,7 @@ def hamm(s,t):
     return len([a for (a,b) in zip(s,t) if a!=b])
 
 
-# BA4A	Translate an RNA String into an Amino Acid String
-# PROT Translating RNA into Protein
-#
-# The 20 commonly occurring amino acids are abbreviated by using 20 letters from
-# the Roman alphabet (all letters except for B, J, O, U, X, and Z). Protein strings
-# are constructed from these 20 symbols. Henceforth, the term genetic string will
-# incorporate protein strings along with DNA strings and RNA strings.
-#
-# The RNA codon table dictates the details regarding the encoding of specific
-# codons into the amino acid alphabet.
-#
-# Input: An RNA string s corresponding to a strand of mRNA (of length at most 10 kbp).
-#
-# Return: The protein string encoded by s.
-#
-# NB: I have allowed an extra parameter to deal with alternatives, such as the
-# Mitochundrial codes (http://www.ncbi.nlm.nih.gov/Taxonomy/Utils/wprintgc.cgi)
 
-def prot(rna,table=codon_table):
-    return ''.join([table[codon] for codon in triplets(rna) if table[codon]!=';'])
 
 # MRNA	Inferring mRNA from Protein
 #
@@ -1732,8 +1693,7 @@ if __name__=='__main__':
             fasta=FastaContent(string.split('\n'))
             self.assertEqual(set(['TA', 'CA', 'AC']),set(lcsm(fasta)))
 
-        def test_prot(self):
-            self.assertEqual('MAMAPRTEINSTRING',prot('AUGGCCAUGGCGCCCAGAACUGAGAUCAAUAGUACCCGUAUUAACGGGUGA'))
+
 
         def test_mrna(self):
             self.assertEqual(12,mrna("MA"))
@@ -1789,14 +1749,7 @@ if __name__=='__main__':
             self.assertIn(('Rosalind_0498', 'Rosalind_0442'),graph)
             self.assertIn(('Rosalind_2391', 'Rosalind_2323'),graph)
 
-        def test_splc(self):
-            string='''>Rosalind_10
-            ATGGTCTACATAGCTGACAAACAGCACGTAGCAATCGGTCGAATCTCGAGAGGCATATGGTCACATGATCGGTCGAGCGTGTTTCAAAGTTTGCGCCTAG
-            >Rosalind_12
-            ATCGGTCGAA
-            >Rosalind_15
-            ATCGGTCGAGCGTGT'''
-            self.assertEqual('MVYIADKQHVASREAYGHMFKVCA',splc(FastaContent(string.split('\n'))))
+
 
         def test_iev(self):
             self.assertEqual(3.5,iev([1,0,0,1,0,1]))
@@ -1846,8 +1799,8 @@ if __name__=='__main__':
             fasta=FastaContent(string.split('\n'))
             self.assertAlmostEqual(1.21428571429,tran(fasta),places=5)
 
-# PDST 	Creating a Distance Matrix
         def test_pdst(self):
+            ''' PDST 	Creating a Distance Matrix'''
             string='''>Rosalind_9499
             TTTCCATTTA
             >Rosalind_0942
@@ -1863,17 +1816,17 @@ if __name__=='__main__':
                               [0.10000, 0.30000, 0.20000, 0.00000]],
                              distance_matrix(fasta))
 
-# ASPC 	Introduction to Alternative Splicing
-
         def test_aspc(self):
+            '''ASPC 	Introduction to Alternative Splicing'''
             self.assertEqual(42,aspc(6,3))
 
-# PPER 	Partial Permutations
+
         def test_pper(self):
+            ''' PPER 	Partial Permutations'''
             self.assertEqual(51200,pper(21,7))
 
-#INDC 	Independent Segregation of Chromosomes
         def test_indc(self):
+            '''INDC 	Independent Segregation of Chromosomes'''
             ii=indc(5)
             self.assertAlmostEqual(0.000,ii[0],3)
             self.assertAlmostEqual(-0.004,ii[1],2)

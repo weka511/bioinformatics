@@ -24,6 +24,7 @@ import numpy as np
 from reference_tables import integer_masses,amino_acids, integer_masses, codon_table
 from bisect           import bisect
 from rosalind         import dna_to_rna, revc, triplets
+from fasta            import FastaContent
 
 def get_mass(peptide,mass=integer_masses):
     '''Total mass of amino acids in peptide'''
@@ -966,6 +967,30 @@ def trim_for_strings(leaderBoard, spectrum,n,
         trans[tuple(num)]=peptide
     trimmed=trim(numeric_peptides, spectrum,n,spectrum_generator)
     return [trans [tuple(peptide)] for peptide in trimmed]
+
+
+
+def splc(fasta):
+    '''
+    SPLC	RNA Splicing
+
+     After identifying the exons and introns of an RNA string, we only need to
+     delete the introns and concatenate the exons to form a new string
+     ready for translation.
+
+     Input: A DNA string s (of length at most 1 kbp) and a collection of substrings
+            of s acting as introns. All strings are given in FASTA format.
+
+     Return: A protein string resulting from transcribing and translating the
+             exons of s. (Note: Only one solution will exist for the dataset provided.)
+    '''
+    (_,dna)=fasta[0]
+    for i in range(1,len(fasta)):
+        (l,intron)=fasta[i]
+        fragments=dna.split(intron)
+        if len(fragments)>1:
+            dna=''.join(fragments)
+    return prot(dna_to_rna(dna))
 
 if __name__=='__main__':
 
@@ -2517,5 +2542,20 @@ if __name__=='__main__':
                                      1222, 1222, 1225, 1227, 1228, 1229, 1230, 1231, 1231, 1233, 1234, 1236,
                                      1238, 1239, 1245, 1246, 1249, 1253, 1256, 1258, 1265
                                        ]))
+
+
+        def test_splc(self):
+            '''SPLC	RNA Splicing'''
+            string='''>Rosalind_10
+            ATGGTCTACATAGCTGACAAACAGCACGTAGCAATCGGTCGAATCTCGAGAGGCATATGGTCACATGATCGGTCGAGCGTGTTTCAAAGTTTGCGCCTAG
+            >Rosalind_12
+            ATCGGTCGAA
+            >Rosalind_15
+            ATCGGTCGAGCGTGT'''
+            self.assertEqual('MVYIADKQHVASREAYGHMFKVCA',splc(FastaContent(string.split('\n'))))
+
+        def test_prot(self):
+            ''' PROT Translating RNA into Protein'''
+            self.assertEqual('MAMAPRTEINSTRING',prot('AUGGCCAUGGCGCCCAGAACUGAGAUCAAUAGUACCCGUAUUAACGGGUGA'))
 
     main()

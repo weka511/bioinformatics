@@ -84,7 +84,7 @@ I have written this code in Python 3, generally with the most recent release at 
 |-|tyrocidine.py| Challenge Problems from [Bioinformatics Algorithms](http://bioinformaticsalgorithms.com/): sequence Tyrocidine from supplied spectrum (WIP)|
 |conv|conv.py+spectrum.py|[Comparing Spectra with the Spectral Convolution](http://rosalind.info/problems/conv/)|
 |full|full.py+spectrum.py|[Inferring Peptide from Full Spectrum](http://rosalind.info/problems/full/)|
-|prtm|rosalind.py|[Calculating Protein Mass](http://rosalind.info/problems/prtm/) - get_weight(...)|
+|prtm|spectrum.py|[Calculating Protein Mass](http://rosalind.info/problems/prtm/) - get_weight(...)|
 |prsm|prsm.py+spectrum.py|[Matching a Spectrum to a Protein](http://rosalind.info/problems/prsm/)|
 |spec|spec.py+spectrum.py|[Inferring Protein from Spectrum](http://rosalind.info/problems/spec/)|
 |sgra|sgra.py+spectrum.py|[Using the Spectrum Graph to Infer Peptides](http://rosalind.info/problems/sgra/)|
@@ -370,12 +370,12 @@ I have written this code in Python 3, generally with the most recent release at 
 |ling|ling.py|[Linguistic Complexity of a Genome](http://rosalind.info/problems/ling/)|
 ||ukkonen.py|[µTuX's implementation of Ukkonen's algorithm](https://github.com/mutux/Ukkonen-s-Suffix-Tree-Algorithm/blob/master/suffixtree.py)|
 |mmch|mmch.py|[Maximum Matchings and RNA Secondary Structures](http://rosalind.info/problems/mmch/) |
-|prot|rosalind.py|[Translating RNA into Protein](http://rosalind.info/problems/prot/) |
+|prot|spectrum.py|[Translating RNA into Protein](http://rosalind.info/problems/prot/) |
 |revc|rosalind.py| [Complementing a Strand of DNA](http://rosalind.info/problems/revc/)|
 |revp|revp.py rosalind.py| [Locating Restriction Sites](http://rosalind.info/problems/revp/)|
 |rna|rna.py rosalind.py|[Transcribing DNA into RNA](http://rosalind.info/problems/rna/) |
 |scsp|scsp.py|[Interleaving Two Motifs](http://rosalind.info/problems/scsp/)|
-|splc|rosalind.py|[RNA Splicing](http://rosalind.info/problems/splc/) |
+|splc|spectrum.py|[RNA Splicing](http://rosalind.info/problems/splc/) |
 |sseq|rosalind.py|[Finding a Spliced Motif](http://rosalind.info/problems/sseq/) |
 |subs|rosalind.py|[Finding a Motif in DNA](http://rosalind.info/problems/subs/) |
 
