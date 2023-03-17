@@ -1103,23 +1103,8 @@ def get_reading_frames(fasta):
     (_,dna)=fasta.pairs[0]
     return list(set(read_one_direction(dna) + read_one_direction(revc(dna))))
 
-# KMER  Generalizing GC-Content
-#
-# Input: A DNA string s in FASTA format (having length at most 100 kbp).
-#
-# Return: The 4-mer composition of s.
 
-def lexig(k,fasta):
-    (a,b)=fasta[0]
-    counts=zeroes(4**k)
-    for index in [patternToNumber(kmer) for kmer in kmer_composition(k,b)]:
-        counts[index]+=1
-    return counts
 
-#def rear(pairs):
-    #def reversal_distance(a,b):
-        #return 0 if a==b else 1
-    #return [reversal_distance(a,b) for (a,b) in pairs]
 
 #TRAN Transitions and Transversions
 #
@@ -1830,33 +1815,6 @@ if __name__=='__main__':
             self.assertIn((21, 4),palindromes)
             self.assertEqual(8,len(palindromes))
 
-# KMER  Generalizing GC-Content
-        def test_kmer(self):
-            string='''>>Rosalind_6431
-            CTTCGAAAGTTTGGGCCGAGTCTTACAGTCGGTCTTGAAGCAAAGTAACGAACTCCACGG
-            CCCTGACTACCGAACCAGTTGTGAGTACTCAACTGGGTGAGAGTGCAGTCCCTATTGAGT
-            TTCCGAGACTCACCGGGATTTTCGATCCAGCCTCAGTCCAGTCTTGTGGCCAACTCACCA
-            AATGACGTTGGAATATCCCTGTCTAGCTCACGCAGTACTTAGTAAGAGGTCGCTGCAGCG
-            GGGCAAGGAGATCGGAAAATGTGCTCTATATGCGACTAAAGCTCCTAACTTACACGTAGA
-            CTTGCCCGTGTTAAAAACTCGGCTCACATGCTGTCTGCGGCTGGCTGTATACAGTATCTA
-            CCTAATACCCTTCAGTTCGCCGCACAAAAGCTGGGAGTTACCGCGGAAATCACAG'''
-            fasta=FastaContent(string.split('\n'))
-            r=lexig(4,fasta)
-            self.assertEqual( \
-                [4, 1, 4, 3, 0, 1, 1, 5, 1, 3, 1, 2, 2, 1, 2, 0, 1, 1, 3, 1, 2,\
-                 1, 3, 1, 1, 1, 1, 2, 2, 5, 1, 3, 0, 2, 2, 1, 1, 1, 1, 3, 1, 0,\
-                 0, 1, 5, 5, 1, 5, 0, 2, 0, 2, 1, 2, 1, 1, 1, 2, 0, 1, 0, 0, 1,\
-                 1, 3, 2, 1, 0, 3, 2, 3, 0, 0, 2, 0, 8, 0, 0, 1, 0, 2, 1, 3, 0,\
-                 0, 0, 1, 4, 3, 2, 1, 1, 3, 1, 2, 1, 3, 1, 2, 1, 2, 1, 1, 1, 2,\
-                 3, 2, 1, 1, 0, 1, 1, 3, 2, 1, 2, 6, 2, 1, 1, 1, 2, 3, 3, 3, 2,\
-                 3, 0, 3, 2, 1, 1, 0, 0, 1, 4, 3, 0, 1, 5, 0, 2, 0, 1, 2, 1, 3,\
-                 0, 1, 2, 2, 1, 1, 0, 3, 0, 0, 4, 5, 0, 3, 0, 2, 1, 1, 3, 0, 3,\
-                 2, 2, 1, 1, 0, 2, 1, 0, 2, 2, 1, 2, 0, 2, 2, 5, 2, 2, 1, 1, 2,\
-                 1, 2, 2, 2, 2, 1, 1, 3, 4, 0, 2, 1, 1, 0, 1, 2, 2, 1, 1, 1, 5,\
-                 2, 0, 3, 2, 1, 1, 2, 2, 3, 0, 3, 0, 1, 3, 1, 2, 3, 0, 2, 1, 2,\
-                 2, 1, 2, 3, 0, 1, 2, 3, 1, 1, 3, 1, 0, 1, 1, 3, 0, 2, 1, 2, 2,\
-                 0, 2, 1, 1],
-                r)
 
         @skip('#122')
         def test_rear(self):

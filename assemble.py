@@ -15,31 +15,38 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-''' 3. How do we assemble genomes?'''
+''' Code for Chapter 3: How do we assemble genomes?'''
 
 from unittest import main, TestCase, skip
-
-from helpers import rotate
-
-# BA3A	Generate the k-mer Composition of a String
-#
-# Input: An integer k and a string Text.
-#
-# Return: Compositionk(Text) (the k-mers can be provided in any order).
+import numpy as np
+from numpy.testing import assert_array_equal
+from helpers  import rotate
+from fasta    import FastaContent
+from rosalind import patternToNumber
 
 def kmer_composition(k,dna):
+    '''
+     BA3A	Generate the k-mer Composition of a String
+
+     Input: An integer k and a string Text.
+
+     Return: Compositionk(Text) (the k-mers can be provided in any order).
+    '''
     return [dna[i:i+k] for i in range(1+len(dna)-k)]
 
-# BA3B	Reconstruct a String from its Genome Path
-#
-# Input: A sequence of k-mers Pattern1, ... , Patternn such that the last k - 1
-# symbols of Pattern[i] are equal to the first k - 1 symbols of Pattern[i+1]
-# for i from 1 to n-1.
-#
-# Return: A string Text of length k+n-1 where the i-th k-mer in Text is equal
-# to Pattern[i] for all i.
+
 
 def reconstruct_as_list(k,n,fragments,extract=lambda fragments,i: fragments[i]):
+    '''
+     BA3B	Reconstruct a String from its Genome Path
+
+      Input: A sequence of k-mers Pattern1, ... , Patternn such that the last k - 1
+      symbols of Pattern[i] are equal to the first k - 1 symbols of Pattern[i+1]
+      for i from 1 to n-1.
+
+      Return: A string Text of length k+n-1 where the i-th k-mer in Text is equal
+      to Pattern[i] for all i.
+    '''
     result=[]
     for i in range(0,n,k):
         result.append(extract(fragments,i))
@@ -53,15 +60,18 @@ def reconstruct_as_list(k,n,fragments,extract=lambda fragments,i: fragments[i]):
 def reconstruct(fragments):
     return ''.join(reconstruct_as_list(len(fragments[0]),len(fragments),fragments))
 
-# BA3C	Construct the Overlap Graph of a Collection of k-mers
-#
-# Construct the overlap graph of a collection of k-mers.
-#
-# Input: A collection Patterns of k-mers.
-#
-# Return: The overlap graph Overlap(Patterns), in the form of an adjacency list.
+
 
 def grph_kmers(strings):
+    '''
+    BA3C	Construct the Overlap Graph of a Collection of k-mers
+
+    Construct the overlap graph of a collection of k-mers.
+
+    Input: A collection Patterns of k-mers.
+
+    Return: The overlap graph Overlap(Patterns), in the form of an adjacency list.
+    '''
     kk=len(strings[0])-1
     graph=[]
     for s in strings:
@@ -71,13 +81,16 @@ def grph_kmers(strings):
 
     return graph
 
-# BA3D 	Construct the De Bruijn Graph of a String
-#
-# Given: An integer k and a string Text.
-#
-# Return:DeBruijnk(Text), in the form of an adjacency list.
+
 
 def deBruijn(k,text):
+    '''
+    BA3D 	Construct the De Bruijn Graph of a String
+
+    Given: An integer k and a string Text.
+
+    Return:DeBruijnk(Text), in the form of an adjacency list.
+    '''
     kmers=kmer_composition(k-1,text)
     def standardize(ll):
         lll=list(set(ll))
@@ -95,15 +108,17 @@ def deBruijn(k,text):
     graph.sort()
     return graph
 
-#BA3E 	Construct the De Bruijn Graph of a Collection of k-mers
-#
-# Input: A collection of k-mers Patterns.
-#
-# Return: The de Bruijn graph DeBruijn(Patterns), in the form of an adjacency list.
 
-def deBruijn_collection(pattern,\
+def deBruijn_collection(pattern,
                         head=lambda kmer: kmer[0:-1],
                         tail=lambda kmer: kmer[1:]):
+    '''
+    BA3E 	Construct the De Bruijn Graph of a Collection of k-mers
+
+    Input: A collection of k-mers Patterns.
+
+    Return: The de Bruijn graph DeBruijn(Patterns), in the form of an adjacency list.
+    '''
     graph={}
     k=len(pattern[0])
     for kmer in pattern:
@@ -114,13 +129,15 @@ def deBruijn_collection(pattern,\
         graph[kmer].sort()
     return graph
 
-# BA3F 	Find an Eulerian Cycle in a Graph
-#
-# Input: An Eulerian directed graph, in the form of an adjacency list.
-#
-# Return: An Eulerian cycle in this graph.
 
 def find_eulerian_cycle(graph):
+    '''
+    BA3F 	Find an Eulerian Cycle in a Graph
+
+     Input: An Eulerian directed graph, in the form of an adjacency list.
+
+     Return: An Eulerian cycle in this graph.
+    '''
     def create_unexplored_edges():
         edges=[]
         for a in graph.keys():
@@ -162,16 +179,19 @@ def find_eulerian_cycle(graph):
         cycle=find_cycle(cycle,cycle[len(cycle)-1])
     return cycle
 
-# BA3G 	Find an Eulerian Path in a Graph
-#
-# Input: A directed graph that contains an Eulerian path, where the graph
-# is given in the form of an adjacency list.
-#
-# Return: An Eulerian path in this graph.
+
 
 def find_eulerian_path(graph):
+    '''
+    BA3G 	Find an Eulerian Path in a Graph
+
+    Input: A directed graph that contains an Eulerian path, where the graph
+    is given in the form of an adjacency list.
+
+    Return: An Eulerian path in this graph.
+    '''
     def nodes():
-        return list(set(list(graph.keys())+ \
+        return list(set(list(graph.keys())+
                         [out for outs in graph.values() for out in outs]))
     def get_start():
         start=[]
@@ -214,14 +234,15 @@ def find_eulerian_path(graph):
     raise RosalindException(\
         'Start %(start)s and finish %(finish)s should have one element each'%locals())
 
-# BA3H 	Reconstruct a String from its k-mer Composition
-#
-# Input: An integer k followed by a list of k-mers Patterns.
-#
-# Return: A string Text with k-mer composition equal to Patterns. (If multiple
-# answers exist, you may return any one.)
-
 def reconstruct_from_kmers(k,patterns):
+    '''
+    BA3H 	Reconstruct a String from its k-mer Composition
+
+     Input: An integer k followed by a list of k-mers Patterns.
+
+     Return: A string Text with k-mer composition equal to Patterns. (If multiple
+     answers exist, you may return any one.)
+    '''
     return reconstruct(find_eulerian_path(deBruijn_collection(patterns)))
 
 def k_universal_circular_string(k):
@@ -354,6 +375,22 @@ def non_branching_paths(graph):
                     paths.append(nbp)
     return isolated_cycles(nodes,graph)+paths
 
+
+
+def lexig(k,fasta):
+    '''
+    KMER  Generalizing GC-Content
+
+     Input: A DNA string s in FASTA format (having length at most 100 kbp).
+
+     Return: The 4-mer composition of s
+     '''
+
+    (a,b)  = fasta[0]
+    counts = np.zeros((4**k))
+    for index in [patternToNumber(kmer) for kmer in kmer_composition(k,b)]:
+        counts[index]+=1
+    return counts
 
 if __name__=='__main__':
 
@@ -564,5 +601,35 @@ if __name__=='__main__':
             self.assertIn([6,7,6 ],paths)
             self.assertEqual(4,len(paths))
 
+
+        def test_kmer(self):
+            '''
+            KMER  Generalizing GC-Content
+            '''
+            string='''>>Rosalind_6431
+            CTTCGAAAGTTTGGGCCGAGTCTTACAGTCGGTCTTGAAGCAAAGTAACGAACTCCACGG
+            CCCTGACTACCGAACCAGTTGTGAGTACTCAACTGGGTGAGAGTGCAGTCCCTATTGAGT
+            TTCCGAGACTCACCGGGATTTTCGATCCAGCCTCAGTCCAGTCTTGTGGCCAACTCACCA
+            AATGACGTTGGAATATCCCTGTCTAGCTCACGCAGTACTTAGTAAGAGGTCGCTGCAGCG
+            GGGCAAGGAGATCGGAAAATGTGCTCTATATGCGACTAAAGCTCCTAACTTACACGTAGA
+            CTTGCCCGTGTTAAAAACTCGGCTCACATGCTGTCTGCGGCTGGCTGTATACAGTATCTA
+            CCTAATACCCTTCAGTTCGCCGCACAAAAGCTGGGAGTTACCGCGGAAATCACAG'''
+            fasta = FastaContent(string.split('\n'))
+
+            assert_array_equal(np.array(
+                [4, 1, 4, 3, 0, 1, 1, 5, 1, 3, 1, 2, 2, 1, 2, 0, 1, 1, 3, 1, 2,
+                 1, 3, 1, 1, 1, 1, 2, 2, 5, 1, 3, 0, 2, 2, 1, 1, 1, 1, 3, 1, 0,
+                 0, 1, 5, 5, 1, 5, 0, 2, 0, 2, 1, 2, 1, 1, 1, 2, 0, 1, 0, 0, 1,
+                 1, 3, 2, 1, 0, 3, 2, 3, 0, 0, 2, 0, 8, 0, 0, 1, 0, 2, 1, 3, 0,
+                 0, 0, 1, 4, 3, 2, 1, 1, 3, 1, 2, 1, 3, 1, 2, 1, 2, 1, 1, 1, 2,
+                 3, 2, 1, 1, 0, 1, 1, 3, 2, 1, 2, 6, 2, 1, 1, 1, 2, 3, 3, 3, 2,
+                 3, 0, 3, 2, 1, 1, 0, 0, 1, 4, 3, 0, 1, 5, 0, 2, 0, 1, 2, 1, 3,
+                 0, 1, 2, 2, 1, 1, 0, 3, 0, 0, 4, 5, 0, 3, 0, 2, 1, 1, 3, 0, 3,
+                 2, 2, 1, 1, 0, 2, 1, 0, 2, 2, 1, 2, 0, 2, 2, 5, 2, 2, 1, 1, 2,
+                 1, 2, 2, 2, 2, 1, 1, 3, 4, 0, 2, 1, 1, 0, 1, 2, 2, 1, 1, 1, 5,
+                 2, 0, 3, 2, 1, 1, 2, 2, 3, 0, 3, 0, 1, 3, 1, 2, 3, 0, 2, 1, 2,
+                 2, 1, 2, 3, 0, 1, 2, 3, 1, 1, 3, 1, 0, 1, 1, 3, 0, 2, 1, 2, 2,
+                 0, 2, 1, 1]),
+                lexig(4,fasta))
 
     main()

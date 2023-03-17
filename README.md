@@ -59,8 +59,10 @@ I have written this code in Python 3, generally with the most recent release at 
 |corr|CORR.py|[Error Correction in Reads](http://rosalind.info/problems/corr/) |
 |gasm|GASM.py|[Genome Assembly Using Reads](http://rosalind.info/problems/gasm/) |
 |grep|GREP.py|[Genome Assembly with Perfect Coverage and Repeats](http://rosalind.info/problems/grep/)|
+|KMER|assemble.py|[Generalizing GC-Content](https://rosalind.info/problems/kmer/)|
 |long|LONG.py|[Genome Assembly as Shortest Superstring](http://rosalind.info/problems/long/) |
 |pcov|PCOV.py|[Genome Assembly with Perfect Coverage](http://rosalind.info/problems/pcov/) |
+
 
 ### 4. How Do We Sequence Antibiotics? See also [Computational Mass Spectrometry](http://rosalind.info/problems/topics/computational-mass-spectrometry/)
 
