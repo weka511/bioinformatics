@@ -45,16 +45,16 @@ I have written this code in Python 3, generally with the most recent release at 
 
 | # | Location | Description |
 | ---- | --------------- | ------------------------------------------------|
-|BA3A|rosalind.py|[Generate the k-mer Composition of a String](http://rosalind.info/problems/ba3a/) |
-|BA3B|rosalind.py|[Reconstruct a String from its Genome Path](http://rosalind.info/problems/ba3a/)
-|BA3C|rosalind.py|[Construct the Overlap Graph of a Collection of k-mers](http://rosalind.info/problems/ba3a/)
-|BA3D |rosalind.py|[Construct the De Bruijn Graph of a String ](http://rosalind.info/problems/ba3a/)
-|BA3E |rosalind.py|[Construct the De Bruijn Graph of a Collection of k-mers](http://rosalind.info/problems/ba3a/)
-|BA3F |rosalind.py|[Find an Eulerian Cycle in a Graph](http://rosalind.info/problems/ba3a/)
-|BA3G |rosalind.py|[Find an Eulerian Path in a Graph](http://rosalind.info/problems/ba3a/)
-|BA3H |rosalind.py|[Reconstruct a String from its k-mer Composition](http://rosalind.info/problems/ba3a/)
-|BA3I |rosalind.py|[Find a k-Universal Circular String](http://rosalind.info/problems/ba3a/)
-|BA3J |rosalind.py|[Reconstruct a String from its Paired Composition](http://rosalind.info/problems/ba3a/)
+|BA3A|assemble.py|[Generate the k-mer Composition of a String](http://rosalind.info/problems/ba3a/) |
+|BA3B|assemble.py|[Reconstruct a String from its Genome Path](http://rosalind.info/problems/ba3a/)
+|BA3C|assemble.py|[Construct the Overlap Graph of a Collection of k-mers](http://rosalind.info/problems/ba3a/)
+|BA3D |assemble.py|[Construct the De Bruijn Graph of a String ](http://rosalind.info/problems/ba3a/)
+|BA3E |assemble.py|[Construct the De Bruijn Graph of a Collection of k-mers](http://rosalind.info/problems/ba3a/)
+|BA3F |assemble.py|[Find an Eulerian Cycle in a Graph](http://rosalind.info/problems/ba3a/)
+|BA3G |assemble.py|[Find an Eulerian Path in a Graph](http://rosalind.info/problems/ba3a/)
+|BA3H |assemble.py|[Reconstruct a String from its k-mer Composition](http://rosalind.info/problems/ba3a/)
+|BA3I |assemble.py|[Find a k-Universal Circular String](http://rosalind.info/problems/ba3a/)
+|BA3J |assemble.py|[Reconstruct a String from its Paired Composition](http://rosalind.info/problems/ba3a/)
 |asmq|ASMQ.py|[Assessing Assembly Quality with N50 and N75](http://rosalind.info/problems/asmq/) |
 |corr|CORR.py|[Error Correction in Reads](http://rosalind.info/problems/corr/) |
 |gasm|GASM.py|[Genome Assembly Using Reads](http://rosalind.info/problems/gasm/) |
