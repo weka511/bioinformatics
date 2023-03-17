@@ -21,11 +21,9 @@ from collections import deque
 from math        import isinf
 from unittest    import TestCase, main
 
-# from   tarjan      import tarjan
-from   deprecated import deprecated
 from helpers     import create_adjacency
 from align       import create_topological_order
-from rosalind    import grph
+
 
 def bf(edges,
        s=1):    # Set to zero for nwc - see Ayaan Hossain's comment http://rosalind.info/problems/nwc/questions/
@@ -732,61 +730,7 @@ def ShortestDistances(graph):
     return distances
 
 
-### Deprecated code ###
 
-#TRIE  Pattern matching
-
-# trie
-#
-# Given: A list of at most 100 DNA strings of length at most 100 bp, none of which is a prefix of another.
-#         one_based Indicates whether numnering of nodes should start at 1 or zero
-#
-# Return: The adjacency list corresponding to the trie T
-#         for these patterns, in the following format.
-#         If T has n nodes, first label the root with 1 and then label the remaining nodes
-#         with the integers 2 through n in any order you like.
-#         Each edge of the adjacency list of T will be encoded by a triple
-#         containing the integer representing the edge's parent node, followed by the integer
-#         representing the edge's child node, and finally the symbol labeling the edge.
-@deprecated(reason="Use snp.create_tree instead")
-def trie(strings,one_based=True):
-
-    def find_string_in_adjacency_list(string, adjacency_list):
-        index=0
-        parent=0
-        path=[]
-        for cc in string:
-            matched=False
-            while index<len(adjacency_list) and not matched:
-                a,b,c=adjacency_list[index]
-                if a==parent and c==cc:
-                    matched=True
-                    path.append(index)
-                    parent=b
-                else:
-                    index+=1
-        return (parent,path)
-
-    def create_suffix(parent,path,string,b):
-        result=[]
-        a = parent
-        for i in range(len(path),len(string)):
-            b+=1
-            result.append((a,b,string[i]))
-            a=b
-
-        return result
-
-    def merge_string_with_adjacency_list(adjacency_list,string):
-        parent,path=find_string_in_adjacency_list(string, adjacency_list)
-        return adjacency_list+create_suffix(parent,path,string,len(adjacency_list))
-
-    incr = 1 if one_based else 0
-
-    def increment_indices(adjacency_list):
-        return [(a+incr,b+incr,c) for (a,b,c) in adjacency_list]
-
-    return increment_indices(reduce(merge_string_with_adjacency_list,strings,[]))
 
 if __name__=='__main__':
     class Test_graphs(TestCase):
