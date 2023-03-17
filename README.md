@@ -32,14 +32,14 @@ I have written this code in Python 3, generally with the most recent release at 
 
 | # | Location | Description |
 | ---- | --------------- | ------------------------------------------------|
-|BA2A|rosalind.py|[Implement MotifEnumeration](http://rosalind.info/problems/ba2a/) |
-|BA2B |rosalind.py|[Find a Median String ](http://rosalind.info/problems/ba1j/)
-|BA2C |rosalind.py|[Find a Profile-most Probable k-mer in a String	](http://rosalind.info/problems/ba2c/)
-|BA2D |rosalind.py|[Implement GreedyMotifSearch](http://rosalind.info/problems/ba2d/)
-|BA2E |rosalind.py|[Implement GreedyMotifSearch with Pseudocounts](http://rosalind.info/problems/ba2e/)
-|BA2F |rosalind.py|[Implement RandomizedMotifSearch](http://rosalind.info/problems/ba2f/)
-|BA2G |rosalind.py|[Implement GibbsSampler](http://rosalind.info/problems/ba2g/)
-|BA2H |rosalind.py|[Implement DistanceBetweenPatternAndStrings](http://rosalind.info/problems/ba2h/)
+|BA2A|sequence.py|[Implement MotifEnumeration](http://rosalind.info/problems/ba2a/) |
+|BA2B |sequence.py|[Find a Median String ](http://rosalind.info/problems/ba1j/)
+|BA2C |sequence.py|[Find a Profile-most Probable k-mer in a String	](http://rosalind.info/problems/ba2c/)
+|BA2D |sequence.py|[Implement GreedyMotifSearch](http://rosalind.info/problems/ba2d/)
+|BA2E |sequence.py|[Implement GreedyMotifSearch with Pseudocounts](http://rosalind.info/problems/ba2e/)
+|BA2F |sequence.py|[Implement RandomizedMotifSearch](http://rosalind.info/problems/ba2f/)
+|BA2G |sequence.py|[Implement GibbsSampler](http://rosalind.info/problems/ba2g/)
+|BA2H |sequence.py|[Implement DistanceBetweenPatternAndStrings](http://rosalind.info/problems/ba2h/)
 
 ### 3. How Do We Assemble Genomes?  See also  [Genome Assembly](http://rosalind.info/problems/topics/genome-assembly/)
 
