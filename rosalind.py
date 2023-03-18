@@ -64,69 +64,88 @@ def grph(fasta,k):
     return graph
 
 def revc(dna):
+    '''Complementing a Strand of DNA '''
     return dna.translate({
             ord('A'): 'T',
             ord('C'): 'G',
             ord('G'):'C',
             ord('T'): 'A'})[::-1]
 
-def dbru(S,include_revc=True):
+def dbru(S,
+         include_revc=True):
     '''DBRU Constructing a De Bruijn Graph'''
+
     def union(S):
-        U=set(S)
-        for s in S:
-            s_revc=revc(s)
-            if include_revc and not s_revc in U:
-                U.add(s_revc)
+        U = set(S)
+        if include_revc:
+            for s in S:
+                U.add(revc(s))
         return U
-    def nodes(E):
-        B=[]
+
+    def create_nodes(E):
+        '''
+           Create the nodes of the De Bruijn Graph: these are all kmers present as a substring of a (k+1)mer
+           present in S or revc(S)
+        '''
+        product = set()
         for (a,b) in E:
-            if not a in B:
-                B.append(a)
-            if not b in B:
-                B.append(b)
-        return B
-    E= [(e[0:-1],e[1:]) for e in union(S)]
-    return (nodes(E),E)
+            product.add(a)
+            product.add(b)
+        return list(product)
+
+    E = [(e[0:-1],e[1:]) for e in union(S)]
+    return (create_nodes(E),E)
 
 def distance(p1,p2):
     return sum([(p1[i]-p2[i])**2 for i in range(len(p1))])
 
-# HAMM	Counting Point Mutations
-# BA1G	Compute the Hamming Distance Between Two Strings
-#
-# Given two strings s and t of equal length, the Hamming distance between s and t,
-# denoted dH(s,t), is the number of corresponding symbols that differ in s and t.
-#
-# Input: Two DNA strings s and t of equal length (not exceeding 1 kbp).
-# Return: The Hamming distance dH(s,t).
 
 def hamm(s,t):
+    '''
+    HAMM	Counting Point Mutations
+    BA1G	Compute the Hamming Distance Between Two Strings
+
+    Given two strings s and t of equal length, the Hamming distance between s and t,
+    denoted dH(s,t), is the number of corresponding symbols that differ in s and t.
+
+    Input: Two DNA strings s and t of equal length (not exceeding 1 kbp).
+    Return: The Hamming distance dH(s,t).
+    '''
     return len([a for (a,b) in zip(s,t) if a!=b])
 
-# Tree
-#
-# This class represents an unndirected, weighted tree
+
 class Tree(object):
+    '''
+    Tree
 
-    # Tree
-    #
-    #  Inputs
-    #      N              Number of nodes
-    #      bidirectional
-    def __init__(self,N=-1,bidirectional=True):
-        self.nodes=list(range(N))
-        self.edges={}
-        self.bidirectional=bidirectional
-        self.N = N
+    This class represents an unndirected, weighted tree
+    '''
 
-    # link
-    #
-    # Inputs: start
-    #         end
-    #         weight
+
+    def __init__(self,
+                               N= -1,
+                 bidirectional = True):
+        '''
+        Tree
+
+      Inputs
+          N              Number of nodes
+          bidirectional
+        '''
+        self.nodes         = list(range(N))
+        self.edges         = {}
+        self.bidirectional = bidirectional
+        self.N             = N
+
+
     def link(self,start,end,weight=1):
+        '''
+        link
+
+            Inputs: start
+                    end
+                    weight
+        '''
         self.half_link(start,end,weight)
         if self.bidirectional:
             self.half_link(end,start,weight)
@@ -311,18 +330,17 @@ class RosalindException(Exception):
     '''
     pass
 
-#def factorial(n):
-#    return reduce(operator.mul,range(1,n+1))
-
-# Verify that string contains the same number of As as Us, and the same number of Cs as Gs;
-# hence, that it is possible to match all bases.
 
 def verify_counts_complete_graph(string):
+    '''
+    Verify that string contains the same number of As as Us, and the same number of Cs as Gs;
+    hence, that it is possible to match all bases.
+    '''
     counts={
-        'A':0,
-        'U':0,
-        'C':0,
-        'G':0
+        'A' : 0,
+        'U' : 0,
+        'C' : 0,
+        'G' : 0
     }
     for c in string:
         counts[c]+=1
@@ -331,73 +349,59 @@ def verify_counts_complete_graph(string):
     else:
         raise RosalindException('Mismatched counts {0}/{1} or {2}/{3}'.format(counts['A'],counts['U'],counts['C'],counts['G']))
 
-# REVC	Complementing a Strand of DNA
-# BA1C	Find the Reverse Complement of a String
-#       In DNA strings, symbols 'A' and 'T' are complements of each other,
-#       as are 'C' and 'G'.
-#       The reverse complement of a DNA string s is the string sc formed by
-#       reversing the symbols of s, then taking the complement of each symbol
-#       (e.g., the reverse complement of "GTCA" is "TGAC").
-#
-#       Input:  A DNA string s of length at most 1000 bp.
-#       Return: The reverse complement sc of s.
+
 
 def revc(dna):
+    '''
+    REVC	Complementing a Strand of DNA
+    BA1C	Find the Reverse Complement of a String
+           In DNA strings, symbols 'A' and 'T' are complements of each other,
+           as are 'C' and 'G'.
+           The reverse complement of a DNA string s is the string sc formed by
+           reversing the symbols of s, then taking the complement of each symbol
+           (e.g., the reverse complement of "GTCA" is "TGAC").
+
+           Input:  A DNA string s of length at most 1000 bp.
+           Return: The reverse complement sc of s.
+    '''
     def translate(seq,table):
         return ''.join([table[x] for x in seq])
     return translate(dna,{'A': 'T', 'C': 'G', 'G':'C', 'T': 'A'})[::-1]
 
-#SUBS	Finding a Motif in DNA
-#
-# Given two strings s and t, t is a substring of s if t is contained as a
-# contiguous collection of symbols in s (as a result, t must be no longer than s).
-#
-# The position of a symbol in a string is the total number of symbols found to its left,
-# including itself (e.g., the positions of all occurrences of 'U' in "AUGCUUCAGAAAGGUCUUACG"
-# are 2, 5, 6, 15, 17, and 18). The symbol at position i of s is denoted by s[i].
-#
-# A substring of s can be represented as s[j:k], where j and k represent the starting
-# and ending positions of the substring in s; for example,
-# if s = "AUGCUUCAGAAAGGUCUUACG", then s[2:5] = "UGCU".
-
-# The location of a substring s[j:k] is its beginning position j; note that t
-# will have multiple locations in s if it occurs more than once as a substring of s.
-#
-# Input: Two DNA strings s and t (each of length at most 1 kbp).
-#
-# Return: All locations of t as a substring of s.
 
 def subs(s,t):
-    matches=[]
-    start=0
+    '''
+    SUBS	Finding a Motif in DNA
+
+    Given two strings s and t, t is a substring of s if t is contained as a
+    contiguous collection of symbols in s (as a result, t must be no longer than s).
+
+    The position of a symbol in a string is the total number of symbols found to its left,
+    including itself (e.g., the positions of all occurrences of 'U' in "AUGCUUCAGAAAGGUCUUACG"
+    are 2, 5, 6, 15, 17, and 18). The symbol at position i of s is denoted by s[i].
+
+    A substring of s can be represented as s[j:k], where j and k represent the starting
+    and ending positions of the substring in s; for example,
+    if s = "AUGCUUCAGAAAGGUCUUACG", then s[2:5] = "UGCU".
+
+    The location of a substring s[j:k] is its beginning position j; note that t
+    will have multiple locations in s if it occurs more than once as a substring of s.
+
+    Input: Two DNA strings s and t (each of length at most 1 kbp).
+
+    Return: All locations of t as a substring of s.
+    '''
+    matches = []
+    start   = 0
     while start>-1:
-        start=s.find(t,start)
+        start = s.find(t,start)
         if start>-1:
-            start+=1
+            start += 1
             matches.append(start)
     return matches
 
-
-
-
-
-
-
-# FIB	Rabbits and Recurrence Relations
-#
-# Input: Positive integers nÃ¢â€°Â¤40 and kÃ¢â€°Â¤5.
-#
-# Return: The total number of rabbit pairs that will be present after n months
-# if we begin with 1 pair and in each generation, every pair of reproduction-age
-# rabbits produces a litter of k rabbit pairs (instead of only 1 pair).
-#
-# When finding the n-th term of a sequence defined by a recurrence relation,
-# we can simply use the recurrence relation to generate terms for progressively
-# larger values of n. This problem introduces us to the computational technique
-# of dynamic programming, which successively builds up solutions by using the
-# answers to smaller cases.
-
 def fib(n,k):
+    '''FIB	Rabbits and Recurrence Relations'''
     cache=[]
     for i in range(n):
         if i<2:
@@ -406,14 +410,17 @@ def fib(n,k):
             cache.append(cache[i-1]+k*cache[i-2])
     return cache[n-1]
 
-# FIBD	Mortal Fibonacci Rabbits
-#
-# Input: Positive integers nÃ¢â€°Â¤100 and mÃ¢â€°Â¤20.
-#
-# Return: The total number of pairs of rabbits that will remain after the n-th
-# month if all rabbits live for m months.
+
 
 def fibd(n,m):
+    '''
+    FIBD	Mortal Fibonacci Rabbits
+
+    Input: Positive integers nÃ¢â€°Â¤100 and mÃ¢â€°Â¤20.
+
+    Return: The total number of pairs of rabbits that will remain after the n-th
+    month if all rabbits live for m months.
+    '''
     def helper(p):
         return [sum([p[i] for i in range(1,len(p))])] +\
                [p[i] for i in range(0,len(p)-1)]
@@ -425,31 +432,33 @@ def fibd(n,m):
         state=helper(state)
     return sum(state)
 
-
-
-# DNA	  Counting DNA Nucleotides
-#
-# Input:  A DNA string s of length at most 1000 nt.
-# Return: Four integers (separated by spaces) counting the respective number
-#         of times that the symbols 'A', 'C', 'G', and 'T' occur in s.
-
 def count_nucleotides(s):
+    '''
+    DNA	  Counting DNA Nucleotides
+
+    Input:  A DNA string s of length at most 1000 nt.
+    Return: Four integers (separated by spaces) counting the respective number
+            of times that the symbols 'A', 'C', 'G', and 'T' occur in s.
+    '''
     return count_subset(s,'ACGT')
 
-# RNA	Transcribing DNA into RNA
-# An RNA string is a string formed from the alphabet containing 'A', 'C', 'G', and 'U'.
-# Given a DNA string t corresponding to a coding strand, its transcribed RNA
-# string u is formed by replacing all occurrences of 'T' in t with 'U' in u.
-#
-# Input: A DNA string t having length at most 1000 nt.
-# Return: The transcribed RNA string of t.
+
 
 def dna_to_rna(dna):
+    '''
+    RNA	Transcribing DNA into RNA
+    An RNA string is a string formed from the alphabet containing 'A', 'C', 'G', and 'U'.
+    Given a DNA string t corresponding to a coding strand, its transcribed RNA
+    string u is formed by replacing all occurrences of 'T' in t with 'U' in u.
+
+    Input: A DNA string t having length at most 1000 nt.
+    Return: The transcribed RNA string of t.
+    '''
     return dna.translate({
-                ord('A'): 'A',
-                ord('C'): 'C',
-                ord('G'):'G',
-                ord('T'): 'U'})
+                ord('A') : 'A',
+                ord('C') : 'C',
+                ord('G') : 'G',
+                ord('T') : 'U'})
 
 ### Where in the Genome does DNA raplication begin? ###
 
@@ -512,25 +521,28 @@ def findOccurences(pattern,string):
     return [pos-1 for pos in subs(string,pattern)]
 
 
-# BA1E	Find Patterns Forming Clumps in a String
-#
-# Given integers L and t, a string Pattern forms an (L, t)-clump inside a
-# (larger) string Genome if there is an interval of Genome of length L in which
-# Pattern appears at least t times. For example, TGCA forms a (25,3)-clump in
-# the following Genome: gatcagcataagggtcccTGCAATGCATGACAAGCCTGCAgttgttttac.
-#
-# Input: A string Genome, and integers k, L, and t.
-#
-# Return: All distinct k-mers forming (L, t)-clumps in Genome.
+
 
 def findClumps(genome,k,L,t):
+    '''
+     BA1E	Find Patterns Forming Clumps in a String
+
+    Given integers L and t, a string Pattern forms an (L, t)-clump inside a
+    (larger) string Genome if there is an interval of Genome of length L in which
+    Pattern appears at least t times. For example, TGCA forms a (25,3)-clump in
+    the following Genome: gatcagcataagggtcccTGCAATGCATGACAAGCCTGCAgttgttttac.
+
+    Input: A string Genome, and integers k, L, and t.
+
+    Return: All distinct k-mers forming (L, t)-clumps in Genome.
+    '''
     def update_patterns(frequencies):
         for (kmer,count) in frequencies.items():
             if count>=t:
                 patterns.append(kmer)
 
-    patterns=[]
-    frequencies=create_frequency_table(genome[0:L],k)
+    patterns    = []
+    frequencies = create_frequency_table(genome[0:L],k)
     update_patterns(frequencies)
     for i in range(1,len(genome)-L+1):
         head=genome[i-1:i+k-1]
@@ -544,21 +556,24 @@ def findClumps(genome,k,L,t):
 
     return list(set(patterns))
 
-# BA1F	Find a Position in a Genome Minimizing the Skew
-#
-# Define the skew of a DNA string Genome, denoted Skew(Genome), as the
-# difference between the total number of occurrences of 'G' and 'C' in Genome.
-#
-# Input: A DNA string Genome.
-#
-# Return: All integer(s) i minimizing Skew(Prefixi (Text)) over all values of
-#         i (from 0 to |Genome|).
+
 
 def find_minimum_skew(genome):
-    positions=[]
-    min_skew=2
-    skew=0
-    pos=0
+    '''
+    # BA1F	Find a Position in a Genome Minimizing the Skew
+
+    Define the skew of a DNA string Genome, denoted Skew(Genome), as the
+    difference between the total number of occurrences of 'G' and 'C' in Genome.
+
+    Input: A DNA string Genome.
+
+    Return: All integer(s) i minimizing Skew(Prefixi (Text)) over all values of
+            i (from 0 to |Genome|).
+    '''
+    positions = []
+    min_skew = 2
+    skew     = 0
+    pos      = 0
     for nucleotide in genome:
         pos+=1
         skew+=skew_step[nucleotide]
@@ -570,43 +585,50 @@ def find_minimum_skew(genome):
 
     return positions, min_skew
 
-# BA1H	Find All Approximate Occurrences of a Pattern in a String
-#
-# Input: Strings Pattern and Text along with an integer d.
-#
-# Return: All starting positions where Pattern appears as a substring of Text
-#         with at most d mismatches.
 
 def findApproximateOccurrences(pattern,text,d):
-    return [i\
-            for i in range(len(text)-len(pattern)+1)\
+    '''
+     BA1H	Find All Approximate Occurrences of a Pattern in a String
+
+    Input: Strings Pattern and Text along with an integer d.
+
+    Return: All starting positions where Pattern appears as a substring of Text
+            with at most d mismatches.
+
+    '''
+    return [i
+            for i in range(len(text)-len(pattern)+1)
             if hamm(pattern,text[i:i+len(pattern)])<=d]
 
-# helper for BA1I
+
 def find_mismatches(pattern,text,d):
+    ''' helper for BA1I'''
     return findApproximateOccurrences(pattern,text,d)
 
-# helper for BA1J
 def find_mismatches_and_rc(pattern,text,d):
-    return findApproximateOccurrences(pattern,text,d) + \
-           findApproximateOccurrences(revc(pattern),text,d)
+    '''helper for BA1J'''
+    return findApproximateOccurrences(pattern,text,d) + findApproximateOccurrences(revc(pattern),text,d)
 
-# BA1I	Find the Most Frequent Words with Mismatches in a String
-# BA1J	Find Frequent Words with Mismatches and Reverse Complements
-#
-# A most frequent k-mer with up to d mismatches in Text is simply a string
-# Pattern maximizing Countd(Text, Pattern) among all k-mers. Note that Pattern
-# does not need to actually appear as a substring of Text; for example, AAAAA
-# is the most frequent 5-mer with 1 mismatch in AACAAGCTGATAAACATTTAAAGAG,
-# even though AAAAA does not appear exactly in this string.
-#
-# Input: A string Text as well as integers k and d.
-#
-# Return: All most frequent k-mers with up to d mismatches in Text.
 
-def findMostFrequentWordsWithMismatches(text,k,d,find=find_mismatches):
-    matches=[]
-    max_count=-1
+
+def findMostFrequentWordsWithMismatches(text,k,d,
+                                        find=find_mismatches):
+    '''
+     BA1I	Find the Most Frequent Words with Mismatches in a String
+     BA1J	Find Frequent Words with Mismatches and Reverse Complements
+
+     A most frequent k-mer with up to d mismatches in Text is simply a string
+     Pattern maximizing Countd(Text, Pattern) among all k-mers. Note that Pattern
+     does not need to actually appear as a substring of Text; for example, AAAAA
+     is the most frequent 5-mer with 1 mismatch in AACAAGCTGATAAACATTTAAAGAG,
+     even though AAAAA does not appear exactly in this string.
+
+     Input: A string Text as well as integers k and d.
+
+     Return: All most frequent k-mers with up to d mismatches in Text.
+    '''
+    matches   = []
+    max_count = -1
     for pattern in k_mers(k):
         count=len(find(pattern,text,d))
         if count>max_count:
@@ -617,17 +639,19 @@ def findMostFrequentWordsWithMismatches(text,k,d,find=find_mismatches):
 
     return (max_count,matches)
 
-# BA1K	Generate the Frequency Array of a Strings
-#
-# Given an integer k, we define the frequency array of a string Text as an
-# array of length 4**k, where the i-th element of the array holds the number of
-# times that the i-th k-mer (in the lexicographic order) appears in Text.
-#
-# Input: A DNA string Text and an integer k.
-#
-# Return: The frequency array of k-mers in Text.
+
 
 def generateFrequencyArray(text,k):
+    '''
+    BA1K	Generate the Frequency Array of a Strings
+    Given an integer k, we define the frequency array of a string Text as an
+    array of length 4**k, where the i-th element of the array holds the number of
+    times that the i-th k-mer (in the lexicographic order) appears in Text.
+
+    Input: A DNA string Text and an integer k.
+
+    Return: The frequency array of k-mers in Text.
+    '''
     frequencies=[]
     for i in range(4**k):
         frequencies.append(0)
@@ -635,18 +659,17 @@ def generateFrequencyArray(text,k):
         frequencies[patternToNumber(text[i:i+k])]+=1
     return frequencies
 
-# BA1L	Implement PatternToNumber
 
 def patternToNumber(kmer):
+    '''BA1L	Implement PatternToNumber'''
     n=0
     for letter in kmer:
         n*=4
         n+=bases.find(letter)
     return n
 
-# BA1M	Implement NumberToPattern
-
 def numberToPattern(n,k):
+    '''BA1M	Implement NumberToPattern'''
     pattern=''
     nn=n
     for i in range(k):
@@ -654,16 +677,17 @@ def numberToPattern(n,k):
         nn//=4
     return pattern[::-1]
 
-# BA1N	Generate the d-Neighborhood of a String
-#
-# The d-neighborhood Neighbors(Pattern, d) is the set of all k-mers whose
-# Hamming distance from Pattern does not exceed d.
-#
-# Input: A DNA string Pattern and an integer d.
-#
-# Return: The collection of strings Neighbors(Pattern, d).
-
 def generate_dNeighborhood(pattern,d):
+    '''
+    BA1N	Generate the d-Neighborhood of a String
+
+    The d-neighborhood Neighbors(Pattern, d) is the set of all k-mers whose
+    Hamming distance from Pattern does not exceed d.
+
+    Input: A DNA string Pattern and an integer d.
+
+    Return: The collection of strings Neighbors(Pattern, d).
+    '''
     def neighbours(p):
         neighbours=[]
         for i in range(len(p)):
@@ -729,23 +753,26 @@ def sseq(fasta,bases=['A','C','G','T']):
     _,motif=fasta[1]
     return find_all([t for t in text],[m for m in motif])
 
-# LCSM	Finding a Shared Motif
-#
-# A common substring of a collection of strings is a substring of every member
-# of the collection. We say that a common substring is a longest common substring
-# if there does not exist a longer common substring. For example, "CG" is a common
-# substring of "ACGTACGT" and "AACCGGTATA", but it is not as long as possible;
-# in this case, "GTA" is a longest common substring of "ACGTACGT" and "AACCGTATA".
-#
-# Note that the longest common substring is not necessarily unique; for a simple
-# example, "AA" and "CC" are both longest common substrings of "AACC" and "CCAA".
-#
-# Input: A collection of k DNA strings of length at most 1 kbp each in FASTA format.
-#
-# Return: A longest common substring of the collection.
-# (If multiple solutions exist, you may return any single solution.)
+
 
 def lcsm(fasta):
+    '''
+    LCSM	Finding a Shared Motif
+
+    A common substring of a collection of strings is a substring of every member
+    of the collection. We say that a common substring is a longest common substring
+    if there does not exist a longer common substring. For example, "CG" is a common
+    substring of "ACGTACGT" and "AACCGGTATA", but it is not as long as possible;
+    in this case, "GTA" is a longest common substring of "ACGTACGT" and "AACCGTATA".
+
+    Note that the longest common substring is not necessarily unique; for a simple
+    example, "AA" and "CC" are both longest common substrings of "AACC" and "CCAA".
+
+    Input: A collection of k DNA strings of length at most 1 kbp each in FASTA format.
+
+    Return: A longest common substring of the collection.
+    (If multiple solutions exist, you may return any single solution.)
+    '''
     def matches(kmer,strings):
         for s in strings:
             if not kmer in s:
@@ -766,21 +793,19 @@ def lcsm(fasta):
             return best
     return best
 
-def hamm(s,t):
-    return len([a for (a,b) in zip(s,t) if a!=b])
 
 
-
-
-# MRNA	Inferring mRNA from Protein
-#
-# Given: A protein string of length at most 1000 aa.
-#
-# Return: The total number of different RNA strings from which the protein could
-# have been translated, modulo 1,000,000.
-# (Don't neglect the importance of the stop codon in protein translation.)
 
 def mrna(string,modulus=1000000,table=codon_table):
+    '''
+    MRNA	Inferring mRNA from Protein
+
+    Given: A protein string of length at most 1000 aa.
+
+    Return: The total number of different RNA strings from which the protein could
+    have been translated, modulo 1,000,000.
+    (Don't neglect the importance of the stop codon in protein translation.)
+    '''
     nodoc={}
     for key in list(set(table.values())):
         nodoc[key]=0
@@ -1305,26 +1330,28 @@ if __name__=='__main__':
     class TestRosalind(TestCase):
 
         def test_fib(self):
+            '''FIB	Rabbits and Recurrence Relations'''
             self.assertEqual(19,fib(5,3))
             self.assertEqual(875089148811941,fib(35, 5))
 
-
-
         def test_fibd(self):
+            ''' FIBD	Mortal Fibonacci Rabbits'''
             self.assertEqual(4,fibd(6,3))
 
-
-
         def test_dna(self):
-            self.assertEqual([20, 12, 17, 21],\
-                             count_nucleotides(\
-                                 'AGCTTTTCATTCTGACTGCAACGGGCAATATGTCTCTGTGT'\
+            '''DNA	  Counting DNA Nucleotides'''
+            self.assertEqual([20, 12, 17, 21],
+                             count_nucleotides(
+                                 'AGCTTTTCATTCTGACTGCAACGGGCAATATGTCTCTGTGT'
                                  'GGATTAAAAAAAGAGTGTCTGATAGCAGC'))
 
         def test_rna(self):
-            self.assertEqual('GAUGGAACUUGACUACGUAAAUU',dna_to_rna('GATGGAACTTGACTACGTAAATT'))
+            '''RNA	Transcribing DNA into RNA'''
+            self.assertEqual('GAUGGAACUUGACUACGUAAAUU',
+                             dna_to_rna('GATGGAACTTGACTACGTAAATT'))
 
         def test_revc(self):
+            '''Complementing a Strand of DNA '''
             self.assertEqual('ACCGGGTTTT',revc('AAAACCCGGT'))
 
         def test_gc(self):
@@ -1356,23 +1383,16 @@ if __name__=='__main__':
             self.assertEqual(4,ss[1])
             self.assertEqual(5,ss[2])
 
-            # HAMM	Counting Point Mutations
-            # BA1G	Compute the Hamming Distance Between Two Strings
-            #
-            # Given two strings s and t of equal length, the Hamming distance between s and t,
-            # denoted dH(s,t), is the number of corresponding symbols that differ in s and t.
-            #
-            # Input: Two DNA strings s and t of equal length (not exceeding 1 kbp).
-            # Return: The Hamming distance dH(s,t).
-
-
         def test_hamm(self):
+            ''' HAMM	Counting Point Mutations'''
             self.assertEqual(7,hamm('GAGCCTACTAACGGGAT','CATCGTAATGACGGCCT'))
 
         def test_subs(self):
+            '''SUBS	Finding a Motif in DNA'''
             self.assertEqual([2,4,10],subs('GATATATGCATATACTT','ATAT'))
 
         def test_lcsm(self):
+            '''LCSM	Finding a Shared Motif'''
             string='''>Rosalind_1
             GATTACA
             >Rosalind_2
@@ -1575,19 +1595,42 @@ if __name__=='__main__':
             self.assertIn('MTPRLGLESLLE',peptides)
             self.assertEqual(4,len(peptides))
 
+        def test_dbru(self):
+            '''DBRU Constructing a De Bruijn Graph'''
+            _,debruijn= dbru(['TGAT',
+                      'CATG',
+                      'TCAT',
+                      'ATGC',
+                      'CATC',
+                      'CATC'])
+            self.assertEqual(9,len(debruijn))
+            self.assertIn(('ATC', 'TCA'),debruijn)
+            self.assertIn(('ATG', 'TGA'),debruijn)
+            self.assertIn(('ATG', 'TGC'),debruijn)
+            self.assertIn(('CAT', 'ATC'),debruijn)
+            self.assertIn(('CAT', 'ATG'),debruijn)
+            self.assertIn(('GAT', 'ATG'),debruijn)
+            self.assertIn(('TCA', 'CAT'),debruijn)
+            self.assertIn(('GCA', 'CAT'),debruijn)
+            self.assertIn(('TGA', 'GAT'),debruijn)
+
     ### Where in the Genome does DNA replication begin? ###
 
     class Test_1_Replication(TestCase):
-        def test_ba1b(self):
+        def test_ba1b1(self):
             most_frequent_words=find_most_frequent_words('ACGTTGCATGTCGCATGATGCATGAGAGCT',4)
             self.assertIn('CATG',most_frequent_words)
             self.assertIn('GCAT',most_frequent_words)
+
+        def test_ba1b2(self):
             most_frequent_words= find_most_frequent_words('ACATCTGGCGCCCATCGCCCATCTGACGGTTCTGACGGTTCTGACGGTTAGCAGCTCTGACGGTTCTGACGGTTCTGACGGTTCTGACGGTTCTGACGGTTTCGCGACCGCCCATCTGACGGTTCGCCCATACATCTGGTCGCGACCTGACGGTTACATCTGGCGCCCATCTGACGGTTCGCCCATAGCAGCTCTGACGGTTTCGCGACCGCCCATACATCTGGCTGACGGTTTCGCGACTCGCGACACATCTGGAGCAGCTACATCTGGTCGCGACCTGACGGTTAGCAGCTCGCCCATAGCAGCTCTGACGGTTAGCAGCTCTGACGGTTACATCTGGACATCTGGCGCCCATCGCCCATTCGCGACACATCTGGAGCAGCTCGCCCATTCGCGACTCGCGACAGCAGCTACATCTGGTCGCGACACATCTGGCGCCCATCTGACGGTTACATCTGGTCGCGACACATCTGGCGCCCATTCGCGACACATCTGGACATCTGGAGCAGCTACATCTGGTCGCGACAGCAGCTACATCTGGTCGCGACCTGACGGTTACATCTGGCTGACGGTTCGCCCATCGCCCATCGCCCATTCGCGACAGCAGCTTCGCGACCTGACGGTTACATCTGGCGCCCATACATCTGGTCGCGACAGCAGCTTCGCGACTCGCGACCTGACGGTTTCGCGACACATCTGGCTGACGGTTCTGACGGTTCGCCCATAGCAGCTCTGACGGTTCTGACGGTTAGCAGCTACATCTGGAGCAGCTCGCCCATCGCCCATAGCAGCTAGCAGCTTCGCGACACATCTGGCGCCCATCTGACGGTTTCGCGACAGCAGCT',14)
             self.assertIn('CGGTTCTGACGGTT',most_frequent_words)
             self.assertIn('GACGGTTCTGACGG',most_frequent_words)
             self.assertIn('TGACGGTTCTGACG',most_frequent_words)
             self.assertIn('ACGGTTCTGACGGT',most_frequent_words)
             self.assertIn('CTGACGGTTCTGAC',most_frequent_words)
+
+        def test_ba1b3(self):
             most_frequent_words=find_most_frequent_words('CGGAAGCGAGATTCGCGTGGCGTGATTCCGGCGGGCGTGGAGAAGCGAGATTCATTCAAGCCGGGAGGCGTGGCGTGGCGTGGCGTGCGGATTCAAGCCGGCGGGCGTGATTCGAGCGGCGGATTCGAGATTCCGGGCGTGCGGGCGTGAAGCGCGTGGAGGAGGCGTGGCGTGCGGGAGGAGAAGCGAGAAGCCGGATTCAAGCAAGCATTCCGGCGGGAGATTCGCGTGGAGGCGTGGAGGCGTGGAGGCGTGCGGCGGGAGATTCAAGCCGGATTCGCGTGGAGAAGCGAGAAGCGCGTGCGGAAGCGAGGAGGAGAAGCATTCGCGTGATTCCGGGAGATTCAAGCATTCGCGTGCGGCGGGAGATTCAAGCGAGGAGGCGTGAAGCAAGCAAGCAAGCGCGTGGCGTGCGGCGGGAGAAGCAAGCGCGTGATTCGAGCGGGCGTGCGGAAGCGAGCGG',12)
             self.assertIn('CGGCGGGAGATT',most_frequent_words)
             self.assertIn('CGGGAGATTCAA',most_frequent_words)
@@ -1650,6 +1693,8 @@ if __name__=='__main__':
             self.assertIn('ACC', neighbours)
             self.assertIn('ACT', neighbours)
             self.assertIn('ACG', neighbours)
+
+
 
 
 
