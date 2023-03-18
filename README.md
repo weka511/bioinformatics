@@ -12,20 +12,20 @@ I have written this code in Python 3, generally with the most recent release at 
 
 | # | Location | Description |
 | ---- | --------------- | ------------------------------------------------|
-|BA1A|rosalind.py|[Compute the Number of Times a Pattern Appears in a Text](http://rosalind.info/problems/ba1a/) |
-|BA1B|rosalind.py|[Find the Most Frequent Words in a String](http://rosalind.info/problems/ba1b/) |
-|BA1C|rosalind.py|[Find the Reverse Complement of a String](http://rosalind.info/problems/ba1c/) |
-|BA1D|rosalind.py|[Find All Occurrences of a Pattern in a String](http://rosalind.info/problems/ba1d/) |
-|BA1E|rosalind.py|[Find Patterns Forming Clumps in a String](http://rosalind.info/problems/ba1e/)|
-|BA1F|rosalind.py|[Find a Position in a Genome Minimizing the Skew](http://rosalind.info/problems/ba1f/)|
-|BA1G|rosalind.py|[Compute the Hamming Distance Between Two Strings](http://rosalind.info/problems/ba1g/)|
-|BA1H|rosalind.py|[Find All Approximate Occurrences of a Pattern in a String](http://rosalind.info/problems/ba1h/) |
-|BA1I|rosalind.py|[Find the Most Frequent Words with Mismatches in a String](http://rosalind.info/problems/ba1i/) |
-|BA1J|rosalind.py|[Find Frequent Words with Mismatches and Reverse Complements](http://rosalind.info/problems/ba1j/) |
-|BA1K|rosalind.py|[Generate the Frequency Array of a Strings](http://rosalind.info/problems/ba1f/) |
-|BA1L|rosalind.py|[Implement PatternToNumber](http://rosalind.info/problems/ba1l/) |
-|BA1M|rosalind.py|[Implement NumberToPattern](http://rosalind.info/problems/ba1m/) |
-|BA1N|rosalind.py|[Generate the d-Neighborhood of a String](http://rosalind.info/problems/ba1n/) |
+|BA1A|replication.py|[Compute the Number of Times a Pattern Appears in a Text](http://rosalind.info/problems/ba1a/) |
+|BA1B|replication.py|[Find the Most Frequent Words in a String](http://rosalind.info/problems/ba1b/) |
+|BA1C|replication.py|[Find the Reverse Complement of a String](http://rosalind.info/problems/ba1c/) |
+|BA1D|replication.py|[Find All Occurrences of a Pattern in a String](http://rosalind.info/problems/ba1d/) |
+|BA1E|replication.py|[Find Patterns Forming Clumps in a String](http://rosalind.info/problems/ba1e/)|
+|BA1F|replication.py|[Find a Position in a Genome Minimizing the Skew](http://rosalind.info/problems/ba1f/)|
+|BA1G|replication.py|[Compute the Hamming Distance Between Two Strings](http://rosalind.info/problems/ba1g/)|
+|BA1H|replication.py|[Find All Approximate Occurrences of a Pattern in a String](http://rosalind.info/problems/ba1h/) |
+|BA1I|replication.py|[Find the Most Frequent Words with Mismatches in a String](http://rosalind.info/problems/ba1i/) |
+|BA1J|replication.py|[Find Frequent Words with Mismatches and Reverse Complements](http://rosalind.info/problems/ba1j/) |
+|BA1K|replication.py|[Generate the Frequency Array of a Strings](http://rosalind.info/problems/ba1f/) |
+|BA1L|replication.py|[Implement PatternToNumber](http://rosalind.info/problems/ba1l/) |
+|BA1M|replication.py|[Implement NumberToPattern](http://rosalind.info/problems/ba1m/) |
+|BA1N|replication.py|[Generate the d-Neighborhood of a String](http://rosalind.info/problems/ba1n/) |
 |-|count_kmers.py| Challenge Problems from [Bioinformatics Algorithms](http://bioinformaticsalgorithms.com/): determine number of times each kmer appears in DNA, allowing for reverse complements and d-neighbourhoods.|
 
 ### 2. Which DNA Patterns Play the Role of Molecular Clocks?

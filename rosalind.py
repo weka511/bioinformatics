@@ -15,7 +15,7 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-''' Rosalind utilities and simple problems from chapter 1'''
+''' Rosalind utilities and simple problems'''
 
 
 from math     import log10, ceil, sqrt
@@ -460,251 +460,6 @@ def dna_to_rna(dna):
                 ord('G') : 'G',
                 ord('T') : 'U'})
 
-### Where in the Genome does DNA raplication begin? ###
-
-# BA1A	Compute the Number of Times a Pattern Appears in a Text
-#
-# We define Count(Text, Pattern) as the number of times that a k-mer Pattern
-# appears as a substring of Text. For example,
-#
-# Count(ACAACTATGCATACTATCGGGAACTATCCT,ACTAT)=3.
-#
-# We note that Count(CGATATATCCATAG, ATA) is equal to 3 (not 2) since we should
-# account for overlapping occurrences of Pattern in Text.
-#
-# To compute Count(Text, Pattern), our plan is to slide a window down Text,
-# checking whether each k-mer substring of Text matches Pattern. We will
-# therefore refer to the k-mer starting at position i of Text as Text(i, k).
-# Throughout this book, we will often use 0-based indexing, meaning that we
-# count starting at 0 instead of 1. In this case, Text begins at position 0
-# and ends at position |Text| - 1 (|Text| denotes the number of symbols in Text).
-# For example, if Text = GACCATACTG, then Text(4, 3) = ATA. Note that the last
-# k-mer of Text begins at position |Text| - k, e.g., the last 3-mer of
-# GACCATACTG starts at position 10 - 3 = 7.
-#
-# Input: {DNA strings}} Text and Pattern.
-#
-# Return: Count(Text, Pattern).
-
-def countOccurrences(pattern,string):
-    return len(findOccurences(pattern,string))
-
-# BA1B	Find the Most Frequent Words in a String
-#
-# We say that Pattern is a most frequent k-mer in Text if it maximizes
-# Count(Text, Pattern) among all k-mers. For example, "ACTAT" is a most
-# frequent 5-mer in "ACAACTATGCATCACTATCGGGAACTATCCT", and "ATA" is a most
-# frequent 3-mer of "CGATATATCCATAG".
-#
-# Input: A DNA string Text and an integer k.
-#
-# Output: All most frequent k-mers in Text (in any order).
-
-def find_most_frequent_words(string,k):
-    most_frequent_words=[]
-    max_k=-1
-    for kmer,count in create_frequency_table(string,k).items():
-        if count>max_k:
-            max_k=count
-            most_frequent_words=[]
-        if count==max_k:
-            most_frequent_words.append(kmer)
-    return most_frequent_words
-
-# BA1D	Find All Occurrences of a Pattern in a String
-#
-# Input: Strings Pattern and Genome.
-#
-# Return: All starting positions in Genome where Pattern appears as a substring.
-#         Use 0-based indexing.
-def findOccurences(pattern,string):
-    return [pos-1 for pos in subs(string,pattern)]
-
-
-
-
-def findClumps(genome,k,L,t):
-    '''
-     BA1E	Find Patterns Forming Clumps in a String
-
-    Given integers L and t, a string Pattern forms an (L, t)-clump inside a
-    (larger) string Genome if there is an interval of Genome of length L in which
-    Pattern appears at least t times. For example, TGCA forms a (25,3)-clump in
-    the following Genome: gatcagcataagggtcccTGCAATGCATGACAAGCCTGCAgttgttttac.
-
-    Input: A string Genome, and integers k, L, and t.
-
-    Return: All distinct k-mers forming (L, t)-clumps in Genome.
-    '''
-    def update_patterns(frequencies):
-        for (kmer,count) in frequencies.items():
-            if count>=t:
-                patterns.append(kmer)
-
-    patterns    = []
-    frequencies = create_frequency_table(genome[0:L],k)
-    update_patterns(frequencies)
-    for i in range(1,len(genome)-L+1):
-        head=genome[i-1:i+k-1]
-        frequencies[head]-=1
-        tail=genome[i+L-k:i+L]
-        if tail in frequencies:
-            frequencies[tail]+=1
-        else:
-            frequencies[tail]=1
-        update_patterns(frequencies)
-
-    return list(set(patterns))
-
-
-
-def find_minimum_skew(genome):
-    '''
-    # BA1F	Find a Position in a Genome Minimizing the Skew
-
-    Define the skew of a DNA string Genome, denoted Skew(Genome), as the
-    difference between the total number of occurrences of 'G' and 'C' in Genome.
-
-    Input: A DNA string Genome.
-
-    Return: All integer(s) i minimizing Skew(Prefixi (Text)) over all values of
-            i (from 0 to |Genome|).
-    '''
-    positions = []
-    min_skew = 2
-    skew     = 0
-    pos      = 0
-    for nucleotide in genome:
-        pos+=1
-        skew+=skew_step[nucleotide]
-        if min_skew>skew:
-            min_skew=skew
-            positions=[pos]
-        elif min_skew==skew:
-            positions.append(pos)
-
-    return positions, min_skew
-
-
-def findApproximateOccurrences(pattern,text,d):
-    '''
-     BA1H	Find All Approximate Occurrences of a Pattern in a String
-
-    Input: Strings Pattern and Text along with an integer d.
-
-    Return: All starting positions where Pattern appears as a substring of Text
-            with at most d mismatches.
-
-    '''
-    return [i
-            for i in range(len(text)-len(pattern)+1)
-            if hamm(pattern,text[i:i+len(pattern)])<=d]
-
-
-def find_mismatches(pattern,text,d):
-    ''' helper for BA1I'''
-    return findApproximateOccurrences(pattern,text,d)
-
-def find_mismatches_and_rc(pattern,text,d):
-    '''helper for BA1J'''
-    return findApproximateOccurrences(pattern,text,d) + findApproximateOccurrences(revc(pattern),text,d)
-
-
-
-def findMostFrequentWordsWithMismatches(text,k,d,
-                                        find=find_mismatches):
-    '''
-     BA1I	Find the Most Frequent Words with Mismatches in a String
-     BA1J	Find Frequent Words with Mismatches and Reverse Complements
-
-     A most frequent k-mer with up to d mismatches in Text is simply a string
-     Pattern maximizing Countd(Text, Pattern) among all k-mers. Note that Pattern
-     does not need to actually appear as a substring of Text; for example, AAAAA
-     is the most frequent 5-mer with 1 mismatch in AACAAGCTGATAAACATTTAAAGAG,
-     even though AAAAA does not appear exactly in this string.
-
-     Input: A string Text as well as integers k and d.
-
-     Return: All most frequent k-mers with up to d mismatches in Text.
-    '''
-    matches   = []
-    max_count = -1
-    for pattern in k_mers(k):
-        count=len(find(pattern,text,d))
-        if count>max_count:
-            max_count=count
-            matches=[]
-        if count==max_count:
-            matches.append(pattern)
-
-    return (max_count,matches)
-
-
-
-def generateFrequencyArray(text,k):
-    '''
-    BA1K	Generate the Frequency Array of a Strings
-    Given an integer k, we define the frequency array of a string Text as an
-    array of length 4**k, where the i-th element of the array holds the number of
-    times that the i-th k-mer (in the lexicographic order) appears in Text.
-
-    Input: A DNA string Text and an integer k.
-
-    Return: The frequency array of k-mers in Text.
-    '''
-    frequencies=[]
-    for i in range(4**k):
-        frequencies.append(0)
-    for i in range(len(text)-k+1):
-        frequencies[patternToNumber(text[i:i+k])]+=1
-    return frequencies
-
-
-def patternToNumber(kmer):
-    '''BA1L	Implement PatternToNumber'''
-    n=0
-    for letter in kmer:
-        n*=4
-        n+=bases.find(letter)
-    return n
-
-def numberToPattern(n,k):
-    '''BA1M	Implement NumberToPattern'''
-    pattern=''
-    nn=n
-    for i in range(k):
-        pattern=pattern+bases[nn%4]
-        nn//=4
-    return pattern[::-1]
-
-def generate_dNeighborhood(pattern,d):
-    '''
-    BA1N	Generate the d-Neighborhood of a String
-
-    The d-neighborhood Neighbors(Pattern, d) is the set of all k-mers whose
-    Hamming distance from Pattern does not exceed d.
-
-    Input: A DNA string Pattern and an integer d.
-
-    Return: The collection of strings Neighbors(Pattern, d).
-    '''
-    def neighbours(p):
-        neighbours=[]
-        for i in range(len(p)):
-            for ch in bases:
-                neighbours.append(p[0:i]+ch+p[i+1:])
-        return neighbours
-    if d==0:
-        return [pattern]
-    else:
-        neighbourhood=[]
-        start=generate_dNeighborhood(pattern,d-1)
-        for p in start:
-            for n in neighbours(p):
-                neighbourhood.append(n)
-        return list(set(start+neighbourhood))
-
-
 
 def gc(fasta):
     '''
@@ -723,13 +478,16 @@ def gc(fasta):
     return gcs[np.argmax([gc_content for _,gc_content in gcs])]
 
 
-#SSEQ  Finding a spliced motif
-# Input: Two DNA strings s and t (each of length at most 1 kbp) in FASTA format.
-#
-# Return: One collection of indices of s in which the symbols of t appear
-# as a subsequence of s. If multiple solutions exist, you may return any one.
+
 
 def sseq(fasta,bases=['A','C','G','T']):
+    '''
+    SSEQ  Finding a spliced motif
+    Input: Two DNA strings s and t (each of length at most 1 kbp) in FASTA format.
+
+    Return: One collection of indices of s in which the symbols of t appear
+    as a subsequence of s. If multiple solutions exist, you may return any one.
+    '''
     def find_all(text,motif):
         def find_occurenences():
             occurrences = {}
@@ -817,22 +575,34 @@ def mrna(string,modulus=1000000,table=codon_table):
         product=product%modulus
     return (product*nodoc[';'])%modulus
 
-# IPRB	Mendel's First Law
-#
-# Input: Three positive integers k, m, and n, representing a population
-#        containing k+m+n organisms: k individuals are homozygous dominant for a factor,
-#        m are heterozygous, and n are homozygous recessive.
-#
-# Return: The probability that two randomly selected mating organisms will
-# produce an individual possessing a dominant allele (and thus displaying
-# the dominant phenotype). Assume that any two organisms can mate.
 
 def iprb(k,m,n):
-    return 1.0 -                                \
-           1.0 * n* (n-1)/((k+m+n)*(k+m+n-1)) - \
-           0.5 * n * m /((k+m+n)*(k+m+n-1))   - \
-           0.5 * m * n /((k+m+n)*(k+m+n-1))   - \
-           0.25 * m * (m-1) /((k+m+n)*(k+m+n-1))
+    '''
+    IPRB	Mendel's First Law
+
+    Input: Three positive integers k, m, and n, representing a population
+           containing k+m+n organisms: k individuals are homozygous dominant for a factor,
+           m are heterozygous, and n are homozygous recessive.
+
+    Return: The probability that two randomly selected mating organisms will
+    produce an individual possessing a dominant allele (and thus displaying
+    the dominant phenotype). Assume that any two organisms can mate.
+    '''
+    def P_both_offspring_recessive():
+        '''
+        Calculate probability that both offspring are recessive. There are 4 cases to consider.
+        '''
+        P1 = n*(n-1)/((k+m+n)*(k+m+n-1))     # Both parents homozygous for recessive
+        W1  = 1.0                            # This guarantees offspring recessive
+        P2 = n * m /((k+m+n)*(k+m+n-1))      # 1st parent homozygous for recessive, 2nd heterozygous
+        W2 =0.5                              # So P(offspring recessive)=0.5
+        P3 = m * n /((k+m+n)*(k+m+n-1))      # 1st parent heterozygous, 2nd homozygous for recessive
+        W3 = 0.5                             # So P(offspring recessive)=0.5
+        P4 = m * (m-1) /((k+m+n)*(k+m+n-1))  # Both heterozygous.
+        W4 = 0.25                            # So P(offspring recessive)=0.25
+        return  W1 * P1 +  W2 *P2 +  W3 * P3 + W4 * P4
+
+    return 1.0 - P_both_offspring_recessive()
 
 # LIA 	Independent Alleles
 #
@@ -1185,22 +955,24 @@ def indc(n):
         return sum(p(kk) for kk in range(k,2*n+1))*mult
     return [log10(p_cumulative(k+1)) for k in range(2*n)]
 
-# AFRQ 	Counting Disease Carriers
+
 def afrq(ps):
+    '''AFRQ 	Counting Disease Carriers'''
     def p_recessive(p):
         return 2*sqrt(p)-p
     return [p_recessive(p) for p in ps]
 
 
 
-
-# WFMD 	The Wright-Fisher Model of Genetic Drift
-#
-# Return:  The probability that in a population of N diploid individuals
-# initially possessing m copies of a dominant allele, we will observe after
-# g generations at least k copies of a recessive allele.
-# Assume the Wright-Fisher model
 def wfmd(n,m,g,k):
+    '''
+    WFMD 	The Wright-Fisher Model of Genetic Drift
+
+    Return:  The probability that in a population of N diploid individuals
+    initially possessing m copies of a dominant allele, we will observe after
+    g generations at least k copies of a recessive allele.
+    Assume the Wright-Fisher model
+    '''
 
     def accumulate(e):
         return sum([e[j] for j in range(k,2*n+1)])
@@ -1210,36 +982,38 @@ def wfmd(n,m,g,k):
            create_wf_initial_probabilites(n,m),
            create_wf_transition_matrix(n),g,n))
 
-# EBIN 	Wright-Fisher's Expected Behavior
 def ebin(n,P):
+    '''EBIN 	Wright-Fisher's Expected Behavior'''
     def expected(p):
         return n*p
     return [expected(p) for p in P]
 
-# FOUN 	The Founder Effect and Genetic Drift
 def foun(N,m,A):
+    '''
+    FOUN 	The Founder Effect and Genetic Drift
+    '''
     def prob(g,a):
         if a==0:
             return 1
         final=iterate_markov(
-           create_wf_initial_probabilites(N,2*N-a),
-           create_wf_transition_matrix(N),
-           g,
-           N)
+                    create_wf_initial_probabilites(N,2*N-a),
+                    create_wf_transition_matrix(N),
+                    g,
+                    N)
         return final[0]
+
     result=[]
     for i in range(m):
         result.append([log10(prob(i+1,a))  for a in A])
     return result
 
-# SEXL 	Sex-Linked Inheritance
 
 def sexl(A):
+    '''SEXL 	Sex-Linked Inheritance'''
     return [2*x*(1-x) for x in A]
 
-#SIGN 	Enumerating Oriented Gene Orderings
-
 def sign(n):
+    '''SIGN 	Enumerating Oriented Gene Orderings'''
     def expand(p):
         def expanded(bits):
             return [pp if bb==0 else -pp  for pp,bb in zip(p,bits)]
@@ -1276,14 +1050,15 @@ def perm(n):
             return result
     return perms([n+1 for n in range(n)])
 
-# LEXF	Enumerating k-mers Lexicographically
-#
-# Input: A positive integer n
-#
-# Return: The total number of permutations of length n, followed by a list of
-#          all such permutations (in any order)
-
 def lexf(alphabet,k):
+    '''
+     LEXF	Enumerating k-mers Lexicographically
+
+     Input: A positive integer n
+
+     Return: The total number of permutations of length n, followed by a list of
+              all such permutations (in any order)
+    '''
     if k<=0:
         return ['']
     else:
@@ -1293,15 +1068,19 @@ def lexf(alphabet,k):
                 result.append(ks+l)
     return result
 
-# LEXV 	Ordering Strings of Varying Length Lexicographically
-#
-# Input: A collection of at most 10 symbols defining an ordered alphabet,
-#        and a positive integer n (nÃ‚Â¡ÃƒÅ“10).
-#
-# Return: All strings of length n that can be formed from the alphabet,
-#         ordered lexicographically.
+
 
 def lexv(alphabet,k):
+    '''
+    LEXV 	Ordering Strings of Varying Length Lexicographically
+
+    Input: A collection of at most 10 symbols defining an ordered alphabet,
+           and a positive integer n (nÃ‚Â¡ÃƒÅ“10).
+
+    Return: All strings of length n that can be formed from the alphabet,
+            ordered lexicographically.
+    '''
+
     if k<=0:
         return ['']
     elif k==1:
@@ -1327,8 +1106,8 @@ def create_skews(genome):
 
 if __name__=='__main__':
 
-    class TestRosalind(TestCase):
-
+    class TestCaseRosalind(TestCase):
+        '''Tests for problems that are not from the textbook track'''
         def test_fib(self):
             '''FIB	Rabbits and Recurrence Relations'''
             self.assertEqual(19,fib(5,3))
@@ -1408,6 +1187,9 @@ if __name__=='__main__':
             self.assertEqual(12,mrna("MA"))
 
         def test_iprb(self):
+            '''
+            IPRB	Mendel's First Law
+            '''
             self.assertAlmostEqual(0.78333,iprb(2,2,2),places=5)
 
         def test_lia(self): # LIA 	Independent Alleles
@@ -1529,27 +1311,31 @@ if __name__=='__main__':
             self.assertAlmostEqual(-1.969,ii[8],3)
             self.assertAlmostEqual(-3.010,ii[9],3)
 
-# AFRQ 	Counting Disease Carriers
         def test_afrq(self):
+            '''AFRQ 	Counting Disease Carriers'''
             aa=afrq([0.1, 0.25, 0.5])
             self.assertAlmostEqual(0.532,aa[0],3)
             self.assertAlmostEqual(0.75,aa[1],3)
             self.assertAlmostEqual(0.914,aa[2],3)
 
-# WFMD 	The Wright-Fisher Model of Genetic Drift
         def test_wfmd(self):
+            '''
+             WFMD 	The Wright-Fisher Model of Genetic Drift
+            '''
             self.assertAlmostEqual(0.772,wfmd(4, 6, 2, 1),3)
 
-# EBIN 	Wright-Fisher's Expected Behavior
         def test_ebin(self):
-            B=ebin(17,[0.1, 0.2, 0.3])
+            '''
+             EBIN 	Wright-Fisher's Expected Behavior
+            '''
+            B = ebin(17,[0.1, 0.2, 0.3])
             self.assertAlmostEqual(1.7,B[0],3)
             self.assertAlmostEqual(3.4,B[1],3)
             self.assertAlmostEqual( 5.1,B[2],3)
 
-# FOUN 	The Founder Effect and Genetic Drift
         def test_foun(self):
-            B=foun(4,3,[0,1,2])
+            ''' FOUN 	The Founder Effect and Genetic Drift'''
+            B = foun(4,3,[0,1,2])
             self.assertAlmostEqual(0.0,              B[0][0],5)
             self.assertAlmostEqual(-0.463935575821,  B[0][1],5)
             self.assertAlmostEqual(-0.999509892866,  B[0][2],5)
@@ -1560,9 +1346,9 @@ if __name__=='__main__':
             self.assertAlmostEqual(-0.229066698008,  B[2][1],5)
             self.assertAlmostEqual(-0.485798552456,  B[2][2],5)
 
-# SEXL 	Sex-Linked Inheritance
         def test_sexl(self):
-            B=sexl([0.1, 0.5, 0.8])
+            '''SEXL 	Sex-Linked Inheritance'''
+            B = sexl([0.1, 0.5, 0.8])
             self.assertAlmostEqual(0.18,B[0],3)
             self.assertAlmostEqual(0.5,B[1],3)
             self.assertAlmostEqual(0.32,B[2],3)
@@ -1613,87 +1399,6 @@ if __name__=='__main__':
             self.assertIn(('TCA', 'CAT'),debruijn)
             self.assertIn(('GCA', 'CAT'),debruijn)
             self.assertIn(('TGA', 'GAT'),debruijn)
-
-    ### Where in the Genome does DNA replication begin? ###
-
-    class Test_1_Replication(TestCase):
-        def test_ba1b1(self):
-            most_frequent_words=find_most_frequent_words('ACGTTGCATGTCGCATGATGCATGAGAGCT',4)
-            self.assertIn('CATG',most_frequent_words)
-            self.assertIn('GCAT',most_frequent_words)
-
-        def test_ba1b2(self):
-            most_frequent_words= find_most_frequent_words('ACATCTGGCGCCCATCGCCCATCTGACGGTTCTGACGGTTCTGACGGTTAGCAGCTCTGACGGTTCTGACGGTTCTGACGGTTCTGACGGTTCTGACGGTTTCGCGACCGCCCATCTGACGGTTCGCCCATACATCTGGTCGCGACCTGACGGTTACATCTGGCGCCCATCTGACGGTTCGCCCATAGCAGCTCTGACGGTTTCGCGACCGCCCATACATCTGGCTGACGGTTTCGCGACTCGCGACACATCTGGAGCAGCTACATCTGGTCGCGACCTGACGGTTAGCAGCTCGCCCATAGCAGCTCTGACGGTTAGCAGCTCTGACGGTTACATCTGGACATCTGGCGCCCATCGCCCATTCGCGACACATCTGGAGCAGCTCGCCCATTCGCGACTCGCGACAGCAGCTACATCTGGTCGCGACACATCTGGCGCCCATCTGACGGTTACATCTGGTCGCGACACATCTGGCGCCCATTCGCGACACATCTGGACATCTGGAGCAGCTACATCTGGTCGCGACAGCAGCTACATCTGGTCGCGACCTGACGGTTACATCTGGCTGACGGTTCGCCCATCGCCCATCGCCCATTCGCGACAGCAGCTTCGCGACCTGACGGTTACATCTGGCGCCCATACATCTGGTCGCGACAGCAGCTTCGCGACTCGCGACCTGACGGTTTCGCGACACATCTGGCTGACGGTTCTGACGGTTCGCCCATAGCAGCTCTGACGGTTCTGACGGTTAGCAGCTACATCTGGAGCAGCTCGCCCATCGCCCATAGCAGCTAGCAGCTTCGCGACACATCTGGCGCCCATCTGACGGTTTCGCGACAGCAGCT',14)
-            self.assertIn('CGGTTCTGACGGTT',most_frequent_words)
-            self.assertIn('GACGGTTCTGACGG',most_frequent_words)
-            self.assertIn('TGACGGTTCTGACG',most_frequent_words)
-            self.assertIn('ACGGTTCTGACGGT',most_frequent_words)
-            self.assertIn('CTGACGGTTCTGAC',most_frequent_words)
-
-        def test_ba1b3(self):
-            most_frequent_words=find_most_frequent_words('CGGAAGCGAGATTCGCGTGGCGTGATTCCGGCGGGCGTGGAGAAGCGAGATTCATTCAAGCCGGGAGGCGTGGCGTGGCGTGGCGTGCGGATTCAAGCCGGCGGGCGTGATTCGAGCGGCGGATTCGAGATTCCGGGCGTGCGGGCGTGAAGCGCGTGGAGGAGGCGTGGCGTGCGGGAGGAGAAGCGAGAAGCCGGATTCAAGCAAGCATTCCGGCGGGAGATTCGCGTGGAGGCGTGGAGGCGTGGAGGCGTGCGGCGGGAGATTCAAGCCGGATTCGCGTGGAGAAGCGAGAAGCGCGTGCGGAAGCGAGGAGGAGAAGCATTCGCGTGATTCCGGGAGATTCAAGCATTCGCGTGCGGCGGGAGATTCAAGCGAGGAGGCGTGAAGCAAGCAAGCAAGCGCGTGGCGTGCGGCGGGAGAAGCAAGCGCGTGATTCGAGCGGGCGTGCGGAAGCGAGCGG',12)
-            self.assertIn('CGGCGGGAGATT',most_frequent_words)
-            self.assertIn('CGGGAGATTCAA',most_frequent_words)
-            self.assertIn('CGTGCGGCGGGA',most_frequent_words)
-            self.assertIn('CGTGCGGCGGGA',most_frequent_words)
-            self.assertIn('CGTGGAGGCGTG',most_frequent_words)
-            self.assertIn('CGTGGCGTGCGG',most_frequent_words)
-            self.assertIn('GCGTGCGGCGGG',most_frequent_words)
-            self.assertIn('GCGTGGAGGCGT',most_frequent_words)
-            self.assertIn('GCGTGGCGTGCG',most_frequent_words)
-            self.assertIn('GGAGAAGCGAGA',most_frequent_words)
-            self.assertIn('GGAGATTCAAGC',most_frequent_words)
-            self.assertIn('GGCGGGAGATTC',most_frequent_words)
-            self.assertIn('GGGAGATTCAAG',most_frequent_words)
-            self.assertIn('GTGCGGCGGGAG',most_frequent_words)
-            self.assertIn('TGCGGCGGGAGA',most_frequent_words)
-
-        def test_ba1e(self):
-            clumps=findClumps('CGGACTCGACAGATGTGAAGAAATGTGAAGACTGAGTGAAGAGAAGAGGAAAC'\
-                              'ACGACACGACATTGCGACATAATGTACGAATGTAATGTGCCTATGGC',5,75,4)
-            self.assertIn('CGACA',clumps)
-            self.assertIn('GAAGA',clumps)
-            self.assertIn('AATGT',clumps)
-
-        def test_ba1f(self):
-            positions,_=find_minimum_skew(\
-                'CCTATCGGTGGATTAGCATGTCCCTGTACGTTTCGCCGCGAACTAGTTCACACGGCT'\
-                'TGATGGCAAATGGTTTTTCCGGCGACCGTAATCGTCCACCGAG')
-            self.assertIn(53,positions)
-            self.assertIn(97,positions)
-
-        def test_ba1g(self):
-            self.assertEqual(7,hamm('GAGCCTACTAACGGGAT','CATCGTAATGACGGCCT'))
-
-        def test_ba1h(self):
-            self.assertEqual([6, 7, 26, 27, 78],
-                             findApproximateOccurrences('ATTCTGGA',\
-                                                        'CGCCCGAATCCAGAACGCATTCCCATATTTCGGGACCACTGGCCTCCACGGTACGGACGTCAATCAAATGCCTAGCGGCTTGTGGTTTCTCCTACGCTCC',\
-                                                           3))
-
-        def test_ba1i(self):
-            _,matches=findMostFrequentWordsWithMismatches('ACGTTGCATGTCGCATGATGCATGAGAGCT',4,1)
-            self.assertIn('GATG',matches)
-            self.assertIn('ATGC',matches)
-            self.assertIn('ATGT',matches)
-
-        def test_ba1k(self):
-            self.assertEqual([2,1,0,0,0,0,2,2,1,2,1,0,0,1,1,0],
-                             generateFrequencyArray('ACGCGGCTCTGAAA',2))
-
-        def test_ba1n(self):
-            neighbours=generate_dNeighborhood('ACG',1)
-            self.assertIn('CCG', neighbours)
-            self.assertIn('TCG', neighbours)
-            self.assertIn('GCG', neighbours)
-            self.assertIn('AAG', neighbours)
-            self.assertIn('ATG', neighbours)
-            self.assertIn('AGG', neighbours)
-            self.assertIn('ACA', neighbours)
-            self.assertIn('ACC', neighbours)
-            self.assertIn('ACT', neighbours)
-            self.assertIn('ACG', neighbours)
-
 
 
 
