@@ -20,9 +20,10 @@
 from unittest import main, TestCase, skip
 import numpy as np
 from numpy.testing import assert_array_equal
-from helpers  import rotate
-from fasta    import FastaContent
-from rosalind import patternToNumber
+
+from fasta       import FastaContent
+from rosalind    import rotate
+from replication import patternToNumber
 
 def kmer_composition(k,dna):
     '''

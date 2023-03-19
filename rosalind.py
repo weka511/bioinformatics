@@ -23,12 +23,164 @@ from re       import compile
 from unittest import main, skip, TestCase
 
 import numpy as np
+from numpy.testing    import assert_array_equal
 
-from helpers          import count_subset,create_frequency_table,triplets,binomial_coefficients
-from helpers          import zeroes,k_mers,iterate_markov,create_wf_initial_probabilites,create_wf_transition_matrix
-from helpers          import create_binomial,binomial_index,rotate,linearSpectrum,countMatchesInSpectra,cycloSpectrum1,get_mass
 from fasta            import FastaContent
 from reference_tables import codon_table,skew_step,bases,integer_masses,amino_acids
+
+def get_mass(peptide,mass=integer_masses):
+    return sum([mass[amino_acid] for amino_acid in peptide])
+
+
+def countMatchesInSpectra(spect1,spect2):
+    i1=0
+    i2=0
+    count=0
+    while i1<len(spect1) and i2<len(spect2):
+        diff=spect1[i1]-spect2[i2]
+        if diff==0:
+            count+=1
+            i1+=1
+            i2+=1
+        elif diff<0:
+            i1+=1
+        else:
+            i2+=1
+    return count
+
+def linearSpectrum(peptide):
+    def get_pairs():
+        return [(i,j) for i in range(len(peptide)) for j in range(len(peptide)+1) if i<j]
+    result=[sum(peptide[i:j]) for (i,j) in get_pairs()]
+    result.append(0)
+    result.sort()
+    return result
+
+def cycloSpectrum1(peptide):
+    def get_pairs(index_range):
+        n=len(index_range)
+        return [(i,j) for i in index_range for j in range(i,i+n) if j!=i]
+    augmented_peptide=peptide+peptide
+    result=[sum(augmented_peptide[a:b]) for (a,b) in get_pairs(range(len(peptide)))]
+    result.append(0)
+    result.append(sum(peptide))
+    result.sort()
+    return result
+
+# Calculate binomial coefficients using recurrence relation
+#
+# Input: n Number of oblects
+#
+# Return: vector [C(n,0), C(n,1),...C(n,n)]
+
+def binomial_coefficients(n):
+    coeffs=[[1,0]]
+    for i in range(1,n+1):
+        new_coeffs=[1]
+        for j in range(i):
+            new_coeffs.append(coeffs[-1][j]+coeffs[-1][j+1])
+        new_coeffs.append(0)
+        coeffs.append(new_coeffs)
+    return coeffs[-1][0:-1]
+
+def iterate_markov(e,p,g,n):
+    for i in range(g):
+        psum=sum(e)
+        e1=[]
+        for k in range(2*n+1):
+            ee=0
+            for j in range(2*n+1):
+                ee+=e[j]*p[j][k]
+            e1.append(ee)
+        for k in range(2*n+1):
+            e[k]=e1[k]
+    return e
+
+def rotate(cycle,pos):
+    return cycle[pos:]+cycle[1:pos]+cycle[pos:pos+1]
+
+def binomial_index(n,k):
+    return n*(n+1)//2+k
+
+def create_binomial(n):
+    def binomial(n,k,c):
+        if k>0 and k<n:
+            ii=binomial_index(n-1,k)
+            return c[ii-1]+c[ii]
+        return 1
+    c=[]
+    for nn in range(n):
+        for k in range(nn+1):
+            c.append(binomial(nn,k,c))
+    return c
+
+    # create transition matrix (Feller, page 380)
+    #   p[j][k] = probabilty of a transition from j to k,
+    #   where j and k i snumber of recessives
+def create_wf_transition_matrix(n):
+    c=create_binomial(2*n+1)
+    transition_matrix=[]
+    for j in range(2*n+1):
+        p_column=[]
+        pj=j/(2*n)
+        term1=1
+        term2=[1.0]
+        for k in range(2*n):
+            term2.append(term2[-1]*(1-pj))
+        kk=-1
+        for k in range(2*n+1):
+            p_column.append(c[binomial_index(2*n,k)] * term1 *term2[kk])
+            term1*=pj
+            kk-=1
+        transition_matrix.append(p_column)
+    return transition_matrix
+
+def create_wf_initial_probabilites(n,m):
+    e        = np.zeros((2*n+1))
+    e[2*n-m] =1
+    return e
+
+def triplets(dna):
+    '''Extract codons (triplets of bases) from a string of DNA'''
+    return [dna[i:i+3] for i in range(0,len(dna),3)]
+
+def k_mers(k, bases=['T','G','C','A']):
+    '''
+    Calculate all possible strings of bases of specified length
+
+    Parameters:
+        k          Length of each string
+        bases      Specifies characters
+    '''
+    if k<=0:
+        return ['']
+
+    return [ks + b for ks in k_mers(k-1) for b in bases]
+
+def create_frequency_table(string,k):
+    '''
+    Used to build a table of all the k-mers in a string, with their frequencies
+    '''
+    frequencies = {}
+    for kmer in [string[i:i+k] for i in range(len(string)-k+1)]:
+        if kmer not in frequencies:
+            frequencies[kmer]=0
+        frequencies[kmer]+=1
+    return frequencies
+
+def count_subset(s,subset):
+    '''
+   count_subset
+
+   Count occurences of specific characters
+
+   Parameters:
+          s       String in which occurences are to be counted
+          subset  String specifying subset of characters to be counted
+
+   Returns:  counts in the same sequence as in subset
+    '''
+    return [s.count(c) for c in subset]
 
 def grph(fasta,k):
     '''
@@ -679,7 +831,7 @@ def cons(fasta):
     def create_profile():
         product={}
         for c in ['A','C','G','T']:
-            product[c]=zeroes(n)
+            product[c] = np.zeros((n))
         for _,string in fasta:
             for i in range(len(string)):
                 row=product[string[i]]
@@ -804,8 +956,8 @@ def longestIncreasingSubsequence(N,X):
                 return x<y
             else:
                 return y<x
-        P = zeroes(N)
-        M = zeroes(N+1)
+        P = np.zeros((N),dtype=int)
+        M = np.zeros((N+1),dtype=int)
         L = 0
         for i in range(N):
             lo = 1
@@ -816,13 +968,13 @@ def longestIncreasingSubsequence(N,X):
                     lo = mid+1
                 else:
                     hi = mid-1
-            newL = lo
-            P[i] = M[newL-1]
+            newL    = lo
+            P[i]    = M[newL-1]
             M[newL] = i
             if newL > L:
                 L = newL
 
-        S = zeroes(L)
+        S = np.zeros((L))
         k = M[L]
         for i in range(L-1,-1,-1):
             S[i] = X[k]
@@ -1218,10 +1370,10 @@ if __name__=='__main__':
             ATGGCACT'''
             consensus,profile=cons(FastaContent(string.split('\n')))
             self.assertEqual('ATGCAACT',consensus)
-            self.assertEqual(profile['T'],[1,5, 0, 0, 0, 1, 1, 6])
-            self.assertEqual(profile['G'],[1, 1, 6, 3, 0, 1, 0, 0])
-            self.assertEqual(profile['A'],[5, 1, 0, 0, 5, 5, 0, 0])
-            self.assertEqual(profile['C'],[0, 0, 1, 4, 2, 0, 6, 1])
+            assert_array_equal(profile['T'],[1,5, 0, 0, 0, 1, 1, 6])
+            assert_array_equal(profile['G'],[1, 1, 6, 3, 0, 1, 0, 0])
+            assert_array_equal(profile['A'],[5, 1, 0, 0, 5, 5, 0, 0])
+            assert_array_equal(profile['C'],[0, 0, 1, 4, 2, 0, 6, 1])
 
         def test_grph(self):
             string='''>Rosalind_0498
@@ -1361,14 +1513,18 @@ if __name__=='__main__':
             self.assertAlmostEqual(0.422,B[0],3)
             self.assertAlmostEqual(0.563,B[1],3)
             self.assertAlmostEqual(0.422,B[2],3)
-        #LGIS 	Longest Increasing Subsequence
-        def test_longestIncreasingSubsequence(self):
+
+        def test_longestIncreasingSubsequence1(self):
+            '''LGIS 	Longest Increasing Subsequence'''
             (a,d)=longestIncreasingSubsequence(5,[5, 1, 4, 2, 3])
-            self.assertEqual([1,2,3],a)
-            self.assertEqual([5,4,3],d)
+            assert_array_equal([1,2,3],a)
+            assert_array_equal([5,4,3],d)
+
+        def test_longestIncreasingSubsequence2(self):
+            '''LGIS 	Longest Increasing Subsequence'''
             (a,d)=longestIncreasingSubsequence(9,[8, 2, 1, 6, 5, 7, 4, 3, 9])
-            self.assertEqual([1, 5, 7, 9],a)
-            self.assertEqual([8, 6, 5, 4, 3],d)
+            assert_array_equal([1, 5, 7, 9],a)
+            assert_array_equal([8, 6, 5, 4, 3],d)
 
         def test_orf(self):
             string='''>Rosalind_99

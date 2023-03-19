@@ -23,7 +23,6 @@ from deprecated import deprecated
 import numpy as np
 
 from reference_tables import createSimpleDNASubst,  BLOSUM62, PAM250
-from helpers          import sign
 
 
 def get_number_of_coins(money,coins):
@@ -578,8 +577,8 @@ def get_highest_scoring_local_alignment(string1,string2,
                     i_best=i
                     j_best=j
                     s_right=s[i][j]
-                    predecessor=(sign(len(string1)-i_best),\
-                                 sign(len(string2)-j_best),\
+                    predecessor=(np.sign(len(string1)-i_best),\
+                                 np.sign(len(string2)-j_best),\
                                  i_best,\
                                  j_best)
         if s_right>s[len(string1)][len(string2)]:

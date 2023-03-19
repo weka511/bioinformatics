@@ -17,8 +17,8 @@
 '''code for Chapter 6 - Are there fragile regions in the human genome?'''
 
 from unittest import TestCase, main, skip
-from helpers import create_frequency_table
-from rosalind import revc,subs
+
+from rosalind import revc,subs,create_frequency_table
 
 # get_permutation
 #

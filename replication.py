@@ -18,8 +18,12 @@
 ''' Chapter 1: Where in the Genome does DNA replication begin?'''
 
 from unittest import main, skip, TestCase
+import numpy as np
 
-from rosalind import subs, bases, k_mers, hamm, skew_step, create_frequency_table
+from numpy.testing    import assert_array_equal
+
+from rosalind         import subs, hamm, create_frequency_table, k_mers
+from reference_tables import bases, skew_step
 
 
 def countOccurrences(pattern,string):
@@ -207,11 +211,9 @@ def generateFrequencyArray(text,k):
 
     Return: The frequency array of k-mers in Text.
     '''
-    frequencies=[]
-    for i in range(4**k):
-        frequencies.append(0)
+    frequencies=np.zeros((4**k))
     for i in range(len(text)-k+1):
-        frequencies[patternToNumber(text[i:i+k])]+=1
+        frequencies[patternToNumber(text[i:i+k])] += 1
     return frequencies
 
 
@@ -332,7 +334,7 @@ if __name__=='__main__':
             self.assertIn('ATGT',matches)
 
         def test_ba1k(self):
-            self.assertEqual([2,1,0,0,0,0,2,2,1,2,1,0,0,1,1,0],
+            assert_array_equal(np.array([2,1,0,0,0,0,2,2,1,2,1,0,0,1,1,0]),
                              generateFrequencyArray('ACGCGGCTCTGAAA',2))
 
         def test_ba1n(self):
