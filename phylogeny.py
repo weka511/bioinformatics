@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-#   Copyright (C) 2020-2021 Greenweaves Software Limited
+#   Copyright (C) 2020-2023 Greenweaves Software Limited
 
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -16,13 +16,15 @@
 
 # Phylogeny -- http://rosalind.info/problems/topics/phylogeny/
 
-import re
+from   re import findall
+from   unittest import TestCase, main, skip
+import numpy    as np
+
 from   rosalind import LabelledTree
 from   random   import randrange
-from   newick   import newick_to_adjacency_list
-from   numpy    import argmin,argmax
-from   fasta    import FastaContent
-from   helpers  import  flatten
+from   newick   import newick_to_adjacency_list, Parser, Tokenizer
+from   fasta    import FastaContent, fasta_out
+from   helpers  import flatten, expand
 
 #  tree -- Completing a Tree
 #
@@ -237,7 +239,7 @@ def qrt(taxa,characters):
 
 # snarfed from https://stackoverflow.com/questions/51373300/how-to-convert-newick-tree-format-to-a-tree-like-hierarchical-object
 def parse(newick,start=0):
-    tokens = re.findall(r"([^:;,()\s]*)(?:\s*:\s*([\d.]+)\s*)?([,);])|(\S)", newick+";")
+    tokens = findall(r"([^:;,()\s]*)(?:\s*:\s*([\d.]+)\s*)?([,);])|(\S)", newick+";")
 
     def recurse(nextid = start, parentid = -1): # one node
         thisid = nextid;
@@ -330,23 +332,27 @@ def sptd(species,newick1,newick2):
     return ds(replace_leaves(create_adj(parse(newick1,start=n))),
               replace_leaves(create_adj(parse(newick2,start=n))))
 
-# MEND Inferring Genotype from a Pedigree
-#
-# Given: A rooted binary tree T in Newick format encoding an individual's pedigree
-#       for a Mendelian factor whose alleles are A (dominant) and a (recessive).
-#
-#       Return: Three numbers between 0 and 1, corresponding to the respective probabilities
-#       that the individual at the root of T will exhibit the "AA", "Aa" and "aa" genotypes.
+
 
 def mend(node):
+    '''
+     MEND Inferring Genotype from a Pedigree
 
-    # combine
-    #
-    # Combine two genomes with known probabilities - work out proabilites in next generation
-    #
-    # NB: the tree is a pedigree, not a phylogeny: the root is the descendent!
+     Given: A rooted binary tree T in Newick format encoding an individual's pedigree
+           for a Mendelian factor whose alleles are A (dominant) and a (recessive).
+
+           Return: Three numbers between 0 and 1, corresponding to the respective probabilities
+           that the individual at the root of T will exhibit the "AA", "Aa" and "aa" genotypes.
+    '''
 
     def combine(f1,f2):
+        '''
+        combine
+
+        Combine two genomes with known probabilities - work out proabilites in next generation
+
+        NB: the tree is a pedigree, not a phylogeny: the root is the descendent!
+        '''
         return np.sum([[f*f1[i]*f2[j] for f in factors[i][j]] for i in range(n) for j in range(n)],
                       axis=0)
 
@@ -498,16 +504,20 @@ def SmallParsimony(T,alphabet='ATGC'):
 
     return sum([SmallParsimonyC([v[i] for l,v in T.labels.items()]) for i in range(len(T.labels[0]))]),assignments
 
-# alph
-#
-# Given: A rooted binary tree T on n  species, given in Newick format, followed by a multiple alignment of m
-#        augmented DNA strings having the same length (at most 300 bp) corresponding to the species
-#        and given in FASTA format.
-#
-# Return: The minimum possible value of dH(T), followed by a collection of DNA strings to be
-#         assigned to the internal nodes of T that will minimize dH(T).
 
-def alph(T,Alignment,Alphabet=['A','T','C','G','-']):
+def alph(T,Alignment,
+         Alphabet=['A','T','C','G','-']):
+    '''
+    alph
+
+    Given: A rooted binary tree T on n  species, given in Newick format, followed by a multiple alignment of m
+           augmented DNA strings having the same length (at most 300 bp) corresponding to the species
+           and given in FASTA format.
+
+    Return: The minimum possible value of dH(T), followed by a collection of DNA strings to be
+            assigned to the internal nodes of T that will minimize dH(T).
+
+    '''
 
     # create_fixed_alignments
     #
@@ -640,7 +650,7 @@ def alph(T,Alignment,Alphabet=['A','T','C','G','-']):
                     dfs(children[i],ks[children[i]],scores_children[i])
 
             ks       = {}
-            index    = argmin(s[root])
+            index    = np.argmin(s[root])
             score    = s[root][index]
             ks[root] = index
             dfs(root,index,score)
@@ -857,32 +867,43 @@ def rsub(T,Assignments):
     # Build list of unique reversals.
     return get_unique([subst for subst in [FindReversingSubstitutions(path,pos) for path in Paths for pos in range(m)] if len(subst)>0])
 
-# cset A submatrix of a matrix M is a matrix formed by selecting rows and columns from M and
-# taking only those entries found at the intersections of the selected rows and columns.
-# We may also think of a submatrix as formed by deleting the remaining rows and columns from M
-#
-# Given: An inconsistent character table C on at most 100 taxa.
-#
-# Return: A submatrix of C representing a consistent character table on the same taxa
-#         and formed by deleting a single row of C.
+
 
 def cset(table):
-    # get_split
-    #
-    # Used to split indices of character (row) into two groups, one for each allele
-    # First we yield all indices corresponding to 0, then those to 1
+    '''
+    CSET Fixing an Inconsistent Character Set
+
+    A submatrix of a matrix M is a matrix formed by selecting rows and columns from M and
+    taking only those entries found at the intersections of the selected rows and columns.
+    We may also think of a submatrix as formed by deleting the remaining rows and columns from M
+
+    Given: An inconsistent character table C on at most 100 taxa.
+
+    Return: A submatrix of C representing a consistent character table on the same taxa
+            and formed by deleting a single row of C.
+    '''
+
 
     def get_splits(character):
+        '''
+        get_split
+
+        Used to split indices of character (row) into two groups, one for each allele
+        First we yield all indices corresponding to 0, then those to 1
+        '''
         for allele in [0,1]:
             yield set(i for i, c in enumerate(character) if c == allele)
 
-    # conflicts_with
-    #
-    # Determine whether two characters are in conflict
-    # We iterate through all the splits of each character.
-    # If any pair of splits consists of two disjoint subsets,
-    # the characters are compatible.
+
     def conflicts_with(c1, c2):
+        '''
+        conflicts_with
+
+        Determine whether two characters are in conflict
+        We iterate through all the splits of each character.
+        If any pair of splits consists of two disjoint subsets,
+        the characters are compatible.
+        '''
         for part1 in get_splits(c1):
             for part2 in get_splits(c2):
                 if len(part1.intersection(part2)) == 0: return False
@@ -897,12 +918,12 @@ def cset(table):
                 Conflicts[i] += 1
                 Conflicts[j] += 1
 
-    return [table[row] for row in range(n) if row!=argmax(Conflicts)]
+    return [table[row] for row in range(n) if row!=np.argmax(Conflicts)]
 
-#  cntq Counting Quartets
+
 
 def cntq(n,newick):
-
+    '''CNTQ Counting Quartets'''
     def create_adj(tree):
         adj = {}
         def bfs(tree):
@@ -948,3 +969,96 @@ def cntq(n,newick):
         if Quartets[i]!=Unique[-1]:
             Unique.append(Quartets[i])
     return len(Unique),Unique
+
+class PhylogenyTestCase(TestCase):
+    @skip('#125')
+    def test_alph(self):
+        fc = FastaContent(['>ostrich',
+                           'AC',
+                           '>cat',
+                           'CA',
+                           '>duck',
+                           'T-',
+                           '>fly',
+                           'GC',
+                           '>elephant',
+                           '-T',
+                           '>pikachu',
+                           'AA'
+                           ])
+
+        d,Assignment = alph('(((ostrich,cat)rat,(duck,fly)mouse)dog,(elephant,pikachu)hamster)robot;',fc.to_list())
+        self.assertEqual(8,d)
+        self.assertEqual(('rat','AC'),Assignment[0])
+        self.assertEqual(('mouse','TC'),Assignment[1])
+        self.assertEqual(('dog','AC'),Assignment[2])
+        self.assertEqual(('hamster','AT'),Assignment[3])
+        self.assertEqual(('robot','AC'),Assignment[4])
+
+
+
+    def test_cntq(self):
+        '''CNTQ Counting Quartets'''
+        n,_ = cntq(6,'(lobster,(cat,dog),(caterpillar,(elephant,mouse)));')
+        self.assertEqual(15,n)
+
+    @skip('#125')
+    def test_cset(self):
+        '''CSET Fixing an Inconsistent Character Set'''
+        submatrix = cset([expand('100001'),
+                          expand('000110'),
+                          expand('111000'),
+                          expand('100111')])
+        self.assertEqual([0,0,0,1,1,0],submatrix[0])
+        self.assertEqual([1,0,0,0,0,1],submatrix[1])
+        self.assertEqual([1,0,0,1,1,1],submatrix[2])
+
+    @skip('#125')
+    def test_cstr(self):
+        print(cstr(['ATGCTACC',
+              'CGTTTACC',
+              'ATTCGACC',
+              'AGTCTCCC',
+              'CGTCTATC'
+              ]))
+
+
+    def test_mend(self):
+        '''MEND Inferring Genotype from a Pedigree'''
+        newick_parser = Parser(Tokenizer())
+        tree,_ = newick_parser.parse('((((Aa,aa),(Aa,Aa)),((aa,aa),(aa,AA))),Aa);')
+        P = mend(tree)
+        self.assertAlmostEqual(0.156, P[0], places=3)
+        self.assertAlmostEqual(0.5,   P[1], places=3)
+        self.assertAlmostEqual(0.344, P[2], places=3)
+
+    @skip('#125')
+    def test_qrt(self):
+        print(cstr(['ATGCTACC',
+              'CGTTTACC',
+              'ATTCGACC',
+              'AGTCTCCC',
+              'CGTCTATC'
+              ]))
+
+    @skip('#125')
+    def test_rsub(self):
+        print(cstr(['ATGCTACC',
+              'CGTTTACC',
+              'ATTCGACC',
+              'AGTCTCCC',
+              'CGTCTATC'
+              ]))
+
+    @skip('#125')
+    def test_sptd(self):
+        print(cstr(['ATGCTACC',
+              'CGTTTACC',
+              'ATTCGACC',
+              'AGTCTCCC',
+              'CGTCTATC'
+              ]))
+
+
+if __name__=='__main__':
+    main()
