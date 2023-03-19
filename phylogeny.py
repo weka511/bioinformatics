@@ -206,14 +206,16 @@ class UnrootedBinaryTree:
             for c in b:
                 yield a,c
 
-#  qrt Incomplete Characters
-#
-# Given: A partial character table C
-#
-# Return: The collection of all quartets that can be inferred from the splits corresponding to the underlying characters of C
+
 
 def qrt(taxa,characters):
+    '''
+     qrt Incomplete Characters
 
+     Given: A partial character table C
+
+     Return: The collection of all quartets that can be inferred from the splits corresponding to the underlying characters of C
+    '''
     def tuples(n):
         for i in range(n):
             for j in range(n):
@@ -970,6 +972,9 @@ def cntq(n,newick):
             Unique.append(Quartets[i])
     return len(Unique),Unique
 
+def expand_character(s):
+    return [int(c) if c.isdigit() else None for c in s]
+
 class PhylogenyTestCase(TestCase):
     @skip('#125')
     def test_alph(self):
@@ -1032,14 +1037,16 @@ class PhylogenyTestCase(TestCase):
         self.assertAlmostEqual(0.5,   P[1], places=3)
         self.assertAlmostEqual(0.344, P[2], places=3)
 
-    @skip('#125')
     def test_qrt(self):
-        print(cstr(['ATGCTACC',
-              'CGTTTACC',
-              'ATTCGACC',
-              'AGTCTCCC',
-              'CGTCTATC'
-              ]))
+        '''qrt Incomplete Characters'''
+        quartets = list(qrt(
+            ['cat', 'dog', 'elephant', 'ostrich', 'mouse', 'rabbit', 'robot'],
+            [expand_character(character) for character in ['01xxx00', 'x11xx00', '111x00x']]))
+        self.assertEqual(4, len(quartets))
+        self.assertEqual(['cat', 'dog',  'mouse', 'rabbit'],quartets[0])
+        self.assertEqual(['cat',  'elephant',  'mouse', 'rabbit'],quartets[1])
+        self.assertEqual(['dog', 'elephant', 'mouse', 'rabbit'],quartets[2])
+        self.assertEqual([ 'dog', 'elephant',  'rabbit', 'robot'],quartets[3])
 
     @skip('#125')
     def test_rsub(self):
