@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# Copyright (C) 2017-2020 Greenweaves Software Limited
+# Copyright (C) 2017-2023 Greenweaves Software Limited
 
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -16,16 +16,16 @@
 
 # cstr Creating a Character Table from Genetic Strings  http://rosalind.info/problems/cstr/
 
-
-from phylogeny import cstr
-import argparse
-import os
-import time
+from argparse import ArgumentParser
+from os.path import basename
+from time import time
 from helpers import read_strings
+from phylogeny import cstr
+
 
 if __name__=='__main__':
-    start = time.time()
-    parser = argparse.ArgumentParser('....')
+    start = time()
+    parser = ArgumentParser('....')
     parser.add_argument('--sample',   default=False, action='store_true', help='process sample dataset')
     parser.add_argument('--rosalind', default=False, action='store_true', help='process Rosalind dataset')
     args = parser.parse_args()
@@ -40,16 +40,16 @@ if __name__=='__main__':
             print (row)
 
     if args.rosalind:
-        Input  = read_strings(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt')
+        Input  = read_strings(f'data/rosalind_{basename(__file__).split(".")[0]}.txt')
 
         Result = cstr(Input)
 
-        with open(f'{os.path.basename(__file__).split(".")[0]}.txt','w') as f:
+        with open(f'{basename(__file__).split(".")[0]}.txt','w') as f:
             for line in Result:
                 print (line)
                 f.write(f'{line}\n')
 
-    elapsed = time.time()-start
+    elapsed = time()-start
     minutes = int(elapsed/60)
     seconds = elapsed-60*minutes
     print (f'Elapsed Time {minutes} m {seconds:.2f} s')
