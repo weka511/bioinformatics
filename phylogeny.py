@@ -14,11 +14,14 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-# Phylogeny -- http://rosalind.info/problems/topics/phylogeny/
+'''Phylogeny -- http://rosalind.info/problems/topics/phylogeny/'''
 
-from   re import findall
+from   re       import findall
 from   unittest import TestCase, main, skip
+from   io       import StringIO
+
 import numpy    as np
+from   Bio      import Phylo
 
 from   rosalind import LabelledTree
 from   random   import randrange
@@ -26,47 +29,27 @@ from   newick   import newick_to_adjacency_list, Parser, Tokenizer
 from   fasta    import FastaContent, fasta_out
 from   helpers  import flatten, expand
 
-#  tree -- Completing a Tree
-#
-# Given: A positive integer n (n<=1000) and an adjacency list corresponding to a graph on n nodes that contains no cycles.
-#
-# Return: The minimum number of edges that can be added to the graph to produce a tree.
-#         This is the number of independent components - 1
+def create_tree(treedata):
+    '''
+    Used while testing to read a tree in Newick format
+    '''
+    return Phylo.read(StringIO(treedata), "newick")
+
 def CompleteTree(n,adj):
-    # create_twigs
-    #
-    # Build dictionary tow show which node is linked to what
+    '''
+    tree -- Completing a Tree
 
-    def create_twigs():
-        twigs = {i:set() for i in range(1,n+1)}
-        for a,b in adj:
-            twigs[a].add(b)
-            twigs[b].add(a)
-        return twigs
+    Given: A positive integer n (n<=1000) and an adjacency list corresponding to a graph on n nodes that contains no cycles.
 
-    # find_component
-    #
-    # Find one component of graph
+    Return: The minimum number of edges that can be added to the graph to produce a tree.
+            This is the number of independent components - 1
 
-    def find_component(start):
-        component = []      # The component being built
-        todo      = set()   # Nodes being considered for inclusion
-        todo.add(start)
-        while len(todo)>0:
-            current = todo.pop()
-            component.append(current)
-            for node in twigs[current]:
-                if node not in component:
-                    todo.add(node)
-        for c in component:
-            del twigs[c]
-        return component
-
-    twigs = create_twigs()
-    components = []
-    while len(twigs)>0:
-        components.append(find_component(list(twigs.keys())[0]))
-    return len(components)-1
+    '''
+    # Yury Zavarin pointed out:
+    #    "The main idea is that the particular edges don't matter. The only thing
+    #     that matters is the number of edges as a tree on n vertices always has n−1 edges....
+    #     We simply count the number of edges, and subtract it from n−1." https://rosalind.info/problems/chbp/
+    return  n-1 - len(adj)
 
 # cstr
 #
@@ -111,21 +94,31 @@ def cstr(strings):
             result.append(''.join(character))
     return result
 
-# ctbl Creating a Character Table  http://rosalind.info/problems/ctbl/
+def create_character(included,species):
+    '''
+    create_character
+
+    Produce an array of 1s for each species that belongs to the split
+
+    Parameters:
+        included
+        species
+
+    '''
+    def fmt(c):
+        return '1' if c else '0'
+    return ''.join([fmt(s in included) for s in species])
 
 def CharacterTable(tree):
-    def create_character(split_species):
-        character=[]
-        for s in species:
-            character.append(1 if s in split_species else 0)
-        return ''.join([str(c) for c in character])
+    '''
+    ctbl Creating a Character Table  http://rosalind.info/problems/ctbl/
+    '''
 
-    species=[spec.name for spec in tree.find_elements(terminal=True)]
-    species.sort()
+    species = sorted([spec.name for spec in tree.find_elements(terminal=True)])
+    clades  = [clade for clade in tree.find_clades(terminal=False)]
 
-    clades=[clade for clade in tree.find_clades(terminal=False)]
     # we iterate over all Clades except the root
-    return [create_character([spec.name for spec in split.find_elements(terminal=True)]) for split in clades[1:]]
+    return [create_character([spec.name for spec in split.find_elements(terminal=True)],species) for split in clades[1:]]
 
 # NumberBinaryTrees
 #
@@ -143,19 +136,20 @@ def NumberBinaryTrees(n,rooted=True):
 
 class UnrootedBinaryTree:
     @classmethod
-    # EnumerateUnrootedBinaryTrees
-    #
-    # Given: A collection of species names representing n taxa.
-    #
-    # Return: A list containing all unrooted binary trees whose leaves are these n
-    #         taxa. Trees should be given in Newick format, with one tree on each line;
-    #         the order of the trees is unimportant.
-    #
-    # Idea: all rooted trees with a given number of leaves are isomorphic if we
-    #       ignore the labels of the leaves and nodes. Therfore it is enough to
-    #       build a tree with 3 leaves, and keep adding one leaf at a time in all available positions.
-
     def Enumerate(cls,species):
+        '''
+        EnumerateUnrootedBinaryTrees
+
+        Given: A collection of species names representing n taxa.
+
+        Return: A list containing all unrooted binary trees whose leaves are these n
+                taxa. Trees should be given in Newick format, with one tree on each line;
+                the order of the trees is unimportant.
+
+        Idea: all rooted trees with a given number of leaves are isomorphic if we
+              ignore the labels of the leaves and nodes. Therfore it is enough to
+              build a tree with 3 leaves, and keep adding one leaf at a time in all available positions.
+        '''
         def enumerate(n):
             if n==3:
                 return [cls({0:[species[0], species[1], species[2]]})]
@@ -164,11 +158,14 @@ class UnrootedBinaryTree:
 
         return enumerate(len(species))
 
-    # insert
-    #
-    # Create a rooted tree by adding one nre inernal node and a leaf to a specifed edge
+
     @classmethod
     def insert(cls,species,edge,graph):
+        '''
+        insert
+
+        Create a rooted tree by adding one internal node and a leaf to a specifed edge
+        '''
         nextNode = max(list(graph.adj.keys())) + 1
         n1,n2    = edge
         adj      = {nextNode: [species,n2]}
@@ -184,11 +181,13 @@ class UnrootedBinaryTree:
     def __str__(self):
         return self.bfs_newick()
 
-    # bfs_newick
-    #
-    # Create Newick representation by best first search
 
     def bfs_newick(self,node=0):
+        '''
+        bfs_newick
+
+        Create Newick representation by best first search
+        '''
         newick = []
         for child in  self.adj[node]:
             if type(child)==int:
@@ -213,7 +212,8 @@ def qrt(taxa,characters):
 
      Return: The collection of all quartets that can be inferred from the splits corresponding to the underlying characters of C
     '''
-    def tuples(n):
+    def quartets(n):
+        '''Generate all possible quarters made from elements less that n'''
         for i in range(n):
             for j in range(n):
                 if i==j: continue
@@ -222,19 +222,23 @@ def qrt(taxa,characters):
                     for l in range(n):
                         if l in [i,j,k]: continue
                         if i<j and k<l and i<k:
-                            yield i,j,k,l
+                            yield ((i,j),(k,l))
 
     def isConsistent(selector):
+        '''Verify that a selector is consistent: no element is null, and no two elements are equal'''
         for char in characters:
-            character = [char[i] for i in selector]
-            if any(c is None for c in character): continue
-            if character[0]==character[1] and character[2]==character[3] and character[0]!=character[2]: return True
+            character = [char[i] for pair in selector for i in pair]
+            if (all(c is not None for c in character) and
+                character[0]==character[1]            and
+                character[2]==character[3]            and
+                character[0]!=character[2]):
+                return True
         return False
 
-    for (i,j,k,l) in tuples(len(taxa)):
-        selector =  [i,j,k,l]
+    for selector in quartets(len(taxa)):
         if isConsistent(selector):
-            yield [taxa[m] for m in selector]
+            ((i,j),(k,l)) = selector
+            yield ((taxa[i],taxa[j]),(taxa[k],taxa[l]))
 
 
 
@@ -1011,130 +1015,1103 @@ def cntq(n,newick):
 def expand_character(s):
     return [int(c) if c.isdigit() else None for c in s]
 
-class PhylogenyTestCase(TestCase):
-    @skip('#126')
-    def test_alph(self):
-        fc = FastaContent(['>ostrich',
-                           'AC',
-                           '>cat',
-                           'CA',
-                           '>duck',
-                           'T-',
-                           '>fly',
-                           'GC',
-                           '>elephant',
-                           '-T',
-                           '>pikachu',
-                           'AA'
-                           ])
-
-        d,Assignment = alph('(((ostrich,cat)rat,(duck,fly)mouse)dog,(elephant,pikachu)hamster)robot;',fc.to_list())
-        self.assertEqual(8,d)
-        self.assertEqual(('rat','AC'),Assignment[0])
-        self.assertEqual(('mouse','TC'),Assignment[1])
-        self.assertEqual(('dog','AC'),Assignment[2])
-        self.assertEqual(('hamster','AT'),Assignment[3])
-        self.assertEqual(('robot','AC'),Assignment[4])
-
-    def test_chbp(self):
-        '''CHBP Character-Based Phylogeny '''
-        tree = chbp(['cat', 'dog', 'elephant', 'mouse', 'rabbit', 'rat'],
-                    [expand('011101'),
-                     expand('001101'),
-                     expand('001100')] )
-        self.assertEqual('(((cat,rabbit),dog),(rat,(elephant,mouse)));',tree)
-
-    def test_cntq(self):
-        '''CNTQ Counting Quartets'''
-        n,_ = cntq(6,'(lobster,(cat,dog),(caterpillar,(elephant,mouse)));')
-        self.assertEqual(15,n)
-
-    @skip('#128')
-    def test_cset(self):
-        '''CSET Fixing an Inconsistent Character Set'''
-        submatrix = cset([expand('100001'),
-                          expand('000110'),
-                          expand('111000'),
-                          expand('100111')])
-        self.assertEqual(3,len(submatrix))
-        self.assertIn([0,0,0,1,1,0],submatrix)
-        self.assertIn([1,0,0,0,0,1],submatrix)
-        self.assertIn([1,0,0,1,1,1],submatrix)
-
-    @skip('#129')
-    def test_cstr(self):
-        character_table = cstr(['ATGCTACC',
-              'CGTTTACC',
-              'ATTCGACC',
-              'AGTCTCCC',
-              'CGTCTATC'
-              ])
-        self.assertEqual(2,len(character_table))
-        self.assertIn('10110',character_table)
-        self.assertIn('10100',character_table)
-
-
-    def test_mend(self):
-        '''MEND Inferring Genotype from a Pedigree'''
-        newick_parser = Parser(Tokenizer())
-        tree,_ = newick_parser.parse('((((Aa,aa),(Aa,Aa)),((aa,aa),(aa,AA))),Aa);')
-        P = mend(tree)
-        self.assertAlmostEqual(0.156, P[0], places=3)
-        self.assertAlmostEqual(0.5,   P[1], places=3)
-        self.assertAlmostEqual(0.344, P[2], places=3)
-
-    def test_qrt(self):
-        '''qrt Incomplete Characters'''
-        quartets = list(qrt(
-                            ['cat', 'dog', 'elephant', 'ostrich', 'mouse', 'rabbit', 'robot'],
-                            [expand_character(character) for character in ['01xxx00', 'x11xx00', '111x00x']]))
-        self.assertEqual(4, len(quartets))
-        self.assertIn(['cat', 'dog',  'mouse', 'rabbit'],quartets)
-        self.assertIn(['cat',  'elephant',  'mouse', 'rabbit'],quartets)
-        self.assertIn(['dog', 'elephant', 'mouse', 'rabbit'],quartets)
-        self.assertIn([ 'dog', 'elephant',  'rabbit', 'robot'],quartets)
-
-    @skip('#46')
-    def test_qrtd(self):
-        '''qrtd Quartet Distance'''
-        self.assertEqual(4,qrtd('A B C D E'.split(),
-                                '(A,C,((B,D),E));',
-                                '(C,(B,D),(A,E));'
-        ))
-
-    def test_rsub(self):
-        ''' RSUB  	Identifying Reversing Substitutions'''
-        substitutions = list(rsub('(((ostrich,cat)rat,mouse)dog,elephant)robot;',
-                            ['>robot',
-                             'AATTG',
-                             '>dog',
-                             'GGGCA',
-                             '>mouse',
-                             'AAGAC',
-                             '>rat',
-                             'GTTGT',
-                             '>cat',
-                             'GAGGC',
-                             '>ostrich',
-                             'GTGTC',
-                             '>elephant',
-                             'AATTC']))
-        self.assertEqual(5,len(substitutions))
-        self.assertIn(('dog', 'rat', 3, 'T', 'G', 'T'),substitutions)
-        self.assertIn(('dog', 'mouse', 2, 'A', 'G', 'A'),substitutions)
-        self.assertIn(('dog', 'mouse', 1, 'A', 'G', 'A'),substitutions)
-        self.assertIn(('rat', 'ostrich', 3, 'G', 'T', 'G'),substitutions)
-        self.assertIn(('rat', 'cat', 3, 'G', 'T', 'G'),substitutions)
-
-
-    def test_sptd(self):
-        '''
-        SPTD Phylogeny Comparison with Split Distance
-        '''
-        self.assertEqual(2,sptd('dog rat elephant mouse cat rabbit'.split(),
-             '(rat,(dog,cat),(rabbit,(elephant,mouse)));',
-             '(rat,(cat,dog),(elephant,(mouse,rabbit)));)'))
-
-
 if __name__=='__main__':
+    class PhylogenyTestCase(TestCase):
+        @skip('#126')
+        def test_alph(self):
+            fc = FastaContent(['>ostrich',
+                               'AC',
+                               '>cat',
+                               'CA',
+                               '>duck',
+                               'T-',
+                               '>fly',
+                               'GC',
+                               '>elephant',
+                               '-T',
+                               '>pikachu',
+                               'AA'
+                               ])
+
+            d,Assignment = alph('(((ostrich,cat)rat,(duck,fly)mouse)dog,(elephant,pikachu)hamster)robot;',fc.to_list())
+            self.assertEqual(8,d)
+            self.assertEqual(('rat','AC'),Assignment[0])
+            self.assertEqual(('mouse','TC'),Assignment[1])
+            self.assertEqual(('dog','AC'),Assignment[2])
+            self.assertEqual(('hamster','AT'),Assignment[3])
+            self.assertEqual(('robot','AC'),Assignment[4])
+
+        def test_chbp(self):
+            '''CHBP Character-Based Phylogeny '''
+            tree = chbp(['cat', 'dog', 'elephant', 'mouse', 'rabbit', 'rat'],
+                        [expand('011101'),
+                         expand('001101'),
+                         expand('001100')] )
+            self.assertEqual('(((cat,rabbit),dog),(rat,(elephant,mouse)));',tree)
+
+        def test_cntq(self):
+            '''CNTQ Counting Quartets'''
+            n,_ = cntq(6,'(lobster,(cat,dog),(caterpillar,(elephant,mouse)));')
+            self.assertEqual(15,n)
+
+        @skip('#128')
+        def test_cset(self):
+            '''CSET Fixing an Inconsistent Character Set'''
+            submatrix = cset([expand('100001'),
+                              expand('000110'),
+                              expand('111000'),
+                              expand('100111')])
+            self.assertEqual(3,len(submatrix))
+            self.assertIn([0,0,0,1,1,0],submatrix)
+            self.assertIn([1,0,0,0,0,1],submatrix)
+            self.assertIn([1,0,0,1,1,1],submatrix)
+
+        @skip('#129')
+        def test_cstr(self):
+            character_table = cstr(['ATGCTACC',
+                  'CGTTTACC',
+                  'ATTCGACC',
+                  'AGTCTCCC',
+                  'CGTCTATC'
+                  ])
+            self.assertEqual(2,len(character_table))
+            self.assertIn('10110',character_table)
+            self.assertIn('10100',character_table)
+
+        def test_ctbl(self):
+            '''  ctbl Creating a Character Table  http://rosalind.info/problems/ctbl/'''
+            character_table = CharacterTable(create_tree('(dog,((elephant,mouse),robot),cat);'))
+            self.assertEqual(2,len(character_table))
+            self.assertIn('00111',character_table)
+            self.assertIn('00110',character_table)
+
+        def test_mend(self):
+            '''MEND Inferring Genotype from a Pedigree'''
+            newick_parser = Parser(Tokenizer())
+            tree,_ = newick_parser.parse('((((Aa,aa),(Aa,Aa)),((aa,aa),(aa,AA))),Aa);')
+            P = mend(tree)
+            self.assertAlmostEqual(0.156, P[0], places=3)
+            self.assertAlmostEqual(0.5,   P[1], places=3)
+            self.assertAlmostEqual(0.344, P[2], places=3)
+
+        def test_qrt1(self):
+            '''qrt Incomplete Characters'''
+            quartets = list(qrt(
+                                ['cat', 'dog', 'elephant', 'ostrich', 'mouse', 'rabbit', 'robot'],
+                                [expand_character(character) for character in [
+                                    '01xxx00',
+                                    'x11xx00',
+                                    '111x00x']]))
+            self.assertEqual(4, len(quartets))
+            self.assertIn((('cat', 'dog'),  ('mouse', 'rabbit')),quartets)
+            self.assertIn((('cat',  'elephant'),  ('mouse', 'rabbit')),quartets)
+            self.assertIn((('dog', 'elephant'), ('mouse', 'rabbit')),quartets)
+            self.assertIn((( 'dog', 'elephant'), ('rabbit', 'robot')),quartets)
+
+        def test_qrt2(self):
+            '''qrt Incomplete Characters'''
+            quartets = list(qrt(['Acanthis_azureus',
+                                 'Ahaetulla_solitaria',
+                                 'Apodora_classicus',
+                                 'Dafila_coturnix',
+                                 'Eirenis_gallicus',
+                                 'Eudrornias_Bernicla',
+                                 'Leiocephalus_edulis',
+                                 'Leptobrachium_bicoloratum',
+                                 'Minipterus_carnifex',
+                                 'Paraphysa_ruthveni',
+                                 'Pareas_gallinago',
+                                 'Pelodytes_nigropalmatus',
+                                 'Phrynohyas_leiosoma',
+                                 'Rhabdophis_noctua',
+                                 'Spermophilus_bobac',
+                                 'Terpsihone_completus',
+                                 'Thecla_castaneus'],
+                                [expand_character(character) for character in [
+                                    'x11x0111100x11011',
+                                    '01xxxxxxxxxxxxxxx',
+                                    'xxxxxxxxxx1xxxx0x',
+                                    'x101x0x1x0010101x',
+                                    '1010xx0011x000100',
+                                    '111x0x1xxx0111xx1',
+                                    '1x111x0x11xx11x01',
+                                    'xx01001x0xx1x001x',
+                                    '111111111x0111011',
+                                    'xxx100xxxxxxxxx1x',
+                                    '01x1xxx100x1x1x11',
+                                    '01x00x0000xxx1x0x',
+                                    '0xxxx0x1xxxx0xxxx']]))
+        @skip('#46')
+        def test_qrtd(self):
+            '''qrtd Quartet Distance'''
+            self.assertEqual(4,qrtd('A B C D E'.split(),
+                                    '(A,C,((B,D),E));',
+                                    '(C,(B,D),(A,E));'
+            ))
+
+        def test_rsub(self):
+            ''' RSUB  	Identifying Reversing Substitutions'''
+            substitutions = list(rsub('(((ostrich,cat)rat,mouse)dog,elephant)robot;',
+                                ['>robot',
+                                 'AATTG',
+                                 '>dog',
+                                 'GGGCA',
+                                 '>mouse',
+                                 'AAGAC',
+                                 '>rat',
+                                 'GTTGT',
+                                 '>cat',
+                                 'GAGGC',
+                                 '>ostrich',
+                                 'GTGTC',
+                                 '>elephant',
+                                 'AATTC']))
+            self.assertEqual(5,len(substitutions))
+            self.assertIn(('dog', 'rat', 3, 'T', 'G', 'T'),substitutions)
+            self.assertIn(('dog', 'mouse', 2, 'A', 'G', 'A'),substitutions)
+            self.assertIn(('dog', 'mouse', 1, 'A', 'G', 'A'),substitutions)
+            self.assertIn(('rat', 'ostrich', 3, 'G', 'T', 'G'),substitutions)
+            self.assertIn(('rat', 'cat', 3, 'G', 'T', 'G'),substitutions)
+
+
+        def test_sptd(self):
+            '''
+            SPTD Phylogeny Comparison with Split Distance
+            '''
+            self.assertEqual(2,sptd('dog rat elephant mouse cat rabbit'.split(),
+                 '(rat,(dog,cat),(rabbit,(elephant,mouse)));',
+                 '(rat,(cat,dog),(elephant,(mouse,rabbit)));)'))
+
+        def test_tree1(self):
+            '''
+            tree -- Completing a Tree
+            '''
+            self.assertEqual(3,CompleteTree(10,
+                                            [(1, 2),
+                                             (2, 8),
+                                             (4, 10),
+                                             (5, 9),
+                                             (6, 10),
+                                             (7, 9)]))
+
+        def test_tree2(self):
+            '''
+            tree -- Completing a Tree
+            '''
+            self.assertEqual(61,CompleteTree(977,[(10, 28),
+                                                  (269, 428),
+                                                  (109, 878),
+                                                  (110, 708),
+                                                  (799, 778),
+                                                  (375, 223),
+                                                  (729, 81),
+                                                  (254, 106),
+                                                  (317, 310),
+                                                  (368, 788),
+                                                  (821, 312),
+                                                  (596, 56),
+                                                  (929, 88),
+                                                  (776, 74),
+                                                  (162, 41),
+                                                  (14, 90),
+                                                  (130, 104),
+                                                  (333, 735),
+                                                  (668, 680),
+                                                  (28, 328),
+                                                  (18, 461),
+                                                  (639, 519),
+                                                  (10, 31),
+                                                  (452, 253),
+                                                  (493, 449),
+                                                  (728, 55),
+                                                  (360, 479),
+                                                  (533, 201),
+                                                  (310, 251),
+                                                  (235, 98),
+                                                  (418, 690),
+                                                  (570, 410),
+                                                  (541, 136),
+                                                  (41, 57),
+                                                  (57, 146),
+                                                  (759, 42),
+                                                  (15, 14),
+                                                  (404, 23),
+                                                  (831, 303),
+                                                  (351, 122),
+                                                  (702, 594),
+                                                  (661, 739),
+                                                  (38, 373),
+                                                  (847, 920),
+                                                  (549, 120),
+                                                  (167, 272),
+                                                  (281, 224),
+                                                  (381, 41),
+                                                  (122, 182),
+                                                  (59, 48),
+                                                  (397, 614),
+                                                  (447, 725),
+                                                  (815, 971),
+                                                  (677, 468),
+                                                  (939, 576),
+                                                  (389, 477),
+                                                  (95, 141),
+                                                  (344, 319),
+                                                  (33, 487),
+                                                  (99, 176),
+                                                  (59, 559),
+                                                  (498, 334),
+                                                  (881, 21),
+                                                  (74, 172),
+                                                  (802, 335),
+                                                  (619, 421),
+                                                  (887, 610),
+                                                  (377, 552),
+                                                  (270, 16),
+                                                  (405, 223),
+                                                  (204, 527),
+                                                  (204, 184),
+                                                  (426, 417),
+                                                  (561, 363),
+                                                  (764, 438),
+                                                  (276, 312),
+                                                  (112, 76),
+                                                  (624, 206),
+                                                  (724, 740),
+                                                  (515, 673),
+                                                  (323, 113),
+                                                  (337, 19),
+                                                  (417, 233),
+                                                  (20, 12),
+                                                  (924, 176),
+                                                  (554, 711),
+                                                  (561, 698),
+                                                  (693, 902),
+                                                  (11, 494),
+                                                  (294, 301),
+                                                  (31, 282),
+                                                  (264, 421),
+                                                  (443, 431),
+                                                  (542, 477),
+                                                  (890, 869),
+                                                  (251, 525),
+                                                  (33, 900),
+                                                  (547, 98),
+                                                  (857, 352),
+                                                  (843, 670),
+                                                  (23, 113),
+                                                  (540, 248),
+                                                  (377, 968),
+                                                  (18, 774),
+                                                  (128, 64),
+                                                  (61, 133),
+                                                  (293, 475),
+                                                  (453, 219),
+                                                  (250, 91),
+                                                  (891, 226),
+                                                  (810, 41),
+                                                  (76, 100),
+                                                  (315, 212),
+                                                  (318, 915),
+                                                  (630, 232),
+                                                  (535, 732),
+                                                  (328, 341),
+                                                  (419, 719),
+                                                  (818, 13),
+                                                  (319, 38),
+                                                  (203, 25),
+                                                  (14, 69),
+                                                  (156, 36),
+                                                  (50, 189),
+                                                  (808, 325),
+                                                  (45, 114),
+                                                  (397, 556),
+                                                  (145, 271),
+                                                  (43, 108),
+                                                  (259, 30),
+                                                  (171, 633),
+                                                  (365, 347),
+                                                  (227, 355),
+                                                  (168, 141),
+                                                  (748, 341),
+                                                  (144, 240),
+                                                  (363, 96),
+                                                  (364, 610),
+                                                  (540, 560),
+                                                  (935, 460),
+                                                  (547, 566),
+                                                  (927, 128),
+                                                  (863, 951),
+                                                  (712, 160),
+                                                  (308, 510),
+                                                  (793, 778),
+                                                  (34, 38),
+                                                  (922, 118),
+                                                  (581, 672),
+                                                  (63, 61),
+                                                  (262, 195),
+                                                  (506, 943),
+                                                  (811, 638),
+                                                  (331, 822),
+                                                  (731, 778),
+                                                  (110, 260),
+                                                  (435, 173),
+                                                  (765, 191),
+                                                  (380, 26),
+                                                  (617, 30),
+                                                  (635, 582),
+                                                  (218, 176),
+                                                  (936, 28),
+                                                  (44, 31),
+                                                  (482, 492),
+                                                  (153, 5),
+                                                  (597, 121),
+                                                  (56, 238),
+                                                  (643, 214),
+                                                  (782, 493),
+                                                  (440, 675),
+                                                  (952, 12),
+                                                  (81, 247),
+                                                  (269, 133),
+                                                  (844, 139),
+                                                  (28, 511),
+                                                  (109, 488),
+                                                  (215, 263),
+                                                  (112, 258),
+                                                  (573, 83),
+                                                  (167, 433),
+                                                  (357, 627),
+                                                  (645, 259),
+                                                  (24, 97),
+                                                  (512, 418),
+                                                  (80, 11),
+                                                  (503, 518),
+                                                  (247, 694),
+                                                  (359, 465),
+                                                  (14, 2),
+                                                  (71, 96),
+                                                  (32, 302),
+                                                  (323, 526),
+                                                  (554, 794),
+                                                  (91, 72),
+                                                  (67, 838),
+                                                  (26, 39),
+                                                  (973, 297),
+                                                  (37, 7),
+                                                  (158, 514),
+                                                  (471, 640),
+                                                  (424, 733),
+                                                  (470, 241),
+                                                  (580, 730),
+                                                  (29, 152),
+                                                  (7, 5),
+                                                  (451, 918),
+                                                  (62, 83),
+                                                  (253, 19),
+                                                  (853, 398),
+                                                  (43, 5),
+                                                  (279, 258),
+                                                  (534, 247),
+                                                  (27, 382),
+                                                  (159, 290),
+                                                  (609, 547),
+                                                  (537, 903),
+                                                  (340, 124),
+                                                  (291, 305),
+                                                  (732, 946),
+                                                  (655, 290),
+                                                  (189, 190),
+                                                  (99, 150),
+                                                  (629, 892),
+                                                  (613, 306),
+                                                  (447, 302),
+                                                  (384, 93),
+                                                  (544, 278),
+                                                  (529, 267),
+                                                  (788, 894),
+                                                  (291, 942),
+                                                  (414, 281),
+                                                  (193, 199),
+                                                  (703, 71),
+                                                  (372, 809),
+                                                  (536, 31),
+                                                  (615, 591),
+                                                  (874, 792),
+                                                  (130, 163),
+                                                  (206, 46),
+                                                  (467, 909),
+                                                  (257, 571),
+                                                  (977, 167),
+                                                  (291, 123),
+                                                  (603, 234),
+                                                  (278, 87),
+                                                  (341, 557),
+                                                  (955, 119),
+                                                  (226, 187),
+                                                  (159, 160),
+                                                  (260, 958),
+                                                  (110, 813),
+                                                  (616, 683),
+                                                  (727, 600),
+                                                  (626, 415),
+                                                  (29, 71),
+                                                  (7, 16),
+                                                  (35, 391),
+                                                  (205, 110),
+                                                  (413, 186),
+                                                  (941, 896),
+                                                  (517, 726),
+                                                  (200, 159),
+                                                  (667, 627),
+                                                  (62, 695),
+                                                  (78, 580),
+                                                  (287, 411),
+                                                  (264, 786),
+                                                  (706, 261),
+                                                  (304, 297),
+                                                  (49, 20),
+                                                  (380, 440),
+                                                  (144, 111),
+                                                  (30, 135),
+                                                  (31, 75),
+                                                  (329, 819),
+                                                  (61, 170),
+                                                  (717, 646),
+                                                  (238, 537),
+                                                  (446, 127),
+                                                  (767, 319),
+                                                  (654, 701),
+                                                  (34, 140),
+                                                  (5, 115),
+                                                  (962, 734),
+                                                  (581, 781),
+                                                  (523, 372),
+                                                  (112, 286),
+                                                  (631, 47),
+                                                  (244, 32),
+                                                  (112, 476),
+                                                  (149, 48),
+                                                  (1, 21),
+                                                  (183, 187),
+                                                  (56, 448),
+                                                  (848, 1),
+                                                  (305, 393),
+                                                  (787, 324),
+                                                  (407, 151),
+                                                  (360, 861),
+                                                  (93, 473),
+                                                  (20, 792),
+                                                  (491, 245),
+                                                  (41, 295),
+                                                  (408, 194),
+                                                  (416, 125),
+                                                  (752, 289),
+                                                  (738, 309),
+                                                  (576, 222),
+                                                  (5, 8),
+                                                  (159, 193),
+                                                  (456, 509),
+                                                  (121, 96),
+                                                  (19, 371),
+                                                  (870, 913),
+                                                  (419, 346),
+                                                  (207, 178),
+                                                  (266, 548),
+                                                  (292, 39),
+                                                  (402, 21),
+                                                  (230, 111),
+                                                  (842, 55),
+                                                  (286, 406),
+                                                  (203, 251),
+                                                  (961, 213),
+                                                  (215, 543),
+                                                  (56, 127),
+                                                  (764, 836),
+                                                  (948, 816),
+                                                  (161, 503),
+                                                  (380, 574),
+                                                  (524, 486),
+                                                  (716, 416),
+                                                  (249, 332),
+                                                  (197, 93),
+                                                  (464, 241),
+                                                  (608, 457),
+                                                  (567, 179),
+                                                  (17, 1),
+                                                  (351, 590),
+                                                  (349, 345),
+                                                  (10, 23),
+                                                  (87, 58),
+                                                  (11, 107),
+                                                  (975, 440),
+                                                  (246, 125),
+                                                  (464, 806),
+                                                  (456, 259),
+                                                  (846, 198),
+                                                  (103, 9),
+                                                  (19, 180),
+                                                  (361, 139),
+                                                  (108, 136),
+                                                  (217, 357),
+                                                  (250, 684),
+                                                  (4, 3),
+                                                  (756, 111),
+                                                  (970, 906),
+                                                  (12, 9),
+                                                  (41, 15),
+                                                  (52, 747),
+                                                  (345, 118),
+                                                  (944, 824),
+                                                  (134, 115),
+                                                  (860, 82),
+                                                  (99, 47),
+                                                  (417, 957),
+                                                  (953, 200),
+                                                  (339, 761),
+                                                  (386, 75),
+                                                  (451, 638),
+                                                  (572, 744),
+                                                  (150, 214),
+                                                  (23, 167),
+                                                  (227, 273),
+                                                  (127, 817),
+                                                  (102, 62),
+                                                  (785, 375),
+                                                  (383, 855),
+                                                  (252, 89),
+                                                  (270, 480),
+                                                  (954, 754),
+                                                  (668, 240),
+                                                  (35, 21),
+                                                  (149, 369),
+                                                  (58, 665),
+                                                  (522, 507),
+                                                  (516, 314),
+                                                  (581, 197),
+                                                  (484, 800),
+                                                  (745, 856),
+                                                  (839, 360),
+                                                  (383, 288),
+                                                  (34, 9),
+                                                  (84, 594),
+                                                  (720, 240),
+                                                  (421, 931),
+                                                  (55, 29),
+                                                  (101, 60),
+                                                  (713, 647),
+                                                  (302, 530),
+                                                  (326, 459),
+                                                  (78, 19),
+                                                  (128, 158),
+                                                  (297, 124),
+                                                  (657, 12),
+                                                  (155, 575),
+                                                  (592, 305),
+                                                  (875, 35),
+                                                  (458, 318),
+                                                  (33, 20),
+                                                  (6, 66),
+                                                  (938, 826),
+                                                  (115, 823),
+                                                  (1, 2),
+                                                  (463, 193),
+                                                  (762, 96),
+                                                  (424, 70),
+                                                  (772, 23),
+                                                  (129, 415),
+                                                  (52, 21),
+                                                  (268, 398),
+                                                  (497, 406),
+                                                  (96, 621),
+                                                  (225, 688),
+                                                  (60, 58),
+                                                  (949, 564),
+                                                  (374, 219),
+                                                  (515, 108),
+                                                  (253, 358),
+                                                  (75, 118),
+                                                  (550, 106),
+                                                  (395, 252),
+                                                  (1, 805),
+                                                  (910, 592),
+                                                  (46, 2),
+                                                  (750, 15),
+                                                  (514, 945),
+                                                  (496, 317),
+                                                  (211, 359),
+                                                  (737, 239),
+                                                  (316, 163),
+                                                  (114, 209),
+                                                  (733, 889),
+                                                  (112, 965),
+                                                  (97, 215),
+                                                  (55, 352),
+                                                  (647, 607),
+                                                  (539, 482),
+                                                  (45, 148),
+                                                  (300, 232),
+                                                  (321, 628),
+                                                  (140, 432),
+                                                  (362, 28),
+                                                  (908, 770),
+                                                  (916, 280),
+                                                  (636, 399),
+                                                  (143, 692),
+                                                  (796, 411),
+                                                  (143, 25),
+                                                  (484, 745),
+                                                  (689, 73),
+                                                  (641, 288),
+                                                  (558, 28),
+                                                  (194, 42),
+                                                  (758, 31),
+                                                  (19, 27),
+                                                  (307, 49),
+                                                  (105, 44),
+                                                  (175, 9),
+                                                  (233, 343),
+                                                  (44, 661),
+                                                  (284, 513),
+                                                  (106, 306),
+                                                  (868, 323),
+                                                  (736, 454),
+                                                  (44, 124),
+                                                  (272, 827),
+                                                  (428, 588),
+                                                  (921, 901),
+                                                  (647, 841),
+                                                  (41, 390),
+                                                  (427, 106),
+                                                  (192, 930),
+                                                  (50, 92),
+                                                  (709, 202),
+                                                  (877, 412),
+                                                  (262, 392),
+                                                  (658, 372),
+                                                  (10, 53),
+                                                  (335, 403),
+                                                  (178, 116),
+                                                  (60, 700),
+                                                  (606, 755),
+                                                  (847, 505),
+                                                  (225, 4),
+                                                  (231, 120),
+                                                  (387, 676),
+                                                  (789, 571),
+                                                  (378, 56),
+                                                  (16, 394),
+                                                  (46, 117),
+                                                  (417, 743),
+                                                  (508, 474),
+                                                  (8, 73),
+                                                  (333, 67),
+                                                  (331, 125),
+                                                  (572, 651),
+                                                  (399, 259),
+                                                  (274, 283),
+                                                  (876, 654),
+                                                  (201, 59),
+                                                  (330, 265),
+                                                  (220, 768),
+                                                  (506, 262),
+                                                  (466, 276),
+                                                  (34, 50),
+                                                  (670, 212),
+                                                  (593, 622),
+                                                  (676, 829),
+                                                  (654, 423),
+                                                  (178, 401),
+                                                  (445, 142),
+                                                  (249, 154),
+                                                  (489, 458),
+                                                  (68, 137),
+                                                  (84, 62),
+                                                  (263, 618),
+                                                  (208, 40),
+                                                  (142, 90),
+                                                  (187, 659),
+                                                  (798, 50),
+                                                  (966, 571),
+                                                  (139, 780),
+                                                  (452, 455),
+                                                  (186, 170),
+                                                  (542, 820),
+                                                  (365, 431),
+                                                  (686, 3),
+                                                  (335, 438),
+                                                  (27, 109),
+                                                  (294, 4),
+                                                  (1, 74),
+                                                  (499, 476),
+                                                  (280, 664),
+                                                  (886, 778),
+                                                  (14, 26),
+                                                  (29, 171),
+                                                  (210, 245),
+                                                  (842, 865),
+                                                  (650, 153),
+                                                  (48, 30),
+                                                  (173, 232),
+                                                  (334, 577),
+                                                  (791, 438),
+                                                  (41, 532),
+                                                  (144, 195),
+                                                  (685, 153),
+                                                  (797, 485),
+                                                  (242, 235),
+                                                  (545, 151),
+                                                  (324, 172),
+                                                  (4, 10),
+                                                  (385, 751),
+                                                  (553, 416),
+                                                  (173, 385),
+                                                  (372, 742),
+                                                  (131, 217),
+                                                  (919, 299),
+                                                  (531, 262),
+                                                  (790, 694),
+                                                  (302, 652),
+                                                  (181, 485),
+                                                  (637, 317),
+                                                  (625, 591),
+                                                  (5, 2),
+                                                  (65, 28),
+                                                  (274, 368),
+                                                  (511, 582),
+                                                  (336, 327),
+                                                  (377, 94),
+                                                  (959, 495),
+                                                  (241, 118),
+                                                  (2, 229),
+                                                  (830, 790),
+                                                  (165, 142),
+                                                  (36, 7),
+                                                  (662, 576),
+                                                  (224, 141),
+                                                  (671, 312),
+                                                  (220, 101),
+                                                  (771, 135),
+                                                  (1, 3),
+                                                  (8, 13),
+                                                  (112, 233),
+                                                  (449, 413),
+                                                  (257, 9),
+                                                  (9, 221),
+                                                  (481, 826),
+                                                  (562, 51),
+                                                  (803, 651),
+                                                  (233, 264),
+                                                  (357, 563),
+                                                  (29, 4),
+                                                  (289, 252),
+                                                  (743, 828),
+                                                  (134, 285),
+                                                  (236, 284),
+                                                  (882, 335),
+                                                  (7, 11),
+                                                  (858, 748),
+                                                  (76, 9),
+                                                  (265, 51),
+                                                  (440, 601),
+                                                  (620, 872),
+                                                  (972, 887),
+                                                  (268, 255),
+                                                  (36, 68),
+                                                  (4, 770),
+                                                  (81, 60),
+                                                  (88, 34),
+                                                  (967, 391),
+                                                  (339, 102),
+                                                  (395, 591),
+                                                  (95, 928),
+                                                  (212, 148),
+                                                  (486, 478),
+                                                  (19, 106),
+                                                  (750, 884),
+                                                  (324, 517),
+                                                  (815, 48),
+                                                  (87, 222),
+                                                  (633, 899),
+                                                  (741, 604),
+                                                  (472, 58),
+                                                  (933, 636),
+                                                  (337, 502),
+                                                  (5, 216),
+                                                  (425, 233),
+                                                  (148, 870),
+                                                  (165, 474),
+                                                  (318, 292),
+                                                  (29, 188),
+                                                  (420, 368),
+                                                  (607, 185),
+                                                  (430, 62),
+                                                  (681, 236),
+                                                  (204, 423),
+                                                  (641, 779),
+                                                  (568, 492),
+                                                  (141, 663),
+                                                  (914, 602),
+                                                  (26, 219),
+                                                  (30, 32),
+                                                  (103, 192),
+                                                  (213, 118),
+                                                  (682, 368),
+                                                  (4, 19),
+                                                  (6, 54),
+                                                  (459, 833),
+                                                  (334, 148),
+                                                  (731, 96),
+                                                  (478, 189),
+                                                  (225, 602),
+                                                  (175, 723),
+                                                  (862, 129),
+                                                  (108, 298),
+                                                  (196, 35),
+                                                  (72, 871),
+                                                  (147, 82),
+                                                  (484, 400),
+                                                  (167, 507),
+                                                  (118, 409),
+                                                  (25, 179),
+                                                  (926, 769),
+                                                  (299, 40),
+                                                  (947, 254),
+                                                  (325, 816),
+                                                  (329, 51),
+                                                  (13, 18),
+                                                  (905, 770),
+                                                  (444, 154),
+                                                  (276, 451),
+                                                  (328, 612),
+                                                  (573, 904),
+                                                  (565, 773),
+                                                  (312, 495),
+                                                  (82, 166),
+                                                  (367, 555),
+                                                  (34, 629),
+                                                  (78, 155),
+                                                  (674, 53),
+                                                  (932, 357),
+                                                  (142, 441),
+                                                  (898, 651),
+                                                  (276, 22),
+                                                  (206, 228),
+                                                  (256, 1),
+                                                  (52, 467),
+                                                  (236, 16),
+                                                  (535, 56),
+                                                  (925, 422),
+                                                  (23, 151),
+                                                  (105, 138),
+                                                  (182, 754),
+                                                  (699, 964),
+                                                  (445, 599),
+                                                  (485, 584),
+                                                  (418, 201),
+                                                  (537, 888),
+                                                  (13, 72),
+                                                  (44, 47),
+                                                  (13, 280),
+                                                  (300, 976),
+                                                  (410, 107),
+                                                  (185, 107),
+                                                  (159, 121),
+                                                  (74, 77),
+                                                  (354, 693),
+                                                  (440, 734),
+                                                  (255, 587),
+                                                  (234, 151),
+                                                  (828, 885),
+                                                  (828, 873),
+                                                  (669, 511),
+                                                  (25, 94),
+                                                  (186, 705),
+                                                  (583, 329),
+                                                  (606, 288),
+                                                  (232, 604),
+                                                  (322, 177),
+                                                  (126, 60),
+                                                  (3, 840),
+                                                  (98, 923),
+                                                  (806, 940),
+                                                  (867, 183),
+                                                  (25, 5),
+                                                  (287, 103),
+                                                  (488, 893),
+                                                  (250, 366),
+                                                  (41, 327),
+                                                  (159, 579),
+                                                  (400, 75),
+                                                  (360, 283),
+                                                  (338, 35),
+                                                  (98, 49),
+                                                  (835, 170),
+                                                  (824, 634),
+                                                  (329, 348),
+                                                  (361, 501),
+                                                  (851, 456),
+                                                  (269, 308),
+                                                  (623, 216),
+                                                  (412, 272),
+                                                  (176, 211),
+                                                  (134, 145),
+                                                  (153, 266),
+                                                  (504, 460),
+                                                  (783, 34),
+                                                  (27, 223),
+                                                  (177, 18),
+                                                  (600, 795),
+                                                  (228, 883),
+                                                  (187, 303),
+                                                  (832, 653),
+                                                  (79, 123),
+                                                  (52, 56),
+                                                  (642, 46),
+                                                  (934, 18),
+                                                  (675, 969),
+                                                  (662, 879),
+                                                  (807, 359),
+                                                  (911, 184),
+                                                  (956, 528),
+                                                  (9, 6),
+                                                  (763, 690),
+                                                  (678, 287),
+                                                  (185, 198),
+                                                  (870, 950),
+                                                  (293, 26),
+                                                  (255, 237),
+                                                  (10, 896),
+                                                  (226, 313),
+                                                  (90, 267),
+                                                  (660, 481),
+                                                  (25, 120),
+                                                  (132, 54),
+                                                  (217, 462),
+                                                  (40, 33),
+                                                  (457, 237),
+                                                  (30, 70),
+                                                  (284, 595),
+                                                  (603, 679),
+                                                  (13, 67),
+                                                  (469, 70),
+                                                  (50, 184),
+                                                  (866, 399),
+                                                  (129, 119),
+                                                  (170, 367),
+                                                  (804, 240),
+                                                  (852, 456),
+                                                  (449, 691),
+                                                  (869, 682),
+                                                  (554, 444),
+                                                  (766, 696),
+                                                  (116, 59),
+                                                  (82, 32),
+                                                  (897, 853),
+                                                  (644, 412),
+                                                  (434, 201),
+                                                  (307, 687),
+                                                  (89, 44),
+                                                  (715, 657),
+                                                  (203, 863),
+                                                  (907, 66),
+                                                  (58, 64),
+                                                  (5, 288),
+                                                  (277, 15),
+                                                  (291, 326),
+                                                  (460, 586),
+                                                  (152, 183),
+                                                  (69, 161),
+                                                  (104, 3),
+                                                  (697, 314),
+                                                  (845, 296),
+                                                  (320, 104),
+                                                  (530, 611),
+                                                  (435, 634),
+                                                  (148, 376),
+                                                  (415, 699),
+                                                  (209, 718),
+                                                  (880, 665),
+                                                  (93, 69),
+                                                  (279, 859),
+                                                  (592, 912),
+                                                  (11, 51),
+                                                  (572, 87),
+                                                  (45, 11),
+                                                  (174, 116),
+                                                  (756, 895),
+                                                  (130, 309),
+                                                  (850, 708),
+                                                  (468, 36),
+                                                  (556, 656),
+                                                  (598, 25),
+                                                  (917, 557),
+                                                  (40, 125),
+                                                  (298, 593),
+                                                  (114, 154),
+                                                  (437, 490),
+                                                  (53, 111),
+                                                  (653, 571),
+                                                  (112, 812),
+                                                  (648, 546),
+                                                  (546, 361),
+                                                  (121, 429),
+                                                  (379, 203),
+                                                  (906, 29),
+                                                  (18, 834),
+                                                  (632, 317),
+                                                  (85, 12),
+                                                  (528, 864),
+                                                  (241, 721),
+                                                  (814, 418),
+                                                  (251, 963),
+                                                  (439, 221),
+                                                  (27, 396),
+                                                  (194, 237),
+                                                  (460, 321),
+                                                  (350, 81),
+                                                  (432, 722),
+                                                  (101, 122),
+                                                  (441, 589),
+                                                  (552, 854),
+                                                  (347, 345),
+                                                  (42, 26),
+                                                  (64, 519),
+                                                  (353, 138),
+                                                  (360, 757),
+                                                  (494, 538),
+                                                  (346, 116),
+                                                  (119, 181),
+                                                  (124, 837),
+                                                  (521, 232),
+                                                  (616, 487),
+                                                  (24, 11),
+                                                  (139, 52),
+                                                  (157, 72),
+                                                  (614, 801),
+                                                  (117, 202),
+                                                  (296, 241),
+                                                  (27, 79),
+                                                  (974, 385),
+                                                  (74, 86),
+                                                  (649, 241),
+                                                  (572, 646),
+                                                  (324, 746),
+                                                  (753, 606),
+                                                  (564, 319),
+                                                  (270, 335),
+                                                  (34, 58),
+                                                  (605, 130),
+                                                  (109, 173),
+                                                  (257, 354),
+                                                  (620, 484),
+                                                  (144, 749),
+                                                  (6, 2),
+                                                  (321, 138),
+                                                  (696, 481),
+                                                  (62, 53),
+                                                  (244, 356),
+                                                  (422, 53),
+                                                  (37, 389),
+                                                  (295, 825),
+                                                  (415, 769) ]))
+
     main()

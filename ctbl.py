@@ -13,24 +13,17 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-# ctbl Creating a Character Table  http://rosalind.info/problems/ctbl/
+'''ctbl Creating a Character Table  http://rosalind.info/problems/ctbl/'''
 
-import argparse
-import os
-import time
-from   helpers import read_strings
-from   Bio import Phylo
-from   io import StringIO
-from   phylogeny import CharacterTable
-
-
-def create_tree(treedata):
-    handle   = StringIO(treedata)
-    return Phylo.read(handle, "newick")
+from argparse  import ArgumentParser
+from os.path   import basename
+from time      import time
+from helpers   import read_strings
+from phylogeny import CharacterTable, create_tree
 
 if __name__=='__main__':
-    start = time.time()
-    parser = argparse.ArgumentParser('....')
+    start = time()
+    parser = ArgumentParser(__doc__)
     parser.add_argument('--sample',   default=False, action='store_true', help='process sample dataset')
     parser.add_argument('--rosalind', default=False, action='store_true', help='process Rosalind dataset')
     args = parser.parse_args()
@@ -39,15 +32,15 @@ if __name__=='__main__':
             print (ch)
 
     if args.rosalind:
-        tree = Phylo.read(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt', 'newick')
+        tree = Phylo.read(f'data/rosalind_{basename(__file__).split(".")[0]}.txt', 'newick')
 
         Result = CharacterTable(tree)
-        with open(f'{os.path.basename(__file__).split(".")[0]}.txt','w') as f:
+        with open(f'{basename(__file__).split(".")[0]}.txt','w') as f:
             for line in Result:
                 print (line)
                 f.write(f'{line}\n')
 
-    elapsed = time.time()-start
+    elapsed = time()-start
     minutes = int(elapsed/60)
     seconds = elapsed-60*minutes
     print (f'Elapsed Time {minutes} m {seconds:.2f} s')
