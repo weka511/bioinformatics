@@ -274,11 +274,21 @@ def create_adj(tree):
     dfs(tree)
     return adj
 
-#  SPTD Phylogeny Comparison with Split Distance
+
 
 def sptd(species,newick1,newick2):
+    '''
+    SPTD Phylogeny Comparison with Split Distance
+
+    Given: A collection of at most 3,000 species taxa and two unrooted binary trees T1 and T2 on these taxa in Newick format.
+
+    Return: The split distance dsplit(T1,T2), the number of nontrivial splits
+            contained in one unrooted binary tree but not the other.
+.
+    '''
     def replace_leaves(adj):
-        return {parent:sorted([seiceps[child] if child in seiceps else child for child in children]) for parent,children in adj.items() }
+        return {parent:sorted([seiceps[child] if child in seiceps else child for child in children])
+                for parent,children in adj.items() }
     def edges(adj):
         for parent,children in adj.items():
             for child in children:
@@ -988,7 +998,7 @@ def expand_character(s):
     return [int(c) if c.isdigit() else None for c in s]
 
 class PhylogenyTestCase(TestCase):
-    @skip('#125')
+    @skip('#126')
     def test_alph(self):
         fc = FastaContent(['>ostrich',
                            'AC',
@@ -1012,32 +1022,39 @@ class PhylogenyTestCase(TestCase):
         self.assertEqual(('hamster','AT'),Assignment[3])
         self.assertEqual(('robot','AC'),Assignment[4])
 
-
+    @skip('#127')
+    def test_chbp(self):
+        '''CHBP Character-Based Phylogeny '''
+        pass
 
     def test_cntq(self):
         '''CNTQ Counting Quartets'''
         n,_ = cntq(6,'(lobster,(cat,dog),(caterpillar,(elephant,mouse)));')
         self.assertEqual(15,n)
 
-    @skip('#125')
+    @skip('#128')
     def test_cset(self):
         '''CSET Fixing an Inconsistent Character Set'''
         submatrix = cset([expand('100001'),
                           expand('000110'),
                           expand('111000'),
                           expand('100111')])
-        self.assertEqual([0,0,0,1,1,0],submatrix[0])
-        self.assertEqual([1,0,0,0,0,1],submatrix[1])
-        self.assertEqual([1,0,0,1,1,1],submatrix[2])
+        self.assertEqual(3,len(submatrix))
+        self.assertIn([0,0,0,1,1,0],submatrix)
+        self.assertIn([1,0,0,0,0,1],submatrix)
+        self.assertIn([1,0,0,1,1,1],submatrix)
 
-    @skip('#125')
+    @skip('#129')
     def test_cstr(self):
-        print(cstr(['ATGCTACC',
+        character_table = cstr(['ATGCTACC',
               'CGTTTACC',
               'ATTCGACC',
               'AGTCTCCC',
               'CGTCTATC'
-              ]))
+              ])
+        self.assertEqual(2,len(character_table))
+        self.assertIn('10110',character_table)
+        self.assertIn('10100',character_table)
 
 
     def test_mend(self):
@@ -1052,8 +1069,8 @@ class PhylogenyTestCase(TestCase):
     def test_qrt(self):
         '''qrt Incomplete Characters'''
         quartets = list(qrt(
-            ['cat', 'dog', 'elephant', 'ostrich', 'mouse', 'rabbit', 'robot'],
-            [expand_character(character) for character in ['01xxx00', 'x11xx00', '111x00x']]))
+                            ['cat', 'dog', 'elephant', 'ostrich', 'mouse', 'rabbit', 'robot'],
+                            [expand_character(character) for character in ['01xxx00', 'x11xx00', '111x00x']]))
         self.assertEqual(4, len(quartets))
         self.assertIn(['cat', 'dog',  'mouse', 'rabbit'],quartets)
         self.assertIn(['cat',  'elephant',  'mouse', 'rabbit'],quartets)
@@ -1085,15 +1102,13 @@ class PhylogenyTestCase(TestCase):
         self.assertIn(('rat', 'cat', 3, 'G', 'T', 'G'),substitutions)
 
 
-
-    @skip('#125')
     def test_sptd(self):
-        print(cstr(['ATGCTACC',
-              'CGTTTACC',
-              'ATTCGACC',
-              'AGTCTCCC',
-              'CGTCTATC'
-              ]))
+        '''
+        SPTD Phylogeny Comparison with Split Distance
+        '''
+        self.assertEqual(2,sptd('dog rat elephant mouse cat rabbit'.split(),
+             '(rat,(dog,cat),(rabbit,(elephant,mouse)));',
+             '(rat,(cat,dog),(elephant,(mouse,rabbit)));)'))
 
 
 if __name__=='__main__':
