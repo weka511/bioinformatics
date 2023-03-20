@@ -236,6 +236,19 @@ def qrt(taxa,characters):
         if isConsistent(selector):
             yield [taxa[m] for m in selector]
 
+
+
+def qrtd(species,T1,T2):
+    '''
+    qrtd  Quartet Distance
+
+    Given: A list containing n taxa  and two unrooted binary trees T1 and T2 on the given taxa.
+           Both T1 and T2 are given in Newick format.
+
+    Return: The quartet distance dq(T1,T2)
+    '''
+    pass
+
 # snarfed from https://stackoverflow.com/questions/51373300/how-to-convert-newick-tree-format-to-a-tree-like-hierarchical-object
 def parse(newick,start=0):
     tokens = findall(r"([^:;,()\s]*)(?:\s*:\s*([\d.]+)\s*)?([,);])|(\S)", newick+";")
@@ -1080,6 +1093,14 @@ class PhylogenyTestCase(TestCase):
         self.assertIn(['cat',  'elephant',  'mouse', 'rabbit'],quartets)
         self.assertIn(['dog', 'elephant', 'mouse', 'rabbit'],quartets)
         self.assertIn([ 'dog', 'elephant',  'rabbit', 'robot'],quartets)
+
+    @skip('#46')
+    def test_qrtd(self):
+        '''qrtd Quartet Distance'''
+        self.assertEqual(4,qrtd('A B C D E'.split(),
+                                '(A,C,((B,D),E));',
+                                '(C,(B,D),(A,E));'
+        ))
 
     def test_rsub(self):
         ''' RSUB  	Identifying Reversing Substitutions'''
