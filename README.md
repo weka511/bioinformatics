@@ -167,7 +167,7 @@ I have written this code in Python 3, generally with the most recent release at 
 |nwck|nwck.py|[Distances in Trees](http://rosalind.info/problems/nwck/) |
 |pdst|rosalind.py|[Creating a Distance Matrix ](http://rosalind.info/problems/pdst/) |
 |qrt|qrt.py phylogeny.py|[Quartets](http://rosalind.info/problems/qrt/)|
-|qrtd|qrtd.py|[Quartet Distance](http://rosalind.info/problems/qrtd/) [WIP](https://github.com/weka511/bioinformatics/issues/46)|
+|qrtd|qrtd.py phylogeny.py|[Quartet Distance](http://rosalind.info/problems/qrtd/) [WIP](https://github.com/weka511/bioinformatics/issues/46)|
 |root|phylogeny.py|[Counting Rooted Binary Trees ](http://rosalind.info/problems/root/) |
 |rsub|rsub.py phylogeny.py|[Identifying Reversing Substitutions](http://rosalind.info/problems/rsub/)|
 |sptd|sptb.py phylogeny.py|[Phylogeny Comparison with Split Distance](http://rosalind.info/problems/sptd/) |
