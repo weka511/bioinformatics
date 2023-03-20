@@ -788,27 +788,31 @@ def chbp(species,character_table):
     root.splitAll(characters)
     return f'{root.newick()};'
 
-#  RSUB  	Identifying Reversing Substitutions
-#
-# Given: A rooted binary tree T with labeled nodes in Newick format, followed by a collection of at most
-#        100 DNA strings in FASTA format whose labels correspond to the labels of T.
-#
-#        We will assume that the DNA strings have the same length, which does not exceed 400 bp).
-#
-# Return: A list of all reversing substitutions in T (in any order), with each substitution encoded by the following three items:
-#
-#    the name of the species in which the symbol is first changed, followed by the name of the species in which it changes back to its original state
-#    the position in the string at which the reversing substitution occurs; and
-#    the reversing substitution in the form original_symbol->substituted_symbol->reverted_symbol.
 
 def rsub(T,Assignments):
+    '''
+    RSUB  	Identifying Reversing Substitutions
 
-    # find_path
-    #
-    # Find path from the root down to a specified leaf
+    Given: A rooted binary tree T with labeled nodes in Newick format, followed by a collection of at most
+           100 DNA strings in FASTA format whose labels correspond to the labels of T.
+
+           We will assume that the DNA strings have the same length, which does not exceed 400 bp).
+
+    Return: A list of all reversing substitutions in T (in any order), with each substitution encoded by the following three items:
+
+       the name of the species in which the symbol is first changed, followed by the name of the species in which it changes back to its original state
+       the position in the string at which the reversing substitution occurs; and
+       the reversing substitution in the form original_symbol->substituted_symbol->reverted_symbol.
+    '''
 
     def find_path(leaf):
         Path   = [leaf]
+        '''
+        find_path
+
+        Find path from the root down to a specified leaf
+
+        '''
         parent = Parents[leaf]
         while len(parent)>0:
             Path.append(parent)
@@ -818,15 +822,18 @@ def rsub(T,Assignments):
                 break
         return Path[::-1]
 
-    # FindReversingSubstitutions
-    #
-    # Find reversion substitutions in one specified path trhough tree,
-    # affecting a specified position in the strings
-    #
-    # Parameters: Path    Path to be searched
-    #             pos     position in tree
-    # Strategy:  build up history of changes, and search back whenever a change is detected.
+
     def FindReversingSubstitutions(Path,pos):
+        '''
+        FindReversingSubstitutions
+
+         Find reversion substitutions in one specified path trhough tree,
+         affecting a specified position in the strings
+
+         Parameters: Path    Path to be searched
+                     pos     position in tree
+         Strategy:  build up history of changes, and search back whenever a change is detected.
+        '''
         History   = [Characters[Path[0]][pos]]
         Names     = Path[0:1]
         Reverses  = []
@@ -840,22 +847,26 @@ def rsub(T,Assignments):
 
         return Reverses
 
-    # create_parents
 
-    # Invert Ajacency list to we have the parent of each child
 
     def create_parents(Adj):
+        '''
+        create_parents
+
+        Invert Adjacency list to we have the parent of each child
+        '''
         Product = {node:[] for node in flatten(Adj.values())}
         for parent,children in Adj.items():
             for child in children:
                 Product[child] = parent
         return Product
 
-    # get_unique
-    #
-    # Convert list of lists into a single list and remove duplicate elements
-
     def get_unique(list_of_lists):
+        '''
+        get_unique
+
+        Convert list of lists into a single list and remove duplicate elements
+        '''
         return list(set(flatten(list_of_lists)))
 
     Adj,root = newick_to_adjacency_list(T,return_root=True)
@@ -867,7 +878,8 @@ def rsub(T,Assignments):
     Paths    = [find_path(node) for node in flatten(Adj.values()) if len(Adj[node])==0]
 
     # Build list of unique reversals.
-    return get_unique([subst for subst in [FindReversingSubstitutions(path,pos) for path in Paths for pos in range(m)] if len(subst)>0])
+    return get_unique([subst for subst in [FindReversingSubstitutions(path,pos) for path in Paths for pos in range(m)]
+                       if len(subst)>0])
 
 
 
@@ -1043,19 +1055,36 @@ class PhylogenyTestCase(TestCase):
             ['cat', 'dog', 'elephant', 'ostrich', 'mouse', 'rabbit', 'robot'],
             [expand_character(character) for character in ['01xxx00', 'x11xx00', '111x00x']]))
         self.assertEqual(4, len(quartets))
-        self.assertEqual(['cat', 'dog',  'mouse', 'rabbit'],quartets[0])
-        self.assertEqual(['cat',  'elephant',  'mouse', 'rabbit'],quartets[1])
-        self.assertEqual(['dog', 'elephant', 'mouse', 'rabbit'],quartets[2])
-        self.assertEqual([ 'dog', 'elephant',  'rabbit', 'robot'],quartets[3])
+        self.assertIn(['cat', 'dog',  'mouse', 'rabbit'],quartets)
+        self.assertIn(['cat',  'elephant',  'mouse', 'rabbit'],quartets)
+        self.assertIn(['dog', 'elephant', 'mouse', 'rabbit'],quartets)
+        self.assertIn([ 'dog', 'elephant',  'rabbit', 'robot'],quartets)
 
-    @skip('#125')
     def test_rsub(self):
-        print(cstr(['ATGCTACC',
-              'CGTTTACC',
-              'ATTCGACC',
-              'AGTCTCCC',
-              'CGTCTATC'
-              ]))
+        ''' RSUB  	Identifying Reversing Substitutions'''
+        substitutions = list(rsub('(((ostrich,cat)rat,mouse)dog,elephant)robot;',
+                            ['>robot',
+                             'AATTG',
+                             '>dog',
+                             'GGGCA',
+                             '>mouse',
+                             'AAGAC',
+                             '>rat',
+                             'GTTGT',
+                             '>cat',
+                             'GAGGC',
+                             '>ostrich',
+                             'GTGTC',
+                             '>elephant',
+                             'AATTC']))
+        self.assertEqual(5,len(substitutions))
+        self.assertIn(('dog', 'rat', 3, 'T', 'G', 'T'),substitutions)
+        self.assertIn(('dog', 'mouse', 2, 'A', 'G', 'A'),substitutions)
+        self.assertIn(('dog', 'mouse', 1, 'A', 'G', 'A'),substitutions)
+        self.assertIn(('rat', 'ostrich', 3, 'G', 'T', 'G'),substitutions)
+        self.assertIn(('rat', 'cat', 3, 'G', 'T', 'G'),substitutions)
+
+
 
     @skip('#125')
     def test_sptd(self):
