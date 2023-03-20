@@ -68,9 +68,6 @@ def CompleteTree(n,adj):
         components.append(find_component(list(twigs.keys())[0]))
     return len(components)-1
 
-def chbp(species,character_table):
-    pass
-
 # cstr
 #
 #  Creating a Character Table from Genetic Strings  http://rosalind.info/problems/cstr/
@@ -711,16 +708,20 @@ def alph(T,Alignment,
 
     return d,[(f'{a}',''.join(b)) for a,b in Assignment.items() if len(Adj[a])!=0]
 
-#  chbp Character-Based Phylogeny
-#
-#  Strategy: sort character table on entropy, then use each character to divide clades into two.
+
 
 def chbp(species,character_table):
-    # Clade
-    #
-    # This class represents one clade or taxon
+    '''
+    chbp Character-Based Phylogeny
 
+    Strategy: sort character table on entropy, then use each character to divide clades into two.
+    '''
     class Clade:
+        '''
+        Clade
+
+        This class represents one clade or taxon
+        '''
         def __init__(self,taxa):
             self.taxa = [s for s in taxa]
 
@@ -1022,10 +1023,13 @@ class PhylogenyTestCase(TestCase):
         self.assertEqual(('hamster','AT'),Assignment[3])
         self.assertEqual(('robot','AC'),Assignment[4])
 
-    @skip('#127')
     def test_chbp(self):
         '''CHBP Character-Based Phylogeny '''
-        pass
+        tree = chbp(['cat', 'dog', 'elephant', 'mouse', 'rabbit', 'rat'],
+                    [expand('011101'),
+                     expand('001101'),
+                     expand('001100')] )
+        self.assertEqual('(((cat,rabbit),dog),(rat,(elephant,mouse)));',tree)
 
     def test_cntq(self):
         '''CNTQ Counting Quartets'''
