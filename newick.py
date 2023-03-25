@@ -226,6 +226,22 @@ class Hierarchy:
 
         self.tree = recurse()[0]
 
+    def dfs(self, tree,visit,level=0):
+        id       = tree['id']
+        name     = tree['name']
+        children = tree['children']
+        parentid = tree['parentid']
+        visit(level,id,name,parentid,children)
+        for child in children:
+            self.dfs(child,visit,level+1)
+
+    def __str__(self):
+        result = []
+        def str_visit(level,id,name,parentid,children,result=result):
+            result.append( f'{"-"*level} {id} {name} {parentid}')
+        self.dfs(self.tree,str_visit)
+        return '\n'.join(result)
+
     def create_adj(self):
         adj = {}
         def dfs(tree):
