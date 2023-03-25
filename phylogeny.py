@@ -16,7 +16,7 @@
 
 '''Phylogeny -- http://rosalind.info/problems/topics/phylogeny/'''
 
-from   re       import findall
+
 from   unittest import TestCase, main, skip
 from   io       import StringIO
 
@@ -25,7 +25,7 @@ from   Bio      import Phylo
 
 from   rosalind import LabelledTree
 from   random   import randrange
-from   newick   import newick_to_adjacency_list, Parser, Tokenizer
+from   newick   import newick_to_adjacency_list, Parser, Tokenizer, Hierarchy
 from   fasta    import FastaContent, fasta_out
 from   helpers  import flatten, expand
 
@@ -251,42 +251,12 @@ def qrtd(species,T1,T2):
 
     Return: The quartet distance dq(T1,T2)
     '''
-    pass
+    species_index = {i:species[i] for i in range(len(species))}
+    T1a = Hierarchy(T1)
+    print (T1a)
+    z=0
 
-# snarfed from https://stackoverflow.com/questions/51373300/how-to-convert-newick-tree-format-to-a-tree-like-hierarchical-object
-def parse(newick,start=0):
-    tokens = findall(r"([^:;,()\s]*)(?:\s*:\s*([\d.]+)\s*)?([,);])|(\S)", newick+";")
 
-    def recurse(nextid = start, parentid = -1): # one node
-        thisid = nextid;
-        children = []
-
-        name, length, delim, ch = tokens.pop(0)
-        if ch == "(":
-            while ch in "(,":
-                node, ch, nextid = recurse(nextid+1, thisid)
-                children.append(node)
-            name, length, delim, ch = tokens.pop(0)
-        return {"id": thisid, "name": name, "length": float(length) if length else None,
-                "parentid": parentid, "children": children}, delim, nextid
-
-    return recurse()[0]
-
-def create_adj(tree):
-    adj = {}
-    def dfs(tree):
-        id       = tree['id']
-        name     = tree['name']
-        children = tree['children']
-        parentid = tree['parentid']
-        if len(name)==0:
-            adj[id]=[]
-        if parentid>-1:
-            adj[parentid].append(id if len(name)==0 else name)
-        for child in children:
-            dfs(child)
-    dfs(tree)
-    return adj
 
 
 
@@ -355,8 +325,10 @@ def sptd(species,newick1,newick2):
     n       = len(species)
     seiceps = {species[i]:i for i in range(n)}
 
-    return ds(replace_leaves(create_adj(parse(newick1,start=n))),
-              replace_leaves(create_adj(parse(newick2,start=n))))
+    tree1 = Hierarchy(newick1,start=n)
+    tree2 = Hierarchy(newick2,start=n)
+    return ds(replace_leaves(tree1.create_adj()),
+              replace_leaves(tree2.create_adj()))
 
 
 
@@ -993,7 +965,7 @@ def cntq(n,newick):
             for j in range(i+1,len(leaves)):
                 yield [leaves[i],leaves[j]] if leaves[i]<leaves[j] else [leaves[j],leaves[i]]
 
-    adj             = create_adj(parse(newick))
+    adj             = Hierarchy(newick).create_adj()
     taxa            = [leaf for children in adj.values() for leaf in children if type(leaf)==str]
     splitting_edges = [(key,child) for key,value in adj.items() for child in value if type(child)==int]
     Quartets        = []
@@ -1088,8 +1060,8 @@ if __name__=='__main__':
         def test_mend(self):
             '''MEND Inferring Genotype from a Pedigree'''
             newick_parser = Parser(Tokenizer())
-            tree,_ = newick_parser.parse('((((Aa,aa),(Aa,Aa)),((aa,aa),(aa,AA))),Aa);')
-            P = mend(tree)
+            tree,_        = newick_parser.parse('((((Aa,aa),(Aa,Aa)),((aa,aa),(aa,AA))),Aa);')
+            P             = mend(tree)
             self.assertAlmostEqual(0.156, P[0], places=3)
             self.assertAlmostEqual(0.5,   P[1], places=3)
             self.assertAlmostEqual(0.344, P[2], places=3)
@@ -1141,7 +1113,7 @@ if __name__=='__main__':
                                     '01x1xxx100x1x1x11',
                                     '01x00x0000xxx1x0x',
                                     '0xxxx0x1xxxx0xxxx']]))
-        @skip('#46')
+        @skip('')
         def test_qrtd(self):
             '''qrtd Quartet Distance'''
             self.assertEqual(4,qrtd('A B C D E'.split(),

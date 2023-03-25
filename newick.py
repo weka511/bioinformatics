@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-#  Copyright (C) 2017-2020 Greenweaves Software Limited
+#  Copyright (C) 2017-2023 Greenweaves Software Limited
 
 #  This is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -24,7 +24,9 @@
 #      Name -> empty | string
 #      Length -> empty | ":" number
 
-import string
+from string import ascii_letters, digits, whitespace
+from re     import findall
+
 
 class Node:
     next_id = 0
@@ -73,11 +75,11 @@ class Tokenizer:
             '_' : Tokenizer.NAME,
             '.' : Tokenizer.NUMBER,
             }
-        for i in string.ascii_letters:
+        for i in ascii_letters:
             self.symbols[i] = Tokenizer.NAME
-        for i in string.digits:
+        for i in digits:
             self.symbols[i] = Tokenizer.NUMBER
-        for i in string.whitespace:
+        for i in whitespace:
             self.symbols[i] = Tokenizer.WHITESPACE
 
     def get_token(self,ch):
@@ -194,6 +196,52 @@ def newick_to_adjacency_list(T,return_root=False):
         return Adj,root
     else:
         return Adj
+
+class Hierarchy:
+
+    '''This class parses a Newick string into a tree'''
+
+    def __init__(self,newick,start=0):
+        '''
+        parse
+
+        Parse a new string into a hierarchy
+
+        # snarfed from https://stackoverflow.com/questions/51373300/how-to-convert-newick-tree-format-to-a-tree-like-hierarchical-object
+        '''
+        tokens = findall(r"([^:;,()\s]*)(?:\s*:\s*([\d.]+)\s*)?([,);])|(\S)", newick+";")
+
+        def recurse(nextid = start, parentid = -1): # one node
+            thisid = nextid;
+            children = []
+
+            name, length, delim, ch = tokens.pop(0)
+            if ch == "(":
+                while ch in "(,":
+                    node, ch, nextid = recurse(nextid+1, thisid)
+                    children.append(node)
+                name, length, delim, ch = tokens.pop(0)
+            return {"id": thisid, "name": name, "length": float(length) if length else None,
+                    "parentid": parentid, "children": children}, delim, nextid
+
+        self.tree = recurse()[0]
+
+    def create_adj(self):
+        adj = {}
+        def dfs(tree):
+            id       = tree['id']
+            name     = tree['name']
+            children = tree['children']
+            parentid = tree['parentid']
+            if len(name)==0:
+                adj[id]=[]
+            if parentid>-1:
+                adj[parentid].append(id if len(name)==0 else name)
+            for child in children:
+                dfs(child)
+        dfs(self.tree)
+        return adj
+
 
 if __name__=='__main__':
     def display(p):
