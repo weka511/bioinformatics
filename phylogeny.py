@@ -252,7 +252,8 @@ def qrtd(species,T1,T2):
     Return: The quartet distance dq(T1,T2)
     '''
     species_index = {i:species[i] for i in range(len(species))}
-    T1a = Hierarchy(T1)
+    T1a = create_tree(T1)
+    # T1a = Hierarchy(T1)
     print (T1a)
     z=0
 
@@ -271,31 +272,66 @@ def sptd(species,newick1,newick2):
 .
     '''
     def replace_leaves(adj):
-        return {parent:sorted([seiceps[child] if child in seiceps else child for child in children])
+        '''
+        replace_leaves
+
+        Modify the adjacency list by replacing names of leaves with their position in the species index.
+        NB: this depends in the indices of internal nodes being `n` or greater, where `n` is the number
+        of leaves.
+        '''
+        return {parent:sorted([species_index[child] if child in species_index else child for child in children])
                 for parent,children in adj.items() }
+
     def edges(adj):
+        '''
+        edges
+
+        A generator that allows iteration through all edges in a tree
+
+        '''
         for parent,children in adj.items():
             for child in children:
                 if child >= n:
                     yield parent,child
+
+    def is_leaf(node):
+        return node<n
+
     def splits(adj,min_size=2):
+        '''
+        Generate splits in tree
+        '''
         def find_leaves(node,path=[]):
+            '''
+            find_leaves
+
+            Find all leaves below specified node
+
+            Parameters:
+                node     The node to start searching
+                path     List of leaves to be accumulated
+            '''
             for child in adj[node]:
-                if child<n:
+                if is_leaf(child):
                     path.append(child)
                 else:
                     find_leaves(child,path=path)
 
         for parent,child in edges(adj):
             s1 = []
-            find_leaves(child,s1)#[leaf for leaf in find_leaves(child)]
-            if len(s1)<min_size: continue
-            s2 = [leaf for leaf in range(n) if not leaf in s1]
-            yield sorted(s1),sorted(s2)
+            find_leaves(child,s1)
+            if len(s1)>=min_size:
+                s2 = [leaf for leaf in range(n) if not leaf in s1]
+                yield sorted(s1),sorted(s2)
 
 
     def ds(adj1,adj2):
-        shared  = 0
+        '''
+        ds
+
+        This is the workhorse that determines number of shared splits given two adjacency lists
+        '''
+        n_shared  = 0
         splits1 = sorted([s for s,_ in splits(adj1)])
         splits2 = sorted([s for s,_ in splits(adj2)])
         k1      = 0
@@ -304,31 +340,34 @@ def sptd(species,newick1,newick2):
         i2      = splits2[k2]
         while k1<len(splits1) and k2<len(splits2):
             if i1==i2:
-                shared += 1
-                k1     += 1
-                k2     += 1
+                n_shared += 1
+                k1       += 1
+                k2       += 1
                 if k1<len(splits1) and k2<len(splits2):
                     i1 = splits1[k1]
                     i2 = splits2[k2]
 
             elif i1<i2:
-                k1+=1
+                k1 += 1
                 if k1<len(splits1):
                     i1 = splits1[k1]
             else:
-                k2+=1
+                assert i1>i2
+                k2 += 1
                 if k2<len(splits2):
                     i2 = splits2[k2]
 
-        return 2*(n-3)- 2* shared
+        return n_shared
 
-    n       = len(species)
-    seiceps = {species[i]:i for i in range(n)}
-
-    tree1 = Hierarchy(newick1,start=n)
-    tree2 = Hierarchy(newick2,start=n)
-    return ds(replace_leaves(tree1.create_adj()),
-              replace_leaves(tree2.create_adj()))
+    n             = len(species)
+    species_index = {species[i]:i for i in range(n)}
+    tree1         = Hierarchy(newick1,start=n)
+    tree2         = Hierarchy(newick2,start=n)
+    #  Any unrooted binary tree on n taxa must have n−3 nontrivial splits,
+    #  so the two trees have 2(n-3) nontrivial splits
+    #  whih comprises non-shared + shared, which must be counted twice
+    return 2*(n-3)- 2* ds(replace_leaves(tree1.create_adj()),
+                          replace_leaves(tree2.create_adj()))
 
 
 
@@ -1113,7 +1152,7 @@ if __name__=='__main__':
                                     '01x1xxx100x1x1x11',
                                     '01x00x0000xxx1x0x',
                                     '0xxxx0x1xxxx0xxxx']]))
-        @skip('')
+        @skip('#46')
         def test_qrtd(self):
             '''qrtd Quartet Distance'''
             self.assertEqual(4,qrtd('A B C D E'.split(),
@@ -1150,9 +1189,10 @@ if __name__=='__main__':
             '''
             SPTD Phylogeny Comparison with Split Distance
             '''
-            self.assertEqual(2,sptd('dog rat elephant mouse cat rabbit'.split(),
-                 '(rat,(dog,cat),(rabbit,(elephant,mouse)));',
-                 '(rat,(cat,dog),(elephant,(mouse,rabbit)));)'))
+            self.assertEqual(2,
+                             sptd('dog rat elephant mouse cat rabbit'.split(),
+                                  '(rat,(dog,cat),(rabbit,(elephant,mouse)));',
+                                  '(rat,(cat,dog),(elephant,(mouse,rabbit)));)'))
 
         def test_tree1(self):
             '''
