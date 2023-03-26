@@ -34,7 +34,7 @@ if __name__=='__main__':
     if args.sample:
         print(sptd('dog rat elephant mouse cat rabbit'.split(),
              '(rat,(dog,cat),(rabbit,(elephant,mouse)));',
-             '(rat,(cat,dog),(elephant,(mouse,rabbit)));)'))
+             '(rat,(cat,dog),(elephant,(mouse,rabbit)));'))
 
     if args.rosalind:
         Input  = read_strings(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt')
