@@ -271,73 +271,39 @@ def sptd(species,newick1,newick2):
             contained in one unrooted binary tree but not the other.
 .
     '''
-    def replace_leaves(adj):
+    def to_edges(tree):
         '''
-        replace_leaves
-
-        Modify the adjacency list by replacing names of leaves with their position in the species index.
-        NB: this depends in the indices of internal nodes being `n` or greater, where `n` is the number
-        of leaves.
+        Iterate through edges
         '''
-        return {parent:sorted([species_index[child] if child in species_index else child for child in children])
-                for parent,children in adj.items() }
-
-    def edges(adj):
+        for parent in tree.find_clades():
+            for child in parent.clades:
+                yield (parent,child)
+    def create_non_trivial_splits(tree):
         '''
-        edges
+        create_non_trivial_splits
 
-        A generator that allows iteration through all edges in a tree
-
+        We can specify a split by giving one componenet, since the other contains all the other leaves.
         '''
-        for parent,children in adj.items():
-            for child in children:
-                if child >= n:
-                    yield parent,child
+        product = []
+        for (parent,child) in to_edges(tree):
+            leaves = [clade.name for clade in child.find_clades() if clade.name]
+            if len(leaves)>1 and len(leaves)<n-1:  # Non trivial iff both components have lenghth 2 or more
+                leaves.sort()
+                product.append(leaves)
+        product.sort()
+        return product
 
-    def is_leaf(node):
-        return node<n
-
-    def splits(adj,min_size=2):
-        '''
-        Generate splits in tree
-        '''
-        def find_leaves(node,path=[]):
-            '''
-            find_leaves
-
-            Find all leaves below specified node
-
-            Parameters:
-                node     The node to start searching
-                path     List of leaves to be accumulated
-            '''
-            for child in adj[node]:
-                if is_leaf(child):
-                    path.append(child)
-                else:
-                    find_leaves(child,path=path)
-
-        for parent,child in edges(adj):
-            s1 = []
-            find_leaves(child,s1)
-            if len(s1)>=min_size:
-                s2 = [leaf for leaf in range(n) if not leaf in s1]
-                yield sorted(s1),sorted(s2)
-
-
-    def ds(adj1,adj2):
+    def ds(splits1,splits2):
         '''
         ds
 
         This is the workhorse that determines number of shared splits given two adjacency lists
         '''
-        n_shared  = 0
-        splits1 = sorted([s for s,_ in splits(adj1)])
-        splits2 = sorted([s for s,_ in splits(adj2)])
-        k1      = 0
-        k2      = 0
-        i1      = splits1[k1]
-        i2      = splits2[k2]
+        n_shared = 0
+        k1       = 0
+        k2       = 0
+        i1       = splits1[k1]
+        i2       = splits2[k2]
         while k1<len(splits1) and k2<len(splits2):
             if i1==i2:
                 n_shared += 1
@@ -358,16 +324,13 @@ def sptd(species,newick1,newick2):
                     i2 = splits2[k2]
 
         return n_shared
-
     n             = len(species)
     species_index = {species[i]:i for i in range(n)}
-    tree1         = Hierarchy(newick1,start=n)
-    tree2         = Hierarchy(newick2,start=n)
     #  Any unrooted binary tree on n taxa must have n−3 nontrivial splits,
     #  so the two trees have 2(n-3) nontrivial splits
     #  whih comprises non-shared + shared, which must be counted twice
-    return 2*(n-3)- 2* ds(replace_leaves(tree1.create_adj()),
-                          replace_leaves(tree2.create_adj()))
+    return 2*(n-3)- 2* ds(create_non_trivial_splits(Phylo.read(StringIO(newick1), "newick")),
+                          create_non_trivial_splits(Phylo.read(StringIO(newick2), "newick")))
 
 
 
@@ -1192,7 +1155,7 @@ if __name__=='__main__':
             self.assertEqual(2,
                              sptd('dog rat elephant mouse cat rabbit'.split(),
                                   '(rat,(dog,cat),(rabbit,(elephant,mouse)));',
-                                  '(rat,(cat,dog),(elephant,(mouse,rabbit)));)'))
+                                  '(rat,(cat,dog),(elephant,(mouse,rabbit)));'))
 
         def test_tree1(self):
             '''
