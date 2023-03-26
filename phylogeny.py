@@ -29,11 +29,6 @@ from   newick   import newick_to_adjacency_list, Parser, Tokenizer, Hierarchy
 from   fasta    import FastaContent, fasta_out
 from   helpers  import flatten, expand
 
-def create_tree(treedata):
-    '''
-    Used while testing to read a tree in Newick format
-    '''
-    return Phylo.read(StringIO(treedata), "newick")
 
 def CompleteTree(n,adj):
     '''
@@ -252,9 +247,9 @@ def qrtd(species,T1,T2):
     Return: The quartet distance dq(T1,T2)
     '''
     species_index = {i:species[i] for i in range(len(species))}
-    T1a = create_tree(T1)
-    # T1a = Hierarchy(T1)
-    print (T1a)
+    tree1         = Phylo.read(StringIO(T1), "newick")
+    tree2         = Phylo.read(StringIO(T2), "newick")
+
     z=0
 
 
@@ -278,6 +273,7 @@ def sptd(species,newick1,newick2):
         for parent in tree.find_clades():
             for child in parent.clades:
                 yield (parent,child)
+
     def create_non_trivial_splits(tree):
         '''
         create_non_trivial_splits
@@ -287,7 +283,7 @@ def sptd(species,newick1,newick2):
         product = []
         for (parent,child) in to_edges(tree):
             leaves = [clade.name for clade in child.find_clades() if clade.name]
-            if len(leaves)>1 and len(leaves)<n-1:  # Non trivial iff both components have lenghth 2 or more
+            if len(leaves)>1 and len(leaves)<n-1:  # Non trivial iff both components have length 2 or more
                 leaves.sort()
                 product.append(leaves)
         product.sort()
@@ -297,7 +293,16 @@ def sptd(species,newick1,newick2):
         '''
         ds
 
-        This is the workhorse that determines number of shared splits given two adjacency lists
+        This is the workhorse that determines number of shared splits
+
+        Parameters:
+            splits1     Splits from one tree, each represented as the list of
+                        leaves defining one component of the split. The inner and outer lists
+                        are both sorted into ascending order.
+            splits2     Splits from the other tree, ordered similaly to splits1
+
+        Returns:
+            Count of splits shared by the two trees
         '''
         n_shared = 0
         k1       = 0
@@ -312,7 +317,6 @@ def sptd(species,newick1,newick2):
                 if k1<len(splits1) and k2<len(splits2):
                     i1 = splits1[k1]
                     i2 = splits2[k2]
-
             elif i1<i2:
                 k1 += 1
                 if k1<len(splits1):
@@ -324,6 +328,7 @@ def sptd(species,newick1,newick2):
                     i2 = splits2[k2]
 
         return n_shared
+
     n             = len(species)
     species_index = {species[i]:i for i in range(n)}
     #  Any unrooted binary tree on n taxa must have n−3 nontrivial splits,
@@ -1053,8 +1058,10 @@ if __name__=='__main__':
             self.assertIn('10100',character_table)
 
         def test_ctbl(self):
-            '''  ctbl Creating a Character Table  http://rosalind.info/problems/ctbl/'''
-            character_table = CharacterTable(create_tree('(dog,((elephant,mouse),robot),cat);'))
+            '''
+            ctbl Creating a Character Table  http://rosalind.info/problems/ctbl/
+            '''
+            character_table = CharacterTable(Phylo.read(StringIO('(dog,((elephant,mouse),robot),cat);'), 'newick'))
             self.assertEqual(2,len(character_table))
             self.assertIn('00111',character_table)
             self.assertIn('00110',character_table)
