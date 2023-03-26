@@ -192,10 +192,7 @@ def newick_to_adjacency_list(T,return_root=False):
         elif token==Tokenizer.SEMICOLON:
             pass
 
-    if return_root:
-        return Adj,root
-    else:
-        return Adj
+    return Adj,root if return_root else Adj
 
 class Hierarchy:
 
