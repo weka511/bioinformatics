@@ -173,7 +173,8 @@ class Parser():
 
 # newick_to_adjacency_list
 
-def newick_to_adjacency_list(T,return_root=False):
+def newick_to_adjacency_list(T,
+                             return_root=False):
     Adj       = {}
     Stack     = [[]]
     top       = []
@@ -192,7 +193,10 @@ def newick_to_adjacency_list(T,return_root=False):
         elif token==Tokenizer.SEMICOLON:
             pass
 
-    return Adj,root if return_root else Adj
+    if return_root:
+        return Adj,root
+    else:
+        return Adj
 
 class Hierarchy:
 
