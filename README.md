@@ -403,6 +403,7 @@ I have written this code in Python 3, generally with the most recent release at 
 | Location | Description |
 | --------------- | ------------------------------------------------|
 |bioinformatics.bib|Bibliography|
+|findtests.py|Generates shell script to execute all tests|
 |helpers.py|Utilities for formatting output, parsing input, etc |
 |LICENSE|License Agreement|
 |newick.py|Parser for files in [Newick format](http://evolution.genetics.washington.edu/phylip/newicktree.html) |
