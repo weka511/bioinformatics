@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# Copyright (C) 2017-2020 Greenweaves Software Limited
+# Copyright (C) 2017-2023 Greenweaves Software Limited
 
 # This is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -14,15 +14,17 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>
 
-# This file contains a collection of functions to parse FASTA format data
+''' This file contains a collection of functions to parse FASTA format data'''
 
-# FastaContent
-#
-# This class is used to parse FASTA format data from a text string
 
 class FastaContent(object):
-    # parse text and build data structures
+    '''
+    FastaContent
+
+    This class is used to parse FASTA format data from a text string
+    '''
     def __init__(self,file_text):
+        '''parse text and build data structures'''
         self.pairs = []             # Description + data -- all text so fae
         nn         = ''             # Description        -- current
         text       = ''             # data               -- current
@@ -39,58 +41,65 @@ class FastaContent(object):
         if len(nn)>0:
             self.pairs.append((nn,text))
 
-    # __getitem__
-    #
-    # Retrieve items (pairs) by index
+
     def __getitem__(self,index):
+        '''Retrieve items (pairs) by index'''
         return self.pairs[index]
 
-    # __len__
-    #
-    # Number of entries
+
     def __len__(self):
+        '''Number of entries'''
         return len(self.pairs)
 
-    # to_list
-    #
-    # Used if caller wants a simple list seq,value, seq,value,...
-
     def to_list(self):
+        '''
+        to_list
+
+        Used if caller wants a simple list seq,value, seq,value,...
+        '''
         List = []
         for a,b in self.pairs:
             List.append(a)
             List.append(b)
         return List
 
-    #to_dict
-    #
-    # Used if caller wants a dictionary
 
     def to_dict(self):
+        '''
+        to_dict
+
+        Used if caller wants a dictionary
+        '''
         Dict = {}
         for a,b in self.pairs:
             Dict[a]=b
         return Dict
 
-# FastaFile
-#
-# This class is used to parse Fasta data from a file
+
 class FastaFile(FastaContent):
-    # parse file and build data structures
+    '''
+    FastaFile
+
+    This class is used to parse Fasta data from a file
+    '''
     def __init__(self,name):
+        ''' parse file and build data structures'''
         with open(name,'r') as file_text:
             FastaContent.__init__(self,file_text)
 
-# fasta_out
-#
-# Generator, used to output one key value pair to a file in FASTA format
-#
-# Parameters:
-#      key           Omit '>', as this will be added
-#      value         Value string
-#      max_length    Used to split lines so none exceeds this length
 
-def fasta_out(key,value,max_length=800000000000):
+def fasta_out(key,value,
+              max_length=800000000000):
+    '''
+    fasta_out
+
+    Generator, used to output one key value pair to a file in FASTA format
+
+    Parameters:
+        key           Omit '>', as this will be added
+        value         Value string
+        max_length    Used to split lines so none exceeds this length
+    '''
     yield f'>{key}'
     remainder = value
     while len(remainder)>0:
