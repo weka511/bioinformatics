@@ -21,7 +21,8 @@ class FastaContent(object):
     '''
     FastaContent
 
-    This class is used to parse FASTA format data from a text string
+    This class is used to parse FASTA format data from a list of text strings,
+    each representing one line from a file
     '''
     def __init__(self,file_text):
         '''parse text and build data structures'''
@@ -36,7 +37,7 @@ class FastaContent(object):
                 nn   = line[1:]
                 text = ''
             else:                         # Data
-                text = text+line
+                text = text + line
 
         if len(nn)>0:
             self.pairs.append((nn,text))

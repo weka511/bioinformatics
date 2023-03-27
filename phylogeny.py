@@ -26,7 +26,7 @@ from   Bio      import Phylo
 from   rosalind import LabelledTree
 from   random   import randrange
 from   newick   import newick_to_adjacency_list, Parser, Tokenizer, Hierarchy
-from   fasta    import FastaContent, fasta_out
+from   fasta    import FastaContent
 from   helpers  import flatten, expand
 
 
@@ -1017,7 +1017,7 @@ if __name__=='__main__':
                                ])
 
             d,Assignment = alph('(((ostrich,cat)rat,(duck,fly)mouse)dog,(elephant,pikachu)hamster)robot;',fc.to_list())
-            self.assertEqual(8,d)   # matches Rosalind; reset doesn't match, but gives same distance
+            self.assertEqual(8,d)   # matches Rosalind; Assignment doesn't match, but gives same distance
 
 
         def test_chbp(self):
