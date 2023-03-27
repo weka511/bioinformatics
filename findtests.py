@@ -15,15 +15,19 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-'''Generates shell script to execute all tests'''
+'''Generate shell script to execute all tests'''
 
 from argparse import ArgumentParser
 from glob     import glob
-from os.path import basename
-from time import time
-from helpers import read_strings
+from os.path  import basename
+
 
 def found_test(file_name):
+    '''
+    found_test
+
+    Verify that file contains unit tests
+    '''
     try:
         with open(file_name) as file:
             for line in file:
@@ -31,13 +35,27 @@ def found_test(file_name):
                     return True
     except UnicodeDecodeError:
         pass
+
     return False
 
+def mark_executable(out):
+    '''
+    mark_executable
+    Mark output file executable -- see answer to
+    https://superuser.com/questions/778313/cygwins-chmod-behaves-as-working-but-it-does-not-work
+    '''
+    out.write('#!\n')
+
 if __name__=='__main__':
-    moi = basename(__file__)
-    with open('tests.sh','w') as out:
+    parser = ArgumentParser(__doc__)
+    parser.add_argument('--exclude', nargs = '*', default=[],             help='List of files to be excluded')
+    parser.add_argument('--out',     nargs = 1,   default='exectests.py', help='Name of batch file to be output')
+    args    = parser.parse_args()
+    exclude = args.exclude+[basename(__file__)] # Exclude this file as well as the ones the user specified
+    with open(args.out,'w') as out:
+        mark_executable(out)
         for file_name in glob('*.py'):
-            if moi != file_name and found_test(file_name):
+            if file_name not in exclude and found_test(file_name):
                 out.write(f'echo {file_name}\n')
                 out.write(f'./{file_name}\n')
 
