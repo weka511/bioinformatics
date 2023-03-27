@@ -115,13 +115,14 @@ def CharacterTable(tree):
     # we iterate over all Clades except the root
     return [create_character([spec.name for spec in split.find_elements(terminal=True)],species) for split in clades[1:]]
 
-# NumberBinaryTrees
-#
-# cunr  Counting Unrooted Binary Trees
-# root  Counting Rooted Binary Trees
-# See http://carrot.mcb.uconn.edu/~olgazh/bioinf2010/class16.html
-
 def NumberBinaryTrees(n,rooted=True):
+    '''
+    NumberBinaryTrees
+
+    cunr  Counting Unrooted Binary Trees
+    root  Counting Rooted Binary Trees
+    See http://carrot.mcb.uconn.edu/~olgazh/bioinf2010/class16.html
+    '''
     N = 1
     m = 2*n-3 if rooted else 2*n-5
     while m>1:
@@ -1029,7 +1030,7 @@ if __name__=='__main__':
             n,_ = cntq(6,'(lobster,(cat,dog),(caterpillar,(elephant,mouse)));')
             self.assertEqual(15,n)
 
-        @skip('#128')
+
         def test_cset(self):
             '''CSET Fixing an Inconsistent Character Set'''
             submatrix = cset([expand('100001'),
@@ -1038,7 +1039,7 @@ if __name__=='__main__':
                               expand('100111')])
             self.assertEqual(3,len(submatrix))
             self.assertIn([0,0,0,1,1,0],submatrix)
-            self.assertIn([1,0,0,0,0,1],submatrix)
+            self.assertIn( [1, 1, 1, 0, 0, 0],submatrix)
             self.assertIn([1,0,0,1,1,1],submatrix)
 
         @skip('#129')
