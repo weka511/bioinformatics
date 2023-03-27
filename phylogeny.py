@@ -46,11 +46,14 @@ def CompleteTree(n,adj):
     #     We simply count the number of edges, and subtract it from n−1." https://rosalind.info/problems/chbp/
     return  n-1 - len(adj)
 
-# cstr
-#
-#  Creating a Character Table from Genetic Strings  http://rosalind.info/problems/cstr/
+
 
 def cstr(strings):
+    '''
+    cstr
+
+    Creating a Character Table from Genetic Strings  http://rosalind.info/problems/cstr/
+    '''
     def trivial(split):
         if len(split)<2: return True
         for k,v in split.items():
@@ -1042,8 +1045,11 @@ if __name__=='__main__':
             self.assertIn( [1, 1, 1, 0, 0, 0],submatrix)
             self.assertIn([1,0,0,1,1,1],submatrix)
 
-        @skip('#129')
+
         def test_cstr(self):
+            '''
+            cstr Creating a Character Table from Genetic Strings
+            '''
             character_table = cstr(['ATGCTACC',
                   'CGTTTACC',
                   'ATTCGACC',
@@ -1051,8 +1057,8 @@ if __name__=='__main__':
                   'CGTCTATC'
                   ])
             self.assertEqual(2,len(character_table))
-            self.assertIn('10110',character_table)
-            self.assertIn('10100',character_table)
+            self.assertIn('01001',character_table) # The choice of assigning '1' and '0' to the two states of each SNP
+            self.assertIn('01011',character_table) # in the strings is arbitrary
 
         def test_ctbl(self):
             '''
