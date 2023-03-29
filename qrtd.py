@@ -24,50 +24,67 @@ from time               import time
 from Bio.Phylo          import read, draw
 from Bio.Phylo.BaseTree import Clade, Tree
 from matplotlib.pyplot  import figure, show
+import numpy as np
 from helpers            import read_strings
 
-class Component(Clade):
-    def __init__(self,name):
-        super().__init__(name=name)
 
-class HTree(Tree):
+class HTreeBuilder(Tree):
     '''Tree associated with Hierarchical Decomposition'''
     def __init__(self,T):
         super().__init__()
         self.components  = {}
         self.leaves      = []
-        for idx, clade in enumerate(T.find_clades()):
+        self.T           = T
+        self.top         = {}
+
+    def build(self):
+        self.build_components()
+        open_edges = self.collect_edges()
+        while len(open_edges)>0:
+            open_edges = self.extract_open_edges(open_edges)
+        names = [k for k,v in self.components.items()]
+        i     = np.argmax([len(name) for name in names])
+        return Tree.from_clade(self.components[names[i]])
+
+
+    def build_components(self):
+        for idx, clade in enumerate(self.T.find_clades()):
             if not clade.name:
                 clade.name = str(idx)
-            self.components[clade.name] = Component(clade.name)
+            self.components[clade.name] = Clade(name=clade.name,branch_length=1)
             if clade.is_terminal():
                 self.leaves.append(clade.name)
+
+
+    def collect_edges(self):
         edges_leaves = []
         edges_internal = []
-        for a in T.find_clades():
+        for a in self.T.find_clades():
             for b in a.clades:
                 if b.is_terminal():
                     edges_leaves.append((a.name,b.name))
                 else:
                     edges_internal.append((a.name,b.name))
 
-        open_edges = edges_leaves + edges_internal
-        self.agenda = []
-        while len(open_edges)>0:
-            skipped   = []
-            closed     = []
-            for a,b in open_edges:
-                if not a in closed and not b in closed:
-                    closed.append(a)
-                    closed.append(b)
-                    self.agenda.append((a,b))
-                else:
-                    skipped.append((a,b))
+        return edges_leaves + edges_internal
 
-            open_edges = skipped.copy()
-
-        z=0
-
+    def extract_open_edges(self,open_edges):
+        remaining_edges = []
+        for a,b in open_edges:
+            if a not in self.top and b not in self.top:
+                key = f'{a}-{b}'
+                self.top[a] = key
+                self.top[b] = key
+                self.components[key] = Clade(name          = key,
+                                             clades        = [self.components[a],self.components[b]],
+                                             branch_length = 1)
+            else:
+                if a in self.top:
+                    a = self.top[a]
+                if b in self.top:
+                    b = self.top[b]
+                remaining_edges.append((a,b))
+        return remaining_edges
 
 
 def draw_tree(T,title,ax=None):
@@ -195,8 +212,8 @@ if __name__=='__main__':
     if args.paper:
         T1 = read(StringIO('a,((e,f),d),(b,c);'), 'newick')
         T2 = read(StringIO('a,((b,d),c),(e,f);'), 'newick')
-        # HT1 = HTree(T1)
-        HT2 = HTree(T2)
+        Factory = HTreeBuilder(T2)
+        HT2 = Factory.build()
 
         fig = figure(figsize=(10,10))
         ax11 = fig.add_subplot(221)
@@ -205,11 +222,8 @@ if __name__=='__main__':
         ax12 = fig.add_subplot(222)
         draw_tree(T2,'T2',ax12)
 
-        # ax21 = fig.add_subplot(223)
-        # draw_tree(HT1,'HT1',ax21)
-
         ax22 = fig.add_subplot(224)
-        draw_tree(HT2,HT2.agenda,ax22)
+        draw_tree(HT2,'HT2',ax22)
 
 
     if args.sample:
