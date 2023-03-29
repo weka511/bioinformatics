@@ -29,16 +29,15 @@ from helpers            import read_strings
 
 
 class HTreeBuilder(Tree):
-    '''Tree associated with Hierarchical Decomposition'''
-    def __init__(self,T):
-        super().__init__()
+    '''This class constructs  Tree associated with Hierarchical Decomposition'''
+
+    def build(self,T):
+        '''Build the tree'''
         self.components  = {}
-        self.leaves      = []
         self.T           = T
         self.top         = {}
 
-    def build(self):
-        self.build_components()
+        self.create_initial_components()
         open_edges = self.collect_edges()
         while len(open_edges)>0:
             open_edges = self.extract_open_edges(open_edges)
@@ -47,17 +46,17 @@ class HTreeBuilder(Tree):
         return Tree.from_clade(self.components[names[i]])
 
 
-    def build_components(self):
+    def create_initial_components(self):
+        '''Ensure all nodes have names, and wrap each nodes in a component'''
         for idx, clade in enumerate(self.T.find_clades()):
             if not clade.name:
                 clade.name = str(idx)
             self.components[clade.name] = Clade(name=clade.name,branch_length=1)
-            if clade.is_terminal():
-                self.leaves.append(clade.name)
 
 
     def collect_edges(self):
-        edges_leaves = []
+        '''Collect edges for first pass; prioritize edges that terminate in leaves.'''
+        edges_leaves   = []
         edges_internal = []
         for a in self.T.find_clades():
             for b in a.clades:
@@ -69,6 +68,11 @@ class HTreeBuilder(Tree):
         return edges_leaves + edges_internal
 
     def extract_open_edges(self,open_edges):
+        '''
+        This is the heart of the algorithm. It processes as many edges as possible, adding them
+        to the clade structure. The remaining edges are modified to point to the top of the
+        constructed clade that contains the original nodes.
+        '''
         remaining_edges = []
         for a,b in open_edges:
             if a not in self.top and b not in self.top:
@@ -86,6 +90,24 @@ class HTreeBuilder(Tree):
                 remaining_edges.append((a,b))
         return remaining_edges
 
+def tabulate_names(tree):
+    names = {}
+    for idx, clade in enumerate(tree.find_clades()):
+        if not clade.name:
+            clade.name = str(idx)
+        names[clade.name] = clade
+    return names
+
+def root_with_specified_leaf(T,index=3):
+    '''
+    Allow user to change root to some arbitrary leaf - see Figure 9
+    '''
+    leaves        = T.get_terminals()
+    T.root_with_outgroup([leaves[index]])
+    tabulate_names(T)
+    root_name     = leaves[index].name
+    T.root.clades = [clade for clade in T.root.clades if clade.name!=root_name]
+    T.root.name   = root_name
 
 def draw_tree(T,title,ax=None):
     draw(T,
@@ -210,17 +232,24 @@ if __name__=='__main__':
     args = parser.parse_args()
 
     if args.paper:
-        T1 = read(StringIO('a,((e,f),d),(b,c);'), 'newick')
-        T2 = read(StringIO('a,((b,d),c),(e,f);'), 'newick')
-        Factory = HTreeBuilder(T2)
-        HT2 = Factory.build()
+        T0      = read(StringIO('a,((e,f),d),(b,c);'), 'newick')
+        T1      = read(StringIO('a,((e,f),d),(b,c);'), 'newick')
+        T2      = read(StringIO('a,((b,d),c),(e,f);'), 'newick')
+        root_with_specified_leaf(T1)
 
-        fig = figure(figsize=(10,10))
+        Factory = HTreeBuilder()
+        HT2     = Factory.build(T2)
+
+        fig = figure(figsize=(12,12))
+
         ax11 = fig.add_subplot(221)
-        draw_tree(T1,'T1',ax11)
+        draw_tree(T0,'T1',ax11)
 
         ax12 = fig.add_subplot(222)
         draw_tree(T2,'T2',ax12)
+
+        ax21 = fig.add_subplot(223)
+        draw_tree(T1,'T1 re rooted',ax21)
 
         ax22 = fig.add_subplot(224)
         draw_tree(HT2,'HT2',ax22)
