@@ -33,8 +33,18 @@ class Colour:
     A = 0
     B = 1
     C = 2
+    n = 3
+    @staticmethod
+    def as_text(c):
+        if   c==Colour.A: return 'xkcd:red'
+        elif c==Colour.B: return 'xkcd:green'
+        elif c==Colour.C: return 'xkcd:blue'
+        else: return None
 
 class Species:
+    '''
+    The represents on Species; thr two trees are over the same set of species.
+    '''
     def __init__(self,name=None,colour=None):
         self.name   = name
         self.colour = colour
@@ -55,7 +65,6 @@ class ComponentClade(Clade):
                        clades        = clades,
                        branch_length = branch_length)
         self.composition_type = composition_type
-        self.colour           = None
 
     @staticmethod
     def get_label(clade):
@@ -76,25 +85,22 @@ class ComponentClade(Clade):
         if self.composition_type==None:
             if self.name in S:
                 species    = S[self.name]
-                self.tuple = (get_element(species,Colour.A),
-                              get_element(species,Colour.B),
-                              get_element(species,Colour.C))
-                self.F     = lambda a,b,c: 0
+                self.tuple = np.array([get_element(species,colour) for colour in range(Colour.n)])
+                self.F     = lambda _: 0
             else:
-                self.tuple = (0,0,0)
-                self.F     = lambda a,b,c: 0   #TODO
-        elif self.composition_type==1:
-            self.tuple = (0,0,0)              #TODO
-            self.F     = lambda a,b,c: 0      #TODO
-        elif self.composition_type==2:
-            self.tuple = (0,0,0)              #TODO
-            self.F     = lambda a,b,c: 0      #TODO
-        elif self.composition_type==3:
-            self.tuple = (0,0,0)              #TODO
-            self.F     = lambda a,b,c: 0      #TODO
-        elif self.composition_type==4:
-            self.tuple = (0,0,0)              #TODO
-            self.F     = lambda a,b,c: 0      #TODO
+                self.tuple = np.zeros((3))
+                self.F     = lambda x: 0   #TODO
+        else:
+            self.tuple = sum([child.tuple for child in self.clades])
+            if self.composition_type==1:
+                self.F = lambda a,b,c: 0      #TODO
+            elif self.composition_type==2:
+                self.F = lambda a,b,c: 0      #TODO
+            elif self.composition_type==3:
+                self.F = lambda a,b,c: 0      #TODO
+            else:
+                assert self.composition_type==4
+                self.F = lambda a,b,c: 0      #TODO
 
 class HTreeBuilder(Tree):
     '''This class constructs the Tree associated with Hierarchical Decomposition'''
@@ -193,14 +199,16 @@ class HTreeBuilder(Tree):
         root.composition_type  = 4
         return root
 
-def tabulate_names(tree):
-    '''tabulate_names'''
-    names = {}
+def ensure_all_nodes_have_names(tree):
+    '''
+    ensure_all_nodes_have_names
+
+    Attach a name to each node that doesn't alread have one
+    '''
     for idx, clade in enumerate(tree.find_clades()):
         if not clade.name:
             clade.name = str(idx)
-        names[clade.name] = clade
-    return names
+
 
 def root_with_specified_leaf(T,S,index=0):
     '''
@@ -208,7 +216,7 @@ def root_with_specified_leaf(T,S,index=0):
     '''
     leaves        = T.get_terminals()
     T.root_with_outgroup([leaves[index]])
-    tabulate_names(T)
+    ensure_all_nodes_have_names(T)
     root_name           = leaves[index].name
     T.root.clades       = [clade for clade in T.root.clades if clade.name!=root_name]
     T.root.name         = root_name
@@ -218,7 +226,7 @@ def link(T1,HT2):
     '''
     Create the links shown in Figure 9
 
-    Currently the link is via dictionary lookup via clade names. Morover the root of T1 is omitted.
+    Currently the link is via dictionary lookup via clade names. Moreover the root of T1 is omitted.
     '''
     leaves1 = {clade.name:clade for clade in T1.get_terminals()}
     leaves2 = {clade.name:clade for clade in HT2.get_terminals() if clade.name in leaves1.keys()}
@@ -243,10 +251,13 @@ def cache_sizes(Tr1):
 def get_node_count(v):
     pass
 
-def colour_leaves():
-    pass
+def colour_leaves(v,S,colour):
+    for clade in v.find_elements(order='postorder'):
+        if clade.is_terminal():
+            S[clade.name].colour = colour
 
-def Count(v,sizes=[]):
+
+def Count(v,species,sizes=[]):
     '''Code from Figure 8'''
     def get_subtree(v,small=True):
         a = v.clades[0]
@@ -275,14 +286,17 @@ def decorate(HT,S):
             print ('skip', clade)
 
 
+
 def draw_tree(T,title,
               ax         = None,
-              label_func = str):
+              label_func = str,
+              label_colors = lambda c:None):
 
     draw(T,
         axes       = ax,
         do_show    = False,
-        label_func = label_func)
+        label_func = label_func,
+        label_colors= label_colors)
     ax.set_title(title)
     ax.set_xlabel('')
     ax.set_ylabel('')
@@ -299,8 +313,7 @@ def qrtd(species,T1,T2):
     Return: The quartet distance dq(T1,T2)
     '''
 
-    S    = {s:Species(s,colour=Colour.A) for s in species}
-
+    S                   = {s:Species(s,colour=Colour.A) for s in species}
     Tr1                 = read(StringIO(T1), 'newick')
     Tr2                 = read(StringIO(T2), 'newick')
     root_name           = root_with_specified_leaf(Tr1,S)
@@ -310,7 +323,19 @@ def qrtd(species,T1,T2):
     leaves1,leaves2     = link(Tr1,HT2)
     decorate(HT2,S)
     return Count(Tr1.root,
+                 species,
                  sizes = cache_sizes(Tr1))
+
+def label_colors(name,S=[]):
+    '''
+    label_colors
+
+    Used to ensure that colour of dislayed label matches assigned colour
+    '''
+    if name in S:
+        return Colour.as_text(S[name].colour)
+    else:
+        return None
 
 
 if __name__=='__main__':
@@ -320,31 +345,41 @@ if __name__=='__main__':
     parser.add_argument('--sample',   default=False, action='store_true', help='process sample dataset')
     parser.add_argument('--rosalind', default=False, action='store_true', help='process Rosalind dataset')
     parser.add_argument('--show',     default=False, action='store_true', help='display plots')
+    parser.add_argument('--tests',    default=False, action='store_true', help='exe')
     args = parser.parse_args()
 
     if args.paper:
+        species = ['a', 'b', 'c', 'd','e', 'f']
         T0      = read(StringIO('a,((e,f),d),(b,c);'), 'newick')
         T1      = read(StringIO('a,((e,f),d),(b,c);'), 'newick')
         T2      = read(StringIO('a,((b,d),c),(e,f);'), 'newick')
-        root_with_specified_leaf(T1, ['a', 'b', 'c', 'd','e', 'f'],
-                                 index = 3)
+        root_with_specified_leaf(T1, species, index = 3)
 
         Factory = HTreeBuilder()
         HT2     = Factory.build(T2)
+        S       = {s:Species(s,colour=Colour.A) for s in species}
+        if args.show:
+            fig = figure(figsize=(12,12))
 
-        fig = figure(figsize=(12,12))
+            ax11 = fig.add_subplot(221)
+            draw_tree(T0,'T1',ax=ax11)
 
-        ax11 = fig.add_subplot(221)
-        draw_tree(T0,'T1',ax11)
+            ax12 = fig.add_subplot(222)
+            draw_tree(T2,'T2',
+                      ax           = ax12,
+                      label_colors = lambda name: label_colors (name,S=S))
 
-        ax12 = fig.add_subplot(222)
-        draw_tree(T2,'T2',ax12)
+            colour_leaves(T1.root.clades[0].clades[1],S,Colour.C)
+            ax21 = fig.add_subplot(223)
+            draw_tree(T1,'T1 re rooted',
+                      ax           = ax21,
+                      label_colors = lambda name: label_colors (name,S=S))
 
-        ax21 = fig.add_subplot(223)
-        draw_tree(T1,'T1 re rooted',ax21)
-
-        ax22 = fig.add_subplot(224)
-        draw_tree(HT2,'HT2',ax22, label_func = ComponentClade.get_label)
+            ax22 = fig.add_subplot(224)
+            draw_tree(HT2,'HT2',
+                      ax           = ax22,
+                      label_func   = ComponentClade.get_label,
+                      label_colors = lambda name: label_colors (name,S=S))
 
 
     if args.sample:
@@ -366,5 +401,6 @@ if __name__=='__main__':
     minutes = int(elapsed/60)
     seconds = elapsed - 60*minutes
     print (f'Elapsed Time {minutes} m {seconds:.2f} s')
+
     if args.show:
         show()
