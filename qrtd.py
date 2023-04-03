@@ -26,6 +26,7 @@ from   Bio.Phylo          import read, draw
 from   Bio.Phylo.BaseTree import Clade, Tree
 from   matplotlib.pyplot  import figure, show
 import numpy              as     np
+from   scipy.special      import binom
 from   helpers            import read_strings
 
 class Colour:
@@ -48,6 +49,33 @@ class Species:
     def __init__(self,name=None,colour=None):
         self.name   = name
         self.colour = colour
+
+
+
+def F3(_tuple):
+    '''
+    F3
+
+    This is the F function described in Lemma 5, for a component consisting of a single degree 3 node.
+
+    '''
+    def generate_cycles(n=3):
+        basic_cycle = np.array(list(range(n)))
+        for i in range(n):
+            yield np.roll(basic_cycle,i)
+
+    def get_tuple_index(index,letter):
+        return 3*index+letter-1
+
+    def get_tuple_value(index,letter):
+        return _tuple[get_tuple_index(index,letter)]
+
+    def get_term(index,letter):
+        return binom(get_tuple_value(index[0],letter[0]),2)                                          *\
+                        (get_tuple_value(index[2],letter[1])*get_tuple_value(index[1],letter[2])     + \
+                         get_tuple_value(index[1],letter[1])*get_tuple_value(index[2],letter[2]))
+
+    return sum([get_term(index,letter) for index in generate_cycles() for letter in generate_cycles()])
 
 class ComponentClade(Clade):
     '''
@@ -78,20 +106,23 @@ class ComponentClade(Clade):
         else:
             return ''.join(['i' for i in range(clade.composition_type)]) if clade.composition_type<4 else 'iv'
 
+
+
     def decorate(self,S):
+
         def get_element(species,target):
             1 if species.colour == target else 0
 
         if self.composition_type==None:
             if self.name in S:
                 species    = S[self.name]
-                self.tuple = np.array([get_element(species,colour) for colour in range(Colour.n)])
+                self._tuple = np.array([get_element(species,colour) for colour in range(Colour.n)])
                 self.F     = lambda _: 0
             else:
-                self.tuple = np.zeros((3))
-                self.F     = lambda x: 0   #TODO
+                self._tuple = np.zeros((3))
+                self.F     = F3
         else:
-            self.tuple = sum([child.tuple for child in self.clades])
+            self._tuple = sum([child._tuple for child in self.clades])
             if self.composition_type==1:
                 self.F = lambda a,b,c: 0      #TODO
             elif self.composition_type==2:
@@ -349,6 +380,7 @@ if __name__=='__main__':
     args = parser.parse_args()
 
     if args.paper:
+        F3((1,2,3,4,5,6,7,8,9))
         species = ['a', 'b', 'c', 'd','e', 'f']
         T0      = read(StringIO('a,((e,f),d),(b,c);'), 'newick')
         T1      = read(StringIO('a,((e,f),d),(b,c);'), 'newick')
