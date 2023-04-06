@@ -361,32 +361,71 @@ def qrtd(species,T1,T2):
 
     Return: The quartet distance dq(T1,T2)
     '''
+
+    def index_nodes_and_edges(T):
+        def create_internal_node_index():
+            product = {}
+            for clade in T.find_clades(terminal=False):
+                clade.name        = str(len(product))
+                product[clade.name] = clade
+            return product
+
+        def create_internal_edges(index):
+            product = []
+            for clade in T.find_clades(terminal=False):
+                for child in clade.clades:
+                    if child.name in index:
+                        product.append((clade.name,child.name))
+            return product
+
+        def create_index_nodes_and_edges(internal_node_index):
+            product = {name : [] for name in internal_node_index.keys()}
+            for clade in T.find_clades(order='postorder',terminal=False):
+                for child in clade.clades:
+                    if child.name in species:
+                        product[clade.name].append(child.name)
+                    else:
+                        for leaf in product[child.name]:
+                            product[clade.name].append(leaf)
+                product[clade.name].sort()
+            return product
+
+        internal_node_index =  create_internal_node_index()
+        return internal_node_index,create_internal_edges(internal_node_index),create_index_nodes_and_edges(internal_node_index)
+
+    def generate_quartets(internal_edges,leaves):
+
+        def generate_pairs(leaves):
+            for i in range(len(leaves)):
+                for j in range(i+1,len(leaves)):
+                    yield leaves[i],leaves[j]
+
+
+        for a,b in internal_edges:
+            for u,v in generate_pairs(leaves[a]):
+                for w,x in generate_pairs(leaves[b]):
+                    if u!=w and v != x and u!=x and w!=v:
+                        yield u,v,w,x
+
     def bryant(T1,T2):
-        index1,edges1,leaves1 = prepare(T1)
-        index2,edges2,leaves2 = prepare(T2)
-        z=0
+        index1,internal_edges1,leaf_index1 = index_nodes_and_edges(T1)
+        index2,internal_edges2,leaf_index2 = index_nodes_and_edges(T2)
+        quartets1 = {f'{a},{b};{c},{d}' for a,b,c,d in generate_quartets(internal_edges1,leaf_index1)}
 
-    def prepare(T):
-        index = {}
-        for clade in T.find_clades(terminal=False):
-            clade.name        = str(len(index))
-            index[clade.name] = clade
 
-        edges = []
-        for clade in T.find_clades(terminal=False):
-            for child in clade.clades:
-                edges.append((clade.name,child.name))
+        quartets2 = set()
+        matched = set()
+        for a,b,c,d in generate_quartets(internal_edges2,leaf_index2):
+            quartet = f'{a},{b};{c},{d}'
+            if quartet in quartets1:
+                matched.add(quartet)
+            elif quartet not in quartets2:
+                quartets2.add(quartet)
 
-        leaves = {name : [] for name in index.keys()}
-        for clade in T.find_clades(order='postorder',terminal=False):
-            for child in clade.clades:
-                if child.name in species:
-                    leaves[clade.name].append(child.name)
-                else:
-                    for leaf in leaves[child.name]:
-                        leaves[clade.name].append(leaf)
 
-        return index,edges,leaves
+        return 0
+
+
 
     return bryant(read(StringIO(T1), 'newick'),
                   read(StringIO(T2), 'newick'))
