@@ -20,14 +20,14 @@
 from   unittest import TestCase, main, skip
 from   io       import StringIO
 
-import numpy    as np
-from   Bio      import Phylo
+import numpy     as np
+from   Bio.Phylo import read
 
-from   rosalind import LabelledTree
-from   random   import randrange
-from   newick   import newick_to_adjacency_list, Parser, Tokenizer, Hierarchy
-from   fasta    import FastaContent
-from   helpers  import flatten, expand
+from   rosalind  import LabelledTree
+from   random    import randrange
+from   newick    import newick_to_adjacency_list, Parser, Tokenizer, Hierarchy
+from   fasta     import FastaContent
+from   helpers   import flatten, expand
 
 
 def CompleteTree(n,adj):
@@ -243,20 +243,111 @@ def qrt(taxa,characters):
 
 def qrtd(species,T1,T2):
     '''
-    qrtd  Quartet Distance
+    qrtd
 
     Given: A list containing n taxa  and two unrooted binary trees T1 and T2 on the given taxa.
-           Both T1 and T2 are given in Newick format.
+        Both T1 and T2 are given in Newick format.
 
     Return: The quartet distance dq(T1,T2)
     '''
-    species_index = {i:species[i] for i in range(len(species))}
-    tree1         = Phylo.read(StringIO(T1), "newick")
-    tree2         = Phylo.read(StringIO(T2), "newick")
+    class Edge:
+        def __init__(self,S,a,b,descendents):
+            self.a = a
+            self.b = b
+            self.A = S - descendents[b]
+            self.B = descendents[b]
 
-    z=0
+        def __str__(self):
+            return f'{self.a}({self.A})->{self.b}({self.B})'
+
+        def generate_quartets(self):
+            AL = list(self.A)
+            BL = list(self.B)
+            for i in range(len(AL)):
+                for j in range(i+1,len(AL)):
+                    for k in range(len(BL)):
+                        for l in range(k+1,len(BL)):
+                            yield (AL[i],AL[j], BL[k],BL[l])
+
+    class Quartet:
+        def __init__(self,a,b,c,d):
+            self.a,self.b,self.c,self.d = a,b,c,d
+            if a>b:
+                self.a,self.b = self.b,self.a
+            if c>d:
+                self.c,self.d = self.d,self.c
+            if c<a:
+                self.a,self.b,self.c,self.d = self.c,self.d,self.a,self.b
+
+        def __str__(self):
+            return f'{self.a},{self.b};{self.c},{self.d}'
+
+    def index_nodes_and_edges(S,T):
+
+        def create_internal_node_index():
+            product = {}
+            for clade in T.find_clades(terminal=False):
+                clade.name        = str(len(product))
+                product[clade.name] = clade
+            return product
+
+        def create_node_descendents(internal_node_index):
+            product = {name : [] for name in internal_node_index.keys()}
+            for clade in T.find_clades(order='postorder',terminal=False):
+                for child in clade.clades:
+                    if child.name in species:
+                        product[clade.name].append(child.name)
+                    else:
+                        for leaf in product[child.name]:
+                            product[clade.name].append(leaf)
+                product[clade.name] = set(product[clade.name])
+            return product
+
+        def create_internal_edges(S,index,descendents):
+            edges  = []
+            leaves = {}
+            for clade in T.find_clades(terminal=False,order='postorder'):
+                for child in clade.clades:
+                    if child.name in index:
+                        edges.append(Edge(S,clade.name,child.name,descendents))
+                    else:
+                        if clade.name not in leaves:
+                            leaves[clade.name] = set()
+                        leaves[clade.name].add(child.name)
+
+            return edges
+
+        internal_node_index = create_internal_node_index()
+        node_descendents    = create_node_descendents(internal_node_index)
+        internal_edges      = create_internal_edges(S,internal_node_index,node_descendents)
+        return internal_node_index, node_descendents, internal_edges
+
+    def generate_quartets(internal_edges,leaves):
+
+        def generate_pairs(leaves):
+            for i in range(len(leaves)):
+                for j in range(i+1,len(leaves)):
+                    yield leaves[i],leaves[j]
 
 
+        for a,b in internal_edges:
+            for u,v in generate_pairs(leaves[a]):
+                for w,x in generate_pairs(leaves[b]):
+                    if u!=w and v != x and u!=x and w!=v:
+                        yield u,v,w,x
+
+    def bryant(S,T1,T2):
+        internal_node_index1, node_descendents1, internal_edges1 = index_nodes_and_edges(S,T1)
+        internal_node_index2, node_descendents2, internal_edges2 = index_nodes_and_edges(S,T2)
+        Q1 = {str(Quartet(i,j,k,l)) for edge in internal_edges1 for i,j,k,l in edge.generate_quartets()}
+        Q2 = {str(Quartet(i,j,k,l)) for edge in internal_edges2 for i,j,k,l in edge.generate_quartets()}
+        return len(Q1.symmetric_difference(Q2))
+
+
+
+    return bryant(set(species),
+                  read(StringIO(T1), 'newick'),
+                  read(StringIO(T2), 'newick'))
 
 
 
@@ -338,8 +429,8 @@ def sptd(species,newick1,newick2):
     #  Any unrooted binary tree on n taxa must have n−3 nontrivial splits,
     #  so the two trees have 2(n-3) nontrivial splits
     #  whih comprises non-shared + shared, which must be counted twice
-    return 2*(n-3)- 2* ds(create_non_trivial_splits(Phylo.read(StringIO(newick1), "newick")),
-                          create_non_trivial_splits(Phylo.read(StringIO(newick2), "newick")))
+    return 2*(n-3)- 2* ds(create_non_trivial_splits(read(StringIO(newick1), "newick")),
+                          create_non_trivial_splits(read(StringIO(newick2), "newick")))
 
 
 
@@ -1064,7 +1155,7 @@ if __name__=='__main__':
             '''
             ctbl Creating a Character Table  http://rosalind.info/problems/ctbl/
             '''
-            character_table = CharacterTable(Phylo.read(StringIO('(dog,((elephant,mouse),robot),cat);'), 'newick'))
+            character_table = CharacterTable(read(StringIO('(dog,((elephant,mouse),robot),cat);'), 'newick'))
             self.assertEqual(2,len(character_table))
             self.assertIn('00111',character_table)
             self.assertIn('00110',character_table)
@@ -1125,7 +1216,7 @@ if __name__=='__main__':
                                     '01x1xxx100x1x1x11',
                                     '01x00x0000xxx1x0x',
                                     '0xxxx0x1xxxx0xxxx']]))
-        @skip('#46')
+
         def test_qrtd(self):
             '''qrtd Quartet Distance'''
             self.assertEqual(4,qrtd('A B C D E'.split(),
