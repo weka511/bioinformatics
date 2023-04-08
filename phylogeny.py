@@ -251,6 +251,9 @@ def qrtd(species,T1,T2):
     Return: The quartet distance dq(T1,T2)
     '''
     class Edge:
+        '''
+        An edge of the graph; it separates leaves into two disjoint sets
+        '''
         def __init__(self,S,a,b,descendents):
             self.a = a
             self.b = b
@@ -270,6 +273,9 @@ def qrtd(species,T1,T2):
                             yield (AL[i],AL[j], BL[k],BL[l])
 
     class Quartet:
+        '''
+        A Quartet {a,b;c;d}, organized so that a<b, c<d, a<c.
+        '''
         def __init__(self,a,b,c,d):
             self.a,self.b,self.c,self.d = a,b,c,d
             if a>b:
@@ -282,12 +288,12 @@ def qrtd(species,T1,T2):
         def __str__(self):
             return f'{self.a},{self.b};{self.c},{self.d}'
 
-    def index_nodes_and_edges(S,T):
+    def index_nodes_and_edges(S,T,offset=0):
 
         def create_internal_node_index():
             product = {}
             for clade in T.find_clades(terminal=False):
-                clade.name        = str(len(product))
+                clade.name          = str(len(product) + offset)
                 product[clade.name] = clade
             return product
 
@@ -295,7 +301,7 @@ def qrtd(species,T1,T2):
             product = {name : [] for name in internal_node_index.keys()}
             for clade in T.find_clades(order='postorder',terminal=False):
                 for child in clade.clades:
-                    if child.name in species:
+                    if child.name in S:
                         product[clade.name].append(child.name)
                     else:
                         for leaf in product[child.name]:
@@ -318,37 +324,31 @@ def qrtd(species,T1,T2):
             return edges
 
         internal_node_index = create_internal_node_index()
-        node_descendents    = create_node_descendents(internal_node_index)
-        internal_edges      = create_internal_edges(S,internal_node_index,node_descendents)
-        return internal_node_index, node_descendents, internal_edges
+        return create_internal_edges(S,internal_node_index,create_node_descendents(internal_node_index))
 
-    def generate_quartets(internal_edges,leaves):
-
-        def generate_pairs(leaves):
-            for i in range(len(leaves)):
-                for j in range(i+1,len(leaves)):
-                    yield leaves[i],leaves[j]
-
-
-        for a,b in internal_edges:
-            for u,v in generate_pairs(leaves[a]):
-                for w,x in generate_pairs(leaves[b]):
-                    if u!=w and v != x and u!=x and w!=v:
-                        yield u,v,w,x
 
     def bryant(S,T1,T2):
-        internal_node_index1, node_descendents1, internal_edges1 = index_nodes_and_edges(S,T1)
-        internal_node_index2, node_descendents2, internal_edges2 = index_nodes_and_edges(S,T2)
+        '''
+        bryant
+
+        Calculate the quartet distance using the method outlines by Bryant et al.
+
+        '''
+        internal_edges1 = index_nodes_and_edges(S,T1,offset=len(S))
+        internal_edges2 = index_nodes_and_edges(S,T2,offset=len(S))
         Q1 = {str(Quartet(i,j,k,l)) for edge in internal_edges1 for i,j,k,l in edge.generate_quartets()}
         Q2 = {str(Quartet(i,j,k,l)) for edge in internal_edges2 for i,j,k,l in edge.generate_quartets()}
         return len(Q1.symmetric_difference(Q2))
 
+    def shorten(tree):
+        for clade in tree.find_clades(terminal=True):
+            clade.name = index[clade.name]
+        return tree
 
-
-    return bryant(set(species),
-                  read(StringIO(T1), 'newick'),
-                  read(StringIO(T2), 'newick'))
-
+    index = {species[i]:str(i) for i in range(len(species))}
+    tree1 = shorten(read(StringIO(T1), 'newick'))
+    tree2 = shorten(read(StringIO(T2), 'newick'))
+    return bryant(set([str(i) for i in range(len(species))]), tree1, tree2 )
 
 
 def sptd(species,newick1,newick2):
