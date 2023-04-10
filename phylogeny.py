@@ -20,9 +20,8 @@
 from   unittest import TestCase, main, skip
 from   io       import StringIO
 
-import numpy              as np
-from   Bio.Phylo          import read
-from   Bio.Phylo.BaseTree import Clade
+import numpy     as np
+from   Bio.Phylo import read
 from   rosalind  import   LabelledTree
 from   random    import   randrange
 from   newick    import   newick_to_adjacency_list, Parser, Tokenizer, Hierarchy
@@ -250,53 +249,10 @@ def qrtd(species,T1,T2):
 
     Return: The quartet distance dq(T1,T2)
     '''
-    class Edge:
-        '''
-        An edge of the graph; it separates leaves into two disjoint sets
-        '''
-        def __init__(self,S,a,b,descendents):
-            self.a = a
-            self.b = b
-            self.A = S - descendents[b]
-            self.B = descendents[b]
 
-        def __str__(self):
-            return f'{self.a}({self.A})->{self.b}({self.B})'
 
-        def generate_quartets(self):
-            AL = list(self.A)
-            BL = list(self.B)
-            for i in range(len(AL)):
-                for j in range(i+1,len(AL)):
-                    for k in range(len(BL)):
-                        for l in range(k+1,len(BL)):
-                            yield Quartet(AL[i],AL[j], BL[k],BL[l])
-
-    class Quartet:
-        '''
-        A Quartet {a,b;c;d}, organized so that a<b, c<d, a<c.
-        '''
-        def __init__(self,a,b,c,d):
-            self.a,self.b,self.c,self.d = a,b,c,d
-            if a>b:
-                self.a,self.b = self.b,self.a
-            if c>d:
-                self.c,self.d = self.d,self.c
-            if c<a:
-                self.a,self.b,self.c,self.d = self.c,self.d,self.a,self.b
-
-        def __str__(self):
-            return f'{self.a},{self.b};{self.c},{self.d}'
 
     def index_nodes_and_edges(S,T,offset=0):
-
-        def create_internal_node_index():
-            product = np.empty((n-2),dtype=Clade)
-            for i,clade in enumerate(T.find_clades(terminal=False)):
-                clade.name          = i+offset #str(len(product))# + offset)
-                product[i] = clade
-            return product
-
 
         def create_node_descendents():
             product = np.zeros((n-2,n),dtype=int)
@@ -320,7 +276,9 @@ def qrtd(species,T1,T2):
 
             return edges
 
-        create_internal_node_index()
+        for i,clade in enumerate(T.find_clades(terminal=False)):
+                clade.name          = i+offset
+
         return create_internal_edges(),create_node_descendents()
 
     def create_quartets_for_edge(edge,descendents):
