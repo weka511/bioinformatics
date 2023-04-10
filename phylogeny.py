@@ -20,14 +20,14 @@
 from   unittest import TestCase, main, skip
 from   io       import StringIO
 
-import numpy     as np
-from   Bio.Phylo import read
-
-from   rosalind  import LabelledTree
-from   random    import randrange
-from   newick    import newick_to_adjacency_list, Parser, Tokenizer, Hierarchy
-from   fasta     import FastaContent
-from   helpers   import flatten, expand
+import numpy              as np
+from   Bio.Phylo          import read
+from   Bio.Phylo.BaseTree import Clade
+from   rosalind  import   LabelledTree
+from   random    import   randrange
+from   newick    import   newick_to_adjacency_list, Parser, Tokenizer, Hierarchy
+from   fasta     import   FastaContent
+from   helpers   import   flatten, expand
 
 
 def CompleteTree(n,adj):
@@ -270,7 +270,7 @@ def qrtd(species,T1,T2):
                 for j in range(i+1,len(AL)):
                     for k in range(len(BL)):
                         for l in range(k+1,len(BL)):
-                            yield (AL[i],AL[j], BL[k],BL[l])
+                            yield Quartet(AL[i],AL[j], BL[k],BL[l])
 
     class Quartet:
         '''
@@ -291,40 +291,121 @@ def qrtd(species,T1,T2):
     def index_nodes_and_edges(S,T,offset=0):
 
         def create_internal_node_index():
-            product = {}
-            for clade in T.find_clades(terminal=False):
-                clade.name          = str(len(product) + offset)
-                product[clade.name] = clade
+            product = np.empty((n-2),dtype=Clade)
+            for i,clade in enumerate(T.find_clades(terminal=False)):
+                clade.name          = i+offset #str(len(product))# + offset)
+                product[i] = clade
             return product
 
-        def create_node_descendents(internal_node_index):
-            product = {name : [] for name in internal_node_index.keys()}
+
+        def create_node_descendents():
+            product = np.zeros((n-2,n),dtype=int)
             for clade in T.find_clades(order='postorder',terminal=False):
                 for child in clade.clades:
-                    if child.name in S:
-                        product[clade.name].append(child.name)
+                    if len(child.clades)==0:
+                        product[clade.name-offset,child.name]=1
                     else:
-                        for leaf in product[child.name]:
-                            product[clade.name].append(leaf)
-                product[clade.name] = set(product[clade.name])
+                        product[clade.name-offset,:]=np.add(product[clade.name-offset,:],product[child.name-offset,:])
             return product
 
-        def create_internal_edges(S,index,descendents):
-            edges  = []
-            leaves = {}
+        def create_internal_edges():
+            edges  = np.empty((n-3,2),dtype = int) #[]
+            i      = 0
             for clade in T.find_clades(terminal=False,order='postorder'):
                 for child in clade.clades:
-                    if child.name in index:
-                        edges.append(Edge(S,clade.name,child.name,descendents))
-                    else:
-                        if clade.name not in leaves:
-                            leaves[clade.name] = set()
-                        leaves[clade.name].add(child.name)
+                    if len(child.clades)>0: #child.name in internal_node_index:
+                        edges[i,0] = clade.name - offset
+                        edges[i,1] = child.name - offset
+                        i += 1
 
             return edges
 
-        internal_node_index = create_internal_node_index()
-        return create_internal_edges(S,internal_node_index,create_node_descendents(internal_node_index))
+        create_internal_node_index()
+        return create_internal_edges(),create_node_descendents()
+
+    def create_quartets_for_edge(edge,descendents):
+
+        def pairs(leaves):
+            m = leaves.size
+            for i in range(m):
+                for j in range(i+1,m):
+                    yield leaves[i],leaves[j]
+
+        def count_potential_quartets():
+            a,b = edge
+            A, = np.nonzero(mask-descendents[b])
+            B, = np.nonzero(descendents[b])
+            n1 = len(A)
+            n2 = len(B)
+            return ((n1*(n1-1)*n2*(n2-1))//4)
+
+        product = np.zeros((count_potential_quartets()+1), dtype = np.uint64)
+        k   = 0
+        a,b = edge
+        A,  = np.nonzero(mask-descendents[b])
+        B,  = np.nonzero(descendents[b])
+        for i1,i2 in pairs(A):
+            for j1,j2 in pairs(B):
+                quartet = np.array([i1,i2,j1,j2]) if i1<j1 else np.array([j1,j2,i1,i2])
+                product[k] = np.dot(base_powers,quartet)
+                k += 1
+        product[-1] = np.iinfo(np.uint64).max # sentinel
+        return product
+
+    def merge(Q1,Q2):
+        def get_length():
+            m = 0
+            i = 0
+            j = 0
+            while i<len(Q1) and j<len(Q2):
+                if Q1[i]<Q2[j]:
+                    i+= 1
+                    m+= 1
+                elif Q1[i]>Q2[j]:
+                    j+= 1
+                    m+= 1
+                else:
+                    i+= 1
+                    j+= 1
+                    m+= 1
+            return m
+
+        product = np.zeros((get_length()), dtype=np.uint64)
+        k = 0
+        i = 0
+        j = 0
+        while i<len(Q1) and j<len(Q2):
+            if Q1[i]<Q2[j]:
+                product[k] = Q1[i]
+                i+= 1
+                k+= 1
+            elif Q1[i]>Q2[j]:
+                product[k] = Q2[j]
+                j+= 1
+                k+= 1
+            else:
+                product[k] = Q1[i]
+                i+= 1
+                j+= 1
+                k+= 1
+
+        return product
+
+    def create_quartets(edges,descendents):
+        m,_      = edges.shape
+        product = create_quartets_for_edge(edges[0,:],descendents)
+        for i in range(1,m):
+            product = merge(product, create_quartets_for_edge(edges[i,:],descendents))
+        return product
+
+
+
+    def create_base_powers():
+        mult = 2**11
+        base_powers = np.ones((4),dtype=np.uint64)
+        for i in range(2,-1,-1):
+            base_powers[i] = mult*base_powers[i+1]
+        return base_powers
 
 
     def bryant(S,T1,T2):
@@ -334,21 +415,40 @@ def qrtd(species,T1,T2):
         Calculate the quartet distance using the method outlines by Bryant et al.
 
         '''
-        internal_edges1 = index_nodes_and_edges(S,T1,offset=len(S))
-        internal_edges2 = index_nodes_and_edges(S,T2,offset=len(S))
-        Q1 = {str(Quartet(i,j,k,l)) for edge in internal_edges1 for i,j,k,l in edge.generate_quartets()}
-        Q2 = {str(Quartet(i,j,k,l)) for edge in internal_edges2 for i,j,k,l in edge.generate_quartets()}
-        return len(Q1.symmetric_difference(Q2))
 
-    def shorten(tree):
+        edges1,descendents1 = index_nodes_and_edges(S,T1,offset=len(S))
+        edges2,descendents2 = index_nodes_and_edges(S,T2,offset=len(S))
+        Q1                  = create_quartets(edges1,descendents1)
+        Q2                  = create_quartets(edges2,descendents2)
+        return len(Q1) + len(Q2) - 2*count_intersections(Q1,Q2)
+
+    def count_intersections(Q1,Q2):
+        m = 0
+        i = 0
+        j = 0
+        while i<len(Q1) and j<len(Q2):
+            if Q1[i]<Q2[j]:
+                i+= 1
+            elif Q1[i]>Q2[j]:
+                j+= 1
+            else:
+                i+= 1
+                j+= 1
+                m+= 1
+        return m
+
+    def shorten_leaves(tree,index=[]):
         for clade in tree.find_clades(terminal=True):
             clade.name = index[clade.name]
         return tree
 
-    index = {species[i]:str(i) for i in range(len(species))}
-    tree1 = shorten(read(StringIO(T1), 'newick'))
-    tree2 = shorten(read(StringIO(T2), 'newick'))
-    return bryant(set([str(i) for i in range(len(species))]), tree1, tree2 )
+    base_powers = create_base_powers()
+    n     = len(species)
+    index = {species[i]:i for i in range(n)}
+    mask  = np.ones((n),dtype=int)
+    return bryant(set(list(range(len(species)))),
+                  shorten_leaves(read(StringIO(T1), 'newick'),index=index),
+                  shorten_leaves(read(StringIO(T2), 'newick'),index=index) )
 
 
 def sptd(species,newick1,newick2):
@@ -485,26 +585,35 @@ def mend(node):
     parent_freqs = [pp for pp in parent_freqs if len(pp)==n]
     return combine(parent_freqs[0],parent_freqs[1])
 
-# SmallParsimony
-#
-# Find the most parsimonious labeling of the internal nodes of a rooted tree.
-#
-# Given: An integer n followed by an adjacency list for a rooted binary tree with n leaves labeled by DNA strings.
-#
-# Return: The minimum parsimony score of this tree, followed by the adjacency list of the tree
-#         corresponding to labeling internal nodes by DNA strings in order to minimize the parsimony score of the tree.
 
 def SmallParsimony(T,alphabet='ATGC'):
+    '''
+    SmallParsimony
 
-    # SmallParsimonyC Solve small parsimony for one character
+    Find the most parsimonious labeling of the internal nodes of a rooted tree.
+
+    Given: An integer n followed by an adjacency list for a rooted binary tree with n leaves labeled by DNA strings.
+
+    Return: The minimum parsimony score of this tree, followed by the adjacency list of the tree
+            corresponding to labeling internal nodes by DNA strings in order to minimize the parsimony score of the tree.
+
+    '''
+
 
     def SmallParsimonyC(Character):
+        '''
+        SmallParsimonyC
 
-        # get_ripe
-        #
-        # Returns: a node that is ready fpr preocssing
+        Solve small parsimony for one character
+        '''
 
         def get_ripe():
+            '''
+            get_ripe
+
+            Returns: a node that is ready for preocssing
+
+            '''
             for v in T.get_nodes():
                 if not processed[v] and v in T.edges:
                     for e,_ in T.edges[v]:
