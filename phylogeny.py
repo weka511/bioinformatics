@@ -249,9 +249,6 @@ def qrtd(species,T1,T2):
 
     Return: The quartet distance dq(T1,T2)
     '''
-
-
-
     def index_nodes_and_edges(S,T,offset=0):
 
         def create_node_descendents():
@@ -282,50 +279,71 @@ def qrtd(species,T1,T2):
         return create_internal_edges(),create_node_descendents()
 
     def create_quartets_for_edge(edge,descendents):
+        '''
+        create_quartets_for_edge
+
+        Create an array representing all quartets from a single edge
+        '''
 
         def pairs(leaves):
+            '''
+            Generate all possible pairings of leaves
+            '''
             m = leaves.size
             for i in range(m):
                 for j in range(i+1,m):
                     yield leaves[i],leaves[j]
 
         def count_potential_quartets():
+            '''
+            count_potential_quartets
+
+            Used to allocate an array to contain quartets from one edge
+            '''
             a,b = edge
-            A, = np.nonzero(mask-descendents[b])
-            B, = np.nonzero(descendents[b])
-            n1 = len(A)
-            n2 = len(B)
+            A,  = np.nonzero(mask-descendents[b])
+            B,  = np.nonzero(descendents[b])
+            n1  = len(A)
+            n2  = len(B)
             return ((n1*(n1-1)*n2*(n2-1))//4)
 
         product = np.zeros((count_potential_quartets()+1), dtype = np.uint64)
-        k   = 0
-        a,b = edge
-        A,  = np.nonzero(mask-descendents[b])
-        B,  = np.nonzero(descendents[b])
+        k       = 0
+        a,b     = edge
+        A,      = np.nonzero(mask - descendents[b])
+        B,      = np.nonzero(descendents[b])
         for i1,i2 in pairs(A):
             for j1,j2 in pairs(B):
-                quartet = np.array([i1,i2,j1,j2]) if i1<j1 else np.array([j1,j2,i1,i2])
+                quartet    = np.array([i1,i2,j1,j2]) if i1<j1 else np.array([j1,j2,i1,i2])
                 product[k] = np.dot(base_powers,quartet)
-                k += 1
+                k         += 1
         product[-1] = np.iinfo(np.uint64).max # sentinel
         return product
 
     def merge(Q1,Q2):
+        '''
+        merge
+
+        Merge two sorted arrays of quartets, into one array of unique quartets
+        '''
         def get_length():
+            '''
+            Used to determine length of result
+            '''
             m = 0
             i = 0
             j = 0
             while i<len(Q1) and j<len(Q2):
                 if Q1[i]<Q2[j]:
-                    i+= 1
-                    m+= 1
+                    i += 1
+                    m += 1
                 elif Q1[i]>Q2[j]:
-                    j+= 1
-                    m+= 1
+                    j += 1
+                    m += 1
                 else:
-                    i+= 1
-                    j+= 1
-                    m+= 1
+                    i += 1
+                    j += 1
+                    m += 1
             return m
 
         product = np.zeros((get_length()), dtype=np.uint64)
@@ -350,16 +368,22 @@ def qrtd(species,T1,T2):
         return product
 
     def create_quartets(edges,descendents):
+        '''
+        Create an array of quartets from all edges
+        '''
         m,_      = edges.shape
-        product = create_quartets_for_edge(edges[0,:],descendents)
+        product  = create_quartets_for_edge(edges[0,:],descendents)
         for i in range(1,m):
             product = merge(product, create_quartets_for_edge(edges[i,:],descendents))
         return product
 
-
-
     def create_base_powers():
-        mult = 2**11
+        '''
+        create_base_powers
+
+        Used to create an array [2**33, 2**22, 2**11, 2**0] so we can store quarters as uint64s
+        '''
+        mult         = 2**11
         base_powers = np.ones((4),dtype=np.uint64)
         for i in range(2,-1,-1):
             base_powers[i] = mult*base_powers[i+1]
@@ -381,6 +405,9 @@ def qrtd(species,T1,T2):
         return len(Q1) + len(Q2) - 2*count_intersections(Q1,Q2)
 
     def count_intersections(Q1,Q2):
+        '''
+        Count elements that are common to two sorted arrays of quartets
+        '''
         m = 0
         i = 0
         j = 0
@@ -396,6 +423,11 @@ def qrtd(species,T1,T2):
         return m
 
     def shorten_leaves(tree,index=[]):
+        '''
+        shorten_leaves
+
+        Replace leaves of tree with the index of the species
+        '''
         for clade in tree.find_clades(terminal=True):
             clade.name = index[clade.name]
         return tree
@@ -581,17 +613,23 @@ def SmallParsimony(T,alphabet='ATGC'):
                     return v
             return None
 
-        #  calculate_s
-        #     Calculate score if node v is set to a specified symbol
-        #     Parameters:
-        #        symbol The symbol, e.g. 'A', not the index in alphabet
-        #        v      The node
+
 
         def calculate_s(symbol,v):
-            # delta
-            #
-            # Complement of Kronecker delta
+            '''
+            calculate_s
+                Calculate score if node v is set to a specified symbol
+                Parameters:
+                   symbol The symbol, e.g. 'A', not the index in alphabet
+                   v      The node
+            '''
+
             def delta(i):
+                '''
+                delta
+
+                Complement of Kronecker delta
+                '''
                 return 0 if symbol==alphabet[i] else 1
 
             def get_min(e):
@@ -599,12 +637,15 @@ def SmallParsimony(T,alphabet='ATGC'):
 
             return sum([get_min(e) for e,_ in T.edges[v]])
 
-        # update_assignments
-        #
-        # Parameters:
-        #     v
-        #     s
+
         def update_assignments(v,s):
+            '''
+            update_assignments
+
+            Parameters:
+                v
+                s
+            '''
             if not v in assignments.labels:
                 assignments.labels[v]=''
             index = 0
@@ -616,11 +657,12 @@ def SmallParsimony(T,alphabet='ATGC'):
             assignments.set_label(v,assignments.labels[v]+alphabet[index])
             return alphabet[index]
 
-        # backtrack
-        #
-        # Process internal node of tree top down, starting from root
-
         def backtrack(v, current_assignment):
+            '''
+            backtrack
+
+            Process internal node of tree top down, starting from root
+            '''
             for v_next,_ in T.edges[v]:
                 if T.is_leaf(v_next): continue
                 if not v_next in assignments.labels:
@@ -686,12 +728,15 @@ def alph(T,Alignment,
 
     '''
 
-    # create_fixed_alignments
-    #
-    # Extract dictionary of leaves from Alignment
-    #
-    # Returns: length of any string in alignment, plus dictionary of leaves
+
     def create_fixed_alignments():
+        '''
+        create_fixed_alignments
+
+        Extract dictionary of leaves from Alignment
+
+        Returns: length of any string in alignment, plus dictionary of leaves
+        '''
         Leaves = {}
         k      = None
         for i in range(0,len(Alignment),2):
@@ -703,36 +748,41 @@ def alph(T,Alignment,
 
         return k,Leaves
 
-    # SmallParsimony
-    #
-    # This is the Small Parsimony algorihm from Pevzner and Compeau, which
-    # processes a single character
-    #
-    # Parameters:
-    #      l       Index of character in Alignment
-    # Returns:     Score of best assignment, plus an assignment of character that provides this score
+
 
     def SmallParsimony(l):
+        '''
+        SmallParsimony
 
-        # is_ripe
-        #
-        # Determine whether now is ready for processing
-        # A ripe node is one that hasn't been processed,
-        # but its children have
+        This is the Small Parsimony algorihm from Pevzner and Compeau, which
+        processes a single character
+
+        Parameters:
+             l       Index of character in Alignment
+        Returns:     Score of best assignment, plus an assignment of character that provides this score
+        '''
 
         def is_ripe(v):
+            '''
+            is_ripe
+
+            Determine whether now is ready for processing
+            A ripe node is one that hasn't been processed,
+            but its children have
+            '''
             for child in Adj[v]:
                 if not Tag[child]: return False
             return True
 
-        # find_ripe
-        #
-        # Find list of nodes that are ready to be processed
-        #
-        # Input:   A list of nodes
-        # Returns: Two lists, those ready for processing, and those which are not
-
         def find_ripe(Nodes):
+            '''
+            find_ripe
+
+            Find list of nodes that are ready to be processed
+
+            Input:   A list of nodes
+            Returns: Two lists, those ready for processing, and those which are not
+            '''
             Ripe   = []
             Unripe = []
             for v in Nodes:
@@ -742,61 +792,69 @@ def alph(T,Alignment,
                     Unripe.append(v)
             return Ripe,Unripe
 
-        # delta
-        #
-        # The delta function from Pevzner and Compeau: not the Kronecker delta
-
         def delta(i,j):
+            '''
+            delta
+
+            The delta function from Pevzner and Compeau: not the Kronecker delta
+            '''
             return 0 if i==j else 1
 
-        # get_distance
-        #
-        # Get total distance of node from its children assuming one trial assignmnet
-        #
-        # Parameters:
-        #     v       Current node
-        #     k       Index of character for trial
 
         def get_distance(v,k):
+            '''
+            get_distance
 
-            # best_alignment
-            #
-            # Find best alignment with child (measured by varying child's index) given
-            # the current choice of character in this node
-            #
-            # Parameters:
-            #      k       Trial alignmnet for this node
+            Get total distance of node from its children assuming one trial assignmnet
+
+            Parameters:
+                v       Current node
+                k       Index of character for trial
+
+            '''
 
             def best_alignment(child):
+                '''
+                best_alignment
+
+                Find best alignment with child (measured by varying child's index) given
+                the current choice of character in this node
+
+                Parameters:
+                     k       Trial alignmnet for this node
+                '''
                 return min([s[child][i] + delta(i,k)  for i in range(len(Alphabet))])
 
             return sum([best_alignment(child) for child in Adj[v]])
 
-        # backtrack
-        #
-        # Perform a depth first search through all nodes to determive alignmant.
-        # Parameters:
-        #     root    Root node
-        #     s       Scores for all possible best assignments to all nodes
-        # Returns:
-        #     score    Score of best assignment,
-        #     ks       For each node the assignment of character that provides this score
-        #              represented an an index into alphabet
-        #
-        #
-        #       Comment by  Robert Goldberg-Alberts.
-        #       The Backtrack portion of the code consists of a breath first tracking through the tree from
-        #       the root in a left to right fashion through the nodes (sons and daughters)
-        #       row after row until you finally reach the leaves. The leaves already have values assigned to them from the data
-        #       At the root, determine whether the value of the node is A, C, T, G by taking the minimum value of the
-        #       four numbers created for the root set. Break ties by selecting from the ties at random.
-        #       After that, for subsequent nodes take the minimum of each value at a node and determine if
-        #       there are ties at the minimum. Check to see if the ancestor parent of that node has a value
-        #       that is contained in the eligible nucleotides from the node. If it IS contained there force the
-        #       ancestor value for that node.
-        #       Continue in that fashion until all the internal nodes have values assigned to them.
+
 
         def backtrack(root,s):
+            '''
+            backtrack
+
+            Perform a depth first search through all nodes to determive alignmant.
+            Parameters:
+                root    Root node
+                s       Scores for all possible best assignments to all nodes
+            Returns:
+                score    Score of best assignment,
+                ks       For each node the assignment of character that provides this score
+                         represented an an index into alphabet
+
+
+                  Comment by  Robert Goldberg-Alberts.
+                  The Backtrack portion of the code consists of a breath first tracking through the tree from
+                  the root in a left to right fashion through the nodes (sons and daughters)
+                  row after row until you finally reach the leaves. The leaves already have values assigned to them from the data
+                  At the root, determine whether the value of the node is A, C, T, G by taking the minimum value of the
+                  four numbers created for the root set. Break ties by selecting from the ties at random.
+                  After that, for subsequent nodes take the minimum of each value at a node and determine if
+                  there are ties at the minimum. Check to see if the ancestor parent of that node has a value
+                  that is contained in the eligible nucleotides from the node. If it IS contained there force the
+                  ancestor value for that node.
+                  Continue in that fashion until all the internal nodes have values assigned to them.
+            '''
             def dfs(node,k,parent_score):
 
                 def match(i,j,child_scores):
