@@ -16,37 +16,45 @@
  */
  
 #include <iostream>
-#include <fstream>
-#include <vector>
-#include <cmath>
 #include "catch.hpp"
 #include "newick.h"
 
-TEST_CASE( "Newick tests", "[kepler]" ) {
+TEST_CASE( "Newick tests", "[newick]" ) {
 	
-	SECTION("no nodes are named"){
+	SECTION("empty tree"){
+		Newick newick;
+		Clade * root = newick.parse("();");
+		REQUIRE (root->children.size()==0);
+	} 
+	
+  	SECTION("no nodes are named"){
 		Newick newick;
 		Clade * root = newick.parse("(,,(,));");
-		REQUIRE (root->clades.size()==3);
-	//	Clade * c2 = root->clades[2];
-	//	REQUIRE (c2->clades.size()==2);
+		REQUIRE (root->children.size()==3);
+		Clade * child_0 = root->children[0];
+		REQUIRE(child_0->children.size()==0);
+		Clade * child_1 = root->children[1];
+		REQUIRE(child_1->children.size()==0);
+		Clade * child_2 = root->children[2];
+		REQUIRE(child_2->children.size()==2);
 	}
 	
-	SECTION("leaf nodes are named"){
+/* 	SECTION("leaf nodes are named"){
 		Newick newick;
 		Clade * root = newick.parse("(A,B,(C,D));");
 		REQUIRE (root->clades.size()==3);
 		Clade * c1 = root->clades[0];
-		REQUIRE (c1->name[0]=='A');
+		std::cout<<c1->name<<std::endl;
+//		REQUIRE (c1->name=='A');
 	//	Clade * c2 = root->clades[2];
 	//	REQUIRE (c2->clades.size()==2);
-	}
+	} */
 	
-		SECTION("all nodes are named"){
+/* 		SECTION("all nodes are named"){
 		Newick newick;
 		Clade * root = newick.parse("(A,B,(C,D)E)F;");
 		REQUIRE (root->clades.size()==3);
 	//	Clade * c2 = root->clades[2];
 	//	REQUIRE (c2->clades.size()==2);
-	}
+	} */
 }

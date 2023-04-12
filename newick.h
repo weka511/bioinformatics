@@ -39,7 +39,7 @@ class Tokenizer {
 		}
 		
 		void Next(){
-			_position+=_length;
+			_position += _length;
 			_update_token();
 		}
 		
@@ -68,14 +68,17 @@ class Tokenizer {
 
 class Clade{
   public:
-	std::vector<Clade*> clades;
+	Clade() : name(""),parent(NULL) {}
+	
+	std::vector<Clade*> children;
 	std::string         name;
+	Clade *             parent;
 };
 
 class Newick {
 	
 	std::vector<Clade*> _stack;
-	Clade *        _root;
+	Clade *             _root;
 	public:
 		Clade * parse(std::string s);
 		

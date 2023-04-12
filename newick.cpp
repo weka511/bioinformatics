@@ -33,7 +33,7 @@ void  Tokenizer::Iterator::_update_token(){
 		_current_token=Colon;
 	else if (_is_alpha(_tokenizer._s[_position])) {
 		_current_token = Name;
-		_length        = 0;
+		_length        = 1;
 		while (_is_alpha(_tokenizer._s[_position+_length],true))
 			_length++;
 	} else if (_is_digit(_tokenizer._s[_position])) {
@@ -64,6 +64,7 @@ bool Tokenizer::Iterator::_is_digit(char c, bool extended){
 
 Clade * Newick::parse(std::string s){
 	assert(_stack.size()==0);
+	_root = NULL;
 	Tokenizer tokenizer(s);
 	Tokenizer::Iterator iterator(tokenizer);
 	iterator.First();
@@ -97,6 +98,7 @@ Clade * Newick::parse(std::string s){
 		}
 		iterator.Next();
 	}
+	assert(_stack.size()==0);
 	return _root;
 }
 
@@ -104,27 +106,43 @@ void Newick::_parseColon(){
 }
 
 void Newick::_parseLeft(){
-	Clade * clade = new Clade();
-	if (_stack.size()>0)
-		_stack.back()->clades.push_back(clade);
-	else
-		_root = clade;
-	_stack.push_back(clade);
+	if (_stack.size()==0){
+		 _root = new Clade();
+		 _stack.push_back(_root);
+	} else {
+		Clade * newly_created = new Clade();
+		Clade * top_of_stack  = _stack.back();
+		newly_created->parent = top_of_stack;
+		top_of_stack->children.push_back(newly_created);
+		_stack.push_back(newly_created);
+	}
+
+	std::cout << "New level "<<_stack.size() << " and node" << std::endl;
 }
 
 void Newick::_parseComma(){
 	assert(_stack.size()>0);
-	Clade * clade = new Clade();
-	_stack.back()->clades.push_back(clade);
+	Clade * newly_created = new Clade();
+	Clade * top_of_stack  = _stack.back();
+	newly_created->parent = top_of_stack->parent;
+	std::cout << __LINE__ << std::endl;
+	top_of_stack->parent->children.push_back(newly_created);
+	std::cout << __LINE__ << std::endl;
+	std::cout << "node: stack size= " << _stack.size()
+		<< ", siblings=" << top_of_stack->children.size() << std::endl;
 }
 
 void Newick::_parseRight(){
 	assert(_stack.size()>0);
 	_stack.pop_back();
+	std::cout << "popped" << std::endl;
 }
 
 void Newick::_parseName(std::string s){
+	std::cout << s << std::endl;
+	std::cout << _stack.size() << std::endl;
 	
+	_stack.back()->children.back()->name = s;
 }
 
 void Newick::_parseLength(std::string s){

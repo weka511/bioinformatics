@@ -20,9 +20,6 @@
 
 int main(){
 
-	Newick newick;
-	newick.parse("(A:0.1,B:0.2,(C:0.3,D:0.4)E:0.5)F;");
-
 	return 0;
 }
  
