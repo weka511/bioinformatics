@@ -42,6 +42,7 @@ TARGETS   = $(MAIN)
 all : $(TARGETS) $(TEST_OBJS)
 
 run : all
+	${RM}  *.stackdump
 	$(MAIN)
 	
 clean :
@@ -66,6 +67,7 @@ $(TEST_MAIN): $(OBJS) tests.o $(TEST_OBJS)
 	${CXX} $(LDFLAGS) -o $(TEST_MAIN) tests.o ${OBJS} $(TEST_OBJS) ${LDLIBS}
 
 tests : $(TEST_MAIN)
+	${RM}  *.stackdump
 	./$(TEST_MAIN)
 	
 distclean: clean
