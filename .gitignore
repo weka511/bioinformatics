@@ -66,3 +66,11 @@ lalign*.jpg
 *.bib.bak
 *.bib.sav
 
+#C++ stuff
+
+*.o
+*.exe
+*.exe.stackdump
+.depend
+
+
