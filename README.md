@@ -403,6 +403,7 @@ I have written this code in Python 3, generally with the most recent release at 
 | Location | Description |
 | --------------- | ------------------------------------------------|
 |bioinformatics.bib|Bibliography|
+|catch.hpp|C++ test framework|
 |findtests.py|Generates shell script to execute all tests|
 |helpers.py|Utilities for formatting output, parsing input, etc |
 |LICENSE|License Agreement|
@@ -415,3 +416,4 @@ I have written this code in Python 3, generally with the most recent release at 
 |rosalind.wpr|WingWare Project File |
 |template.py|Template for getting started on a problem|
 |test-newick.cpp|Test Newick Parser[Newick format](http://evolution.genetics.washington.edu/phylip/newicktree.html)|
+|tests.cpp|C++ test framework|
