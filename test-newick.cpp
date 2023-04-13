@@ -21,18 +21,17 @@
 
 TEST_CASE( "Newick tests", "[newick]" ) {
 	
- /* 	SECTION("Trivial trees"){
+  	SECTION("Trivial trees"){
 		Newick newick;
 		Clade * tree0 = newick.parse("();");
-		REQUIRE (tree0->children.size()==0);
-		Clade * tree5 = newick.parse("();");
-		REQUIRE (tree5->children.size()==0);
-	}  */
+		REQUIRE (tree0->children.size()==1);
+		Clade * tree5 = newick.parse("(,,,,);");
+		REQUIRE (tree5->children.size()==5);
+	} 
 	
     SECTION("no nodes are named"){
 		Newick newick;
 		Clade * root = newick.parse("(,,(,));");
-		 root = root->children.front();
 		REQUIRE (root->children.size()==3);
 		Clade * child_0 = root->children[0];
 	 	REQUIRE(child_0->children.size()==0);
