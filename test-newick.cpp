@@ -18,6 +18,7 @@
 #include <iostream>
 #include "catch.hpp"
 #include "newick.h"
+#include <string>
 
 TEST_CASE( "Newick tests", "[newick]" ) {
 	
@@ -41,16 +42,21 @@ TEST_CASE( "Newick tests", "[newick]" ) {
 		REQUIRE(child_2->children.size()==2);
 	} 
 	
-/* 	SECTION("leaf nodes are named"){
+ 	SECTION("leaf nodes are named"){
 		Newick newick;
-		Clade * root = newick.parse("(A,B,(C,D));");
-		REQUIRE (root->clades.size()==3);
-		Clade * c1 = root->clades[0];
-		std::cout<<c1->name<<std::endl;
-//		REQUIRE (c1->name=='A');
-	//	Clade * c2 = root->clades[2];
-	//	REQUIRE (c2->clades.size()==2);
-	} */
+		Clade * root = newick.parse("(Alice,Bob,(Charlie,David));");
+		REQUIRE (root->children.size()==3);
+		REQUIRE (root->children[0]->name=="Alice");
+		REQUIRE (root->children[1]->name=="Bob");
+		Clade * child_0 = root->children[0];
+	 	REQUIRE(child_0->children.size()==0);
+		Clade * child_1 = root->children[1];
+		REQUIRE(child_1->children.size()==0);
+		Clade * child_2 = root->children[2];
+		REQUIRE(child_2->children.size()==2);
+		REQUIRE (child_2->children[0]->name=="Charlie");
+		REQUIRE (child_2->children[1]->name=="David");
+	} 
 	
 /* 		SECTION("all nodes are named"){
 		Newick newick;

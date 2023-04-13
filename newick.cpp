@@ -47,7 +47,7 @@ void  Tokenizer::Iterator::_update_token(){
 }
 
 bool Tokenizer::Iterator::_is_alpha(char c, bool extended){
-	bool in_range= 'A'<=c and c<='Z';
+	bool in_range= ('A'<=c and c<='Z') || ('a'<=c and c<='z');
 	if (extended)
 		return in_range || c=='_';
 	else
@@ -130,10 +130,7 @@ void Newick::_parseRight(){
 }
 
 void Newick::_parseName(std::string s){
-	std::cout << s << std::endl;
-	std::cout << _stack.size() << std::endl;
-	
-	_stack.back()->children.back()->name = s;
+	_get_top_of_stack()->children.back()->name = s;
 }
 
 void Newick::_parseLength(std::string s){
