@@ -58,11 +58,21 @@ TEST_CASE( "Newick tests", "[newick]" ) {
 		REQUIRE (child_2->children[1]->name=="David");
 	} 
 	
-/* 		SECTION("all nodes are named"){
-		Newick newick;
-		Clade * root = newick.parse("(A,B,(C,D)E)F;");
-		REQUIRE (root->clades.size()==3);
-	//	Clade * c2 = root->clades[2];
-	//	REQUIRE (c2->clades.size()==2);
-	} */
+ 		SECTION("all nodes are named"){
+			Newick newick;
+			Clade * root = newick.parse("(Alice,Bob,(Charlie,David)Ermintrude)Frank;");
+			REQUIRE (root->children.size()==3);
+			REQUIRE (root->children[0]->name=="Alice");
+			REQUIRE (root->children[1]->name=="Bob");
+			REQUIRE (root->children[2]->name=="Ermintrude");
+			Clade * child_0 = root->children[0];
+			REQUIRE(child_0->children.size()==0);
+			Clade * child_1 = root->children[1];
+			REQUIRE(child_1->children.size()==0);
+			Clade * child_2 = root->children[2];
+			REQUIRE(child_2->children.size()==2);
+			REQUIRE (child_2->children[0]->name=="Charlie");
+			REQUIRE (child_2->children[1]->name=="David");
+			REQUIRE (root->name=="Frank");
+	} 
 }
