@@ -104,7 +104,7 @@ Clade * Newick::parse(std::string s){
 	Clade * root = _stack.back();
 	_stack.pop_back();
 	assert(_stack.size()==0);
-	return root->children.front();
+	return root->_children.front();
 }
 
 void Newick::_parseColon( Tokenizer::Token previous_token){
@@ -122,7 +122,7 @@ void Newick::_parseLeft( Tokenizer::Token previous_token){
 	} else 
 		_stack.push_back(_get_latest());
 	Clade * first_born = new Clade();
-	_get_top_of_stack()->children.push_back(first_born);
+	_get_top_of_stack()->_children.push_back(first_born);
 }
 
 void Newick::_parseComma(Tokenizer::Token previous_token){
@@ -151,15 +151,15 @@ void Newick::_parseName(std::string s, Tokenizer::Token previous_token){
 	assert(	previous_token==Tokenizer::Token::Comma      || 
 			previous_token==Tokenizer::Token::Right      || 
 			previous_token==Tokenizer::Token::Left);
-	_get_top_of_stack()->children.back()->name = s;
+	_get_top_of_stack()->_children.back()->_name = s;
 }
 
 void Newick::_parseLength(std::string s, Tokenizer::Token previous_token){
 	assert(previous_token==Tokenizer::Token::Colon);
-	int deficit = _get_top_of_stack()->children.size() - _get_top_of_stack()->branch_lengths.size();
+	int deficit = _get_top_of_stack()->_children.size() - _get_top_of_stack()->_branch_lengths.size();
 	while (deficit-- >1)
-		_get_top_of_stack()->branch_lengths.push_back(_default_branch_length);
-	_get_top_of_stack()->branch_lengths.push_back(std::stod(s));
+		_get_top_of_stack()->_branch_lengths.push_back(_default_branch_length);
+	_get_top_of_stack()->_branch_lengths.push_back(std::stod(s));
 }
 
 

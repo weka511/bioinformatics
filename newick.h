@@ -23,13 +23,22 @@ class Tokenizer {
 	std::string  _s;
 	
   public:
-	enum Token { Left,  Comma, Right, Name, Colon, Length, Semicolon, Invalid };
+	enum Token {
+		Left, 
+		Comma, 
+		Right,
+		Name,
+		Colon,
+		Length,
+		Semicolon,
+		Invalid };
 
 	class Iterator {
 		int        _position;
 		Token      _current_token;
 		Tokenizer& _tokenizer;
 		int        _length;
+		
 	  public:
 		Iterator(Tokenizer& tokenizer): _tokenizer(tokenizer),_position(0){;}
 		
@@ -57,9 +66,7 @@ class Tokenizer {
 		bool _is_digit(char c, bool extended=false);
 	};
 	
- 	Tokenizer(std::string s):_s(s) {
-		std::cout << _s << std::endl;
-	}
+ 	Tokenizer(std::string s):_s(s) {}
 
 	std::string GetString(size_t pos, size_t len){
 		return _s.substr(pos,len);
@@ -67,13 +74,19 @@ class Tokenizer {
 };
 
 class Clade{
-  public:
-	Clade() : name(""),parent(NULL) {}
+	friend class Newick;
 	
-	std::vector<Clade*> children;
-	std::vector<double> branch_lengths;
-	std::string         name;
-	Clade *             parent;
+	std::vector<Clade*> _children;
+	std::vector<double> _branch_lengths;
+	std::string         _name;
+	Clade *             _parent;
+	
+  public:
+	Clade() : _name(""),_parent(NULL) {}
+	std::vector<Clade*> get_children() {return _children;}
+	std::vector<double> get_branch_lengths() {return _branch_lengths;}
+	std::string         get_name() {return _name;}
+	Clade *             get_parent() {return _parent;}
 };
 
 class Newick {
@@ -101,10 +114,10 @@ class Newick {
 	
 	Clade * _get_top_of_stack(){return _stack.back();}
 	int     _get_depth() {return _stack.size();}
-	Clade * _get_latest() {return  _get_top_of_stack()->children.back();}
+	Clade * _get_latest() {return  _get_top_of_stack()->_children.back();}
 	void    _link(Clade * newly_created){
-											newly_created->parent =_get_top_of_stack();
-											_get_top_of_stack()->children.push_back(newly_created);
+											newly_created->_parent =_get_top_of_stack();
+											_get_top_of_stack()->_children.push_back(newly_created);
 										}
 };
 
