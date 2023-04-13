@@ -71,24 +71,34 @@ class Clade{
 	Clade() : name(""),parent(NULL) {}
 	
 	std::vector<Clade*> children;
+	std::vector<double> branch_lengths;
 	std::string         name;
 	Clade *             parent;
 };
 
 class Newick {
 	std::vector<Clade*> _stack;
-	
+	double              _default_branch_length;
   public:
+	Newick(double default_branch_length=1.0) : _default_branch_length(default_branch_length) {}
+  
 	Clade * parse(std::string s);
 		
   private:
-	void    _parseLeft();
-	void    _parseComma();
-	void    _parseRight();
-	void    _parseName(std::string s);
-	void    _parseColon();
-	void    _parseLength(std::string s);
-	void    _parseSemicolon();
+	void    _parseLeft(Tokenizer::Token previous_token);
+	
+	void    _parseComma(Tokenizer::Token previous_token);
+	
+	void    _parseRight(Tokenizer::Token previous_token);
+	
+	void    _parseName(std::string s, Tokenizer::Token previous_token);
+	
+	void    _parseColon(Tokenizer::Token previous_token);
+	
+	void    _parseLength(std::string s,Tokenizer::Token previous_token);
+	
+	void    _parseSemicolon(Tokenizer::Token previous_token);
+	
 	Clade * _get_top_of_stack(){return _stack.back();}
 	int     _get_depth() {return _stack.size();}
 	Clade * _get_latest() {return  _get_top_of_stack()->children.back();}

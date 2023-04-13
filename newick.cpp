@@ -68,26 +68,27 @@ Clade * Newick::parse(std::string s){
 	Tokenizer tokenizer(s);
 	Tokenizer::Iterator iterator(tokenizer);
 	iterator.First();
+	Tokenizer::Token previous_token = Tokenizer::Token::Invalid;
 	while (!iterator.isDone()){
 		Tokenizer::Token token = iterator.CurrentToken();
 		switch(token) {
 			case Tokenizer::Token::Left:
-				_parseLeft();
+				_parseLeft( previous_token);
 				break;
 			case Tokenizer::Token::Comma:
-				_parseComma();
+				_parseComma( previous_token);
 				break;
 			case Tokenizer::Token::Right:
-				_parseRight();
+				_parseRight( previous_token);
 				break;
 			case Tokenizer::Token::Name:
-				_parseName(tokenizer.GetString(iterator.GetPosition(), iterator.GetLength()));
+				_parseName(tokenizer.GetString(iterator.GetPosition(), iterator.GetLength()), previous_token);
 				break;
 			case Tokenizer::Token::Colon:
-				_parseColon();
+				_parseColon( previous_token);
 				break;
 			case Tokenizer::Token::Length:
-				_parseLength(tokenizer.GetString(iterator.GetPosition(), iterator.GetLength()));
+				_parseLength(tokenizer.GetString(iterator.GetPosition(), iterator.GetLength()), previous_token);
 				break;
 			case Tokenizer::Token::Semicolon:
 				iterator.Next();
@@ -96,6 +97,7 @@ Clade * Newick::parse(std::string s){
 			default:
 				std::cout <<"WTF "<<token<< std::endl;
 		}
+		previous_token = token;
 		iterator.Next();
 	}
 
@@ -105,10 +107,14 @@ Clade * Newick::parse(std::string s){
 	return root->children.front();
 }
 
-void Newick::_parseColon(){
+void Newick::_parseColon( Tokenizer::Token previous_token){
+	assert( previous_token==Tokenizer::Token::Name        || 
+			previous_token==Tokenizer::Token::Comma      || 
+			previous_token==Tokenizer::Token::Right      || 
+			previous_token==Tokenizer::Token::Left);
 }
 
-void Newick::_parseLeft(){
+void Newick::_parseLeft( Tokenizer::Token previous_token){
 	if (_get_depth()==1){
 		Clade * newly_created = new Clade();
 		_link(newly_created);
@@ -119,22 +125,41 @@ void Newick::_parseLeft(){
 	_get_top_of_stack()->children.push_back(first_born);
 }
 
-void Newick::_parseComma(){
+void Newick::_parseComma(Tokenizer::Token previous_token){
+	assert( previous_token==Tokenizer::Token::Name        || 
+			previous_token==Tokenizer::Token::Comma      || 
+			previous_token==Tokenizer::Token::Right      || 
+			previous_token==Tokenizer::Token::Length      ||
+			previous_token==Tokenizer::Token::Left);
+
 	assert(_stack.size()>1);
+	
 	_link(new Clade());
 }
 
-void Newick::_parseRight(){
+void Newick::_parseRight(Tokenizer::Token previous_token){
+	assert( previous_token==Tokenizer::Token::Name        || 
+			previous_token==Tokenizer::Token::Comma      || 
+			previous_token==Tokenizer::Token::Right      || 
+			previous_token==Tokenizer::Token::Length      ||
+			previous_token==Tokenizer::Token::Left);
 	assert(_stack.size()>0);
 	_stack.pop_back();
 }
 
-void Newick::_parseName(std::string s){
+void Newick::_parseName(std::string s, Tokenizer::Token previous_token){
+	assert(	previous_token==Tokenizer::Token::Comma      || 
+			previous_token==Tokenizer::Token::Right      || 
+			previous_token==Tokenizer::Token::Left);
 	_get_top_of_stack()->children.back()->name = s;
 }
 
-void Newick::_parseLength(std::string s){
-	
+void Newick::_parseLength(std::string s, Tokenizer::Token previous_token){
+	assert(previous_token==Tokenizer::Token::Colon);
+	int deficit = _get_top_of_stack()->children.size() - _get_top_of_stack()->branch_lengths.size();
+	while (deficit-- >1)
+		_get_top_of_stack()->branch_lengths.push_back(_default_branch_length);
+	_get_top_of_stack()->branch_lengths.push_back(std::stod(s));
 }
 
 

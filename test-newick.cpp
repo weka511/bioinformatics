@@ -58,21 +58,94 @@ TEST_CASE( "Newick tests", "[newick]" ) {
 		REQUIRE (child_2->children[1]->name=="David");
 	} 
 	
- 		SECTION("all nodes are named"){
-			Newick newick;
-			Clade * root = newick.parse("(Alice,Bob,(Charlie,David)Ermintrude)Frank;");
-			REQUIRE (root->children.size()==3);
-			REQUIRE (root->children[0]->name=="Alice");
-			REQUIRE (root->children[1]->name=="Bob");
-			REQUIRE (root->children[2]->name=="Ermintrude");
-			Clade * child_0 = root->children[0];
-			REQUIRE(child_0->children.size()==0);
-			Clade * child_1 = root->children[1];
-			REQUIRE(child_1->children.size()==0);
-			Clade * child_2 = root->children[2];
-			REQUIRE(child_2->children.size()==2);
-			REQUIRE (child_2->children[0]->name=="Charlie");
-			REQUIRE (child_2->children[1]->name=="David");
-			REQUIRE (root->name=="Frank");
+ 	SECTION("all nodes are named"){
+		Newick newick;
+		Clade * root = newick.parse("(Alice,Bob,(Charlie,David)Ermintrude)Frank;");
+		REQUIRE (root->children.size()==3);
+		REQUIRE (root->children[0]->name=="Alice");
+		REQUIRE (root->children[1]->name=="Bob");
+		REQUIRE (root->children[2]->name=="Ermintrude");
+		Clade * child_0 = root->children[0];
+		REQUIRE(child_0->children.size()==0);
+		Clade * child_1 = root->children[1];
+		REQUIRE(child_1->children.size()==0);
+		Clade * child_2 = root->children[2];
+		REQUIRE(child_2->children.size()==2);
+		REQUIRE (child_2->children[0]->name=="Charlie");
+		REQUIRE (child_2->children[1]->name=="David");
+		REQUIRE (root->name=="Frank");
 	} 
+	
+	   SECTION("Branch lengths"){
+		Newick newick;
+		Clade * root = newick.parse("(:0.1,:0.2,(:0.3,:0.4):0.5);");
+		REQUIRE (root->children.size()==3);
+		REQUIRE (root->branch_lengths[0]==0.1);
+		REQUIRE (root->branch_lengths[1]==0.2);
+		REQUIRE (root->branch_lengths[2]==0.5);
+		Clade * child_0 = root->children[0];
+	 	REQUIRE(child_0->children.size()==0);
+		Clade * child_1 = root->children[1];
+		REQUIRE(child_1->children.size()==0);
+		Clade * child_2 = root->children[2];
+		REQUIRE(child_2->children.size()==2);
+		REQUIRE (child_2->branch_lengths[0]==0.3);
+		REQUIRE (child_2->branch_lengths[1]==0.4);
+	} 
+	
+	SECTION("Branch lengths - one missing"){
+		Newick newick(42);
+		Clade * root = newick.parse("(:0.1,,(:0.3,:0.4):0.5);");
+		REQUIRE (root->children.size()==3);
+		REQUIRE (root->branch_lengths[0]==0.1);
+		REQUIRE (root->branch_lengths[1]==42.0);
+		REQUIRE (root->branch_lengths[2]==0.5);
+		Clade * child_0 = root->children[0];
+	 	REQUIRE(child_0->children.size()==0);
+		Clade * child_1 = root->children[1];
+		REQUIRE(child_1->children.size()==0);
+		Clade * child_2 = root->children[2];
+		REQUIRE(child_2->children.size()==2);
+		REQUIRE (child_2->branch_lengths[0]==0.3);
+		REQUIRE (child_2->branch_lengths[1]==0.4);
+	} 
+	
+	SECTION("Branch lengths -- all"){
+		Newick newick;
+		Clade * root = newick.parse("(:0.1,:0.2,(:0.3,:0.4):0.5):0.0;");
+		REQUIRE (root->children.size()==3);
+		REQUIRE (root->branch_lengths[0]==0.1);
+		REQUIRE (root->branch_lengths[1]==0.2);
+		REQUIRE (root->branch_lengths[2]==0.5);
+		Clade * child_0 = root->children[0];
+	 	REQUIRE(child_0->children.size()==0);
+		Clade * child_1 = root->children[1];
+		REQUIRE(child_1->children.size()==0);
+		Clade * child_2 = root->children[2];
+		REQUIRE(child_2->children.size()==2);
+		REQUIRE (child_2->branch_lengths[0]==0.3);
+		REQUIRE (child_2->branch_lengths[1]==0.4);
+		REQUIRE(root->parent->branch_lengths[0]==0);
+	}
+
+	SECTION("leaf nodes are named, and we have kengths"){
+		Newick newick;
+		Clade * root = newick.parse("(A:0.1,B:0.2,(C:0.3,D:0.4):0.5);");
+		REQUIRE (root->children.size()==3);
+		REQUIRE (root->children[0]->name=="A");
+		REQUIRE (root->children[1]->name=="B");
+		REQUIRE (root->branch_lengths[0]==0.1);
+		REQUIRE (root->branch_lengths[1]==0.2);
+		REQUIRE (root->branch_lengths[2]==0.5);
+		Clade * child_0 = root->children[0];
+	 	REQUIRE(child_0->children.size()==0);
+		Clade * child_1 = root->children[1];
+		REQUIRE(child_1->children.size()==0);
+		Clade * child_2 = root->children[2];
+		REQUIRE(child_2->children.size()==2);
+		REQUIRE (child_2->children[0]->name=="C");
+		REQUIRE (child_2->children[1]->name=="D");
+		REQUIRE (child_2->branch_lengths[0]==0.3);
+		REQUIRE (child_2->branch_lengths[1]==0.4);
+	} 	
 }
