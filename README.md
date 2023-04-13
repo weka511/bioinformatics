@@ -399,10 +399,10 @@ I have written this code in Python 3, generally with the most recent release at 
 ## C++ code
 
 | Location | Header|Description |
-| --------------- | ------------------------------------------------|
+| --------------- |------------------|------------------------------------------------|
 |Makefile||for C++ code|
 |newick.cpp|newick.h|Parser for files in [Newick format](http://evolution.genetics.washington.edu/phylip/newicktree.html)|
-|qrtd|qrtd.cpp|qrtd.h|[Quartet Distance](http://rosalind.info/problems/qrtd/) [WIP](https://github.com/weka511/bioinformatics/issues/46)|
+|qrtd.cpp|qrtd.h|[Quartet Distance](http://rosalind.info/problems/qrtd/) [WIP](https://github.com/weka511/bioinformatics/issues/46)|
 |test-newick.cpp||Test [Newick](http://evolution.genetics.washington.edu/phylip/newicktree.html) Parser|
 |test-qrtd.cpp||Test [Quartet Distance](http://rosalind.info/problems/qrtd/) [WIP](https://github.com/weka511/bioinformatics/issues/46)|
 |tests.cpp|catch.hpp|C++ test framework|
