@@ -92,6 +92,10 @@ class Newick {
 	Clade * _get_top_of_stack(){return _stack.back();}
 	int     _get_depth() {return _stack.size();}
 	Clade * _get_latest() {return  _get_top_of_stack()->children.back();}
+	void    _link(Clade * newly_created){
+											newly_created->parent =_get_top_of_stack();
+											_get_top_of_stack()->children.push_back(newly_created);
+										}
 };
 
 
