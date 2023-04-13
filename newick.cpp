@@ -64,7 +64,7 @@ bool Tokenizer::Iterator::_is_digit(char c, bool extended){
 
 Clade * Newick::parse(std::string s){
 	assert(_stack.size()==0);
-	_root = NULL;
+	_stack.push_back(new Clade());     // root
 	Tokenizer tokenizer(s);
 	Tokenizer::Iterator iterator(tokenizer);
 	iterator.First();
@@ -98,44 +98,55 @@ Clade * Newick::parse(std::string s){
 		}
 		iterator.Next();
 	}
+
+	Clade * root = _stack.back();
+	_stack.pop_back();
 	assert(_stack.size()==0);
-	return _root;
+	return root;//->children.front();
 }
 
 void Newick::_parseColon(){
 }
 
 void Newick::_parseLeft(){
-	if (_stack.size()==0){
-		 _root = new Clade();
-		 _stack.push_back(_root);
-	} else {
+	if (_get_depth()==1){
+		std::cout << "Initialize " << std::endl;
 		Clade * newly_created = new Clade();
-		Clade * top_of_stack  = _stack.back();
-		newly_created->parent = top_of_stack;
-		top_of_stack->children.push_back(newly_created);
+		newly_created->parent = _get_top_of_stack();
+	//	_get_top_of_stack()->children.push_back(newly_created);
+		_get_top_of_stack()->children.push_back(newly_created);
 		_stack.push_back(newly_created);
+		Clade * first_born = new Clade();
+		_get_top_of_stack()->children.push_back(first_born);
+	} else {
+		_stack.push_back(_get_latest());
+			Clade * first_born = new Clade();
+		_get_top_of_stack()->children.push_back(first_born);
 	}
 
 	std::cout << "New level "<<_stack.size() << " and node" << std::endl;
 }
 
 void Newick::_parseComma(){
-	assert(_stack.size()>0);
+	assert(_stack.size()>1);
 	Clade * newly_created = new Clade();
-	Clade * top_of_stack  = _stack.back();
-	newly_created->parent = top_of_stack->parent;
-	std::cout << __LINE__ << std::endl;
-	top_of_stack->parent->children.push_back(newly_created);
-	std::cout << __LINE__ << std::endl;
+	newly_created->parent =_get_top_of_stack();
+	_get_top_of_stack()->children.push_back(newly_created);
+
+//	std::cout << __LINE__ << std::endl;
+//	top_of_stack->parent->children.push_back(newly_created);
+//	std::cout << __LINE__ << std::endl;
 	std::cout << "node: stack size= " << _stack.size()
-		<< ", siblings=" << top_of_stack->children.size() << std::endl;
+		<< ", siblings=" << _get_top_of_stack()->children.size() << std::endl;
 }
 
 void Newick::_parseRight(){
 	assert(_stack.size()>0);
+	std::cout << "R: node: stack size= " << _stack.size()
+		<< ", siblings=" << _get_top_of_stack()->children.size() << std::endl;
 	_stack.pop_back();
-	std::cout << "popped" << std::endl;
+	//Clade * top_of_stack  = _stack.back();
+	std::cout << "popped, levels = " << _stack.size() << std::endl;
 }
 
 void Newick::_parseName(std::string s){

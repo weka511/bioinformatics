@@ -76,20 +76,22 @@ class Clade{
 };
 
 class Newick {
-	
 	std::vector<Clade*> _stack;
-	Clade *             _root;
-	public:
-		Clade * parse(std::string s);
+	
+  public:
+	Clade * parse(std::string s);
 		
-	private:
-		void _parseLeft();
-		void _parseComma();
-		void _parseRight();
-		void _parseName(std::string s);
-		void _parseColon();
-		void _parseLength(std::string s);
-		void _parseSemicolon();
+  private:
+	void    _parseLeft();
+	void    _parseComma();
+	void    _parseRight();
+	void    _parseName(std::string s);
+	void    _parseColon();
+	void    _parseLength(std::string s);
+	void    _parseSemicolon();
+	Clade * _get_top_of_stack(){return _stack.back();}
+	int     _get_depth() {return _stack.size();}
+	Clade * _get_latest() {return  _get_top_of_stack()->children.back();}
 };
 
 
