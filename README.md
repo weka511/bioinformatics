@@ -168,8 +168,7 @@ I have written this code in Python 3, generally with the most recent release at 
 |pdst|rosalind.py|[Creating a Distance Matrix ](http://rosalind.info/problems/pdst/) |
 |qrt|qrt.py phylogeny.py|[Quartets](http://rosalind.info/problems/qrt/)|
 |qrtd|qrtd.py phylogeny.py|[Quartet Distance](http://rosalind.info/problems/qrtd/) [WIP](https://github.com/weka511/bioinformatics/issues/46)|
-|qrtd|qrtd.cpp|[Quartet Distance](http://rosalind.info/problems/qrtd/) [WIP](https://github.com/weka511/bioinformatics/issues/46)|
-|root|phylogeny.py|[Counting Rooted Binary Trees ](http://rosalind.info/problems/root/) |
+||root|phylogeny.py|[Counting Rooted Binary Trees ](http://rosalind.info/problems/root/) |
 |rsub|rsub.py phylogeny.py|[Identifying Reversing Substitutions](http://rosalind.info/problems/rsub/)|
 |sptd|sptb.py phylogeny.py|[Phylogeny Comparison with Split Distance](http://rosalind.info/problems/sptd/) |
 |tree|tree.py phylogeny.py|[Completing a Tree ](http://rosalind.info/problems/tree/) |
@@ -397,23 +396,27 @@ I have written this code in Python 3, generally with the most recent release at 
 | ---- | --------------- | ------------------------------------------------|
 |fibo|fibo.py|[Fibonacci numbers](http://rosalind.info/problems/fibo/) |
 
+## C++ code
+
+| Location | Header|Description |
+| --------------- | ------------------------------------------------|
+|Makefile||for C++ code|
+|newick.cpp|newick.h|Parser for files in [Newick format](http://evolution.genetics.washington.edu/phylip/newicktree.html)|
+|qrtd|qrtd.cpp|qrtd.h|[Quartet Distance](http://rosalind.info/problems/qrtd/) [WIP](https://github.com/weka511/bioinformatics/issues/46)|
+|test-newick.cpp||Test [Newick](http://evolution.genetics.washington.edu/phylip/newicktree.html) Parser|
+|test-qrtd.cpp||Test [Quartet Distance](http://rosalind.info/problems/qrtd/) [WIP](https://github.com/weka511/bioinformatics/issues/46)|
+|tests.cpp|catch.hpp|C++ test framework|
 
 ## Support
 
 | Location | Description |
 | --------------- | ------------------------------------------------|
 |bioinformatics.bib|Bibliography|
-|catch.hpp|C++ test framework|
 |findtests.py|Generates shell script to execute all tests|
 |helpers.py|Utilities for formatting output, parsing input, etc |
 |LICENSE|License Agreement|
-|Makefile|for C++ code|
 |newick.py|Parser for files in [Newick format](http://evolution.genetics.washington.edu/phylip/newicktree.html) |
-|newick.cpp|Parser for files in [Newick format](http://evolution.genetics.washington.edu/phylip/newicktree.html)|
-|newick.h|Parser for files in [Newick format](http://evolution.genetics.washington.edu/phylip/newicktree.html)|
 |README.md|This file|
 |rosalind.py|Shared code|
 |rosalind.wpr|WingWare Project File |
 |template.py|Template for getting started on a problem|
-|test-newick.cpp|Test [Newick](http://evolution.genetics.washington.edu/phylip/newicktree.html) Parser|
-|tests.cpp|C++ test framework|

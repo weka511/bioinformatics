@@ -23,7 +23,7 @@ CC          = gcc
 CXX         = g++
 RM          = rm -f
 MKDIR       = mkdir
-SRCS        = newick.cpp
+SRCS        = newick.cpp qrtd.cpp
 
 
 TESTS       = 	test-newick.cpp	test-qrtd.cpp	
@@ -34,7 +34,7 @@ TEST_OBJS  = $(subst .cpp,.o,$(TESTS))
 
 
 
-MAIN      = qrtd.exe
+MAIN      = bioinformatics.exe
 TEST_MAIN = tests.exe 
 
 TARGETS   = $(MAIN) 
@@ -55,16 +55,16 @@ depend: .depend
 install: rebuild
 	cp $(MAIN) /usr/local/bin
 	
-.depend: $(SRCS)  qrtd.cpp $(TESTS) 
+.depend: $(SRCS)  $(TESTS) 
 	$(RM) ./.depend
 	$(CXX) $(CPPFLAGS) -MM $^>>./.depend;
 	sed -i -e 's/\/home\/Weka\/qrtd\///$g' .depend
 	
-$(MAIN): $(OBJS) qrtd.o
-	${CXX} $(LDFLAGS) -o $(MAIN) qrtd.o ${OBJS} ${LDLIBS}
+$(MAIN): $(OBJS) bioinformatics.o
+	${CXX} $(LDFLAGS) -o $(MAIN)  ${OBJS} bioinformatics.o ${LDLIBS}
 
-$(TEST_MAIN): $(OBJS) tests.o $(TEST_OBJS)
-	${CXX} $(LDFLAGS) -o $(TEST_MAIN) tests.o ${OBJS} $(TEST_OBJS) ${LDLIBS}
+$(TEST_MAIN): $(OBJS) tests.o $(TEST_OBJS) 
+	${CXX} $(LDFLAGS) -o $(TEST_MAIN) tests.o ${OBJS}  $(TEST_OBJS) ${LDLIBS}
 
 tests : $(TEST_MAIN)
 	${RM}  *.stackdump

@@ -17,6 +17,8 @@
  
 #ifndef _QRTD_H
 #define _QRTD_H
+#include <string>
 
+int get_qrtd(std::string taxa, std::string T1, std::string T2);
 
-#endif
+#endif //_QRTD_H

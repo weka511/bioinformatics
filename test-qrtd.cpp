@@ -18,12 +18,13 @@
 #include <iostream>
 #include "catch.hpp"
 #include "qrtd.h"
-#include <string>
 
 TEST_CASE( "QRTD tests", "[qrtd]" ) {
 	
-  	SECTION("Trivial trees"){
-	
+  	SECTION("Sample"){
+		REQUIRE(get_qrtd("A B C D E",
+			"(A,C,((B,D),E));",
+			"(C,(B,D),(A,E));")==4);
 	} 
 	
 }

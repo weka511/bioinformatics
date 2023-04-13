@@ -19,8 +19,12 @@
 #include "newick.h"
 #include "qrtd.h"
 
-int main(){
+int get_qrtd(std::string taxa, std::string T1, std::string T2) {
+	return -1;
+}
+
+/* int main(){
 
 	return 0;
-}
+} */
  
