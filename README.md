@@ -415,5 +415,5 @@ I have written this code in Python 3, generally with the most recent release at 
 |rosalind.py|Shared code|
 |rosalind.wpr|WingWare Project File |
 |template.py|Template for getting started on a problem|
-|test-newick.cpp|Test Newick Parser[Newick format](http://evolution.genetics.washington.edu/phylip/newicktree.html)|
+|test-newick.cpp|Test [Newick](http://evolution.genetics.washington.edu/phylip/newicktree.html) Parser|
 |tests.cpp|C++ test framework|
