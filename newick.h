@@ -18,20 +18,22 @@
 #ifndef _NEWICK_H
 #define _NEWICK_H
 #include <vector>
+#include <string>
 
 class Tokenizer {
 	std::string  _s;
 	
   public:
 	enum Token {
-		Left, 
-		Comma, 
-		Right,
-		Name,
-		Colon,
-		Length,
-		Semicolon,
-		Invalid };
+			Left, 
+			Comma, 
+			Right,
+			Name,
+			Colon,
+			Length,
+			Semicolon,
+			Invalid
+		};
 
 	class Iterator {
 		int        _position;
@@ -83,44 +85,100 @@ class Clade{
 	
   public:
 	Clade() : _name(""),_parent(NULL) {}
+	
 	std::vector<Clade*> get_children() {return _children;}
+	
 	std::vector<double> get_branch_lengths() {return _branch_lengths;}
+	
 	std::string         get_name() {return _name;}
+	
 	Clade *             get_parent() {return _parent;}
+	
+	/**
+	 *  Destructor deletes children
+	 */
+	virtual ~Clade() {
+		for (std::vector<Clade*>::iterator child=_children.begin(); child!=_children.end(); child++)
+			delete *child;
+	}
 };
 
+/**
+ *   Parser for trees in Newick format
+ */
 class Newick {
+	
 	std::vector<Clade*> _stack;
 	double              _default_branch_length;
+	
   public:
+  
 	Newick(double default_branch_length=1.0) : _default_branch_length(default_branch_length) {}
   
+  /**
+   *   Parse string in Newick format into a tree
+   */
 	Clade * parse(std::string s);
 		
   private:
+	/**
+      *   Used when parsing a Newick formatted string when a left parenthesis is encountered
+	  */
 	void    _parseLeft(Tokenizer::Token previous_token);
-	
+
+	  /**
+	  *   Used when parsing a Newick formatted string when a comma is encountered
+	  */	
 	void    _parseComma(Tokenizer::Token previous_token);
 	
+	/**
+	  *   Used when parsing a Newick formatted string when a right parenthesis is encountered
+	  */
 	void    _parseRight(Tokenizer::Token previous_token);
+	
+	/**
+	  *   Used when parsing a Newick formatted string when a name is encountered
+	  */
 	
 	void    _parseName(std::string s, Tokenizer::Token previous_token);
 	
+	/**
+	  *   Used when parsing a Newick formatted string when a colon is encountered
+	  */	
 	void    _parseColon(Tokenizer::Token previous_token);
 	
+	/**
+	  *   Used when parsing a Newick formatted string when a lenght is encountered
+	  */
 	void    _parseLength(std::string s,Tokenizer::Token previous_token);
-	
+
+	/**
+	  *   Used when parsing a Newick formatted string when a semicolon is encountered
+	  */	
 	void    _parseSemicolon(Tokenizer::Token previous_token);
 	
+	/**
+	 *    Locate the current top of stack
+	 */
 	Clade * _get_top_of_stack(){return _stack.back();}
+	
+	/**
+	 *     Find depth of the current top of stack
+	 */
 	int     _get_depth() {return _stack.size();}
+	
+	/**
+	 *    Get the latest clade to be added
+	 */
 	Clade * _get_latest() {return  _get_top_of_stack()->_children.back();}
+	 
+	/**
+	 *   Establish a parent-child relationship between the current top of the stack and a newly created clade
+	 */
 	void    _link(Clade * newly_created){
 											newly_created->_parent =_get_top_of_stack();
 											_get_top_of_stack()->_children.push_back(newly_created);
 										}
 };
 
-
-
-#endif
+#endif // _NEWICK_H

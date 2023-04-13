@@ -15,10 +15,9 @@
  * along with this software.  If not, see <http://www.gnu.org/licenses/>
  */
  
-#include <iostream>
+
 #include "catch.hpp"
 #include "newick.h"
-#include <string>
 
 TEST_CASE( "Newick tests", "[newick]" ) {
 	
@@ -26,8 +25,10 @@ TEST_CASE( "Newick tests", "[newick]" ) {
 		Newick newick;
 		Clade * tree0 = newick.parse("();");
 		REQUIRE (tree0->get_children().size()==1);
+		delete tree0;
 		Clade * tree5 = newick.parse("(,,,,);");
 		REQUIRE (tree5->get_children().size()==5);
+		delete tree5;
 	} 
 	
     SECTION("no nodes are named"){
@@ -40,6 +41,7 @@ TEST_CASE( "Newick tests", "[newick]" ) {
 		REQUIRE(child_1->get_children().size()==0);
 		Clade * child_2 = root->get_children()[2];
 		REQUIRE(child_2->get_children().size()==2);
+		delete root;
 	} 
 	
   	SECTION("leaf nodes are named"){
@@ -56,6 +58,7 @@ TEST_CASE( "Newick tests", "[newick]" ) {
 		REQUIRE(child_2->get_children().size()==2);
 		REQUIRE (child_2->get_children()[0]->get_name()=="Charlie");
 		REQUIRE (child_2->get_children()[1]->get_name()=="David");
+		delete root;
 	}  
 	
  	SECTION("all nodes are named"){
@@ -74,6 +77,7 @@ TEST_CASE( "Newick tests", "[newick]" ) {
 		REQUIRE (child_2->get_children()[0]->get_name()=="Charlie");
 		REQUIRE (child_2->get_children()[1]->get_name()=="David");
 		REQUIRE (root->get_name()=="Frank");
+		delete root;
 	} 
 	
     SECTION("Branch lengths"){
@@ -91,6 +95,7 @@ TEST_CASE( "Newick tests", "[newick]" ) {
 		REQUIRE(child_2->get_children().size()==2);
 		REQUIRE (child_2->get_branch_lengths()[0]==0.3);
 		REQUIRE (child_2->get_branch_lengths()[1]==0.4);
+		delete root;
 	} 
 	
 	SECTION("Branch lengths - one missing"){
@@ -126,6 +131,7 @@ TEST_CASE( "Newick tests", "[newick]" ) {
 		REQUIRE (child_2->get_branch_lengths()[0]==0.3);
 		REQUIRE (child_2->get_branch_lengths()[1]==0.4);
 		REQUIRE(root->get_parent()->get_branch_lengths()[0]==0);
+		delete root;
 	} 
 
  	SECTION("leaf nodes are named, and we have lengths"){
@@ -147,5 +153,6 @@ TEST_CASE( "Newick tests", "[newick]" ) {
 		REQUIRE (child_2->get_children()[1]->get_name()=="D");
 		REQUIRE (child_2->get_branch_lengths()[0]==0.3);
 		REQUIRE (child_2->get_branch_lengths()[1]==0.4);
+		delete root;
 	} 	
 }

@@ -17,7 +17,7 @@
  
 #include <iostream>
 #include <cstddef> 
-#include <string>
+
 #include <cassert>
 #include "newick.h"
 
