@@ -16,11 +16,14 @@
  */
  
 #include <iostream>
-#include "newick.h"
+#include "catch.hpp"
 #include "qrtd.h"
+#include <string>
 
-int main(){
-
-	return 0;
+TEST_CASE( "QRTD tests", "[qrtd]" ) {
+	
+  	SECTION("Trivial trees"){
+	
+	} 
+	
 }
- 

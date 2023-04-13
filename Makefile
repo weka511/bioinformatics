@@ -26,7 +26,7 @@ MKDIR       = mkdir
 SRCS        = newick.cpp
 
 
-TESTS       = 	test-newick.cpp		
+TESTS       = 	test-newick.cpp	test-qrtd.cpp	
 		
 OBJS1      = $(subst .cpp,.o,$(SRCS)) 
 OBJS       = $(subst .cc,.o,$(OBJS1)) 

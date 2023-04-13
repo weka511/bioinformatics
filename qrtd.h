@@ -15,12 +15,8 @@
  * along with this software.  If not, see <http://www.gnu.org/licenses/>
  */
  
-#include <iostream>
-#include "newick.h"
-#include "qrtd.h"
+#ifndef _QRTD_H
+#define _QRTD_H
 
-int main(){
 
-	return 0;
-}
- 
+#endif
