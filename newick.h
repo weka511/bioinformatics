@@ -20,6 +20,7 @@
 #include <vector>
 #include <string>
 
+
 class Tokenizer {
 	std::string  _s;
 	
@@ -76,39 +77,6 @@ class Tokenizer {
 };
 
 
-class Clade{
-	friend class Newick;
-	
-	std::vector<Clade*> _children;
-	std::vector<double> _branch_lengths;
-	std::string         _name;
-	Clade *             _parent;
-	
-  public:
-	class Visitor{
-	  public:
-		virtual bool visit(Clade *)=0;
-	};
-	Clade() : _name(""),_parent(NULL) {}
-	
-	std::vector<Clade*> get_children() {return _children;}
-	
-	std::vector<double> get_branch_lengths() {return _branch_lengths;}
-	
-	std::string         get_name() {return _name;}
-	
-	Clade *             get_parent() {return _parent;}
-	
-	bool                depth_first_search(Visitor* visitor);
-	
-	/**
-	 *  Destructor deletes children
-	 */
-	virtual ~Clade() {
-		for (std::vector<Clade*>::iterator child=_children.begin(); child!=_children.end(); child++)
-			delete *child;
-	}
-};
 
 /**
  *   Parser for trees in Newick format

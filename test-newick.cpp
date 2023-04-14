@@ -17,6 +17,7 @@
  
 
 #include "catch.hpp"
+#include "tree.h"
 #include "newick.h"
 
 TEST_CASE( "Newick tests", "[newick]" ) {

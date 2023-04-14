@@ -23,10 +23,14 @@ CC          = gcc
 CXX         = g++
 RM          = rm -f
 MKDIR       = mkdir
-SRCS        = newick.cpp qrtd.cpp
+SRCS        = 	newick.cpp 	\
+				qrtd.cpp    \
+				tree.cpp
 
 
-TESTS       = 	test-newick.cpp	test-qrtd.cpp	
+TESTS       = 	test-newick.cpp	\
+				test-qrtd.cpp 	\
+				test-tree.cpp
 		
 OBJS1      = $(subst .cpp,.o,$(SRCS)) 
 OBJS       = $(subst .cc,.o,$(OBJS1)) 

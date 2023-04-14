@@ -16,13 +16,30 @@
  */
  
 #include <iostream>
+#include "catch.hpp"
 #include "tree.h"
-#include "qrtd.h"
+#include "newick.h"
 
 
-
-int get_qrtd(std::string taxa_string, std::string T1, std::string T2) {
-	Taxa taxa(taxa_string);
-
-	return -1;
+	
+ 
+TEST_CASE( "Consistency tests", "[consist]" ) {	
+ 	SECTION("Consistency"){
+		Newick             newick;
+		Clade *            root = newick.parse("(A,C,((B,D),E));");
+		Taxa               taxa("A B C D E");
+		ConsistencyChecker consistency_checker;
+		REQUIRE(consistency_checker.is_consistent(root,taxa));
+		delete root;
+	}
+	
+	SECTION("Inconsistency"){
+		Newick             newick;
+		Clade *            root = newick.parse("(A,C,((B,D),F));");
+		Taxa               taxa("A B C D E");
+		ConsistencyChecker consistency_checker;
+		REQUIRE_FALSE(consistency_checker.is_consistent(root,taxa));
+		delete root;
+	}
+	
 }

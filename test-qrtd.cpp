@@ -17,6 +17,7 @@
  
 #include <iostream>
 #include "catch.hpp"
+#include "tree.h"
 #include "qrtd.h"
 
 TEST_CASE( "QRTD tests", "[qrtd]" ) {
@@ -28,23 +29,3 @@ TEST_CASE( "QRTD tests", "[qrtd]" ) {
 	}  */
 }
 
-TEST_CASE( "Consitency tests", "[consist]" ) {	
- 	SECTION("Consistency"){
-		Newick             newick;
-		Clade *            root = newick.parse("(A,C,((B,D),E));");
-		Taxa               taxa("A B C D E");
-		ConsistencyChecker consistency_checker;
-		REQUIRE(consistency_checker.is_consistent(root,taxa));
-		delete root;
-	}
-	
-	SECTION("Consistency"){
-		Newick             newick;
-		Clade *            root = newick.parse("(A,C,((B,D),F));");
-		Taxa               taxa("A B C D E");
-		ConsistencyChecker consistency_checker;
-		REQUIRE_FALSE(consistency_checker.is_consistent(root,taxa));
-		delete root;
-	}
-	
-}
