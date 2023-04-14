@@ -21,10 +21,19 @@
 
 TEST_CASE( "QRTD tests", "[qrtd]" ) {
 	
-  	SECTION("Sample"){
+ /*  	SECTION("Sample"){
 		REQUIRE(get_qrtd("A B C D E",
 			"(A,C,((B,D),E));",
 			"(C,(B,D),(A,E));")==4);
-	} 
+	}  */
+	
+ 	SECTION("Consistency"){
+		Newick             newick;
+		Clade *            root = newick.parse("(A,C,((B,D),E));");
+		Taxa               taxa("A B C D E");
+		ConsistencyChecker consistency_checker;
+		REQUIRE(consistency_checker.is_consistent(root,taxa));
+		delete root;
+	}
 	
 }

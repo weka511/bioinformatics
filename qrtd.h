@@ -17,7 +17,27 @@
  
 #ifndef _QRTD_H
 #define _QRTD_H
+#include <sstream>
 #include <string>
+#include <map>
+#include <vector>
+#include "newick.h"
+
+class Taxa  {
+	friend class ConsistencyChecker;
+	std::vector<std::string> _names;
+  public:
+	Taxa(std::string taxa_string);
+
+};
+
+class ConsistencyChecker : Clade::Visitor{
+	std::map<std::string,int> _counts;
+	
+  public:
+	bool visit(Clade *);
+	bool is_consistent(Clade *,Taxa& taxa);
+};
 
 int get_qrtd(std::string taxa, std::string T1, std::string T2);
 

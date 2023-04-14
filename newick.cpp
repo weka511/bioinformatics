@@ -62,6 +62,13 @@ bool Tokenizer::Iterator::_is_digit(char c, bool extended){
 		return in_range;
 }
 
+bool Clade::depth_first_search(Visitor* visitor) {
+	for (std::vector<Clade*>::iterator child=_children.begin(); child!=_children.end(); child++)
+		if (!(*child)->depth_first_search(visitor))
+			return false;
+	return visitor->visit(this);
+}
+
 Clade * Newick::parse(std::string s){
 	assert(_stack.size()==0);
 	_stack.push_back(new Clade());     // root

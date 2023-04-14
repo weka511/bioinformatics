@@ -61,6 +61,23 @@ TEST_CASE( "Newick tests", "[newick]" ) {
 		delete root;
 	}  
 	
+	SECTION("leaf nodes are named - 3 levels"){
+		Newick newick;
+		Clade * root = newick.parse("(A,C,((B,D),E));");
+		REQUIRE (root->get_children().size()==3);
+		REQUIRE (root->get_children()[0]->get_name()=="A");   // 1st level -- (A,C,...)
+		REQUIRE (root->get_children()[1]->get_name()=="C");
+		Clade * child_2 = root->get_children()[2];            // 2nd level -- (...,E)
+		REQUIRE(child_2->get_children().size()==2);
+		Clade * child_20 = child_2->get_children()[0];
+		REQUIRE(child_20->get_children().size()==2);
+		REQUIRE (child_20->get_children()[0]->get_name()=="B");
+		REQUIRE (child_20->get_children()[1]->get_name()=="D");
+		Clade * child_21 = child_2->get_children()[1];
+		REQUIRE (child_21->get_name()=="E");
+		delete root;
+	}  
+	
  	SECTION("all nodes are named"){
 		Newick newick;
 		Clade * root = newick.parse("(Alice,Bob,(Charlie,David)Ermintrude)Frank;");

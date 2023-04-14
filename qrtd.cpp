@@ -16,15 +16,45 @@
  */
  
 #include <iostream>
-#include "newick.h"
+
 #include "qrtd.h"
 
-int get_qrtd(std::string taxa, std::string T1, std::string T2) {
-	return -1;
+Taxa::Taxa(std::string taxa_string){
+	std::istringstream taxa_stream(taxa_string);
+	while (taxa_stream) {
+		std::string taxon_name;
+		taxa_stream >> taxon_name;
+		if (taxon_name.size()>0){
+			_names.push_back(taxon_name);
+			std::cout <<"<<"<<taxon_name<<">>"<<std::endl;
+		}
+	}
 }
 
-/* int main(){
+bool ConsistencyChecker::visit(Clade * clade) {
+	if (clade->get_name().size()==0) return true;
+	std::cout<<clade->get_name()<<std::endl;
+	int count = _counts.count(clade->get_name());
+	if (count==1)
+		_counts[clade->get_name()]++;
+	else
+		std::cout<< "MIssing key " << clade->get_name() << std::endl;
+	return true;
+}
 
-	return 0;
-} */
- 
+bool ConsistencyChecker::is_consistent(Clade * root,Taxa& taxa){
+	_counts.clear();
+	for (std::vector<std::string>::iterator name=taxa._names.begin(); name!=taxa._names.end(); name++)
+		_counts[*name] =0;
+	bool result = root->depth_first_search(this);
+	
+	for (std::map<std::string, int>::iterator it = _counts.begin(); it != _counts.end(); it++)
+		std::cout << it->first << "," << it->second << std::endl;
+	return result;
+}
+
+int get_qrtd(std::string taxa_string, std::string T1, std::string T2) {
+	Taxa taxa(taxa_string);
+
+	return -1;
+}

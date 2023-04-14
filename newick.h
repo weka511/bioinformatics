@@ -75,6 +75,7 @@ class Tokenizer {
 	}
 };
 
+
 class Clade{
 	friend class Newick;
 	
@@ -84,6 +85,10 @@ class Clade{
 	Clade *             _parent;
 	
   public:
+	class Visitor{
+	  public:
+		virtual bool visit(Clade *)=0;
+	};
 	Clade() : _name(""),_parent(NULL) {}
 	
 	std::vector<Clade*> get_children() {return _children;}
@@ -93,6 +98,8 @@ class Clade{
 	std::string         get_name() {return _name;}
 	
 	Clade *             get_parent() {return _parent;}
+	
+	bool                depth_first_search(Visitor* visitor);
 	
 	/**
 	 *  Destructor deletes children
