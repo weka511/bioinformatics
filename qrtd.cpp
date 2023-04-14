@@ -24,21 +24,17 @@ Taxa::Taxa(std::string taxa_string){
 	while (taxa_stream) {
 		std::string taxon_name;
 		taxa_stream >> taxon_name;
-		if (taxon_name.size()>0){
+		if (taxon_name.size()>0)
 			_names.push_back(taxon_name);
-			std::cout <<"<<"<<taxon_name<<">>"<<std::endl;
-		}
 	}
 }
 
 bool ConsistencyChecker::visit(Clade * clade) {
 	if (clade->get_name().size()==0) return true;
-	std::cout<<clade->get_name()<<std::endl;
-	int count = _counts.count(clade->get_name());
-	if (count==1)
+	if (_counts.count(clade->get_name())==1)
 		_counts[clade->get_name()]++;
 	else
-		std::cout<< "MIssing key " << clade->get_name() << std::endl;
+		std::cout<< "Key \"" << clade->get_name() << "\" in tree is not present in list of taxa" << std::endl;
 	return true;
 }
 
@@ -47,9 +43,11 @@ bool ConsistencyChecker::is_consistent(Clade * root,Taxa& taxa){
 	for (std::vector<std::string>::iterator name=taxa._names.begin(); name!=taxa._names.end(); name++)
 		_counts[*name] =0;
 	bool result = root->depth_first_search(this);
-	
 	for (std::map<std::string, int>::iterator it = _counts.begin(); it != _counts.end(); it++)
-		std::cout << it->first << "," << it->second << std::endl;
+		if (it->second!=1){
+			std::cout << "Taxon \"" << it->first << "\" has count " << it->second << " - should be 1." << std::endl;
+			result = false;
+		}
 	return result;
 }
 

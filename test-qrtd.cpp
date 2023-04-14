@@ -26,13 +26,24 @@ TEST_CASE( "QRTD tests", "[qrtd]" ) {
 			"(A,C,((B,D),E));",
 			"(C,(B,D),(A,E));")==4);
 	}  */
-	
+}
+
+TEST_CASE( "Consitency tests", "[consist]" ) {	
  	SECTION("Consistency"){
 		Newick             newick;
 		Clade *            root = newick.parse("(A,C,((B,D),E));");
 		Taxa               taxa("A B C D E");
 		ConsistencyChecker consistency_checker;
 		REQUIRE(consistency_checker.is_consistent(root,taxa));
+		delete root;
+	}
+	
+	SECTION("Consistency"){
+		Newick             newick;
+		Clade *            root = newick.parse("(A,C,((B,D),F));");
+		Taxa               taxa("A B C D E");
+		ConsistencyChecker consistency_checker;
+		REQUIRE_FALSE(consistency_checker.is_consistent(root,taxa));
 		delete root;
 	}
 	
