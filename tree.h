@@ -18,12 +18,12 @@
 #ifndef _TREE_H
 #define _TREE_H
 
+#include <iostream>
+#include <map>
+#include <set>
 #include <sstream>
 #include <string>
-#include <map>
 #include <vector>
-#include <iostream>
-#include <set>
 
 /**
  *  Clade
@@ -134,9 +134,11 @@ class Edge : std::tuple<Clade*,Clade*>{
  * Assigned names to internal nodes
  */
 class CladeNamer : public Clade::Visitor{
-	int seq = 0;
+	int seq                   = 0;
+	std::map<std::string, Clade*> _clades;
   public:
 	bool visit(Clade *, Clade *);
+	Clade* get_clade(std::string name) {return _clades[name];};
 };
 
 /**
@@ -153,22 +155,6 @@ class EdgeBuilder : public Clade::Visitor{
 }; 
 
 
-	
-/**
- * Tree
- *
- *
- */
-class Tree {
-	Clade*            _root;
-	std::vector<Edge> _edges;
-	Taxa&             _taxa;
-  public:
- 	Tree(Clade * root, Taxa & taxa);
-	std::vector<Edge> get_edges() {return _edges;};
-	bool              traverse(Clade::Visitor* visitor) {return _root->traverse(visitor);};
-};
-
 /**
  * ConsistencyChecker
  *
@@ -181,6 +167,24 @@ class ConsistencyChecker : Clade::Visitor{
 	bool visit(Clade *, Clade*);
 	bool is_consistent(Clade *,Taxa& taxa);
 };
+	
+/**
+ * Tree
+ *
+ * Encapsulate a hierarchu of clades and a consistent collection of taxa
+ */
+class Tree {
+	Clade*            _root;
+	std::vector<Edge> _edges;
+	Taxa&             _taxa;
+	CladeNamer        _clade_namer;
+  public:
+ 	Tree(Clade * root, Taxa & taxa);
+	std::vector<Edge> get_edges() {return _edges;};
+	bool              traverse(Clade::Visitor* visitor) {return _root->traverse(visitor);};
+};
+
+
 
 /**
  *  DescendentVisitor
@@ -193,6 +197,7 @@ class DescendentVisitor : public Clade::Visitor{
   public:
 	DescendentVisitor(Taxa & taxa) : _taxa(taxa) {};
 	bool visit(Clade *, Clade*);
+	std::set<int> get_descendents(std::string name) {return _descendents[name];};
   private:
 	void _propagate(Clade * clade,std::set<int> descendents);
 }; 

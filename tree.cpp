@@ -61,8 +61,7 @@ bool ConsistencyChecker::is_consistent(Clade * root,Taxa& taxa){
 }
 
 Tree::Tree(Clade * root, Taxa & taxa) : _root(root), _taxa(taxa) {
-	CladeNamer clade_namer;
-	_root->traverse(&clade_namer);
+	_root->traverse(&_clade_namer);
 	std::cout <<__FILE__ << " " << __LINE__ << ": " << std::endl;
 	EdgeBuilder edgeBuilder(_edges,taxa);
 	_root->traverse(&edgeBuilder); 
@@ -72,7 +71,7 @@ Tree::Tree(Clade * root, Taxa & taxa) : _root(root), _taxa(taxa) {
 bool CladeNamer::visit(Clade * clade, Clade * parent) {
 	if ( clade->get_name().size()==0)
 		clade->set_name( std::to_string(seq++));
-
+	_clades[clade->get_name()] = clade;
 	return true;
 }
 
@@ -92,19 +91,14 @@ bool EdgeBuilder::visit(Clade * clade, Clade * parent) {
 
 bool DescendentVisitor::visit(Clade * clade, Clade* parent) {
 	if (clade->is_leaf()) {
-//		std::cout <<__FILE__ << " " << __LINE__ << ": " << clade->get_name()<<std::endl;
 		int leaf_index = _taxa.get_position(clade->get_name());
 		_descendents[clade->get_name()].insert(leaf_index);
 	}
 	while (parent!=NULL){
-	//	std::cout <<__FILE__ << " " << __LINE__ << ": " << clade->get_name()<<" "<<parent->get_name()<<std::endl;
 		_propagate(parent,_descendents[clade->get_name()]);
 		parent = parent->get_parent();
 	}
-	std::cout <<__FILE__ << " " << __LINE__ << " " <<clade->get_name()<<": ";
-	for (std::set<int>::iterator descendent=_descendents[clade->get_name()].begin();descendent!=_descendents[clade->get_name()].end();descendent++)
-		std::cout << *descendent << " ";
-	std::cout <<std::endl; 
+
 	return true;
 }
 

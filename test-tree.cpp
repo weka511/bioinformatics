@@ -58,6 +58,17 @@ TEST_CASE( "Consistency tests", "[consist]" ) {
 		Tree    tree(root,taxa);
 		DescendentVisitor visitor(taxa);
 		tree.traverse(&visitor);
+		std::set<int> d0 = visitor.get_descendents("0");
+		REQUIRE(d0.size()==2);
+		REQUIRE(d0.find(1)!=d0.end());
+		REQUIRE(d0.find(3)!=d0.end());
+		std::set<int> d1 = visitor.get_descendents("1");
+		REQUIRE(d1.size()==3);
+		REQUIRE(d1.find(1)!=d1.end());
+		REQUIRE(d1.find(3)!=d1.end());
+		REQUIRE(d1.find(4)!=d1.end());
+		std::set<int> d2 = visitor.get_descendents("2");
+		REQUIRE(d2.size()==5);
 		delete root;
 	}
 	
