@@ -18,11 +18,11 @@
  #include <iostream>
  #include "tree.h"
  
- bool Clade::traverse(Visitor* visitor) {
+ bool Clade::traverse(Visitor* visitor, Clade * parent) {
 	for (std::vector<Clade*>::iterator child=_children.begin(); child!=_children.end(); child++)
-		if (!(*child)->traverse(visitor))
+		if (!(*child)->traverse(visitor, this))
 			return false;
-	return visitor->visit(this);
+	return visitor->visit(this,parent);
 }
 
 Taxa::Taxa(std::string taxa_string){
@@ -30,17 +30,20 @@ Taxa::Taxa(std::string taxa_string){
 	while (taxa_stream) {
 		std::string taxon_name;
 		taxa_stream >> taxon_name;
-		if (taxon_name.size()>0)
+		if (taxon_name.size()>0) {
+			_positions[taxon_name] = _names.size();
 			_names.push_back(taxon_name);
+			std::cout <<__FILE__ << " " << __LINE__ << ":"  <<taxon_name<< " "<<_positions[taxon_name]<< std::endl;
+		}
 	}
 }
 
-bool ConsistencyChecker::visit(Clade * clade) {
+bool ConsistencyChecker::visit(Clade * clade, Clade * parent) {
 	if (clade->get_name().size()==0) return true;
 	if (_counts.count(clade->get_name())==1)
 		_counts[clade->get_name()]++;
 	else
-		std::cout<< "Key \"" << clade->get_name() << "\" in tree is not present in list of taxa" << std::endl;
+		std::cout <<__FILE__ << " " << __LINE__ << ":"<< "Key \"" << clade->get_name() << "\" in tree is not present in list of taxa" << std::endl;
 	return true;
 }
 
@@ -51,8 +54,33 @@ bool ConsistencyChecker::is_consistent(Clade * root,Taxa& taxa){
 	bool result = root->traverse(this);
 	for (std::map<std::string, int>::iterator it = _counts.begin(); it != _counts.end(); it++)
 		if (it->second!=1){
-			std::cout << "Taxon \"" << it->first << "\" has count " << it->second << " - should be 1." << std::endl;
+			std::cout <<__FILE__ << " " << __LINE__ << ":" << "Taxon \"" << it->first << "\" has count " << it->second << " - should be 1." << std::endl;
 			result = false;
 		}
 	return result;
+}
+
+Tree::Tree(Clade * root, Taxa & taxa) : _root(root), _taxa(taxa) {
+	CladeNamer clade_namer;
+	_root->traverse(&clade_namer);
+	std::cout <<__FILE__ << " " << __LINE__ << ": " << std::endl;
+	EdgeBuilder edgeBuilder(_edges,taxa);
+	_root->traverse(&edgeBuilder); 
+
+}
+
+bool CladeNamer::visit(Clade * clade, Clade * parent) {
+	if ( clade->get_name().size()==0)
+		clade->set_name( std::to_string(seq++));
+
+	return true;
+}
+
+bool EdgeBuilder::visit(Clade * clade, Clade * parent) {
+	if (parent!=NULL){
+		Edge edge(parent,clade);
+		_edges.push_back(edge);
+	} 
+
+	return true;
 }

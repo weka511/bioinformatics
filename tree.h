@@ -18,12 +18,17 @@
 #ifndef _TREE_H
 #define _TREE_H
 
-
 #include <sstream>
 #include <string>
 #include <map>
 #include <vector>
+#include <iostream>
 
+/**
+ *  Clade
+ *
+ *  This class represents one clade in a phylogeny
+ */
 class Clade{
 	friend class Newick;
 	
@@ -31,13 +36,17 @@ class Clade{
 	std::vector<double> _branch_lengths;
 	std::string         _name;
 	Clade *             _parent;
-	
+	std::vector<int>    _taxon_indices;
   public:
+    /**
+	 *  Visitor
+	 *
+	 *  This abstract class is used by traverse(...) to apply an operation to all noded in phylogeny.
+	 */
 	class Visitor{
 	  public:
-		virtual bool visit(Clade *)=0;
+		virtual bool visit(Clade *, Clade*)=0;
 	};
-	Clade() : _name(""),_parent(NULL) {}
 	
 	std::vector<Clade*> get_children() {return _children;}
 	
@@ -45,9 +54,23 @@ class Clade{
 	
 	std::string         get_name() {return _name;}
 	
+	void                set_name(std::string name) { _name=name;}
+	
 	Clade *             get_parent() {return _parent;}
 	
-	bool                traverse(Visitor* visitor);
+	/**
+	 *  traverse
+	 *
+	 *  Used to apply an operation to all noded in phylogeny
+	 */
+	bool                traverse(Visitor* visitor, Clade * parent=NULL);
+	
+	void add_taxon(int seq) {
+		_taxon_indices.push_back(seq);
+		std::cout <<__FILE__ << " " << __LINE__ << ":"<<_taxon_indices.size()<< " " << _taxon_indices.back()<< std::endl;
+	}
+	
+	std::vector<int>    get_taxon_indices() {return _taxon_indices;}
 	
 	/**
 	 *  Destructor deletes children
@@ -58,19 +81,98 @@ class Clade{
 	}
 };
 
+/**
+ * Taxa
+ *
+ *  This class represent the set of names for leaves in one or more trees
+ */
 class Taxa  {
 	friend class ConsistencyChecker;
-	std::vector<std::string> _names;
-  public:
-	Taxa(std::string taxa_string);
+	
+	/**
+	 * Names of leaves
+	 */
+	std::vector<std::string>  _names;
+	
+	/**
+	 * Determine position of a specified name in list of all names
+	 */
 
+	std::map<std::string,int> _positions;
+	
+  public:
+    /**
+    * Constructor: create lookup tables froma list of taxon names
+    */
+	Taxa(std::string taxa_string);
+	
+	/**
+	 *  Accessor to determine sequence number of specifed taxon
+	 */
+	int get_position(std::string name) {return _positions[name];}
 };
 
+/**
+ *  Edge
+ *
+ *  And edge joins two Clade in phylogeny
+ */
+ 
+class Edge : std::tuple<Clade*,Clade*>{
+  public:
+	Edge(Clade* first,Clade* second) : std::tuple<Clade*,Clade*>(first,second) {
+		std::cout <<__FILE__ << " " << __LINE__ <<":"<< first->get_name() << " " << second->get_name()<< std::endl;
+	}
+};
+
+/**
+ *  CladeNamer
+ * 
+ * Assigned names to internal nodes
+ */
+class CladeNamer : public Clade::Visitor{
+	int seq = 0;
+  public:
+	bool visit(Clade *, Clade *);
+};
+
+/**
+ *  EdgeBuilder
+ *
+ *  Constructs set of all edges in phylogeny
+ */
+class EdgeBuilder : public Clade::Visitor{
+	std::vector<Edge> & _edges;
+	Taxa &              _taxa;
+  public:
+	EdgeBuilder(std::vector<Edge> &edges, Taxa & taxa) : _edges(edges), _taxa(taxa) {};
+	bool visit(Clade *, Clade*);
+}; 
+	
+/**
+ * Tree
+ *
+ *
+ */
+class Tree {
+	Clade*            _root;
+	std::vector<Edge> _edges;
+	Taxa&             _taxa;
+  public:
+ 	Tree(Clade * root, Taxa & taxa);
+	std::vector<Edge> get_edges() {return _edges;};
+};
+
+/**
+ * ConsistencyChecker
+ *
+ * Usd to verify that the phylogeny uses the exact same set of namesas t specified Taxa object
+ */
 class ConsistencyChecker : Clade::Visitor{
 	std::map<std::string,int> _counts;
 	
   public:
-	bool visit(Clade *);
+	bool visit(Clade *, Clade*);
 	bool is_consistent(Clade *,Taxa& taxa);
 };
 

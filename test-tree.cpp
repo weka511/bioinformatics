@@ -21,8 +21,6 @@
 #include "newick.h"
 
 
-	
- 
 TEST_CASE( "Consistency tests", "[consist]" ) {	
  	SECTION("Consistency"){
 		Newick             newick;
@@ -39,6 +37,16 @@ TEST_CASE( "Consistency tests", "[consist]" ) {
 		Taxa               taxa("A B C D E");
 		ConsistencyChecker consistency_checker;
 		REQUIRE_FALSE(consistency_checker.is_consistent(root,taxa));
+		delete root;
+	}
+	
+	SECTION("Edges"){
+		std::cout <<__FILE__ << " " << __LINE__  << std::endl;
+		Newick             newick;
+		Clade *            root = newick.parse("(A,C,((B,D),E));");
+		Taxa               taxa("A B C D E");
+		Tree tree(root,taxa);
+		REQUIRE (tree.get_edges().size()==7);
 		delete root;
 	}
 	
