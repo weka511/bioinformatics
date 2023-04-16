@@ -41,7 +41,6 @@ TEST_CASE( "Consistency tests", "[consist]" ) {
 	}
 	
 	SECTION("Edges"){
-		std::cout <<__FILE__ << " " << __LINE__  << std::endl;
 		Newick  newick;
 		Clade * root = newick.parse("(A,C,((B,D),E));");
 		Taxa    taxa("A B C D E");
@@ -51,7 +50,6 @@ TEST_CASE( "Consistency tests", "[consist]" ) {
 	}
 	
 	SECTION("Descendents"){
-		std::cout <<__FILE__ << " " << __LINE__  << std::endl;
 		Newick   newick;
 		Clade * root = newick.parse("(A,C,((B,D),E));");
 		Taxa    taxa("A B C D E");

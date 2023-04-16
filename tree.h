@@ -123,9 +123,7 @@ class Taxa  {
  
 class Edge : std::tuple<Clade*,Clade*>{
   public:
-	Edge(Clade* first,Clade* second) : std::tuple<Clade*,Clade*>(first,second) {
-		std::cout <<__FILE__ << " " << __LINE__ <<":"<< first->get_name() << " " << second->get_name()<< std::endl;
-	}
+	Edge(Clade* first,Clade* second) : std::tuple<Clade*,Clade*>(first,second) {;}
 };
 
 /**

@@ -33,7 +33,6 @@ Taxa::Taxa(std::string taxa_string){
 		if (taxon_name.size()>0) {
 			_positions[taxon_name] = _names.size();
 			_names.push_back(taxon_name);
-			std::cout <<__FILE__ << " " << __LINE__ << ":"  <<taxon_name<< " "<<_positions[taxon_name]<< std::endl;
 		}
 	}
 }
@@ -62,7 +61,6 @@ bool ConsistencyChecker::is_consistent(Clade * root,Taxa& taxa){
 
 Tree::Tree(Clade * root, Taxa & taxa) : _root(root), _taxa(taxa) {
 	_root->traverse(&_clade_namer);
-	std::cout <<__FILE__ << " " << __LINE__ << ": " << std::endl;
 	EdgeBuilder edgeBuilder(_edges,taxa);
 	_root->traverse(&edgeBuilder); 
 
