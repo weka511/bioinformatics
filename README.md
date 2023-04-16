@@ -405,7 +405,9 @@ I have written this code in Python 3, generally with the most recent release at 
 |qrtd.cpp|qrtd.h|[Quartet Distance](http://rosalind.info/problems/qrtd/) [WIP](https://github.com/weka511/bioinformatics/issues/46)|
 |test-newick.cpp||Test [Newick](http://evolution.genetics.washington.edu/phylip/newicktree.html) Parser|
 |test-qrtd.cpp||Test [Quartet Distance](http://rosalind.info/problems/qrtd/) [WIP](https://github.com/weka511/bioinformatics/issues/46)|
+|test-tree.cpp||Tests for tree.cpp|
 |tests.cpp|catch.hpp|C++ test framework|
+|tree.cpp|tree.h|Code representing a phylogeny|
 
 ## Support
 
