@@ -23,6 +23,7 @@
 #include <map>
 #include <vector>
 #include <iostream>
+#include <set>
 
 /**
  *  Clade
@@ -187,13 +188,13 @@ class ConsistencyChecker : Clade::Visitor{
  *  Find the leaves that are descended from each node
  */
 class DescendentVisitor : public Clade::Visitor{
-	std::map<std::string,std::vector<int>> _descendents;
-	Taxa&                                  _taxa;
+	std::map<std::string,std::set<int>> _descendents;
+	Taxa&                               _taxa;
   public:
 	DescendentVisitor(Taxa & taxa) : _taxa(taxa) {};
 	bool visit(Clade *, Clade*);
   private:
-	void _propagate(Clade * clade,std::vector<int> descendents);
+	void _propagate(Clade * clade,std::set<int> descendents);
 }; 
 
 #endif

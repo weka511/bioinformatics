@@ -94,7 +94,7 @@ bool DescendentVisitor::visit(Clade * clade, Clade* parent) {
 	if (clade->is_leaf()) {
 //		std::cout <<__FILE__ << " " << __LINE__ << ": " << clade->get_name()<<std::endl;
 		int leaf_index = _taxa.get_position(clade->get_name());
-		_descendents[clade->get_name()].push_back(leaf_index);
+		_descendents[clade->get_name()].insert(leaf_index);
 	}
 	while (parent!=NULL){
 	//	std::cout <<__FILE__ << " " << __LINE__ << ": " << clade->get_name()<<" "<<parent->get_name()<<std::endl;
@@ -102,13 +102,13 @@ bool DescendentVisitor::visit(Clade * clade, Clade* parent) {
 		parent = parent->get_parent();
 	}
 	std::cout <<__FILE__ << " " << __LINE__ << " " <<clade->get_name()<<": ";
-	for (std::vector<int>::iterator descendent=_descendents[clade->get_name()].begin();descendent!=_descendents[clade->get_name()].end();descendent++)
+	for (std::set<int>::iterator descendent=_descendents[clade->get_name()].begin();descendent!=_descendents[clade->get_name()].end();descendent++)
 		std::cout << *descendent << " ";
 	std::cout <<std::endl; 
 	return true;
 }
 
-void DescendentVisitor::_propagate(Clade * clade,std::vector<int> descendents){
-	for (std::vector<int>::iterator descendent=descendents.begin();descendent!=descendents.end();descendent++)
-		_descendents[clade->get_name()].push_back(*descendent);
+void DescendentVisitor::_propagate(Clade * clade,std::set<int> descendents){
+	for (std::set<int>::iterator descendent=descendents.begin();descendent!=descendents.end();descendent++)
+		_descendents[clade->get_name()].insert(*descendent);
 }
