@@ -16,6 +16,7 @@
  */
  
 #include <iostream>
+#include "tree.h"
 #include "newick.h"
 #include "qrtd.h"
 
