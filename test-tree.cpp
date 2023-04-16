@@ -42,11 +42,22 @@ TEST_CASE( "Consistency tests", "[consist]" ) {
 	
 	SECTION("Edges"){
 		std::cout <<__FILE__ << " " << __LINE__  << std::endl;
-		Newick             newick;
-		Clade *            root = newick.parse("(A,C,((B,D),E));");
-		Taxa               taxa("A B C D E");
-		Tree tree(root,taxa);
+		Newick  newick;
+		Clade * root = newick.parse("(A,C,((B,D),E));");
+		Taxa    taxa("A B C D E");
+		Tree    tree(root,taxa);
 		REQUIRE (tree.get_edges().size()==7);
+		delete root;
+	}
+	
+	SECTION("Descendents"){
+		std::cout <<__FILE__ << " " << __LINE__  << std::endl;
+		Newick   newick;
+		Clade * root = newick.parse("(A,C,((B,D),E));");
+		Taxa    taxa("A B C D E");
+		Tree    tree(root,taxa);
+		DescendentVisitor visitor(taxa);
+		tree.traverse(&visitor);
 		delete root;
 	}
 	

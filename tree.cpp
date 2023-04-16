@@ -15,7 +15,7 @@
  * along with this software.  If not, see <http://www.gnu.org/licenses/>
  */
  
- #include <iostream>
+ 
  #include "tree.h"
  
  bool Clade::traverse(Visitor* visitor, Clade * parent) {
@@ -76,6 +76,11 @@ bool CladeNamer::visit(Clade * clade, Clade * parent) {
 	return true;
 }
 
+/**
+ *  EdgeBuilder::visit(...)
+ *
+ *  Used to construct set of all edges in phylogeny
+ */
 bool EdgeBuilder::visit(Clade * clade, Clade * parent) {
 	if (parent!=NULL){
 		Edge edge(parent,clade);
@@ -83,4 +88,27 @@ bool EdgeBuilder::visit(Clade * clade, Clade * parent) {
 	} 
 
 	return true;
+}
+
+bool DescendentVisitor::visit(Clade * clade, Clade* parent) {
+	if (clade->is_leaf()) {
+//		std::cout <<__FILE__ << " " << __LINE__ << ": " << clade->get_name()<<std::endl;
+		int leaf_index = _taxa.get_position(clade->get_name());
+		_descendents[clade->get_name()].push_back(leaf_index);
+	}
+	while (parent!=NULL){
+	//	std::cout <<__FILE__ << " " << __LINE__ << ": " << clade->get_name()<<" "<<parent->get_name()<<std::endl;
+		_propagate(parent,_descendents[clade->get_name()]);
+		parent = parent->get_parent();
+	}
+	std::cout <<__FILE__ << " " << __LINE__ << " " <<clade->get_name()<<": ";
+	for (std::vector<int>::iterator descendent=_descendents[clade->get_name()].begin();descendent!=_descendents[clade->get_name()].end();descendent++)
+		std::cout << *descendent << " ";
+	std::cout <<std::endl; 
+	return true;
+}
+
+void DescendentVisitor::_propagate(Clade * clade,std::vector<int> descendents){
+	for (std::vector<int>::iterator descendent=descendents.begin();descendent!=descendents.end();descendent++)
+		_descendents[clade->get_name()].push_back(*descendent);
 }

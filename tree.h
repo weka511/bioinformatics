@@ -72,6 +72,8 @@ class Clade{
 	
 	std::vector<int>    get_taxon_indices() {return _taxon_indices;}
 	
+	bool is_leaf() {return _children.size()==0;}
+	
 	/**
 	 *  Destructor deletes children
 	 */
@@ -148,6 +150,8 @@ class EdgeBuilder : public Clade::Visitor{
 	EdgeBuilder(std::vector<Edge> &edges, Taxa & taxa) : _edges(edges), _taxa(taxa) {};
 	bool visit(Clade *, Clade*);
 }; 
+
+
 	
 /**
  * Tree
@@ -161,12 +165,13 @@ class Tree {
   public:
  	Tree(Clade * root, Taxa & taxa);
 	std::vector<Edge> get_edges() {return _edges;};
+	bool              traverse(Clade::Visitor* visitor) {return _root->traverse(visitor);};
 };
 
 /**
  * ConsistencyChecker
  *
- * Usd to verify that the phylogeny uses the exact same set of namesas t specified Taxa object
+ * Used to verify that the phylogeny uses the exact same set of names as the specified Taxa object
  */
 class ConsistencyChecker : Clade::Visitor{
 	std::map<std::string,int> _counts;
@@ -175,5 +180,20 @@ class ConsistencyChecker : Clade::Visitor{
 	bool visit(Clade *, Clade*);
 	bool is_consistent(Clade *,Taxa& taxa);
 };
+
+/**
+ *  DescendentVisitor
+ *
+ *  Find the leaves that are descended from each node
+ */
+class DescendentVisitor : public Clade::Visitor{
+	std::map<std::string,std::vector<int>> _descendents;
+	Taxa&                                  _taxa;
+  public:
+	DescendentVisitor(Taxa & taxa) : _taxa(taxa) {};
+	bool visit(Clade *, Clade*);
+  private:
+	void _propagate(Clade * clade,std::vector<int> descendents);
+}; 
 
 #endif
