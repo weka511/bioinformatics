@@ -15,7 +15,6 @@
  * along with this software.  If not, see <http://www.gnu.org/licenses/>
  */
  
- 
  #include "tree.h"
  
  bool Clade::traverse(Visitor* visitor, Clade * parent) {
@@ -65,6 +64,8 @@ Tree::Tree(Clade * root, Taxa & taxa) : _root(root), _taxa(taxa) {
 	_root->traverse(&edgeBuilder); 
 
 }
+
+
 
 bool CladeNamer::visit(Clade * clade, Clade * parent) {
 	if ( clade->get_name().size()==0)

@@ -41,21 +41,21 @@ TEST_CASE( "Consistency tests", "[consist]" ) {
 	}
 	
 	SECTION("Edges"){
-		Newick  newick;
-		Clade * root = newick.parse("(A,C,((B,D),E));");
-		Taxa    taxa("A B C D E");
-		Tree    tree(root,taxa);
-		REQUIRE (tree.get_edges().size()==7);
-		delete root;
+		Newick      newick;
+		Taxa        taxa("A B C D E");
+		TreeFactory factory(newick,taxa);
+		Tree *      tree = factory.create("(A,C,((B,D),E));");
+		REQUIRE (tree->get_edges().size()==7);
+		delete tree;
 	}
 	
-	SECTION("Descendents"){
-		Newick   newick;
-		Clade * root = newick.parse("(A,C,((B,D),E));");
-		Taxa    taxa("A B C D E");
-		Tree    tree(root,taxa);
+ 	SECTION("Descendents"){
+		Newick      newick;
+		Taxa        taxa("A B C D E");
+		TreeFactory factory(newick,taxa);
+		Tree *      tree = factory.create("(A,C,((B,D),E));");
 		DescendentVisitor visitor(taxa);
-		tree.traverse(&visitor);
+		tree->traverse(&visitor);
 		std::set<int> d0 = visitor.get_descendents("0");
 		REQUIRE(d0.size()==2);
 		REQUIRE(d0.find(1)!=d0.end());
@@ -67,7 +67,7 @@ TEST_CASE( "Consistency tests", "[consist]" ) {
 		REQUIRE(d1.find(4)!=d1.end());
 		std::set<int> d2 = visitor.get_descendents("2");
 		REQUIRE(d2.size()==5);
-		delete root;
-	}
+		delete tree;
+	} 
 	
 }

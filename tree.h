@@ -165,6 +165,17 @@ class ConsistencyChecker : Clade::Visitor{
 	bool visit(Clade *, Clade*);
 	bool is_consistent(Clade *,Taxa& taxa);
 };
+
+
+/**
+ * TreeParser
+ *
+ * Used to parse a tree from some specified string
+ */
+class TreeParser {
+  public:
+	virtual Clade * parse(std::string s)=0;
+};
 	
 /**
  * Tree
@@ -172,17 +183,31 @@ class ConsistencyChecker : Clade::Visitor{
  * Encapsulate a hierarchu of clades and a consistent collection of taxa
  */
 class Tree {
+	friend class TreeFactory;
 	Clade*            _root;
 	std::vector<Edge> _edges;
 	Taxa&             _taxa;
 	CladeNamer        _clade_namer;
-  public:
  	Tree(Clade * root, Taxa & taxa);
+	
+  public:
 	std::vector<Edge> get_edges() {return _edges;};
 	bool              traverse(Clade::Visitor* visitor) {return _root->traverse(visitor);};
+	virtual ~Tree() {delete _root;};
 };
 
-
+/**
+ * TreeFactory
+ *
+ * Create a tree
+ */
+class TreeFactory {
+	TreeParser& _parser;
+	Taxa &      _taxa;
+  public:
+	TreeFactory(TreeParser& parser, Taxa &taxa): _parser(parser),_taxa(taxa){};
+	Tree * create(std::string s) {return new Tree(_parser.parse(s),_taxa);};
+};
 
 /**
  *  DescendentVisitor

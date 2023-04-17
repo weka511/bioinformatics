@@ -81,7 +81,7 @@ class Tokenizer {
 /**
  *   Parser for trees in Newick format
  */
-class Newick {
+class Newick : public TreeParser {
 	
 	std::vector<Clade*> _stack;
 	double              _default_branch_length;
