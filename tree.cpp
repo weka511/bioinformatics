@@ -70,7 +70,9 @@ Tree::Tree(Clade * root, Taxa & taxa) : _root(root), _taxa(taxa) {
 	_root->traverse(&_clade_namer);
 	EdgeBuilder edgeBuilder(_edges,taxa);
 	_root->traverse(&edgeBuilder); 
-
+	DescendentVisitor descendentVisitor(taxa);
+	_root->traverse(&descendentVisitor);
+	_descendents = descendentVisitor._descendents;
 }
 
 

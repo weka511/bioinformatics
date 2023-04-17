@@ -22,10 +22,11 @@
 
 TEST_CASE( "QRTD tests", "[qrtd]" ) {
 	
- /*  	SECTION("Sample"){
-		REQUIRE(get_qrtd("A B C D E",
-			"(A,C,((B,D),E));",
-			"(C,(B,D),(A,E));")==4);
-	}  */
+   	SECTION("Sample"){
+		Taxa        taxa("A B C D E");
+		QuartetDistanceCalculator calculator(taxa);
+		REQUIRE(calculator.get_distance("(A,C,((B,D),E));",
+										"(C,(B,D),(A,E));")==4);
+	} 
 }
 

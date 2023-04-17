@@ -18,14 +18,17 @@
 #ifndef _QRTD_H
 #define _QRTD_H
 
-#include <sstream>
 #include <string>
-#include <map>
-#include <vector>
-#include "newick.h"
+#include "tree.h"
 
-
-
-int get_qrtd(std::string taxa, std::string T1, std::string T2);
-
+class QuartetDistanceCalculator {
+  public:
+	QuartetDistanceCalculator(Taxa & taxa) : _taxa(taxa) {}
+	int get_distance(std::string T1, std::string T2);
+	
+  private:
+	Taxa & _taxa;
+    int _get_distance(Tree* T1, Tree* T2);
+	void prepare( Tree* T);
+};
 #endif //_QRTD_H

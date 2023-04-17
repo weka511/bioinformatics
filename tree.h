@@ -124,9 +124,10 @@ class Taxa  {
  *  And edge joins two Clade in phylogeny
  */
  
-class Edge : std::tuple<Clade*,Clade*>{
+class Edge : public std::pair<Clade*,Clade*>{
   public:
-	Edge(Clade* first,Clade* second) : std::tuple<Clade*,Clade*>(first,second) {;}
+	Edge(Clade* first,Clade* second) : std::pair<Clade*,Clade*>(first,second) {;}
+	bool is_internal() {return std::isdigit(second->get_name()[0]);}
 };
 
 /**
@@ -169,6 +170,22 @@ class ConsistencyChecker : Clade::Visitor{
 	bool is_consistent(Clade *,Taxa& taxa);
 };
 
+/**
+ *  DescendentVisitor
+ *
+ *  Find the leaves that are descended from each node
+ */
+class DescendentVisitor : public Clade::Visitor{
+	friend class Tree;
+	std::map<std::string,std::set<int>> _descendents;
+	Taxa&                               _taxa;
+  public:
+	DescendentVisitor(Taxa & taxa) : _taxa(taxa) {};
+	bool visit(Clade *, Clade*);
+	std::set<int> get_descendents(std::string name) {return _descendents[name];};
+  private:
+	void _propagate(Clade * clade,std::set<int> descendents);
+}; 
 
 /**
  * TreeParser
@@ -192,10 +209,13 @@ class Tree {
 	Taxa&             _taxa;
 	CladeNamer        _clade_namer;
  	Tree(Clade * root, Taxa & taxa);
+	std::map<std::string,std::set<int>> _descendents;
 	
   public:
 	std::vector<Edge> get_edges() {return _edges;};
 	bool              traverse(Clade::Visitor* visitor) {return _root->traverse(visitor);};
+	std::set<int>     get_descendents(std::string name) {return _descendents[name];};
+
 	virtual ~Tree() {delete _root;};
 };
 
@@ -212,20 +232,6 @@ class TreeFactory {
 	Tree * create(std::string s) {return new Tree(_parser.parse(s),_taxa);};
 };
 
-/**
- *  DescendentVisitor
- *
- *  Find the leaves that are descended from each node
- */
-class DescendentVisitor : public Clade::Visitor{
-	std::map<std::string,std::set<int>> _descendents;
-	Taxa&                               _taxa;
-  public:
-	DescendentVisitor(Taxa & taxa) : _taxa(taxa) {};
-	bool visit(Clade *, Clade*);
-	std::set<int> get_descendents(std::string name) {return _descendents[name];};
-  private:
-	void _propagate(Clade * clade,std::set<int> descendents);
-}; 
+
 
 #endif
