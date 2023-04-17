@@ -38,6 +38,7 @@ class Clade{
 	std::string         _name;
 	Clade *             _parent;
 	std::vector<int>    _taxon_indices;
+	
   public:
     /**
 	 *  Visitor
@@ -105,7 +106,7 @@ class Taxa  {
 	
   public:
     /**
-    * Constructor: create lookup tables froma list of taxon names
+    * Constructor: create lookup tables from a list of taxon names
     */
 	Taxa(std::string taxa_string);
 	
@@ -113,6 +114,8 @@ class Taxa  {
 	 *  Accessor to determine sequence number of specifed taxon
 	 */
 	int get_position(std::string name) {return _positions[name];}
+	
+	std::set<int> get_complement(std::set<int> leaves);
 };
 
 /**

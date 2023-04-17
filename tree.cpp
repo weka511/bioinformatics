@@ -36,6 +36,14 @@ Taxa::Taxa(std::string taxa_string){
 	}
 }
 
+std::set<int> Taxa::get_complement(std::set<int> leaves) {
+	std::set<int> result;
+	for (int i=0;i<_names.size();i++)
+		if (leaves.find(i)==leaves.end())
+			result.insert(i);
+	return result;
+}
+	
 bool ConsistencyChecker::visit(Clade * clade, Clade * parent) {
 	if (clade->get_name().size()==0) return true;
 	if (_counts.count(clade->get_name())==1)

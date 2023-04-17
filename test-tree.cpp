@@ -67,6 +67,10 @@ TEST_CASE( "Consistency tests", "[consist]" ) {
 		REQUIRE(d1.find(4)!=d1.end());
 		std::set<int> d2 = visitor.get_descendents("2");
 		REQUIRE(d2.size()==5);
+		std::set<int> d1c = taxa.get_complement(d1);
+		REQUIRE(d1c.size()==2);
+		REQUIRE(d1c.find(0)!=d1.end());
+		REQUIRE(d1c.find(5)!=d1.end());
 		delete tree;
 	} 
 	
