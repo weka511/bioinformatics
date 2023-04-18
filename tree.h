@@ -116,18 +116,28 @@ class Taxa  {
 	int get_position(std::string name) {return _positions[name];}
 	
 	std::set<int> get_complement(std::set<int> leaves);
+	
+	int size() {return _names.size();};
 };
 
 /**
  *  Edge
  *
- *  And edge joins two Clade in phylogeny
+ *  An edge joins two Clade in phylogeny
  */
  
 class Edge : public std::pair<Clade*,Clade*>{
   public:
-	Edge(Clade* first,Clade* second) : std::pair<Clade*,Clade*>(first,second) {;}
-	bool is_internal() {return std::isdigit(second->get_name()[0]);}
+	Edge(Clade* first,Clade* second) : std::pair<Clade*,Clade*>(first,second) {
+		std::cout <<__FILE__ << " " << __LINE__  << " " << first->get_name()<< " " << second->get_name() << " " << is_internal() << std::endl;
+	}
+	
+	/**
+	 * is_internal
+	 *
+	 * Verify that edge joins two internal nodes
+	 */
+	bool is_internal() {return (!second->is_leaf()) and (!first->is_leaf());}
 };
 
 /**
@@ -153,6 +163,12 @@ class EdgeBuilder : public Clade::Visitor{
 	Taxa &              _taxa;
   public:
 	EdgeBuilder(std::vector<Edge> &edges, Taxa & taxa) : _edges(edges), _taxa(taxa) {};
+	
+	/**
+      *  EdgeBuilder
+      *
+      *  Used to construct set of all edges in phylogeny
+      */
 	bool visit(Clade *, Clade*);
 }; 
 
@@ -204,15 +220,16 @@ class TreeParser {
  */
 class Tree {
 	friend class TreeFactory;
-	Clade*            _root;
-	std::vector<Edge> _edges;
-	Taxa&             _taxa;
-	CladeNamer        _clade_namer;
- 	Tree(Clade * root, Taxa & taxa);
+	Tree(Clade * root, Taxa & taxa);
+	Clade*                              _root;
+	std::vector<Edge>                   _edges;
+	Taxa&                               _taxa;
+	CladeNamer                          _clade_namer;
 	std::map<std::string,std::set<int>> _descendents;
 	
   public:
-	std::vector<Edge> get_edges() {return _edges;};
+	std::vector<Edge>::iterator get_edges_begin()       {return _edges.begin();};
+	std::vector<Edge>::iterator get_edges_end()         {return _edges.end();};
 	bool              traverse(Clade::Visitor* visitor) {return _root->traverse(visitor);};
 	std::set<int>     get_descendents(std::string name) {return _descendents[name];};
 
