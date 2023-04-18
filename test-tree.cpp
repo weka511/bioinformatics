@@ -45,7 +45,14 @@ TEST_CASE( "Consistency tests", "[consist]" ) {
 		Taxa        taxa("A B C D E");
 		TreeFactory factory(newick,taxa);
 		Tree *      tree = factory.create("(A,C,((B,D),E));");
-		REQUIRE (tree->get_edges().size()==7);
+		int count = 0, count_internal=0;
+		for (std::vector<Edge>::iterator edge = tree->get_edges_begin(); edge != tree->get_edges_end();++edge){
+			count++;
+			if (edge->is_internal())
+				count_internal++;
+		}
+		REQUIRE (count==7);
+		REQUIRE (count_internal==2);
 		delete tree;
 	}
 	
