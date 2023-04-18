@@ -34,21 +34,51 @@ int  QuartetDistanceCalculator::get_distance(std::string T1, std::string T2) {
 }
 
 int QuartetDistanceCalculator::_get_distance(Tree* T1, Tree* T2){
-	prepare(T1);
-	prepare(T2);
+	_prepare(T1);
+//	std::set<uint64_t> q2=prepare(T2);
 	return -1;
 }
 
-void QuartetDistanceCalculator::prepare(Tree* T){
-	for (std::vector<Edge>::iterator edge = T->get_edges().begin(); edge != T->get_edges().end();++edge)
+void QuartetDistanceCalculator::_prepare(Tree* T){
+	std::vector<uint64_t> result;
+	for (std::vector<Edge>::iterator edge = T->get_edges_begin(); edge != T->get_edges_end();++edge) {
+		std::cout <<__FILE__ << " " << __LINE__  << std::endl;
 		if (edge->is_internal()) {
+			std::cout <<__FILE__ << " " << __LINE__  << std::endl;
 			Clade* first = edge->first;
 			Clade* second = edge->second;
 			std::cout <<__FILE__ << " " << __LINE__ <<" "<< first->get_name() << "," << second->get_name() << std::endl;
 			std::set<int> B = T->get_descendents(second->get_name());
-			std::set<int> A =  _taxa.get_complement(B);
-			for (std::set<int>::iterator a=A.begin();a!=A.end();++a)
-				for (std::set<int>::iterator b=B.begin();b!=B.end();++b)
-					std::cout <<__FILE__ << " " << __LINE__ <<" "<< *a << "->" << *b << std::endl;
+			std::set<int> A = _taxa.get_complement(B);
+			std::cout <<__FILE__ << " " << __LINE__ <<" "<<A.size() << "," <<B.size() << std::endl;
+			for (std::set<int>::iterator a1=A.begin();a1!=A.end();++a1)
+				for (std::set<int>::iterator a2=A.begin();a2!=A.end();++a2)
+					for (std::set<int>::iterator b1=B.begin();b1!=B.end();++b1)
+						for (std::set<int>::iterator b2=B.begin();b2!=B.end();++b2)
+							if (*a1<*a2 && *b1<*b2){
+								uint64_t quartet=_create_quartet(*a1,*a2,*b1,*b2);
+								std::cout <<__FILE__ << " " << __LINE__ <<" "<<std::hex << quartet <<std::dec << std::endl;
+								result.push_back(quartet);
+							}	
+			std::cout <<__FILE__ << " " << __LINE__ <<" "<<result.size() << std::endl;	
+			
+			std::cout <<__FILE__ << " " << __LINE__ <<" "<< first->get_name() << "," << second->get_name() << std::endl;
+		} else 
+			std::cout <<__FILE__ << " " << __LINE__  << std::endl;
 	}
+	std::cout <<__FILE__ << " " << __LINE__ <<" "<<result.size() << std::endl;	
+//	return result;
+}
+
+uint64_t QuartetDistanceCalculator::_create_quartet(int a1,int a2,int b1,int b2) {
+/* 	if (a1>b1)
+		return _create_quartet(b1,b2,a1,a2); */
+	uint64_t result=a1;
+	result <<=QuartetDistanceCalculator::shift;
+	result += a2;
+	result <<=QuartetDistanceCalculator::shift;
+	result += b1;
+	result <<=QuartetDistanceCalculator::shift;
+	result += b2;
+	return result;
 }
