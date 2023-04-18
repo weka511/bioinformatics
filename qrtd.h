@@ -31,7 +31,7 @@ class QuartetDistanceCalculator {
   private:
 	Taxa &   _taxa;
     int      _get_distance(Tree* T1, Tree* T2);
-	void     _prepare( Tree* T);
+	void     _prepare( Tree* T, std::set<uint64_t> * quartets);
 	
 	uint64_t _create_quartet(int a1,int a2,int b1,int b2);
 };

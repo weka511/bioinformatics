@@ -128,9 +128,7 @@ class Taxa  {
  
 class Edge : public std::pair<Clade*,Clade*>{
   public:
-	Edge(Clade* first,Clade* second) : std::pair<Clade*,Clade*>(first,second) {
-		std::cout <<__FILE__ << " " << __LINE__  << " " << first->get_name()<< " " << second->get_name() << " " << is_internal() << std::endl;
-	}
+	Edge(Clade* first,Clade* second) : std::pair<Clade*,Clade*>(first,second) {;}
 	
 	/**
 	 * is_internal

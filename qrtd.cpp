@@ -14,7 +14,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this software.  If not, see <http://www.gnu.org/licenses/>
  */
- 
+
+#include <algorithm>
 #include <iostream>
 #include "tree.h"
 #include "newick.h"
@@ -34,45 +35,34 @@ int  QuartetDistanceCalculator::get_distance(std::string T1, std::string T2) {
 }
 
 int QuartetDistanceCalculator::_get_distance(Tree* T1, Tree* T2){
-	_prepare(T1);
-//	std::set<uint64_t> q2=prepare(T2);
-	return -1;
+	std::set<uint64_t> Q1, Q2;
+	_prepare(T1,&Q1);
+	_prepare(T2, &Q2);
+	std::vector<uint64_t> Q_intersection;
+    std::set_intersection(Q1.begin(), Q1.end(), Q2.begin(), Q2.end(),
+                          std::back_inserter(Q_intersection));
+	return Q1.size() + Q2.size() - 2*Q_intersection.size();
 }
 
-void QuartetDistanceCalculator::_prepare(Tree* T){
-	std::vector<uint64_t> result;
+void QuartetDistanceCalculator::_prepare(Tree* T,std::set<uint64_t> * quartets){
 	for (std::vector<Edge>::iterator edge = T->get_edges_begin(); edge != T->get_edges_end();++edge) {
-		std::cout <<__FILE__ << " " << __LINE__  << std::endl;
-		if (edge->is_internal()) {
-			std::cout <<__FILE__ << " " << __LINE__  << std::endl;
-			Clade* first = edge->first;
-			Clade* second = edge->second;
-			std::cout <<__FILE__ << " " << __LINE__ <<" "<< first->get_name() << "," << second->get_name() << std::endl;
-			std::set<int> B = T->get_descendents(second->get_name());
-			std::set<int> A = _taxa.get_complement(B);
-			std::cout <<__FILE__ << " " << __LINE__ <<" "<<A.size() << "," <<B.size() << std::endl;
-			for (std::set<int>::iterator a1=A.begin();a1!=A.end();++a1)
-				for (std::set<int>::iterator a2=A.begin();a2!=A.end();++a2)
-					for (std::set<int>::iterator b1=B.begin();b1!=B.end();++b1)
-						for (std::set<int>::iterator b2=B.begin();b2!=B.end();++b2)
-							if (*a1<*a2 && *b1<*b2){
-								uint64_t quartet=_create_quartet(*a1,*a2,*b1,*b2);
-								std::cout <<__FILE__ << " " << __LINE__ <<" "<<std::hex << quartet <<std::dec << std::endl;
-								result.push_back(quartet);
-							}	
-			std::cout <<__FILE__ << " " << __LINE__ <<" "<<result.size() << std::endl;	
-			
-			std::cout <<__FILE__ << " " << __LINE__ <<" "<< first->get_name() << "," << second->get_name() << std::endl;
-		} else 
-			std::cout <<__FILE__ << " " << __LINE__  << std::endl;
+		if (!edge->is_internal()) continue;
+		Clade* first = edge->first;
+		Clade* second = edge->second;
+		std::set<int> B = T->get_descendents(second->get_name());
+		std::set<int> A = _taxa.get_complement(B);
+		for (std::set<int>::iterator a1=A.begin();a1!=A.end();++a1)
+			for (std::set<int>::iterator a2=A.begin();a2!=A.end();++a2)
+				for (std::set<int>::iterator b1=B.begin();b1!=B.end();++b1)
+					for (std::set<int>::iterator b2=B.begin();b2!=B.end();++b2)
+						if (*a1<*a2 && *b1<*b2)
+							quartets->insert(_create_quartet(*a1,*a2,*b1,*b2));		 
 	}
-	std::cout <<__FILE__ << " " << __LINE__ <<" "<<result.size() << std::endl;	
-//	return result;
 }
 
 uint64_t QuartetDistanceCalculator::_create_quartet(int a1,int a2,int b1,int b2) {
-/* 	if (a1>b1)
-		return _create_quartet(b1,b2,a1,a2); */
+ 	if (a1>b1)
+		return _create_quartet(b1,b2,a1,a2);
 	uint64_t result=a1;
 	result <<=QuartetDistanceCalculator::shift;
 	result += a2;
