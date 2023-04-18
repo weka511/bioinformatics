@@ -20,7 +20,9 @@
 #include <vector>
 #include <string>
 
-
+/**
+ *  Extract tokens from input string
+ */
 class Tokenizer {
 	std::string  _s;
 	
@@ -36,6 +38,11 @@ class Tokenizer {
 			Invalid
 		};
 
+	/**
+	 *  Iterator
+	 *
+	 * Allows parser to iterate through Tokens in inout string
+	 */
 	class Iterator {
 		int        _position;
 		Token      _current_token;
@@ -64,8 +71,24 @@ class Tokenizer {
 		int GetLength() {return _length;}
 		
 	  private:
+		/**
+		 * _update_token
+		 *
+		 * Used to recognize the next token as we move through input sting.
+		 */
 	  	void _update_token();
+		
+		/**
+		  *  _is_alpha
+		  *
+		  *  Used to recognize a string of letters, which may include underscore (but not as first charcter)
+		  */
 		bool _is_alpha(char c, bool extended=false);
+		/**
+		 *  _is_digit
+		 *
+		 *  Used to recognize a string of digits, which may include a decomal point (but not as first charcter)
+		 */	
 		bool _is_digit(char c, bool extended=false);
 	};
 	

@@ -47,6 +47,11 @@ void  Tokenizer::Iterator::_update_token(){
 		_current_token = Invalid;
 }
 
+/**
+ *  _is_alpha
+ *
+ *  Used to recognize a string of letters, which may include underscore (but not as first charcter)
+ */
 bool Tokenizer::Iterator::_is_alpha(char c, bool extended){
 	bool in_range= ('A'<=c and c<='Z') || ('a'<=c and c<='z');
 	if (extended)
@@ -54,7 +59,12 @@ bool Tokenizer::Iterator::_is_alpha(char c, bool extended){
 	else
 		return in_range;
 }
-	
+
+/**
+ *  _is_digit
+ *
+ *  Used to recognize a string of digits, which may include a decomal point (but not as first charcter)
+ */	
 bool Tokenizer::Iterator::_is_digit(char c, bool extended){
 	bool in_range= '0'<=c and c<='9';
 	if (extended)
