@@ -22,6 +22,11 @@
 #include "tree.h"
 #include "newick.h"
 
+/**
+  * _update_token
+  *
+  * Used to recognize the next token as we move through input sting.
+  */
 void  Tokenizer::Iterator::_update_token(){
 	_length = 1;
 	if (_tokenizer._s[_position]=='(')
