@@ -16,6 +16,7 @@
  */
  
 #include <iostream>
+#include <fstream> 
 #include "tree.h"
 #include "newick.h"
 #include "qrtd.h"
@@ -23,7 +24,17 @@
 
 
 int main(){
-
+	std::string text1, text2, text3;
+	std::ifstream data_file("data/rosalind_qrtd.txt");
+	getline (data_file, text1);
+	Taxa taxa(text1);
+	std::cout <<__FILE__ << " " <<__LINE__ << " " << taxa.size() << std::endl;
+	getline (data_file, text2);
+	getline (data_file, text3);
+	QuartetDistanceCalculator calculator(taxa);
+	int dist = calculator.get_distance(text2,text3);
+	std::cout <<__FILE__ << " " <<__LINE__ << " " << dist << std::endl;
+	data_file.close();
 	return 0;
 }
  

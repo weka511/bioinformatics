@@ -36,8 +36,11 @@ int  QuartetDistanceCalculator::get_distance(std::string T1, std::string T2) {
 
 int QuartetDistanceCalculator::_get_distance(Tree* T1, Tree* T2){
 	std::set<uint64_t> Q1, Q2;
+	std::cout <<__FILE__ << " " <<__LINE__ << " " << std::endl;
 	_prepare(T1,&Q1);
+	std::cout <<__FILE__ << " " <<__LINE__ << " " << std::endl;
 	_prepare(T2, &Q2);
+	std::cout <<__FILE__ << " " <<__LINE__ << " " << std::endl;
 	std::vector<uint64_t> Q_intersection;
     std::set_intersection(Q1.begin(), Q1.end(), Q2.begin(), Q2.end(),
                           std::back_inserter(Q_intersection));
