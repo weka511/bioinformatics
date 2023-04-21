@@ -17,17 +17,16 @@
 '''Phylogeny -- http://rosalind.info/problems/topics/phylogeny/'''
 
 
-from   unittest import TestCase, main, skip
-from   io       import StringIO
-
-import numpy     as np
-from   Bio.Phylo import read
-from   rosalind  import   LabelledTree
-from   random    import   randrange
+from   unittest    import TestCase, main, skip
+from   io          import StringIO
+import numpy       as np
+from   Bio.Phylo   import read
+from   rosalind    import   LabelledTree
+from   random      import   randrange
 from scipy.special import comb
-from   newick    import   newick_to_adjacency_list, Parser, Tokenizer, Hierarchy
-from   fasta     import   FastaContent
-from   helpers   import   flatten, expand
+from   newick      import   newick_to_adjacency_list, Parser, Tokenizer, Hierarchy
+from   fasta       import   FastaContent
+from   helpers     import   flatten, expand
 
 
 def CompleteTree(n,adj):
@@ -309,10 +308,9 @@ def qrtd(species,T1,T2):
         G1 = e2.B1
         G2 = e2.B2
         G3 = e2.B3
-        A = comb(len(F1.intersection(G1)),2,exact=True) *  (len(F2.intersection(G2))*len(F3.intersection(G3))+\
-                                                            len(F2.intersection(G3))*len(F3.intersection(G2)))
-        # print (f'claim {e1},{e2}: {A}')
-        return A
+        return comb(len(F1.intersection(G1)),2,exact=True) *           \
+               (    len(F2.intersection(G2))*len(F3.intersection(G3))+ \
+                    len(F2.intersection(G3))*len(F3.intersection(G2)))
 
     n     = len(species)
     index = {species[i]:i for i in range(n)}
