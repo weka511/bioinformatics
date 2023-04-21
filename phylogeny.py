@@ -24,6 +24,7 @@ import numpy     as np
 from   Bio.Phylo import read
 from   rosalind  import   LabelledTree
 from   random    import   randrange
+from scipy.special import comb
 from   newick    import   newick_to_adjacency_list, Parser, Tokenizer, Hierarchy
 from   fasta     import   FastaContent
 from   helpers   import   flatten, expand
@@ -248,197 +249,77 @@ def qrtd(species,T1,T2):
         Both T1 and T2 are given in Newick format.
 
     Return: The quartet distance dq(T1,T2)
+
+    Algorithms for Computing the Triplet and Quartet Distances for Binary and General Trees
+    https://www.mdpi.com/2079-7737/2/4/1189, Andreas Sand et al.
     '''
-    def index_nodes_and_edges(S,T,offset=0):
 
-        def create_node_descendents():
-            product = np.zeros((n-2,n),dtype=int)
-            for clade in T.find_clades(order='postorder',terminal=False):
-                for child in clade.clades:
-                    if len(child.clades)==0:
-                        product[clade.name-offset,child.name]=1
-                    else:
-                        product[clade.name-offset,:]=np.add(product[clade.name-offset,:],product[child.name-offset,:])
-            return product
-
-        def create_internal_edges():
-            edges  = np.empty((n-3,2),dtype = int) #[]
-            i      = 0
-            for clade in T.find_clades(terminal=False,order='postorder'):
-                for child in clade.clades:
-                    if len(child.clades)>0: #child.name in internal_node_index:
-                        edges[i,0] = clade.name - offset
-                        edges[i,1] = child.name - offset
-                        i += 1
-
-            return edges
-
-        for i,clade in enumerate(T.find_clades(terminal=False)):
-                clade.name          = i+offset
-
-        return create_internal_edges(),create_node_descendents()
-
-    def create_quartets_for_edge(edge,descendents):
-        '''
-        create_quartets_for_edge
-
-        Create an array representing all quartets from a single edge
-        '''
-
-        def pairs(leaves):
-            '''
-            Generate all possible pairings of leaves
-            '''
-            m = leaves.size
-            for i in range(m):
-                for j in range(i+1,m):
-                    yield leaves[i],leaves[j]
-
-        def count_potential_quartets():
-            '''
-            count_potential_quartets
-
-            Used to allocate an array to contain quartets from one edge
-            '''
-            a,b = edge
-            A,  = np.nonzero(mask-descendents[b])
-            B,  = np.nonzero(descendents[b])
-            n1  = len(A)
-            n2  = len(B)
-            return ((n1*(n1-1)*n2*(n2-1))//4)
-
-        product = np.zeros((count_potential_quartets()+1), dtype = np.uint64)
-        k       = 0
-        a,b     = edge
-        A,      = np.nonzero(mask - descendents[b])
-        B,      = np.nonzero(descendents[b])
-        for i1,i2 in pairs(A):
-            for j1,j2 in pairs(B):
-                quartet    = np.array([i1,i2,j1,j2]) if i1<j1 else np.array([j1,j2,i1,i2])
-                product[k] = np.dot(base_powers,quartet)
-                k         += 1
-        product[-1] = np.iinfo(np.uint64).max # sentinel
-        return product
-
-    def merge(Q1,Q2):
-        '''
-        merge
-
-        Merge two sorted arrays of quartets, into one array of unique quartets
-        '''
-        def get_length():
-            '''
-            Used to determine length of result
-            '''
-            m = 0
-            i = 0
-            j = 0
-            while i<len(Q1) and j<len(Q2):
-                if Q1[i]<Q2[j]:
-                    i += 1
-                    m += 1
-                elif Q1[i]>Q2[j]:
-                    j += 1
-                    m += 1
+    class Edge:
+        def __init__(self,a,b, expanded_nodes,n):
+            def get_descendants(bb):
+                if bb.name <n:
+                    return set([bb.name])
                 else:
-                    i += 1
-                    j += 1
-                    m += 1
-            return m
+                    return set(expanded_nodes[bb.name])
+            self.a = a.name
+            self.b = b.name
+            assert len(b.clades)==2
+            self.B2 = get_descendants(b.clades[0])
+            self.B3 = get_descendants(b.clades[1])
+            self.B1 = set(i for i in range(n) if i not in self.B2 and i not in self.B3)
 
-        product = np.zeros((get_length()), dtype=np.uint64)
-        k = 0
-        i = 0
-        j = 0
-        while i<len(Q1) and j<len(Q2):
-            if Q1[i]<Q2[j]:
-                product[k] = Q1[i]
-                i+= 1
-                k+= 1
-            elif Q1[i]>Q2[j]:
-                product[k] = Q2[j]
-                j+= 1
-                k+= 1
-            else:
-                product[k] = Q1[i]
-                i+= 1
-                j+= 1
-                k+= 1
+        def __str__(self):
+            return f'{self.a}->{self.b} {self.B1} {self.B2} {self.B3}'
 
-        return product
+    class PreparedTree:
+        def __init__(self,T,n,index):
+            self.n = n
+            self.T = read(StringIO(T), 'newick')
+            self.number_nodes()
+            self.edges,self.expanded_nodes = self.create_edges()
 
-    def create_quartets(edges,descendents):
-        '''
-        Create an array of quartets from all edges
-        '''
-        m,_      = edges.shape
-        product  = create_quartets_for_edge(edges[0,:],descendents)
-        for i in range(1,m):
-            product = merge(product, create_quartets_for_edge(edges[i,:],descendents))
-        return product
+        def number_nodes(self):
+            m = 0
+            for clade in self.T.find_clades(order='postorder'):
+                if clade.name in index:
+                    clade.name = index[clade.name]
+                else:
+                    clade.name = n+m
+                    m+=1
 
-    def create_base_powers():
-        '''
-        create_base_powers
+        def create_edges(self):
+            edges          = []
+            expanded_nodes   = {}
+            for internal_node in self.T.find_clades(order='postorder',terminal=False):
+                expanded_nodes[internal_node.name] = []
+                for child in internal_node.clades:
+                    if child.name<self.n:
+                        expanded_nodes[internal_node.name].append(child.name)
+                    else:
+                        edges.append(Edge(internal_node,child, expanded_nodes, self.n ))
+                        for descendant in expanded_nodes[child.name]:
+                            expanded_nodes[internal_node.name].append(descendant)
 
-        Used to create an array [2**33, 2**22, 2**11, 2**0] so we can store quarters as uint64s
-        '''
-        mult         = 2**11
-        base_powers = np.ones((4),dtype=np.uint64)
-        for i in range(2,-1,-1):
-            base_powers[i] = mult*base_powers[i+1]
-        return base_powers
+            return edges,expanded_nodes
 
+    def claim(e1,e2):
+        F1 = e1.B1
+        F2 = e1.B2
+        F3 = e1.B3
+        G1 = e2.B1
+        G2 = e2.B2
+        G3 = e2.B3
+        A = comb(len(F1.intersection(G1)),2,exact=True) *  (len(F2.intersection(G2))*len(F3.intersection(G3))+\
+                                                            len(F2.intersection(G3))*len(F3.intersection(G2)))
+        # print (f'claim {e1},{e2}: {A}')
+        return A
 
-    def bryant(S,T1,T2):
-        '''
-        bryant
-
-        Calculate the quartet distance using the method outlines by Bryant et al.
-
-        '''
-
-        edges1,descendents1 = index_nodes_and_edges(S,T1,offset=len(S))
-        edges2,descendents2 = index_nodes_and_edges(S,T2,offset=len(S))
-        Q1                  = create_quartets(edges1,descendents1)
-        Q2                  = create_quartets(edges2,descendents2)
-        return len(Q1) + len(Q2) - 2*count_intersections(Q1,Q2)
-
-    def count_intersections(Q1,Q2):
-        '''
-        Count elements that are common to two sorted arrays of quartets
-        '''
-        m = 0
-        i = 0
-        j = 0
-        while i<len(Q1) and j<len(Q2):
-            if Q1[i]<Q2[j]:
-                i+= 1
-            elif Q1[i]>Q2[j]:
-                j+= 1
-            else:
-                i+= 1
-                j+= 1
-                m+= 1
-        return m
-
-    def shorten_leaves(tree,index=[]):
-        '''
-        shorten_leaves
-
-        Replace leaves of tree with the index of the species
-        '''
-        for clade in tree.find_clades(terminal=True):
-            clade.name = index[clade.name]
-        return tree
-
-    base_powers = create_base_powers()
     n     = len(species)
     index = {species[i]:i for i in range(n)}
-    mask  = np.ones((n),dtype=int)
-    return bryant(set(list(range(len(species)))),
-                  shorten_leaves(read(StringIO(T1), 'newick'),index=index),
-                  shorten_leaves(read(StringIO(T2), 'newick'),index=index) )
+    tree1 = PreparedTree(T1,n,index)
+    tree2 = PreparedTree(T2,n,index)
+    return 2*comb(n,2) - 2*sum(claim (e1,e2) for e1 in tree1.edges for  e2 in tree2.edges)
+
 
 
 def sptd(species,newick1,newick2):
