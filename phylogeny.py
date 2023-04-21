@@ -17,16 +17,16 @@
 '''Phylogeny -- http://rosalind.info/problems/topics/phylogeny/'''
 
 
-from   unittest    import TestCase, main, skip
-from   io          import StringIO
-import numpy       as np
-from   Bio.Phylo   import read
-from   rosalind    import   LabelledTree
-from   random      import   randrange
-from scipy.special import comb
-from   newick      import   newick_to_adjacency_list, Parser, Tokenizer, Hierarchy
-from   fasta       import   FastaContent
-from   helpers     import   flatten, expand
+from   unittest      import TestCase, main, skip
+from   io            import StringIO
+from   random        import randrange
+import numpy         as     np
+from   Bio.Phylo     import read
+from   scipy.special import comb
+from   newick        import newick_to_adjacency_list, Parser, Tokenizer, Hierarchy
+from   rosalind      import LabelledTree
+from   fasta         import FastaContent
+from   helpers       import flatten, expand
 
 
 def CompleteTree(n,adj):
@@ -288,7 +288,7 @@ def qrtd(species,T1,T2):
 
         def create_edges(self):
             edges          = []
-            expanded_nodes   = {}
+            expanded_nodes = {}
             for internal_node in self.T.find_clades(order='postorder',terminal=False):
                 expanded_nodes[internal_node.name] = []
                 for child in internal_node.clades:
@@ -301,7 +301,7 @@ def qrtd(species,T1,T2):
 
             return edges,expanded_nodes
 
-    def claim(e1,e2):
+    def get_count_for_pair(e1,e2):
         F1 = e1.B1
         F2 = e1.B2
         F3 = e1.B3
@@ -316,7 +316,7 @@ def qrtd(species,T1,T2):
     index = {species[i]:i for i in range(n)}
     tree1 = PreparedTree(T1,n,index)
     tree2 = PreparedTree(T2,n,index)
-    return 2*comb(n,2) - 2*sum(claim (e1,e2) for e1 in tree1.edges for  e2 in tree2.edges)
+    return 2*comb(n,2) - 2*sum(get_count_for_pair (e1,e2) for e1 in tree1.edges for  e2 in tree2.edges)
 
 
 
