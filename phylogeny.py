@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+
 #   Copyright (C) 2020-2023 Greenweaves Software Limited
 
 #   This program is free software: you can redistribute it and/or modify
@@ -14,8 +15,13 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-'''Phylogeny -- http://rosalind.info/problems/topics/phylogeny/'''
+'''
+Phylogeny -- http://rosalind.info/problems/topics/phylogeny/
 
+Note on terminology: in this module a character is some feature, either physical or genetic,
+that divides a collection of taxa into two groups--https://rosalind.info/problems/ctbl/. I will
+therefore use the name "char" to the Python lexical elements, e.g. "list of chars".
+'''
 
 from   unittest      import TestCase, main, skip
 from   io            import StringIO
@@ -29,7 +35,7 @@ from   fasta         import FastaContent
 from   helpers       import flatten, expand
 
 
-def CompleteTree(n,adj):
+def CompleteTree(n, adj):
     '''
     tree -- Completing a Tree
 
@@ -38,12 +44,13 @@ def CompleteTree(n,adj):
     Return: The minimum number of edges that can be added to the graph to produce a tree.
             This is the number of independent components - 1
 
+    Yury Zavarin pointed out:
+        The main idea is that the particular edges don't matter. The only thing
+         that matters is the number of edges as a tree on n vertices always has n−1 edges....
+         We simply count the number of edges, and subtract it from n−1." https://rosalind.info/problems/chbp/
     '''
-    # Yury Zavarin pointed out:
-    #    "The main idea is that the particular edges don't matter. The only thing
-    #     that matters is the number of edges as a tree on n vertices always has n−1 edges....
-    #     We simply count the number of edges, and subtract it from n−1." https://rosalind.info/problems/chbp/
-    return  n-1 - len(adj)
+
+    return  n - 1 - len(adj)
 
 
 
@@ -59,76 +66,95 @@ def cstr(strings):
             if v<2: return True
         return False
 
-    choices = [[] for s in strings[0]]
-    counts  = [{} for s in strings[0]]
-    for i in range(len(strings[0])):
-        for s in strings:
-            if not s[i] in choices[i]:
-                choices[i].append(s[i])
-            if s[i] in counts[i]:
-                counts[i][s[i]] += 1
-            else:
-                counts[i][s[i]] = 1
+    def create_choices():
+        '''
+        Ascertain which characters actually appear in each position
 
-    splits=[]
-    for i in range(len(strings[0])):
-        split = {}
-        for c in choices[i]:
-            split[c] = 0
-        for s in strings:
-            for c in choices[i]:
-                if s[i]==c:
-                    split[c]+=1
-        splits.append(split)
-    result=[]
-    for i in range(len(strings[0])):
+        Returns:
+           A list, one element for each position in any string, comprising
+           a list of chars that are found at that position.
+        '''
+        product = []
+
+        for i in range(n):
+            choice = []
+            for s in strings:
+                if s[i] not in choice:
+                    choice.append(s[i])
+            product.append(choice)
+        return product
+
+    def create_splits(choices):
+        '''
+        Ascertain frequency with which characters actually appear in each position
+
+        Returns:
+           A list, one element for each position in any string, comprising
+           a list of chars that are found at that position, each char
+           augmented by its count.
+        '''
+        product = []
+        for i in range(n):
+            count = {c:0 for c in choices[i]}
+            for s in strings:
+                for c in choices[i]:
+                    if s[i] == c:
+                        count[c] += 1
+            product.append(count)
+        return product
+
+    n = len(strings[0])
+    splits = create_splits(create_choices())
+
+    result = []
+    for i in range(n):
         character = []
         split = splits[i]
         if not trivial(split):
             chs = list(split.keys())
             for s in strings:
-                character.append('0' if s[i]==chs[0] else '1')
+                character.append('0' if s[i] == chs[0] else '1')
             result.append(''.join(character))
     return result
-
-def create_character(included,species):
-    '''
-    create_character
-
-    Produce an array of 1s for each species that belongs to the split
-
-    Parameters:
-        included
-        species
-
-    '''
-    def fmt(c):
-        return '1' if c else '0'
-    return ''.join([fmt(s in included) for s in species])
 
 def CharacterTable(tree):
     '''
     ctbl Creating a Character Table  http://rosalind.info/problems/ctbl/
     '''
+    def create_character(belong):
+        '''
+        create_character
+
+        Parameters:
+            belong   List of species that belong to split
+
+        Returns:
+            A list of chars representing binary bits for each species, with a 1 iff the corresponding
+            species belongs to the split
+
+        '''
+        def fmt(c):
+            return '1' if c else '0'
+        return ''.join([fmt(s in belong) for s in species])
 
     species = sorted([spec.name for spec in tree.find_elements(terminal=True)])
-    clades  = [clade for clade in tree.find_clades(terminal=False)]
+    internal_nodes = [clade for clade in tree.find_clades(terminal=False)][1:]
 
-    # we iterate over all Clades except the root
-    return [create_character([spec.name for spec in split.find_elements(terminal=True)],species) for split in clades[1:]]
+    return [create_character([spec.name for spec in split.find_elements(terminal=True)]) for split in internal_nodes]
 
-def NumberBinaryTrees(n,rooted=True):
+def NumberBinaryTrees(n, rooted=True):
     '''
     NumberBinaryTrees
 
     cunr  Counting Unrooted Binary Trees
     root  Counting Rooted Binary Trees
+
     See http://carrot.mcb.uconn.edu/~olgazh/bioinf2010/class16.html
     '''
     N = 1
-    m = 2*n-3 if rooted else 2*n-5
-    while m>1:
-        N *=m
+    m = 2*n - 3 if rooted else 2 * n-5
+    while m > 1:
+        N *= m
         m -= 2
     return N
 
@@ -1189,6 +1215,13 @@ if __name__=='__main__':
             self.assertIn('00111',character_table)
             self.assertIn('00110',character_table)
 
+        def test_cunr(self):
+            '''
+            cunr  Counting Unrooted Binary Trees
+            '''
+            self.assertEqual(15,NumberBinaryTrees(5, rooted=False));
+
+
         def test_mend(self):
             '''MEND Inferring Genotype from a Pedigree'''
             newick_parser = Parser(Tokenizer())
@@ -1252,6 +1285,13 @@ if __name__=='__main__':
                                     '(A,C,((B,D),E));',
                                     '(C,(B,D),(A,E));'
             ))
+
+        def test_root(self):
+            '''
+            root  Counting Rooted Binary Trees
+            '''
+            self.assertEqual(15,NumberBinaryTrees(4, rooted=True));
+
 
         def test_rsub(self):
             ''' RSUB  	Identifying Reversing Substitutions'''
