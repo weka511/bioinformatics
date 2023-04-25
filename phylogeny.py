@@ -149,14 +149,12 @@ def NumberBinaryTrees(n, rooted=True):
     cunr  Counting Unrooted Binary Trees
     root  Counting Rooted Binary Trees
 
-    See http://carrot.mcb.uconn.edu/~olgazh/bioinf2010/class16.html
+    See the equations given in the last slide of http://carrot.mcb.uconn.edu/~olgazh/bioinf2010/class16.html
     '''
-    N = 1
-    m = 2*n - 3 if rooted else 2 * n-5
-    while m > 1:
-        N *= m
-        m -= 2
-    return N
+    if rooted:
+        return np.math.factorial(2*n - 3)/(2**(n-2) * np.math.factorial(n-2))
+    else:
+        return np.math.factorial(2*n - 5)/(2**(n-3) * np.math.factorial(n-3))
 
 class UnrootedBinaryTree:
     @classmethod
