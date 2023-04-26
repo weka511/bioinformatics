@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Copyright (C) 2017-2020 Greenweaves Software Limited
+# Copyright (C) 2017-2023 Greenweaves Software Limited
 #
 # This is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -15,18 +15,20 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>
 
-# BA7F Implement SmallParsimony
+'''BA7F Implement SmallParsimony'''
 
-import argparse
-import os
-import time
-from   helpers import read_strings
-import operator,random
-from   rosalind  import LabelledTree,hamm
-from   phylogeny import SmallParsimony
+from argparse  import ArgumentParser
+from os.path   import basename
+from time      import time
+from helpers   import read_strings
+from rosalind  import LabelledTree,hamm
+from phylogeny import SmallParsimony
 
 
 def print_assignments(assignments):
+    '''
+    Used to format output
+    '''
     assignments.nodes.sort()
 
     for node in assignments.nodes:
@@ -39,8 +41,8 @@ def print_assignments(assignments):
                                                  hamm(assignments.labels[node],assignments.labels[end])))
 
 if __name__=='__main__':
-    start = time.time()
-    parser = argparse.ArgumentParser('BA7F Implement SmallParsimony ')
+    start = time()
+    parser = ArgumentParser(__doc__)
     parser.add_argument('--sample',   default=False, action='store_true', help='process sample dataset')
     parser.add_argument('--rosalind', default=False, action='store_true', help='process Rosalind dataset')
     args = parser.parse_args()
@@ -61,7 +63,7 @@ if __name__=='__main__':
 
 
     if args.rosalind:
-        Input  = read_strings(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt')
+        Input  = read_strings(f'data/rosalind_{basename(__file__).split(".")[0]}.txt')
 
         T = LabelledTree.parse(int(Input[0]),Input[1],bidirectional=False)
 
@@ -70,11 +72,11 @@ if __name__=='__main__':
         print_assignments(assignments)
         Result = None
         print (Result)
-        with open(f'{os.path.basename(__file__).split(".")[0]}.txt','w') as f:
+        with open(f'{basename(__file__).split(".")[0]}.txt','w') as f:
             for line in Result:
                 f.write(f'{line}\n')
 
-    elapsed = time.time() - start
+    elapsed = time() - start
     minutes = int(elapsed/60)
     seconds = elapsed - 60*minutes
     print (f'Elapsed Time {minutes} m {seconds:.2f} s')

@@ -49,7 +49,7 @@ def mark_executable(out):
 if __name__=='__main__':
     parser = ArgumentParser(__doc__)
     parser.add_argument('--exclude', nargs = '*', default=[],             help='List of files to be excluded')
-    parser.add_argument('--out',     nargs = 1,   default='exectests.py', help='Name of batch file to be output')
+    parser.add_argument('--out',     nargs = 1,   default='exectests.sh', help='Name of batch file to be output')
     args    = parser.parse_args()
     exclude = args.exclude+[basename(__file__)] # Exclude this file as well as the ones the user specified
     with open(args.out,'w') as out:

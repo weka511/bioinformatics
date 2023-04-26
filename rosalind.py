@@ -394,7 +394,7 @@ class LabelledTree(Tree):
             return None
 
         T       = LabelledTree(bidirectional=bidirectional)
-        pattern = compils('(([0-9]+)|([{0}]+))->(([0-9]+)|([{0}]+))'.format(letters))
+        pattern = compile('(([0-9]+)|([{0}]+))->(([0-9]+)|([{0}]+))'.format(letters))
 
         for line in lines:
             m=pattern.match(line)

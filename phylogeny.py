@@ -30,7 +30,7 @@ import numpy         as     np
 from   Bio.Phylo     import read
 from   scipy.special import comb
 from   newick        import newick_to_adjacency_list, Parser, Tokenizer, Hierarchy
-from   rosalind      import LabelledTree
+from   rosalind      import LabelledTree, hamm
 from   fasta         import FastaContent
 from   helpers       import flatten, expand
 
@@ -151,10 +151,8 @@ def NumberBinaryTrees(n, rooted=True):
 
     See the equations given in the last slide of http://carrot.mcb.uconn.edu/~olgazh/bioinf2010/class16.html
     '''
-    if rooted:
-        return np.math.factorial(2*n - 3)/(2**(n-2) * np.math.factorial(n-2))
-    else:
-        return np.math.factorial(2*n - 5)/(2**(n-3) * np.math.factorial(n-3))
+    return np.math.factorial(2*n - 3)/(2**(n-2) * np.math.factorial(n-2)) if rooted else NumberBinaryTrees(n-1)
+
 
 class UnrootedBinaryTree:
     '''
@@ -241,12 +239,12 @@ def qrt(taxa,characters):
         '''Generate all possible quarters made from elements less that n'''
         for i in range(n):
             for j in range(n):
-                if i==j: continue
+                if i == j: continue
                 for k in range(n):
                     if k in [i,j]: continue
                     for l in range(n):
                         if l in [i,j,k]: continue
-                        if i<j and k<l and i<k:
+                        if i < j and k < l and i < k:
                             yield ((i,j),(k,l))
 
     def isConsistent(selector):
@@ -254,16 +252,16 @@ def qrt(taxa,characters):
         for char in characters:
             character = [char[i] for pair in selector for i in pair]
             if (all(c is not None for c in character) and
-                character[0]==character[1]            and
-                character[2]==character[3]            and
-                character[0]!=character[2]):
+                character[0] == character[1]            and
+                character[2] == character[3]            and
+                character[0] != character[2]):
                 return True
         return False
 
     for selector in quartets(len(taxa)):
         if isConsistent(selector):
             ((i,j),(k,l)) = selector
-            yield ((taxa[i],taxa[j]),(taxa[k],taxa[l]))
+            yield ((taxa[i],taxa[j]), (taxa[k],taxa[l]))
 
 
 
@@ -394,11 +392,10 @@ def sptd(species,newick1,newick2):
         product = []
         for (parent,child) in to_edges(tree):
             leaves = [clade.name for clade in child.find_clades() if clade.name]
-            if len(leaves)>1 and len(leaves)<n-1:  # Non trivial iff both components have length 2 or more
-                leaves.sort()
-                product.append(leaves)
-        product.sort()
-        return product
+            if len(leaves) > 1 and len(leaves) < n-1:  # Non trivial iff both components have length 2 or more
+                product.append(sorted(leaves))
+
+        return sorted(product)
 
     def ds(splits1,splits2):
         '''
@@ -416,38 +413,37 @@ def sptd(species,newick1,newick2):
             Count of splits shared by the two trees
         '''
         n_shared = 0
-        k1       = 0
-        k2       = 0
-        i1       = splits1[k1]
-        i2       = splits2[k2]
-        while k1<len(splits1) and k2<len(splits2):
-            if i1==i2:
+        k1 = 0
+        k2 = 0
+        i1 = splits1[k1]
+        i2 = splits2[k2]
+        while k1 < len(splits1) and k2 < len(splits2):
+            if i1 == i2:
                 n_shared += 1
-                k1       += 1
-                k2       += 1
-                if k1<len(splits1) and k2<len(splits2):
+                k1 += 1
+                k2 += 1
+                if k1 < len(splits1) and k2 < len(splits2):
                     i1 = splits1[k1]
                     i2 = splits2[k2]
-            elif i1<i2:
+            elif i1 < i2:
                 k1 += 1
-                if k1<len(splits1):
+                if k1 < len(splits1):
                     i1 = splits1[k1]
             else:
                 assert i1>i2
                 k2 += 1
-                if k2<len(splits2):
+                if k2 < len(splits2):
                     i2 = splits2[k2]
 
         return n_shared
 
-    n             = len(species)
+    n = len(species)
     species_index = {species[i]:i for i in range(n)}
     #  Any unrooted binary tree on n taxa must have n−3 nontrivial splits,
     #  so the two trees have 2(n-3) nontrivial splits
     #  whih comprises non-shared + shared, which must be counted twice
-    return 2*(n-3)- 2* ds(create_non_trivial_splits(read(StringIO(newick1), "newick")),
-                          create_non_trivial_splits(read(StringIO(newick2), "newick")))
-
+    return 2*(n - 3) - 2 * ds(create_non_trivial_splits(read(StringIO(newick1), "newick")),
+                              create_non_trivial_splits(read(StringIO(newick2), "newick")))
 
 
 def mend(node):
@@ -491,7 +487,7 @@ def mend(node):
     n = len(frequencies)  # Number of combinations
 
     # If we are at a leaf, we have a known ancestor
-    if len(node.nodes)==0:
+    if len(node.nodes) == 0:
         try:
             return frequencies['Aa' if node.name=='aA' else node.name]
         except KeyError:
@@ -1336,6 +1332,44 @@ if __name__=='__main__':
                              sptd('dog rat elephant mouse cat rabbit'.split(),
                                   '(rat,(dog,cat),(rabbit,(elephant,mouse)));',
                                   '(rat,(cat,dog),(elephant,(mouse,rabbit)));'))
+
+        def test_ba7f(self):
+            '''
+            BA7F Implement SmallParsimony
+            '''
+            T = LabelledTree.parse(4,
+                                   ['4->CAAATCCC',
+                                    '4->ATTGCGAC',
+                                    '5->CTGCGCTG',
+                                    '5->ATGGACGA',
+                                    '6->4',
+                                    '6->5'],
+                                   bidirectional=False
+                                   )
+            score,assignments=SmallParsimony(T)
+            self.assertEqual(16,score)
+            text = []
+            assignments.nodes.sort()
+            for node in assignments.nodes:
+                if node in assignments.edges:
+                    for edge in assignments.edges[node]:
+                        end,weight=edge
+                        if node in assignments.labels and end in assignments.labels:
+                            text.append('{0}->{1}:{2}'.format(assignments.labels[node],
+                                                         assignments.labels[end],
+                                                         hamm(assignments.labels[node],assignments.labels[end])))
+            self.assertIn('ATTGCGAC->ATAGCCAC:2',text)
+            self.assertIn('ATAGACAA->ATAGCCAC:2',text)
+            self.assertIn('ATAGACAA->ATGGACTA:2',text)
+            self.assertIn('ATGGACGA->ATGGACTA:1',text)
+            self.assertIn('CTGCGCTG->ATGGACTA:4',text)
+            self.assertIn('ATGGACTA->CTGCGCTG:4',text)
+            self.assertIn('ATGGACTA->ATGGACGA:1',text)
+            self.assertIn('ATGGACTA->ATAGACAA:2',text)
+            self.assertIn('ATAGCCAC->CAAATCCC:5',text)
+            self.assertIn('ATAGCCAC->ATTGCGAC:2',text)
+            self.assertIn('ATAGCCAC->ATAGACAA:2',text)
+            self.assertIn('CAAATCCC->ATAGCCAC:5',text)
 
         def test_tree1(self):
             '''
