@@ -157,6 +157,9 @@ def NumberBinaryTrees(n, rooted=True):
         return np.math.factorial(2*n - 5)/(2**(n-3) * np.math.factorial(n-3))
 
 class UnrootedBinaryTree:
+    '''
+    Class that solves eubt Enumerating Unrooted Binary Trees
+    '''
     @classmethod
     def Enumerate(cls,species):
         '''
@@ -173,10 +176,10 @@ class UnrootedBinaryTree:
               build a tree with 3 leaves, and keep adding one leaf at a time in all available positions.
         '''
         def enumerate(n):
-            if n==3:
+            if n == 3:
                 return [cls({0:[species[0], species[1], species[2]]})]
             else:
-                return [cls.insert(species[n-1],edge,graph) for graph in enumerate(n-1) for edge in graph.Edges()]
+                return [cls.insert(species[n-1], edge, graph) for graph in enumerate(n-1) for edge in graph.Edges()]
 
         return enumerate(len(species))
 
@@ -189,8 +192,8 @@ class UnrootedBinaryTree:
         Create a rooted tree by adding one internal node and a leaf to a specifed edge
         '''
         nextNode = max(list(graph.adj.keys())) + 1
-        n1,n2    = edge
-        adj      = {nextNode: [species,n2]}
+        n1, n2 = edge
+        adj = {nextNode: [species,n2]}
 
         for node,links in graph.adj.items():
                 adj[node] = [nextNode if ll==n2 else ll for ll in links] if node==n1 else links
@@ -212,7 +215,7 @@ class UnrootedBinaryTree:
         '''
         newick = []
         for child in  self.adj[node]:
-            if type(child)==int:
+            if type(child) == int:
                 newick.append(self.bfs_newick(node=child))
             else:
                 newick.append(child)
@@ -1219,6 +1222,15 @@ if __name__=='__main__':
             '''
             self.assertEqual(15,NumberBinaryTrees(5, rooted=False));
 
+        def test_eubt(self):
+            '''
+            eubt Enumerating Unrooted Binary Trees  http://rosalind.info/problems/eubt/
+            '''
+            trees = [str(tree) for tree in UnrootedBinaryTree.Enumerate('dog cat mouse elephant'.split())]
+            self.assertEqual(3,len(trees))
+            self.assertIn('((elephant,dog),cat,mouse)',trees)
+            self.assertIn('(dog,(elephant,cat),mouse)',trees)
+            self.assertIn('(dog,cat,(elephant,mouse))',trees)
 
         def test_mend(self):
             '''MEND Inferring Genotype from a Pedigree'''
