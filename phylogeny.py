@@ -29,6 +29,7 @@ from   random        import randrange
 import numpy         as     np
 from   Bio.Phylo     import read
 from   scipy.special import comb
+from   scipy.stats   import entropy
 from   newick        import newick_to_adjacency_list, Parser, Tokenizer, Hierarchy
 from   rosalind      import LabelledTree, hamm
 from   fasta         import FastaContent
@@ -864,10 +865,10 @@ def chbp(species,character_table):
             self.taxa = [s for s in taxa]
 
         def is_trivial(self):
-            return len(self.taxa)==0
+            return len(self.taxa) == 0
 
         def is_singleton(self):
-            return len(self.taxa)==1
+            return len(self.taxa) == 1
 
         def newick(self):
             '''
@@ -876,14 +877,9 @@ def chbp(species,character_table):
             Convert to string in Newick format
             '''
             def conv(taxon):
-                if isinstance(taxon,int):
-                    return species[taxon]
-                else:
-                    return taxon.newick()
-            if self.is_singleton():
-                return conv(self.taxa[0])
-            else:
-                return '(' + ','.join(conv(taxon) for taxon in self.taxa) +')'
+                return species[taxon] if isinstance(taxon,int) else taxon.newick()
+
+            return conv(self.taxa[0]) if self.is_singleton() else '(' + ','.join(conv(taxon) for taxon in self.taxa) +')'
 
 
         def split(self,character):
@@ -899,15 +895,16 @@ def chbp(species,character_table):
             left  = []
             right = []
             for i in self.taxa:
-                if character[i]==0:
+                if character[i] == 0:
                     left.append(i)
                 else:
                     right.append(i)
+
             leftTaxon  = Clade(left)
             rightTaxon = Clade(right)
             if leftTaxon.is_trivial(): return False
             if rightTaxon.is_trivial(): return False
-            self.taxa = [leftTaxon,rightTaxon]
+            self.taxa = [leftTaxon, rightTaxon]
             return True
 
 
@@ -920,20 +917,15 @@ def chbp(species,character_table):
             if depth<len(characters):
                 if self.split(characters[depth]):
                     for taxon in self.taxa:
-                        taxon.splitAll(characters,depth+1)
+                        taxon.splitAll(characters, depth+1)
                 else:
-                    self.splitAll(characters,depth+1)
+                    self.splitAll(characters, depth+1)
 
     def get_entropy(freq):
         '''
-        Calculate entropy of a single character
+        Calculate entropy of a single character (wrapper around scipy.stats.entropy)
         '''
-        if freq==0 or freq==n: return 0
-        p1 = freq/n
-        p2 = 1-p1
-        return - p1 *np.log(p1) - p2 * np.log(p2)
-
-
+        return entropy(np.array([freq/n, 1 - freq/n]))
 
     n               = len(species)
     entropies       = [get_entropy(sum(char)) for char in character_table]
@@ -970,7 +962,7 @@ def rsub(T,Assignments):
 
         '''
         parent = Parents[leaf]
-        while len(parent)>0:
+        while len(parent) > 0:
             Path.append(parent)
             if parent in Parents:
                 parent = Parents[parent]
@@ -998,12 +990,10 @@ def rsub(T,Assignments):
             if current==History[-1]: continue
             History.append(current)
             Names.append(taxon)
-            if len(History)>2 and History[-3]==History[-1]: # we have a reverse
+            if len(History) > 2 and History[-3] == History[-1]: # we have a reverse
                 Reverses.append((Names[-2],Names[-1],pos+1,History[-3],History[-2],History[-1]))
 
         return Reverses
-
-
 
     def create_parents(Adj):
         '''
@@ -1026,16 +1016,16 @@ def rsub(T,Assignments):
         return list(set(flatten(list_of_lists)))
 
     Adj,root = newick_to_adjacency_list(T,return_root=True)
-    fc       = FastaContent(Assignments)
+    fc = FastaContent(Assignments)
     Characters = fc.to_dict()            # So we can find character for each species
     _,string = fc[0]
-    m        = len(string)
-    Parents  = create_parents(Adj)
-    Paths    = [find_path(node) for node in flatten(Adj.values()) if len(Adj[node])==0]
+    m  = len(string)
+    Parents = create_parents(Adj)
+    Paths = [find_path(node) for node in flatten(Adj.values()) if len(Adj[node])==0]
 
     # Build list of unique reversals.
     return get_unique([subst for subst in [FindReversingSubstitutions(path,pos) for path in Paths for pos in range(m)]
-                       if len(subst)>0])
+                       if len(subst) > 0])
 
 
 
@@ -1080,7 +1070,7 @@ def cset(table):
 
         return True
 
-    n         = len(table)
+    n = len(table)
     Conflicts = np.zeros(n)   # Count number of times each row conflicts with another
     for i in range(n):
         for j in range(i+1,n):
@@ -1095,14 +1085,14 @@ def cntq(n,newick):
     def create_adj(tree):
         adj = {}
         def bfs(tree):
-            id       = tree['id']
-            name     = tree['name']
+            id = tree['id']
+            name = tree['name']
             children = tree['children']
             parentid = tree['parentid']
             if len(name)==0:
                 adj[id]=[]
             if parentid>-1:
-                adj[parentid].append(id if len(name)==0 else name)
+                adj[parentid].append(id if len(name) == 0 else name)
             for child in children:
                 bfs(child)
         bfs(tree)
@@ -1114,31 +1104,37 @@ def cntq(n,newick):
                 leaves.append(node)
             else:
                 bfs(node,leaves)
+
     def pair(leaves):
         for i in range(len(leaves)):
-            for j in range(i+1,len(leaves)):
-                yield [leaves[i],leaves[j]] if leaves[i]<leaves[j] else [leaves[j],leaves[i]]
+            for j in range(i+1, len(leaves)):
+                yield [leaves[i],leaves[j]] if leaves[i] < leaves[j] else [leaves[j],leaves[i]]
 
-    adj             = Hierarchy(newick).create_adj()
-    taxa            = [leaf for children in adj.values() for leaf in children if isinstance(leaf,str)]
+    adj = Hierarchy(newick).create_adj()
+    taxa = [leaf for children in adj.values() for leaf in children if isinstance(leaf,str)]
     splitting_edges = [(key,child) for key,value in adj.items() for child in value if isinstance(child,int)]
-    Quartets        = []
+    Quartets = []
     for _,node in splitting_edges:
-        leaves       = []
+        leaves = []
         bfs(node,leaves)
         other_leaves = [leaf for leaf in taxa if leaf not in leaves]
         for pair1 in pair(leaves):
             for pair2 in pair(other_leaves):
-                quartet = pair1 + pair2 if pair1[0]<pair2[0] else pair2 + pair1
+                quartet = pair1 + pair2 if pair1[0] < pair2[0] else pair2 + pair1
                 Quartets.append(quartet)
     Quartets.sort()
-    Unique =[Quartets[0]]
+    Unique = [Quartets[0]]
     for i in range(1,len(Quartets)):
-        if Quartets[i]!=Unique[-1]:
+        if Quartets[i] != Unique[-1]:
             Unique.append(Quartets[i])
     return len(Unique),Unique
 
 def expand_character(s):
+    '''
+    expand_character
+
+    Used to format strings for output
+    '''
     return [int(c) if c.isdigit() else None for c in s]
 
 if __name__=='__main__':
