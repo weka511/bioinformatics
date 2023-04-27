@@ -213,7 +213,7 @@ class UnrootedBinaryTree:
         '''
         newick = []
         for child in  self.adj[node]:
-            if type(child) == int:
+            if isinstance(child,int):
                 newick.append(self.bfs_newick(node=child))
             else:
                 newick.append(child)
@@ -876,7 +876,7 @@ def chbp(species,character_table):
             Convert to string in Newick format
             '''
             def conv(taxon):
-                if type(taxon)==int:
+                if isinstance(taxon,int):
                     return species[taxon]
                 else:
                     return taxon.newick()
@@ -1110,7 +1110,7 @@ def cntq(n,newick):
 
     def bfs(subtree,leaves):
         for node in adj[subtree]:
-            if type(node)==str:
+            if isinstance(node,str):
                 leaves.append(node)
             else:
                 bfs(node,leaves)
@@ -1120,8 +1120,8 @@ def cntq(n,newick):
                 yield [leaves[i],leaves[j]] if leaves[i]<leaves[j] else [leaves[j],leaves[i]]
 
     adj             = Hierarchy(newick).create_adj()
-    taxa            = [leaf for children in adj.values() for leaf in children if type(leaf)==str]
-    splitting_edges = [(key,child) for key,value in adj.items() for child in value if type(child)==int]
+    taxa            = [leaf for children in adj.values() for leaf in children if isinstance(leaf,str)]
+    splitting_edges = [(key,child) for key,value in adj.items() for child in value if isinstance(child,int)]
     Quartets        = []
     for _,node in splitting_edges:
         leaves       = []
