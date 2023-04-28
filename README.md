@@ -151,7 +151,7 @@ I have written this code in Python 3, generally with the most recent release at 
 |BA7C|BA7C.py|[Implement Additive Phylogeny](http://rosalind.info/problems/ba7c/) [See also](https://github.com/weka511/bioinformatics/issues/19)|
 |BA7D|BA7D.py|[Implement UPGMA](http://rosalind.info/problems/ba7d/)|
 |BA7E|BA7E.py|[Implement the Neighbor Joining Algorithm](http://rosalind.info/problems/ba7e/)|
-|BA7F|BA7F.py|[Implement SmallParsimony](http://rosalind.info/problems/ba7f/)|
+|BA7F|BA7F.py phylogeny.py|[Implement SmallParsimony](http://rosalind.info/problems/ba7f/)|
 |BA7G|BA7G.py|[Adapt SmallParsimony to Unrooted Trees](http://rosalind.info/problems/ba7g/)|
 |alph|alph.py phylogeny.py|[Alignment-Based Phylogeny](http://rosalind.info/problems/alph/)|
 |chbp|chbp.py phylogeny.py|[Character-Based Phylogeny](http://rosalind.info/problems/chbp/)|
