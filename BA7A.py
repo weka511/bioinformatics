@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Copyright (C) 2017-2021 Greenweaves Software Limited
+# Copyright (C) 2017-2023 Greenweaves Software Limited
 
 # This is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -15,35 +15,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>
 
-# BA7A Compute Distances Between Leaves
+'''BA7A Compute Distances Between Leaves'''
 
-from helpers import create_weighted_adjacency_list
+from helpers   import create_weighted_adjacency_list
+from phylogeny import ComputeDistancesBetweenLeaves
 
-# ComputeDistancesBetweenLeaves
-
-# Inputs:  n an integer n
-#          T the adjacency list of a weighted tree with n leaves.
-#
-# Returns: An n by n symmetric matrix of distannces between leaves
-
-def ComputeDistancesBetweenLeaves(n,T):
-
-    # D
-    # Recursively compute the distances between two nodes
-    def D(i,j,path=[]):
-        if i==j:  return 0
-        d = float('inf')
-        for node,weight in T[i]:
-            if node==j:
-                return weight
-            if node in path:
-                continue
-            test = weight + D(node,j,path+[node])
-            if test<d:
-                d=test
-        return d
-
-    return [[D(i,j)for j in range(n)] for i in range(n) ]
 
 if __name__=='__main__':
 

@@ -26,6 +26,7 @@ therefore use the name "char" to the Python lexical elements, e.g. "list of char
 from   unittest      import TestCase, main, skip
 from   io            import StringIO
 from   random        import randrange
+from   re            import compile
 import numpy         as     np
 from   Bio.Phylo     import read
 from   scipy.special import comb
@@ -498,6 +499,52 @@ def mend(node):
     parent_freqs = [pp for pp in parent_freqs if len(pp)==n]
     return combine(parent_freqs[0],parent_freqs[1])
 
+def ComputeDistancesBetweenLeaves(n,T):
+    '''
+    ComputeDistancesBetweenLeaves
+
+    BA7A Compute Distances Between Leaves
+
+    Inputs:  n an integer n
+          T the adjacency list of a weighted tree with n leaves.
+
+    Returns: An n by n symmetric matrix of distances between leaves
+    '''
+    def get_distance(i,j,path=[]):
+        '''
+        get_distance
+
+        Recursively compute the distances between two nodes
+        '''
+        if i==j:  return 0
+        d = float('inf')
+        for node,weight in T[i]:
+            if node == j:
+                return weight
+            if node not in path:
+                d = min(d,weight + get_distance(node,j,path+[node]))
+        return d
+
+    D = np.zeros((n,n))
+    for i in range(n):
+        for j in range(i+1,n):
+            D[i,j] = get_distance(i,j)
+            D[j,i] = D[i,j]
+    return D
+
+def ComputeLimbLength(n,j,D):
+    '''
+    ComputeLimbLength
+
+    Inputs: n An integer n
+            j an integer between 0 and n - 1,
+            D a space-separated additive distance matrix D (whose elements are integers).
+
+    Return: The limb length of the leaf in Tree(D) corresponding to row j of this distance matrix (use 0-based indexing).
+
+    Uses the Limb Length Theorem: LimbLength(j) = min(D[i][j] + D[j][k]-D[i][k])/2 over all leaves i and k
+    '''
+    return min([D[i,j]+D[j,k]-D[i,k] for i in range(n) for k in range(n) if j!=k and k!=i and i!=j])/2
 
 def SmallParsimony(T,alphabet='ATGC'):
     '''
@@ -1328,6 +1375,53 @@ if __name__=='__main__':
                              sptd('dog rat elephant mouse cat rabbit'.split(),
                                   '(rat,(dog,cat),(rabbit,(elephant,mouse)));',
                                   '(rat,(cat,dog),(elephant,(mouse,rabbit)));'))
+
+        def test_ba7a(self):
+            '''BA7A Compute Distances Between Leaves'''
+            def create_weighted_adjacency(n,Edges):
+                T = [[] for _ in range(n+2)]
+                re_edge = compile('(\d+)->(\d+):(\d+)')
+                for edge in Edges:
+                    matched = re_edge.match(edge)
+                    i,node,weight = (int(j) for j in matched.groups())
+                    T[i].append((node,weight))
+                return n,T
+
+            n,T = create_weighted_adjacency(4,
+                                            ['0->4:11',
+                                             '1->4:2',
+                                             '2->5:6',
+                                             '3->5:7',
+                                             '4->0:11',
+                                             '4->1:2',
+                                             '4->5:4',
+                                             '5->4:4',
+                                             '5->3:7',
+                                             '5->2:6'])
+
+            D = ComputeDistancesBetweenLeaves(n,T)
+            self.assertEqual(13,D[0,1])
+            self.assertEqual(21,D[0,2])
+            self.assertEqual(22,D[0,3])
+            self.assertEqual(13,D[1,0])
+            self.assertEqual(12,D[1,2])
+            self.assertEqual(13,D[1,3])
+            self.assertEqual(21,D[2,0])
+            self.assertEqual(12,D[2,1])
+            self.assertEqual(13,D[2,3])
+            self.assertEqual(22,D[3,0])
+            self.assertEqual(13,D[3,1])
+            self.assertEqual(13,D[3,2])
+
+        def test_ba7b(self):
+            ''' BA7B Limb Length Problem'''
+            self.assertEqual(2,ComputeLimbLength(4,
+                                                 1,
+                                                 np.array([[ 0, 13, 21, 22],
+                                                           [13,  0, 12, 13],
+                                                           [21, 12,  0, 13],
+                                                           [22, 13, 13, 0]])))
+
 
         def test_ba7f(self):
             '''

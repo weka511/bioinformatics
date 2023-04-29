@@ -112,6 +112,7 @@ def create_adjacency(edges,back=True,self=True):
 
      Inputs:   edges    Edges in graph
                back     Indicates whether to create back links (undirected graph)
+               self     Indicates whether self links, a->a, are to be included
 
      Outputs:  Adjacency list, including loop a->a
     '''
@@ -465,7 +466,7 @@ def create_weighted_adjacency_list(problem=basename(argv[0]).split('.')[0],
                                    ext=None,
                                    name=None):
     '''
-     create_strings
+    create_weighted_adjacency_list
 
     Read test data from file
 
@@ -475,19 +476,19 @@ def create_weighted_adjacency_list(problem=basename(argv[0]).split('.')[0],
               ext      Ext used to identify additional datasets - 1, 2, 3...
               fasta    File is in FASTA format, so skip FASTA ids
 
-    Returns: A weighted adjactency list - e.g. http://rosalind.info/problems/ba7a/
+    Returns: A weighted adjacency list - e.g. http://rosalind.info/problems/ba7a/
     '''
     n = -1
     T = {}
-    p=compile('([0-9]+)->([0-9]+):([.0-9]+)')
+    p = compile('([0-9]+)->([0-9]+):([.0-9]+)')
 
-    for line in create_strings(problem=problem,path=path,ext=ext,name=name):
-        if n==-1:
-            n=int(line)
+    for line in create_strings(problem=problem, path=path, ext=ext, name=name):
+        if n == -1:
+            n = int(line)
         else:
-            m=p.match(line)
+            m = p.match(line)
             if  not int(m.group(1)) in T:
-                T[int(m.group(1))]=[(int(m.group(2)),int(m.group(3)))]
+                T[int(m.group(1))] = [(int(m.group(2)),int(m.group(3)))]
             else:
                 T[int(m.group(1))].append((int(m.group(2)),int(m.group(3))))
     return n,T
