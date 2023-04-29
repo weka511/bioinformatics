@@ -330,6 +330,14 @@ class Tree(object):
     def are_linked(self,a,b):
         return len([e for (e,w) in self.edges[a] if e == b])>0
 
+    def generate_adjacency(self):
+        self.nodes.sort()
+        for node in self.nodes:
+            if node in self.edges:
+                for edge in self.edges[node]:
+                    end,weight=edge
+                    yield node,end,weight
+
     def print_adjacency(self,includeNodes=False):
         print('-----------------')
         self.nodes.sort()
