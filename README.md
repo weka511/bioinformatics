@@ -150,9 +150,9 @@ I have written this code in Python 3, generally with the most recent release at 
 |BA7B|BA7B.py phylogeny.py|[Limb Length Problem](http://rosalind.info/problems/ba7b/)|
 |BA7C|BA7C.py phylogeny.py|[Implement Additive Phylogeny](http://rosalind.info/problems/ba7c/) [See also](https://github.com/weka511/bioinformatics/issues/19)|
 |BA7D|BA7D.py phylogeny.py|[Implement UPGMA](http://rosalind.info/problems/ba7d/)|
-|BA7E|BA7E.py|[Implement the Neighbor Joining Algorithm](http://rosalind.info/problems/ba7e/)|
+|BA7E|BA7E.py  phylogeny.py|[Implement the Neighbor Joining Algorithm](http://rosalind.info/problems/ba7e/)|
 |BA7F|BA7F.py phylogeny.py|[Implement SmallParsimony](http://rosalind.info/problems/ba7f/)|
-|BA7G|BA7G.py|[Adapt SmallParsimony to Unrooted Trees](http://rosalind.info/problems/ba7g/)|
+|BA7G|BA7G.py  phylogeny.py|[Adapt SmallParsimony to Unrooted Trees](http://rosalind.info/problems/ba7g/)|
 |alph|alph.py phylogeny.py|[Alignment-Based Phylogeny](http://rosalind.info/problems/alph/)|
 |chbp|chbp.py phylogeny.py|[Character-Based Phylogeny](http://rosalind.info/problems/chbp/)|
 |cntq|cntq.py phylogeny.py|[Counting Quartets](http://rosalind.info/problems/cntq/)|

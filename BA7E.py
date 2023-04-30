@@ -18,7 +18,7 @@
 
 
 from phylogeny import NeighborJoining
-from rosalind  import Tree,read_matrix
+from rosalind  import read_matrix
 
 
 if __name__=='__main__':

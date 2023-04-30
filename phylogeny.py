@@ -883,6 +883,37 @@ def SmallParsimony(T,alphabet='ATGC'):
 
     return sum([SmallParsimonyC([v[i] for l,v in T.labels.items()]) for i in range(len(T.labels[0]))]),assignments
 
+def AdaptSmallParsimonyToUnrootedTrees(N,T):
+    '''
+    When the position of the root in an evolutionary tree is unknown,
+    we can simply assign the root to any edge that we like, apply
+    SmallParsimony from "Implement SmallParsimony" to the resulting rooted tree, and then remove the root.
+    It can be shown that this method provides a solution to the following problem.
+    Small Parsimony in an Unrooted Tree Problem
+    '''
+    def assign_root():
+        '''
+        Assign a root to the tree.
+
+        Initially I followed Igor Segota's solution from
+        https://stepik.org/lesson/10335/step/12?course=Stepic-Interactive-Text-for-Week-3&unit=8301,
+        but found that a random root  generally led to problems with the Small Parsimony algorithm.
+        Using the last node as one half of the broken lenk works well.
+        '''
+        a=T.nodes[len(T.nodes)-1]
+        b,_=T.edges[a][0]
+        T.unlink(a,b)
+        c=T.next_node()
+        T.link(c,a)
+        T.link(c,b)
+        return (a,b,c)
+
+    a,b,root=assign_root()
+
+    T.remove_backward_links(root)
+
+    return a,b,root,T
+
 
 def alph(T,Alignment,
          Alphabet=['A','T','C','G','-']):
@@ -1705,7 +1736,7 @@ if __name__=='__main__':
                                     '6->5'],
                                    bidirectional=False
                                    )
-            score,assignments=SmallParsimony(T)
+            score,assignments = SmallParsimony(T)
             self.assertEqual(16,score)             # See issue #135
             # text = []
             # assignments.nodes.sort()
@@ -1729,6 +1760,29 @@ if __name__=='__main__':
             # self.assertIn('ATAGCCAC->ATTGCGAC:2',text)
             # self.assertIn('ATAGCCAC->ATAGACAA:2',text)
             # self.assertIn('CAAATCCC->ATAGCCAC:5',text)
+
+        def test_ba7g(self):
+            ''' BA7G Adapt SmallParsimony to Unrooted Trees  http://rosalind.info/problems/ba7g/'''
+            T = LabelledTree.parse(4,
+                                   ['TCGGCCAA->4',
+                                    '4->TCGGCCAA',
+                                    'CCTGGCTG->4',
+                                    '4->CCTGGCTG',
+                                    'CACAGGAT->5',
+                                    '5->CACAGGAT',
+                                    'TGAGTACC->5',
+                                    '5->TGAGTACC',
+                                    '4->5',
+                                    '5->4'],
+                                   bidirectional=True
+                                   )
+            a,b,root,T1= AdaptSmallParsimonyToUnrootedTrees(4,T)
+            score,assignments=SmallParsimony(T1)
+            # This is the fixup at the end of processing
+            assignments.unlink(root,b)
+            assignments.unlink(root,a)
+            assignments.link(a,b)
+            self.assertEqual(17,score)
 
         def test_tree1(self):
             '''
