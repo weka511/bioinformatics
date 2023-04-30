@@ -678,44 +678,33 @@ def UPGMA(D, n):
         D = np.vstack((D,row.flatten()))
 
     for node in T.nodes:
-        T.edges[node]=[(e,abs(Age[node]-Age[e])) for e,W in T.edges[node]]
+        T.edges[node] = [(e,abs(Age[node]-Age[e])) for e,W in T.edges[node]]
 
     return T
 
 def NeighborJoining(D,n,node_list=None):
     ''' BA7E Implement the Neighbor Joining Algorithm'''
     def remove(i,D):
-        D1 = np.delete(D,i,axis=0)
-        D2 = np.delete(D1,i,axis=1)
-        return D2
+        '''
+        Remove specified row and column from matrix
+        '''
+        return np.delete(np.delete(D,i,axis=0),i,axis=1)
 
-    def create_DPrime(Total_distance):
-        DPrime = np.zeros((n,n))
+    def create_dprime(Total_distance):
+        Product = np.zeros((n,n))
         for i in range(n):
             for j in range(i+1,n):
-                DPrime[i,j] = (n-2)*D[i,j] - Total_distance[i] - Total_distance[j]
-                DPrime[j,i]= DPrime[i,j]
-        return DPrime
+                Product[i,j] = (n-2)*D[i,j] - Total_distance[i] - Total_distance[j]
+                Product[j,i]= Product[i,j]
+        return Product
 
-    def get_ij_minDPrime(DPrime):
-        i = -1
-        j = -1
-        minD = np.inf
-        for ii in range(n):
-            for jj in range(ii,n):
-                if  DPrime[ii,jj] < minD:
-                    i = ii
-                    j = jj
-                    minD = DPrime[i,j]
-        return (i,j,minD)
-
-    def createDelta(Total_distance):
-        Delta = np.zeros((n,n))
+    def create_delta(Total_distance):
+        Product = np.zeros((n,n))
         for i in range(n):
             for j in range(i+1,n):
-                Delta[i,j] = (Total_distance[i] - Total_distance[j])/(n - 2)
-                Delta[j,i] = Delta[i,j]
-        return Delta
+                Product[i,j] = (Total_distance[i] - Total_distance[j])/(n - 2)
+                Product[j,i] = Product[i,j]
+        return Product
 
     if node_list==None:
         node_list=list(range(n))
@@ -724,10 +713,11 @@ def NeighborJoining(D,n,node_list=None):
         T=Tree()
         T.link(node_list[0],node_list[1],D[0][1])
     else:
-        Total_distance = np.sum(D,axis=0)#[sum(row) for row in D]
-        DPrime = create_DPrime(Total_distance)
-        (i,j,minD) = get_ij_minDPrime(DPrime)
-        Delta = createDelta(Total_distance)
+        Total_distance = np.sum(D,axis=0)
+        DPrime = create_dprime(Total_distance)
+        minD = DPrime.argmin()
+        i,j = np.unravel_index(minD, DPrime.shape)
+        Delta = create_delta(Total_distance)
         limbLength_i = (D[i,j]+Delta[i,j])/2
         limbLength_j = (D[i,j]-Delta[i,j])/2
         row = np.array( [[0.5*(D[k,i]+D[k,j]-D[i,j])] for k in range(n)] + [[0.0]])
@@ -758,8 +748,6 @@ def SmallParsimony(T,alphabet='ATGC'):
             corresponding to labeling internal nodes by DNA strings in order to minimize the parsimony score of the tree.
 
     '''
-
-
     def SmallParsimonyC(Character):
         '''
         SmallParsimonyC
