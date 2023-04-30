@@ -900,15 +900,15 @@ def AdaptSmallParsimonyToUnrootedTrees(N,T):
         but found that a random root  generally led to problems with the Small Parsimony algorithm.
         Using the last node as one half of the broken lenk works well.
         '''
-        a=T.nodes[len(T.nodes)-1]
-        b,_=T.edges[a][0]
+        a = T.nodes[len(T.nodes)-1]
+        b,_ = T.edges[a][0]
         T.unlink(a,b)
-        c=T.next_node()
+        c = T.next_node()
         T.link(c,a)
         T.link(c,b)
         return (a,b,c)
 
-    a,b,root=assign_root()
+    a,b,root = assign_root()
 
     T.remove_backward_links(root)
 
