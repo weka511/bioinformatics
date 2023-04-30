@@ -146,10 +146,10 @@ I have written this code in Python 3, generally with the most recent release at 
 
 | # | Location | Description |
 | ---- | --------------- | ------------------------------------------------|
-|BA7A|BA7A.py|[Compute Distances Between Leaves](http://rosalind.info/problems/ba7a/)|
-|BA7B|BA7B.py|[Limb Length Problem](http://rosalind.info/problems/ba7b/)|
-|BA7C|BA7C.py|[Implement Additive Phylogeny](http://rosalind.info/problems/ba7c/) [See also](https://github.com/weka511/bioinformatics/issues/19)|
-|BA7D|BA7D.py|[Implement UPGMA](http://rosalind.info/problems/ba7d/)|
+|BA7A|BA7A.py phylogeny.py|[Compute Distances Between Leaves](http://rosalind.info/problems/ba7a/)|
+|BA7B|BA7B.py phylogeny.py|[Limb Length Problem](http://rosalind.info/problems/ba7b/)|
+|BA7C|BA7C.py phylogeny.py|[Implement Additive Phylogeny](http://rosalind.info/problems/ba7c/) [See also](https://github.com/weka511/bioinformatics/issues/19)|
+|BA7D|BA7D.py phylogeny.py|[Implement UPGMA](http://rosalind.info/problems/ba7d/)|
 |BA7E|BA7E.py|[Implement the Neighbor Joining Algorithm](http://rosalind.info/problems/ba7e/)|
 |BA7F|BA7F.py phylogeny.py|[Implement SmallParsimony](http://rosalind.info/problems/ba7f/)|
 |BA7G|BA7G.py|[Adapt SmallParsimony to Unrooted Trees](http://rosalind.info/problems/ba7g/)|

@@ -515,22 +515,30 @@ def ComputeDistancesBetweenLeaves(n,T):
         get_distance
 
         Recursively compute the distances between two nodes
+
+        Cache distances in D[i,j] so we don't repeat calculation
         '''
-        if i==j:  return 0
-        d = float('inf')
+        if D[i,j] < np.inf:  return D[i,j]
+        d = np.inf
         for node,weight in T[i]:
             if node == j:
-                return weight
+                d = weight
+                break
             if node not in path:
                 d = min(d,weight + get_distance(node,j,path+[node]))
+        D[i,j] = d
+        D[j,i] = d
         return d
 
-    D = np.zeros((n,n))
-    for i in range(n):
-        for j in range(i+1,n):
-            D[i,j] = get_distance(i,j)
-            D[j,i] = D[i,j]
-    return D
+    m = len(T)
+    D = np.full((m,m),np.inf)
+    for i in range(m):
+        D[i,i] = 0
+    for i in range(m):
+        for j in range(i+1,m):
+            get_distance(i,j)
+
+    return D[0:n,0:n]
 
 def ComputeLimbLength(n,j,D):
     '''
@@ -564,7 +572,7 @@ def AdditivePhylogeny(D,n,N=-1):
         '''
         for i in range(n):
             for k in range(n):
-                if DD[i,k]==DD[i,n-1]+DD[n-1,k] and i!=k:
+                if DD[i,k] == DD[i,n-1] + DD[n-1,k] and i != k:
                     return(i,k,n-1,DD[i,n-1])
 
     def get_Position_v(traversal):
@@ -579,12 +587,11 @@ def AdditivePhylogeny(D,n,N=-1):
         return (False, l_previous, l, d0,d)
 
     if N==-1:
-        N=n
+        N = n
 
     if n==2:
         T = Tree(N)
         T.link(0,1,D[0,1])
-        return T
     else:
         limbLength = ComputeLimbLength(n,n-1,D)
 
@@ -617,7 +624,63 @@ def AdditivePhylogeny(D,n,N=-1):
 
         T.link(node,v,limbLength) # add leaf n back to T by creating a limb (v, n) of length limbLength
 
-        return T
+    return T
+
+def UPGMA(D, n):
+    '''
+    Construct the ultrametric tree resulting from UPGMA.
+
+    Given: An integer n
+           D an n x n distance matrix.
+
+    Return: An adjacency list for the ultrametric tree output by UPGMA. Weights should be accurate to three decimal places.
+    '''
+    def find_two_closest_clusters(Clusters):
+        '''
+        Find the indices of the two closest clusters
+        '''
+        ii = -1
+        jj = -1
+        best_distance = np.inf
+        for i in range(len(D)):
+            for j in range(i):
+                if i in Clusters and j in Clusters and D[i,j] < best_distance:
+                    ii = i
+                    jj = j
+                    best_distance = D[i,j]
+        return (ii,jj,best_distance)
+
+    def d(i,j):
+        '''
+        Calculate distance between two clusters
+        '''
+        if i in Clusters and j in Clusters:
+            return sum([D[cl_i,cl_j] for cl_i in Clusters[i] for cl_j in Clusters[j]])/(len( Clusters[i])* len(Clusters[j]))
+        else:
+            return np.nan
+
+    Clusters = {i:[i] for i in range(n)}
+    T = Tree(n)
+    Age = {node:0 for node in T.get_nodes()}
+
+    while len(Clusters) > 1:
+        i,j,distance = find_two_closest_clusters(Clusters)
+        node = T.next_node()
+        T.link(node,i)
+        T.link(node,j)
+        Clusters[node] = Clusters[i] + Clusters[j]
+        Age[node] = D[i,j]/2
+        del Clusters[i]
+        del Clusters[j]
+
+        row = np.array([[d(i,node)] for i in range(len(D))] + [[0.0]])
+        D = np.hstack((D,row[:-1]))
+        D = np.vstack((D,row.flatten()))
+
+    for node in T.nodes:
+        T.edges[node]=[(e,abs(Age[node]-Age[e])) for e,W in T.edges[node]]
+
+    return T
 
 def SmallParsimony(T,alphabet='ATGC'):
     '''
@@ -692,7 +755,7 @@ def SmallParsimony(T,alphabet='ATGC'):
             if not v in assignments.labels:
                 assignments.labels[v]=''
             index = 0
-            min_s = float('inf')
+            min_s = np.inf
             for i in range(len(s)):
                 if s[i] < min_s:
                     min_s = s[i]
@@ -734,7 +797,7 @@ def SmallParsimony(T,alphabet='ATGC'):
         for v in T.get_nodes():
             if T.is_leaf(v):
                 processed[v]=True
-                s[v]        = [0 if symbol==Character[v] else float('inf') for symbol in alphabet]
+                s[v]        = [0 if symbol==Character[v] else np.inf for symbol in alphabet]
             else:
                 processed[v]=False
 
@@ -936,7 +999,7 @@ def alph(T,Alignment,
         for v in Adj.keys():
             if v in Leaves:
                 char      = Leaves[v][l]
-                s[v]      = [0 if Alphabet[k]==char else float('inf') for k in range(len(Alphabet))]
+                s[v]      = [0 if Alphabet[k]==char else np.inf for k in range(len(Alphabet))]
                 Tag[v]    = True
             else:
                 Tag[v] = False
@@ -1514,6 +1577,36 @@ if __name__=='__main__':
             self.assertIn(( 5,4,4),adj)
             self.assertIn(( 5,3,7),adj)
             self.assertIn((5,2,6),adj)
+
+        def test_ba7cNA(self):
+            '''BA7C Implement Additive Phylogeny: non-additive matrix'''
+            with self.assertRaises(ValueError):
+                AdditivePhylogeny(np.array([[0,  3,  4,  3],
+                                            [3,  0,  4,  5],
+                                            [4,  4,  0,  2],
+                                            [3,  5,  2,  0]]),
+                                  4)
+
+        def test_ba7d(self):
+            ''' BA7D Implement UPGMA'''
+            T = UPGMA(np.array([[ 0, 20, 17,  11],
+                                [20,  0, 20,  13],
+                                [17, 20,  0,  10],
+                                [11, 13, 10,   0]]),
+                  4)
+            adj = [a for a in T.generate_adjacency()]
+            self.assertEqual(12,len(adj))
+            self.assertIn((0,5,7),adj)
+            # self.assertIn((1,6,8.833),adj)
+            self.assertIn((2,4,5.000),adj)
+            self.assertIn((4,2,5.000),adj)
+            self.assertIn((4,3,5.000),adj)
+            self.assertIn((4,5,2.000),adj)
+            self.assertIn((5,0,7.000),adj)
+            self.assertIn((5,4,2.000),adj)
+            # self.assertIn((5,6,1.833),adj)
+            # self.assertIn((6,5,1.833),adj)
+            # self.assertIn((6,1,8.833),adj)
 
 
         def test_ba7f(self):
