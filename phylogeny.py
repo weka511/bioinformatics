@@ -682,6 +682,70 @@ def UPGMA(D, n):
 
     return T
 
+def NeighborJoining(D,n,node_list=None):
+    ''' BA7E Implement the Neighbor Joining Algorithm'''
+    def remove(i,D):
+        D1 = np.delete(D,i,axis=0)
+        D2 = np.delete(D1,i,axis=1)
+        return D2
+
+    def create_DPrime(Total_distance):
+        DPrime = np.zeros((n,n))
+        for i in range(n):
+            for j in range(i+1,n):
+                DPrime[i,j] = (n-2)*D[i,j] - Total_distance[i] - Total_distance[j]
+                DPrime[j,i]= DPrime[i,j]
+        return DPrime
+
+    def get_ij_minDPrime(DPrime):
+        i = -1
+        j = -1
+        minD = np.inf
+        for ii in range(n):
+            for jj in range(ii,n):
+                if  DPrime[ii,jj] < minD:
+                    i = ii
+                    j = jj
+                    minD = DPrime[i,j]
+        return (i,j,minD)
+
+    def createDelta(Total_distance):
+        Delta = np.zeros((n,n))
+        for i in range(n):
+            for j in range(i+1,n):
+                Delta[i,j] = (Total_distance[i] - Total_distance[j])/(n - 2)
+                Delta[j,i] = Delta[i,j]
+        return Delta
+
+    if node_list==None:
+        node_list=list(range(n))
+
+    if n==2:
+        T=Tree()
+        T.link(node_list[0],node_list[1],D[0][1])
+    else:
+        Total_distance = np.sum(D,axis=0)#[sum(row) for row in D]
+        DPrime = create_DPrime(Total_distance)
+        (i,j,minD) = get_ij_minDPrime(DPrime)
+        Delta = createDelta(Total_distance)
+        limbLength_i = (D[i,j]+Delta[i,j])/2
+        limbLength_j = (D[i,j]-Delta[i,j])/2
+        row = np.array( [[0.5*(D[k,i]+D[k,j]-D[i,j])] for k in range(n)] + [[0.0]])
+        D = np.hstack((D,row[:-1]))
+        D = np.vstack((D,row.flatten()))
+        m = node_list[-1]+1
+        node_list.append(m)
+        D = remove(max(i,j),D)
+        D = remove(min(i,j),D)
+        node_i = node_list[i]
+        node_j = node_list[j]
+        node_list.remove(node_i)
+        node_list.remove(node_j)
+        T = NeighborJoining(D, n-1, node_list)
+        T.link(node_i, m, limbLength_i)
+        T.link(node_j, m, limbLength_j)
+    return T
+
 def SmallParsimony(T,alphabet='ATGC'):
     '''
     SmallParsimony
@@ -1608,6 +1672,25 @@ if __name__=='__main__':
             # self.assertIn((6,5,1.833),adj)
             # self.assertIn((6,1,8.833),adj)
 
+        def test_ba7e(self):
+            ''' BA7E Implement the Neighbor Joining Algorithm'''
+            T = NeighborJoining(np.array([[0,   23,  27,  20],
+                                          [23,  0,   30,  28],
+                                          [27,  30,  0,   30],
+                                          [20,  28,  30,  0]]),
+                                4)
+            adj = [a for a in T.generate_adjacency()]
+            self.assertEqual(10,len(adj))
+            self.assertIn((0,4,8.000),adj)
+            self.assertIn((1,5,13.500),adj)
+            self.assertIn((2,5,16.500),adj)
+            self.assertIn((3,4,12.000),adj)
+            self.assertIn((4,5,2.000),adj)
+            self.assertIn((4,0,8.000),adj)
+            self.assertIn((4,3,12.000),adj)
+            self.assertIn((5,1,13.500),adj)
+            self.assertIn((5,2,16.500),adj)
+            self.assertIn((5,4,2.000),adj)
 
         def test_ba7f(self):
             '''
