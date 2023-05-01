@@ -32,7 +32,7 @@ from   Bio.Phylo     import read
 from   scipy.special import comb
 from   scipy.stats   import entropy
 from   newick        import newick_to_adjacency_list, Parser, Tokenizer, Hierarchy
-from   rosalind      import LabelledTree, hamm, Tree
+from   rosalind      import LabelledTree, hamm, Tree, RosalindException
 from   fasta         import FastaContent
 from   helpers       import flatten, expand
 
@@ -505,8 +505,9 @@ def ComputeDistancesBetweenLeaves(n,T):
 
     BA7A Compute Distances Between Leaves
 
-    Inputs:  n an integer n
-          T the adjacency list of a weighted tree with n leaves.
+    Parameters:
+        n a positive integer
+        T the adjacency list of a weighted tree with n leaves.
 
     Returns: An n by n symmetric matrix of distances between leaves
     '''
@@ -516,24 +517,33 @@ def ComputeDistancesBetweenLeaves(n,T):
 
         Recursively compute the distances between two nodes
 
+        Parameters:
+           i     One node from pair: we will vary this parameter as we iterate
+           j     Fixed node from pair
+           path  The nodes that we have already visited: used to prevent cycles
+
+        Returns:  Distance rom i to j
+
         Cache distances in D[i,j] so we don't repeat calculation
         '''
-        if D[i,j] < np.inf:  return D[i,j]
-        d = np.inf
-        for node,weight in T[i]:
-            if node == j:
-                d = weight
-                break
-            if node not in path:
-                d = min(d,weight + get_distance(node,j,path+[node]))
-        D[i,j] = d
-        D[j,i] = d
+
+        if D[i,j] < np.inf:
+            d = D[i,j]
+        else:
+            d = np.inf
+            for node,weight in T[i]:
+                if node == j:
+                    return weight
+
+                if node not in path:
+                    d = min(d,weight + get_distance(node,j,path+[node]))
+            D[i,j] = d
+            D[j,i] = d
         return d
 
     m = len(T)
-    D = np.full((m,m),np.inf)
-    for i in range(m):
-        D[i,i] = 0
+    D = np.full((m,m),np.inf)  # Distances for all nodes; we will return distances for leaves only
+    np.fill_diagonal(D,0)
     for i in range(m):
         for j in range(i+1,m):
             get_distance(i,j)
@@ -544,19 +554,30 @@ def ComputeLimbLength(n,j,D):
     '''
     ComputeLimbLength
 
-    Inputs: n An integer n
+    Inputs: n An integer
             j an integer between 0 and n - 1,
             D a space-separated additive distance matrix D (whose elements are integers).
 
-    Return: The limb length of the leaf in Tree(D) corresponding to row j of this distance matrix (use 0-based indexing).
+    Return: The limb length of the leaf in Tree(D) corresponding to row j of this distance matrix.
 
     Uses the Limb Length Theorem: LimbLength(j) = min(D[i][j] + D[j][k]-D[i][k])/2 over all leaves i and k
     '''
     return min([D[i,j]+D[j,k]-D[i,k] for i in range(n) for k in range(n) if j!=k and k!=i and i!=j])/2
 
+def is_additive(D,n):
+    '''Verify that matrix is additive'''
+    for i in range(n):
+        for j in range(i+1,n):
+            for k in range(j+1,n):
+                for l in range(k+1,n):
+                    sums = sorted([D[i,j] + D[k,l],
+                                   D[i,k] + D[j,l],
+                                   D[i,l] + D[j,k]])
+                    if sums[1] != sums[2]:
+                        return False
+    return True
 
-
-def AdditivePhylogeny(D,n,N=-1):
+def AdditivePhylogeny(D,n,N=-1,verify=True):
     '''
     AdditivePhylogeny
 
@@ -569,20 +590,35 @@ def AdditivePhylogeny(D,n,N=-1):
         find_ikn
 
         Find three leaves such that Di,k = Di,n + Dn,k
+        This will tell us which node to remove from the tree.
         '''
         for i in range(n):
             for k in range(n):
                 if DD[i,k] == DD[i,n-1] + DD[n-1,k] and i != k:
                     return(i,k,n-1,DD[i,n-1])
 
-    def get_Position_v(traversal):
+    def get_Position_v(x,traversal):
+        '''
+        Find a point that is a specified distance along a path
+
+        Parameters:
+            x           The specified distance
+            traversal  A list of tuples [(n1,0), (n2,w12), (n3,w23), ...], where the ns are nodes and the w weights
+
+        Returns:
+                (True,l,l,d0,d)            If found
+                (False,l_previous,l,d0,d)  Otherwise
+        '''
         d = 0
         for l,w in traversal:
             d0 = d
             d += w
-            if d == x: return (True,l,l,d0,d)
-            if d > x: return (False,l_previous,l,d0,d)
-            l_previous=l
+            if d == x:
+                return (True,l,l,d0,d)
+            elif d > x:
+                return (False,l_previous,l,d0,d)
+            else:
+                l_previous = l
 
         return (False, l_previous, l, d0,d)
 
@@ -593,31 +629,26 @@ def AdditivePhylogeny(D,n,N=-1):
         T = Tree(N)
         T.link(0,1,D[0,1])
     else:
+        if verify and not is_additive(D,n):
+            raise(RosalindException('Matrix is not additive'))
         limbLength = ComputeLimbLength(n,n-1,D)
 
-        D_bald     = D.copy()
         for j in range(n-1):
-            D_bald[n-1,j] -= limbLength
-            D_bald[j,n-1] = D_bald[n-1,j]
+            D[n-1,j] -= limbLength
+            D[j,n-1] = D[n-1,j]
 
-        i,k,node,x        = find_ikn(D_bald)  #x=D_bald[i,n-1]
+        i,k,node,x = find_ikn(D)
+        T = AdditivePhylogeny(D,n-1,N,verify=False)
+        _,traversal = T.traverse(i,k)
+        path,weights = zip(*traversal)
 
-        D_Trimmed         = D_bald.copy()
-
-        T                 = AdditivePhylogeny(D_Trimmed,n-1,N)
-        # v= the (potentially new) node in T at distance x from i on the path between i and
-        found_k,traversal = T.traverse(i,k)
-        path,weights      = zip(*traversal)
-
-        found,l0,l1,d,d0=get_Position_v(traversal)
+        found,l0,l1,d,d0 = get_Position_v(x,traversal)
 
         if found:
             v = l0  #Untested!
             T.link(node,v,limbLength)
         else:
             v = T.next_node()
-            # weight_i = ComputeLimbLength(n,i,D)
-            # weight_k = ComputeLimbLength(n,k,D)
             T.unlink(l0,l1)
             T.link(v,l0,x-d)
             T.link(v,l1,d0-x)
@@ -628,7 +659,7 @@ def AdditivePhylogeny(D,n,N=-1):
 
 def UPGMA(D, n):
     '''
-    Construct the ultrametric tree resulting from UPGMA.
+    Construct the ultrametric tree resulting from Unweighted Pair Group Method with Arithmetic Mean
 
     Given: An integer n
            D an n x n distance matrix.
@@ -659,20 +690,23 @@ def UPGMA(D, n):
         else:
             return np.nan
 
-    Clusters = {i:[i] for i in range(n)}
-    T = Tree(n)
-    Age = {node:0 for node in T.get_nodes()}
-
-    while len(Clusters) > 1:
-        i,j,distance = find_two_closest_clusters(Clusters)
+    def consolidate_clusters(T,i,j):
         node = T.next_node()
         T.link(node,i)
         T.link(node,j)
         Clusters[node] = Clusters[i] + Clusters[j]
-        Age[node] = D[i,j]/2
         del Clusters[i]
         del Clusters[j]
+        return node
 
+    Clusters = {i:[i] for i in range(n)}         # Initially each node has its own cluster
+    T = Tree(n)
+    Age = {node:0 for node in T.get_nodes()}     # UPGMA assumes contant evolutionary rate,
+                                                 # so all leaves have the same age relative to root
+    while len(Clusters) > 1:
+        i,j,distance = find_two_closest_clusters(Clusters)
+        node = consolidate_clusters(T,i,j)
+        Age[node] = D[i,j]/2
         row = np.array([[d(i,node)] for i in range(len(D))] + [[0.0]])
         D = np.hstack((D,row[:-1]))
         D = np.vstack((D,row.flatten()))
@@ -681,6 +715,7 @@ def UPGMA(D, n):
         T.edges[node] = [(e,abs(Age[node]-Age[e])) for e,W in T.edges[node]]
 
     return T
+
 
 def NeighborJoining(D,n,node_list=None):
     ''' BA7E Implement the Neighbor Joining Algorithm'''
@@ -1663,7 +1698,7 @@ if __name__=='__main__':
 
         def test_ba7cNA(self):
             '''BA7C Implement Additive Phylogeny: non-additive matrix'''
-            with self.assertRaises(ValueError):
+            with self.assertRaises(RosalindException):
                 AdditivePhylogeny(np.array([[0,  3,  4,  3],
                                             [3,  0,  4,  5],
                                             [4,  4,  0,  2],

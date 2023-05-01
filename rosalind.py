@@ -22,8 +22,9 @@ from math     import log10, ceil, sqrt
 from re       import compile
 from unittest import main, skip, TestCase
 
-import numpy as np
+import numpy          as np
 from numpy.testing    import assert_array_equal
+from deprecated       import deprecated
 
 from fasta            import FastaContent
 from reference_tables import codon_table,skew_step,bases,integer_masses,amino_acids
@@ -67,13 +68,17 @@ def cycloSpectrum1(peptide):
     result.sort()
     return result
 
-# Calculate binomial coefficients using recurrence relation
-#
-# Input: n Number of oblects
-#
-# Return: vector [C(n,0), C(n,1),...C(n,n)]
 
+
+@deprecated('Use scipy.special.binom instead')
 def binomial_coefficients(n):
+    '''
+    Calculate binomial coefficients using recurrence relation
+
+    Input: n Number of oblects
+
+    Return: vector [C(n,0), C(n,1),...Cscipy(n,n)]
+    '''
     coeffs=[[1,0]]
     for i in range(1,n+1):
         new_coeffs=[1]
@@ -270,12 +275,11 @@ class Tree(object):
     '''
     Tree
 
-    This class represents an unndirected, weighted tree
+    This class represents an undirected, weighted tree
     '''
 
-
     def __init__(self,
-                               N= -1,
+                 N= -1,
                  bidirectional = True):
         '''
         Tree
@@ -289,10 +293,11 @@ class Tree(object):
         self.bidirectional = bidirectional
         self.N             = N
 
-
     def link(self,start,end,weight=1):
         '''
         link
+
+        Link two nodes
 
             Inputs: start
                     end
@@ -303,6 +308,11 @@ class Tree(object):
             self.half_link(end,start,weight)
 
     def unlink(self,i,k):
+        '''
+        unlink
+
+        Break link between two nodes
+        '''
         try:
             self.half_unlink(i,k)
             if self.bidirectional:
@@ -312,6 +322,11 @@ class Tree(object):
             self.print()
 
     def half_link(self,a,b,weight=1):
+        '''
+        half_link
+
+        Create a unidirectional link between two nodes
+        '''
         if not a in self.nodes:
             self.nodes.append(a)
         if a in self.edges:
@@ -320,6 +335,11 @@ class Tree(object):
             self.edges[a]=[(b,weight)]
 
     def half_unlink(self,a,b):
+        '''
+        half_unlink
+
+        Break link between two nodes
+        '''
         links=[(e,w) for (e,w) in self.edges[a] if e != b]
         if len(links)<len(self.edges[a]):
             self.edges[a]=links
@@ -328,6 +348,11 @@ class Tree(object):
             self.print()
 
     def are_linked(self,a,b):
+        '''
+        are_linked
+
+        Verify that two nodes are linked
+        '''
         return len([e for (e,w) in self.edges[a] if e == b])>0
 
     def generate_adjacency(self):
@@ -353,22 +378,37 @@ class Tree(object):
         return len(self.nodes)
 
     def traverse(self,i,k,path=[],weights=[]):
-        if not i in self.edges: return (False,[])
-        if len(path)==0:
-            path=[i]
-            weights=[0]
+        '''
+        Traverse a tree, looking for a path between two specified nodes
 
-        for j,w in self.edges[i]:
-            if j in path: continue
-            path1=path + [j]
-            weights1=weights+[w]
-            if j==k:
-                return (True,list(zip(path1,weights1)))
-            else:
-                found_k,test=self.traverse(j,k,path1,weights1)
-                if found_k:
-                    return (found_k,test)
-        return (False,[])
+        Parameters:
+            i        Start of path
+            k        End of path
+            path     Used during recursion to construct path
+            weights  Used during recursion to construct weights
+
+        Returns:
+            A list of tuples, [(i,0), (n1,w1), ... (k,w)], where the path is [i,n1,...k]
+            and the weights [0,w1,...w]
+        '''
+        if not i in self.edges:
+            return (False,[])
+        else:
+            if len(path) == 0:
+                path = [i]
+                weights = [0]
+
+            for j,w in self.edges[i]:
+                if j in path: continue
+                path1 = path + [j]
+                weights1 = weights + [w]
+                if j==k:
+                    return (True,list(zip(path1,weights1)))
+                else:
+                    found_k,test=self.traverse(j,k,path1,weights1)
+                    if found_k:
+                        return (found_k,test)
+            return (False,[])
 
     def get_nodes(self):
         for node in self.nodes:
@@ -776,23 +816,21 @@ def iprb(k,m,n):
 # level). Assume that Mendel's second law holds for the factors.
 
 def lia(k,n):
-    transition_probabilities=[[2/4,1/4,0],[2/4,2/4,2/4],[0,1/4,2/4]]
-    k_probabilities=[0,1,0]
+    transition_probabilities = [[2/4,1/4,0],[2/4,2/4,2/4],[0,1/4,2/4]]
+    k_probabilities = [0,1,0]
     for kk in range(k-1):
         new_probabilities=[0,0,0]
         for j in range(3):
             for i in range(3):
-                new_probabilities[j]+=transition_probabilities[j][i]*k_probabilities[i]
-        k_probabilities=new_probabilities
-    counts=binomial_coefficients(2**k)
-    probability=0
-    prob_individual=k_probabilities[1]**2
+                new_probabilities[j] += transition_probabilities[j][i]*k_probabilities[i]
+        k_probabilities = new_probabilities
+    counts = binomial_coefficients(2**k)
+    probability = 0
+    prob_individual = k_probabilities[1]**2
     for nn in range(n,2**k+1):
-        n1=2**k-nn
-        probability+=counts[nn]*(1-prob_individual)**n1*prob_individual**nn
+        n1 = 2**k-nn
+        probability += counts[nn]*(1-prob_individual)**n1*prob_individual**nn
     return probability
-
-
 
 def rstr(n,x,string):
     '''
