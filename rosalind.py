@@ -431,21 +431,38 @@ class Tree(object):
             self.half_unlink(child,root)
             self.remove_backward_links(child)
 
-class LabelledTree(Tree):
+class LabeledTree(Tree):
+    '''
+    LabeledTree
 
+    A labeled tree is a tree in which each vertex is given a unique label.
+    '''
     @staticmethod
-    def parse(N,lines,letters='ATGC',bidirectional=True):
+    def parse(N,lines,
+              letters='ATGC',
+              bidirectional=True):
+        '''
+        parse
+
+        Used to create a labeled tree from a list having the following form
+            ['4->CAAATCCC',
+            '4->ATTGCGAC',
+            '5->CTGCGCTG',
+            '5->ATGGACGA',
+            '6->4',
+            '6->5']
+        '''
         def get_leaf(string):
             for index,label in T.labels.items():
                 if string==label:
                     return index
             return None
 
-        T       = LabelledTree(bidirectional=bidirectional)
+        T  = LabeledTree(bidirectional=bidirectional)
         pattern = compile('(([0-9]+)|([{0}]+))->(([0-9]+)|([{0}]+))'.format(letters))
 
         for line in lines:
-            m=pattern.match(line)
+            m = pattern.match(line)
             if m:
                 i=None
 
@@ -469,7 +486,6 @@ class LabelledTree(Tree):
                             T.leaves.append(j)
                         T.set_label(j,m.group(6))
                     T.link(i,j)
-
 
                 if m.group(6)==None:
                     j=int(m.group(5))
@@ -804,18 +820,21 @@ def iprb(k,m,n):
 
     return 1.0 - P_both_offspring_recessive()
 
-# LIA 	Independent Alleles
-#
-# Input: Two positive integers k (k≤7) and N (N≤2**k). In this problem, we begin
-# with Tom, who in the 0th generation has genotype Aa Bb. Tom has two children
-# in the 1st generation, each of whom has two children, and so on. Each organism
-# always mates with an organism having genotype Aa Bb.
-#
-# Return: The probability that at least N Aa Bb organisms will belong to the
-# k-th generation of Tom's family tree (don't count the Aa Bb mates at each
-# level). Assume that Mendel's second law holds for the factors.
+
 
 def lia(k,n):
+    '''
+    LIA 	Independent Alleles
+
+    Input: Two positive integers k (k≤7) and N (N≤2**k). In this problem, we begin
+    with Tom, who in the 0th generation has genotype Aa Bb. Tom has two children
+    in the 1st generation, each of whom has two children, and so on. Each organism
+    always mates with an organism having genotype Aa Bb.
+
+    Return: The probability that at least N Aa Bb organisms will belong to the
+    k-th generation of Tom's family tree (don't count the Aa Bb mates at each
+    level). Assume that Mendel's second law holds for the factors.
+    '''
     transition_probabilities = [[2/4,1/4,0],[2/4,2/4,2/4],[0,1/4,2/4]]
     k_probabilities = [0,1,0]
     for kk in range(k-1):

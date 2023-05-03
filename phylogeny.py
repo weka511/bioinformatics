@@ -32,7 +32,7 @@ from   Bio.Phylo     import read
 from   scipy.special import comb
 from   scipy.stats   import entropy
 from   newick        import newick_to_adjacency_list, Parser, Tokenizer, Hierarchy
-from   rosalind      import LabelledTree, hamm, Tree, RosalindException
+from   rosalind      import LabeledTree, hamm, Tree, RosalindException
 from   fasta         import FastaContent
 from   helpers       import flatten, expand
 
@@ -794,7 +794,7 @@ def SmallParsimony(T,alphabet='ATGC'):
             '''
             get_ripe
 
-            Returns: a node that is ready for preocssing
+            Returns: a node that is ready for processing
 
             '''
             for v in T.get_nodes():
@@ -805,8 +805,6 @@ def SmallParsimony(T,alphabet='ATGC'):
 
                     return v
             return None
-
-
 
         def calculate_s(symbol,v):
             '''
@@ -901,7 +899,7 @@ def SmallParsimony(T,alphabet='ATGC'):
         backtrack(v_last,update_assignments(v_last,s[v_last]))
         return min([s[v_last][c] for c in range(len(alphabet))])
 
-    assignments = LabelledTree(T.N)
+    assignments = LabeledTree(T.N)
     assignments.initialize_from(T)
 
     return sum([SmallParsimonyC([v[i] for l,v in T.labels.items()]) for i in range(len(T.labels[0]))]),assignments
@@ -1750,7 +1748,7 @@ if __name__=='__main__':
             '''
             BA7F Implement SmallParsimony
             '''
-            T = LabelledTree.parse(4,
+            T = LabeledTree.parse(4,
                                    ['4->CAAATCCC',
                                     '4->ATTGCGAC',
                                     '5->CTGCGCTG',
@@ -1786,7 +1784,7 @@ if __name__=='__main__':
 
         def test_ba7g(self):
             ''' BA7G Adapt SmallParsimony to Unrooted Trees  http://rosalind.info/problems/ba7g/'''
-            T = LabelledTree.parse(4,
+            T = LabeledTree.parse(4,
                                    ['TCGGCCAA->4',
                                     '4->TCGGCCAA',
                                     'CCTGGCTG->4',

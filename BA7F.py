@@ -21,7 +21,7 @@ from argparse  import ArgumentParser
 from os.path   import basename
 from time      import time
 from helpers   import read_strings
-from rosalind  import LabelledTree,hamm
+from rosalind  import LabeledTree,hamm
 from phylogeny import SmallParsimony
 
 
@@ -48,7 +48,7 @@ if __name__=='__main__':
     args = parser.parse_args()
     if args.sample:
         N = 4
-        T = LabelledTree.parse(4,
+        T = LabeledTree.parse(4,
                                ['4->CAAATCCC',
                                 '4->ATTGCGAC',
                                 '5->CTGCGCTG',
@@ -65,7 +65,7 @@ if __name__=='__main__':
     if args.rosalind:
         Input  = read_strings(f'data/rosalind_{basename(__file__).split(".")[0]}.txt')
 
-        T = LabelledTree.parse(int(Input[0]),Input[1],bidirectional=False)
+        T = LabeledTree.parse(int(Input[0]),Input[1],bidirectional=False)
 
         score,assignments=SmallParsimony(T)
         print (score)

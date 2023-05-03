@@ -18,7 +18,7 @@
 ''' BA7G Adapt SmallParsimony to Unrooted Trees  http://rosalind.info/problems/ba7g/'''
 
 
-from rosalind import LabelledTree
+from rosalind import LabeledTree
 from phylogeny import SmallParsimony, AdaptSmallParsimonyToUnrootedTrees
 from BA7F import print_assignments
 
@@ -32,7 +32,7 @@ if __name__=='__main__':
                 N=int(line.strip())
             else:
                 lines.append(line.strip())
-        return N,LabelledTree.parse(N,lines,bidirectional=True)
+        return N,LabeledTree.parse(N,lines,bidirectional=True)
 
 
     with open('c:/Users/Weka/Downloads/rosalind_ba7g(3).txt') as f:
