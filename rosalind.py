@@ -374,6 +374,7 @@ class Tree(object):
                     end,weight=edge
                     print ('{0}->{1}:{2}'.format(node,end,weight))
 
+    @deprecated('Use len() instead')
     def next_node(self):
         return len(self.nodes)
 
@@ -409,6 +410,9 @@ class Tree(object):
                     if found_k:
                         return (found_k,test)
             return (False,[])
+
+    def __len__(self):
+        return len(self.nodes)
 
     def get_nodes(self):
         for node in self.nodes:

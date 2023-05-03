@@ -648,7 +648,7 @@ def AdditivePhylogeny(D,n,N=-1,verify=True):
             v = l0  #Untested!
             T.link(node,v,limbLength)
         else:
-            v = T.next_node()
+            v = len(T)
             T.unlink(l0,l1)
             T.link(v,l0,x-d)
             T.link(v,l1,d0-x)
@@ -691,7 +691,7 @@ def UPGMA(D, n):
             return np.nan
 
     def consolidate_clusters(T,i,j):
-        node = T.next_node()
+        node =len(T)
         T.link(node,i)
         T.link(node,j)
         Clusters[node] = Clusters[i] + Clusters[j]
@@ -790,21 +790,25 @@ def SmallParsimony(T,alphabet='ATGC'):
         Solve small parsimony for one character
         '''
 
-        def get_ripe():
+        def generate_ripe_nodes():
             '''
-            get_ripe
-
-            Returns: a node that is ready for processing
-
+            Used to iterate through ripe nodes
             '''
-            for v in T.get_nodes():
-                if not processed[v] and v in T.edges:
-                    for e,_ in T.edges[v]:
-                        if e>v: continue
-                        if not processed[e]: break
+            def get_ripe():
+                for v in T.get_nodes():
+                    if not processed[v] and v in T.edges:
+                        for e,_ in T.edges[v]:
+                            if e>v: continue
+                            if not processed[e]: break
 
-                    return v
-            return None
+                        return v
+                return None
+
+            v = get_ripe()
+            while v != None:
+                yield v
+                processed[v] = True
+                v = get_ripe()
 
         def calculate_s(symbol,v):
             '''
@@ -875,26 +879,19 @@ def SmallParsimony(T,alphabet='ATGC'):
                     assignments.set_label(v_next,assignments.labels[v_next]+next_assignment)
                     backtrack(v_next,next_assignment)
 
-        processed = {}
-        s         = {}
+        processed = np.full((len(T)),False)
+        s = {}
 
         # Compute scores for a leaves, and mark internal notes unprocessed
         for v in T.get_nodes():
             if T.is_leaf(v):
-                processed[v]=True
-                s[v]        = [0 if symbol==Character[v] else np.inf for symbol in alphabet]
-            else:
-                processed[v]=False
+                processed[v] = True
+                s[v] = [0 if symbol==Character[v] else np.inf for symbol in alphabet]
 
-        # Process ripe (unprocessed, but whose children have been processed)
-        # until there are none left
-        # Keep track of last node as we will use it to start backtracking
-        v = get_ripe()
-        while not v == None:
-            processed[v] = True
-            s[v]         = [calculate_s(symbol,v) for symbol in alphabet ]
-            v_last       = v
-            v            = get_ripe()
+
+        for v in generate_ripe_nodes():
+            s[v] = [calculate_s(symbol,v) for symbol in alphabet ]
+            v_last = v # Keep track of last node as we will use it to start backtracking
 
         backtrack(v_last,update_assignments(v_last,s[v_last]))
         return min([s[v_last][c] for c in range(len(alphabet))])
@@ -924,7 +921,7 @@ def AdaptSmallParsimonyToUnrootedTrees(N,T):
         a = T.nodes[len(T.nodes)-1]
         b,_ = T.edges[a][0]
         T.unlink(a,b)
-        c = T.next_node()
+        c = len(T)
         T.link(c,a)
         T.link(c,b)
         return (a,b,c)
