@@ -435,6 +435,42 @@ class Tree(object):
             self.half_unlink(child,root)
             self.remove_backward_links(child)
 
+    def create_topological_order(self):
+        '''
+        Return a set of all nodes, ordered so descendents prede ancestors
+        '''
+        def partition_nodes():
+            '''
+            Partition nodes into leaves (already sorted) and the rest
+            '''
+            Processed = set()
+            Unprocessed = []
+            for node in self.nodes:
+                if node in self.edges:
+                    Unprocessed.append(node)
+                else:
+                    Processed.add(node)
+            return Processed, Unprocessed
+
+        def sort(Processed, Unprocessed):
+            '''
+            Organize reset of data. Repeaedly move nodes whose children have been processed
+            until there are none left
+            '''
+            while len(Unprocessed)>0:
+                Unripe = []
+                for node in Unprocessed:
+                    if all ([child in Processed for child,_ in self.edges[node]]):
+                        Processed.add(node)
+                    else:
+                        Unripe.append(node)
+                assert len(Unripe) < len(Unprocessed)
+                Unprocessed = Unripe
+
+        Product, Unprocessed = partition_nodes()
+        sort(Product, Unprocessed)
+        return Product
+
 class LabeledTree(Tree):
     '''
     LabeledTree
@@ -514,6 +550,7 @@ class LabeledTree(Tree):
         super().initialize_from(T)
         for node,label in T.labels.items():
             self.set_label(node,label)
+
 
 def read_strings(file_name):
     '''
