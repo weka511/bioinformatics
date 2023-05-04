@@ -64,17 +64,10 @@ if __name__=='__main__':
 
     if args.rosalind:
         Input  = read_strings(f'data/rosalind_{basename(__file__).split(".")[0]}.txt')
-
-        T = LabeledTree.parse(int(Input[0]),Input[1],bidirectional=False)
-
-        score,assignments=SmallParsimony(T)
+        T = LabeledTree.parse(int(Input[0]),Input[1:],bidirectional=False)
+        score,assignments = SmallParsimony(T)
         print (score)
         print_assignments(assignments)
-        Result = None
-        print (Result)
-        with open(f'{basename(__file__).split(".")[0]}.txt','w') as f:
-            for line in Result:
-                f.write(f'{line}\n')
 
     elapsed = time() - start
     minutes = int(elapsed/60)
