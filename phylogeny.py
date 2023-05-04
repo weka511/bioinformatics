@@ -853,7 +853,6 @@ def SmallParsimony(T,alphabet='ATGC'):
                 matched   = False
                 for i in indices:
                     if alphabet[i]==current_assignment:
-
                         matched = True
                         assignments.set_label(v_next,assignments.labels[v_next]+current_assignment)
                         backtrack(v_next,current_assignment)
@@ -876,7 +875,7 @@ def SmallParsimony(T,alphabet='ATGC'):
                 s[v,indices[v]] = 0
 
         for v in generate_ripe_nodes():
-            s[v,:] = calculate_score(v,len(indices))
+            s[v,:] = calculate_score(v,len(alphabet))
             v_last = v
 
         backtrack(v_last,update_assignments(v_last,s[v_last]))
