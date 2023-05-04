@@ -810,28 +810,14 @@ def SmallParsimony(T,alphabet='ATGC'):
                 processed[v] = True
                 v = get_ripe()
 
-        def calculate_s(symbol,v):
+        def calculate_score(v,n):
             '''
-            calculate_s
-                Calculate score if node v is set to a specified symbol
-                Parameters:
-                   symbol The symbol, e.g. 'A', not the index in alphabet
-                   v      The node
+            Calculate score using formula in Chapter 7, panel 7F
             '''
-
-            def delta(i):
-                '''
-                delta
-
-                Complement of Kronecker delta
-                '''
-                return 0 if symbol==alphabet[i] else 1
-
-            def get_min(e):
-                return min(s[e][i]+delta(i) for i in range(len(alphabet)))
-
-            return sum([get_min(e) for e,_ in T.edges[v]])
-
+            child_scores = np.full((2,n),np.nan)
+            for i,(e,_) in enumerate(T.edges[v]):
+                child_scores[i,:] = np.min(s[e] + Delta,axis=1)
+            return np.sum(child_scores,axis=0)
 
         def update_assignments(v,s):
             '''
@@ -879,26 +865,28 @@ def SmallParsimony(T,alphabet='ATGC'):
                     assignments.set_label(v_next,assignments.labels[v_next]+next_assignment)
                     backtrack(v_next,next_assignment)
 
+        indices = [alphabet.index(c) for c in Character]
         processed = np.full((len(T)),False)
-        s = {}
+        s = np.full((len(T),len(alphabet)),np.inf)
 
         # Compute scores for a leaves, and mark internal notes unprocessed
         for v in T.get_nodes():
             if T.is_leaf(v):
                 processed[v] = True
-                s[v] = [0 if symbol==Character[v] else np.inf for symbol in alphabet]
-
+                s[v,indices[v]] = 0
 
         for v in generate_ripe_nodes():
-            s[v] = [calculate_s(symbol,v) for symbol in alphabet ]
-            v_last = v # Keep track of last node as we will use it to start backtracking
+            s[v,:] = calculate_score(v,len(indices))
+            v_last = v
 
         backtrack(v_last,update_assignments(v_last,s[v_last]))
         return min([s[v_last][c] for c in range(len(alphabet))])
 
     assignments = LabeledTree(T.N)
     assignments.initialize_from(T)
-
+    # This is the Delta symbol from  Chapter 7, page 38
+    Delta = np.ones((len(alphabet),len(alphabet)))
+    np.fill_diagonal(Delta,0)
     return sum([SmallParsimonyC([v[i] for l,v in T.labels.items()]) for i in range(len(T.labels[0]))]),assignments
 
 def AdaptSmallParsimonyToUnrootedTrees(N,T):
@@ -1434,7 +1422,7 @@ def expand_character(s):
     return [int(c) if c.isdigit() else None for c in s]
 
 if __name__=='__main__':
-    class PhylogenyTestCase(TestCase):
+    class TestPhylogeny(TestCase):
 
         def test_alph(self):
             fc = FastaContent(['>ostrich',
