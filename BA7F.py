@@ -20,48 +20,9 @@
 from argparse  import ArgumentParser
 from os.path   import basename
 from time      import time
-import numpy as np
 from helpers   import read_strings
 from rosalind  import LabeledTree, hamm
 from phylogeny import SmallParsimony
-
-def NewSmallParsimony(T,alphabet='ATGC'):
-    def create_delta(n):
-        '''
-        This is the Delta symbol from  Chapter 7, page 38
-        '''
-        Product = np.ones((n,n))
-        np.fill_diagonal(Product,0)
-        return Product
-
-    def calculate_score(v,n,scores):
-        '''
-        Calculate score using formula in Chapter 7, panel 7F
-        '''
-        child_scores = np.full((2,n),np.nan)
-        for i,(e,_) in enumerate(T.edges[v]):
-            assert i < v
-            child_scores[i,:] = np.min(scores[e] + Delta,axis=1)
-        return np.sum(child_scores,axis=0)
-
-
-    def SmallParsimonyC(Character):
-        character_indices = [alphabet.index(c) for c in Character]
-        scores = np.full((len(T),len(alphabet)),np.inf)
-
-        for v in Nodes:
-            if T.is_leaf(v):
-                scores[v,character_indices[v]] = 0
-            else:
-                scores[v,:] = calculate_score(v,len(alphabet),scores)
-
-        return np.min(scores[Nodes[-1],:])
-
-    Nodes = T.create_topological_order()
-    assignments = LabeledTree(T.N)
-    assignments.initialize_from(T)
-    Delta = create_delta(len(alphabet))
-    return sum([SmallParsimonyC([v[i] for l,v in T.labels.items()]) for i in range(len(T.labels[0]))]),assignments
 
 def print_assignments(assignments):
     '''
@@ -96,7 +57,7 @@ if __name__=='__main__':
                                    bidirectional=False
                                    )
 
-        score,assignments = NewSmallParsimony(T)
+        score,assignments = SmallParsimony(T)
         print (score)
         print_assignments(assignments)
 
@@ -104,10 +65,9 @@ if __name__=='__main__':
     if args.rosalind:
         Input  = read_strings(f'data/rosalind_{basename(__file__).split(".")[0]}.txt')
         T = LabeledTree.parse(int(Input[0]),Input[1:],bidirectional=False)
-        unprocessed = T.create_topological_order()
         score,assignments = SmallParsimony(T)
         print (score)
-        print_assignments(assignments)
+        # print_assignments(assignments)
 
     elapsed = time() - start
     minutes = int(elapsed/60)

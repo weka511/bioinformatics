@@ -783,106 +783,75 @@ def SmallParsimony(T,alphabet='ATGC'):
             corresponding to labeling internal nodes by DNA strings in order to minimize the parsimony score of the tree.
 
     '''
-    def create_delta(n):
+    def calculate_score(v,n,scores):
         '''
-        This is the Delta symbol from  Chapter 7, page 38
+        Calculate score using formula in Chapter 7, panel 7F
         '''
-        Product = np.ones((n,n))
-        np.fill_diagonal(Product,0)
-        return Product
+        child_scores = np.full((2,n),np.nan)
+        for i,(e,_) in enumerate(T.edges[v]):
+            child_scores[i,:] = np.min(scores[e] + Delta,axis=1)
+        return np.sum(child_scores,axis=0)
+
+    def backtrack(v, current_assignment,scores):
+        '''
+        backtrack
+
+        Process internal node of tree top down, starting from root
+        '''
+        for v_next,_ in T.edges[v]:
+            if T.is_leaf(v_next): continue
+            if not v_next in assignments.labels:
+                assignments.labels[v_next] = ''
+            min_score = np.min(scores[v_next,:])
+            indices = [i for i in range(n) if scores[v_next,i] == min_score ]
+            matched = False
+            for i in indices:
+                if alphabet[i] == current_assignment:
+                    matched = True
+                    assignments.set_label(v_next,assignments.labels[v_next] + current_assignment)
+                    backtrack(v_next,current_assignment,scores)
+
+            if not matched:
+                # Black magic alert: I am not clear why the introduction of random numbers
+                # helps here. Maybe it stops the tree being biased towards the first strings
+                # in the alphabet.
+                next_assignment = alphabet[indices[randrange(0,(len(indices)))]]
+                assignments.set_label(v_next,assignments.labels[v_next]+next_assignment)
+                backtrack(v_next,next_assignment,scores)
+
+    def update_assignments(v,s):
+        '''
+        update_assignments
+
+        Parameters:
+            v            Current node
+            s            Scores for current node only
+        '''
+        c = alphabet[np.argmin(s)]
+        assignments.set_label(v,
+                              assignments.labels[v] + c if v in assignments.labels else c)
+        return c
 
     def SmallParsimonyC(Character):
-        '''
-        SmallParsimonyC
+        character_indices = [alphabet.index(c) for c in Character]
+        scores = np.full((len(T),n),np.inf)
 
-        Solve small parsimony for one character
-        '''
-
-        def generate_ripe_nodes():
-            '''
-            Used to iterate through ripe nodes
-            '''
-            def get_ripe():
-                for v in T.get_nodes():
-                    if not processed[v] and v in T.edges:
-                        if all(processed[e] for e,_ in T.edges[v]):
-                            return v
-                return None
-
-            v = get_ripe()
-            while v != None:
-                yield v
-                processed[v] = True
-                v = get_ripe()
-
-        def calculate_score(v,n):
-            '''
-            Calculate score using formula in Chapter 7, panel 7F
-            '''
-            child_scores = np.full((2,n),np.nan)
-            for i,(e,_) in enumerate(T.edges[v]):
-                child_scores[i,:] = np.min(s[e] + Delta,axis=1)
-            return np.sum(child_scores,axis=0)
-
-        def update_assignments(v,s):
-            '''
-            update_assignments
-
-            Parameters:
-                v            Current node
-                s            Scores for current node only
-            '''
-            c = alphabet[np.argmin(s)]
-            assignments.set_label(v,
-                                  assignments.labels[v] + c if v in assignments.labels else c)
-            return c
-
-        def backtrack(v, current_assignment):
-            '''
-            backtrack
-
-            Process internal node of tree top down, starting from root
-            '''
-            for v_next,_ in T.edges[v]:
-                if T.is_leaf(v_next): continue
-                if not v_next in assignments.labels:
-                    assignments.labels[v_next]=''
-                min_score = np.min(s[v_next,:])
-                indices = [i for i in range(len(alphabet)) if s[v_next,i]==min_score ]
-                matched = False
-                for i in indices:
-                    if alphabet[i] == current_assignment:
-                        matched = True
-                        assignments.set_label(v_next,assignments.labels[v_next] + current_assignment)
-                        backtrack(v_next,current_assignment)
-                if not matched:
-                    # Black magic alert: I am not clear why the introduction of random numbers
-                    # helps here. Maybe it stops the tree being biased towatds the first strings
-                    # in the alphabet.
-                    next_assignment = alphabet[indices[randrange(0,(len(indices)))]]
-                    assignments.set_label(v_next,assignments.labels[v_next]+next_assignment)
-                    backtrack(v_next,next_assignment)
-
-        indices = [alphabet.index(c) for c in Character]
-        processed = np.full((len(T)),False)
-        s = np.full((len(T),len(alphabet)),np.inf)
-
-        # Compute scores for leaves, and mark internal notes unprocessed
-        for v in T.get_nodes():
+        for v in Nodes:
             if T.is_leaf(v):
-                processed[v] = True
-                s[v,indices[v]] = 0
+                scores[v,character_indices[v]] = 0
+            else:
+                scores[v,:] = calculate_score(v,n,scores)
 
-        for v in generate_ripe_nodes():
-            s[v,:] = calculate_score(v,len(alphabet))
-            v_last = v
+        v = Nodes[-1]
+        backtrack(v, update_assignments(v,scores[v,:]),scores)
+        return np.min(scores[v,:])
 
-        backtrack(v_last,update_assignments(v_last,s[v_last,:]))
-        return np.min(s[v_last,:])
-
+    Nodes = T.create_topological_order()
     assignments = LabeledTree(T.N)
     assignments.initialize_from(T)
-    Delta = create_delta(len(alphabet))
+    n = len(alphabet)
+    Delta = np.ones((n,n))
+    np.fill_diagonal(Delta,0)
     return sum([SmallParsimonyC([v[i] for l,v in T.labels.items()]) for i in range(len(T.labels[0]))]),assignments
 
 def AdaptSmallParsimonyToUnrootedTrees(N,T):
@@ -900,7 +869,7 @@ def AdaptSmallParsimonyToUnrootedTrees(N,T):
         Initially I followed Igor Segota's solution from
         https://stepik.org/lesson/10335/step/12?course=Stepic-Interactive-Text-for-Week-3&unit=8301,
         but found that a random root  generally led to problems with the Small Parsimony algorithm.
-        Using the last node as one half of the broken lenk works well.
+        Using the last node as one half of the broken link works well.
         '''
         a = T.nodes[len(T.nodes)-1]
         b,_ = T.edges[a][0]
@@ -1740,16 +1709,16 @@ if __name__=='__main__':
                                    )
             score,assignments = SmallParsimony(T)
             self.assertEqual(16,score)             # See issue #135
-            # text = []
-            # assignments.nodes.sort()
-            # for node in assignments.nodes:
-                # if node in assignments.edges:
-                    # for edge in assignments.edges[node]:
-                        # end,weight=edge
-                        # if node in assignments.labels and end in assignments.labels:
-                            # text.append('{0}->{1}:{2}'.format(assignments.labels[node],
-                                                         # assignments.labels[end],
-                                                         # hamm(assignments.labels[node],assignments.labels[end])))
+            text = []
+            assignments.nodes.sort()
+            for node in assignments.nodes:
+                if node in assignments.edges:
+                    for edge in assignments.edges[node]:
+                        end,weight=edge
+                        if node in assignments.labels and end in assignments.labels:
+                            text.append('{0}->{1}:{2}'.format(assignments.labels[node],
+                                                         assignments.labels[end],
+                                                         hamm(assignments.labels[node],assignments.labels[end])))
             # self.assertIn('ATTGCGAC->ATAGCCAC:2',text)
             # self.assertIn('ATAGACAA->ATAGCCAC:2',text)
             # self.assertIn('ATAGACAA->ATGGACTA:2',text)
