@@ -443,33 +443,35 @@ class Tree(object):
             '''
             Partition nodes into leaves (already sorted) and the rest
             '''
-            Processed = set()
-            Unprocessed = []
+            Sorted = []
+            ToBeSorted = []
             for node in self.nodes:
                 if node in self.edges:
-                    Unprocessed.append(node)
+                    ToBeSorted.append(node)
                 else:
-                    Processed.add(node)
-            return Processed, Unprocessed
+                    Sorted.append(node)
+            return Sorted, ToBeSorted
 
-        def sort(Processed, Unprocessed):
+        def sort_remaining_nodes(Sorted, ToBeSorted):
             '''
-            Organize reset of data. Repeaedly move nodes whose children have been processed
+            sort_remaining_nodes
+
+            Repeaedly move nodes whose children have been processed
             until there are none left
             '''
-            while len(Unprocessed)>0:
+            while len(ToBeSorted)>0:
                 Unripe = []
-                for node in Unprocessed:
-                    if all ([child in Processed for child,_ in self.edges[node]]):
-                        Processed.add(node)
+                for node in ToBeSorted:
+                    if all ([child in Sorted for child,_ in self.edges[node]]):
+                        Sorted.append(node)
                     else:
                         Unripe.append(node)
-                assert len(Unripe) < len(Unprocessed)
-                Unprocessed = Unripe
+                assert len(Unripe) < len(ToBeSorted)
+                ToBeSorted = Unripe
+            return Sorted
 
-        Product, Unprocessed = partition_nodes()
-        sort(Product, Unprocessed)
-        return Product
+        Sorted, ToBeSorted = partition_nodes()
+        return sort_remaining_nodes(Sorted, ToBeSorted)
 
 class LabeledTree(Tree):
     '''

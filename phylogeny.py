@@ -783,6 +783,14 @@ def SmallParsimony(T,alphabet='ATGC'):
             corresponding to labeling internal nodes by DNA strings in order to minimize the parsimony score of the tree.
 
     '''
+    def create_delta(n):
+        '''
+        This is the Delta symbol from  Chapter 7, page 38
+        '''
+        Product = np.ones((n,n))
+        np.fill_diagonal(Product,0)
+        return Product
+
     def SmallParsimonyC(Character):
         '''
         SmallParsimonyC
@@ -797,11 +805,8 @@ def SmallParsimony(T,alphabet='ATGC'):
             def get_ripe():
                 for v in T.get_nodes():
                     if not processed[v] and v in T.edges:
-                        for e,_ in T.edges[v]:
-                            if e>v: continue
-                            if not processed[e]: break
-
-                        return v
+                        if all(processed[e] for e,_ in T.edges[v]):
+                            return v
                 return None
 
             v = get_ripe()
@@ -824,19 +829,13 @@ def SmallParsimony(T,alphabet='ATGC'):
             update_assignments
 
             Parameters:
-                v
-                s
+                v            Current node
+                s            Scores for current node only
             '''
-            if not v in assignments.labels:
-                assignments.labels[v]=''
-            index = 0
-            min_s = np.inf
-            for i in range(len(s)):
-                if s[i] < min_s:
-                    min_s = s[i]
-                    index = i
-            assignments.set_label(v,assignments.labels[v]+alphabet[index])
-            return alphabet[index]
+            c = alphabet[np.argmin(s)]
+            assignments.set_label(v,
+                                  assignments.labels[v] + c if v in assignments.labels else c)
+            return c
 
         def backtrack(v, current_assignment):
             '''
@@ -848,13 +847,13 @@ def SmallParsimony(T,alphabet='ATGC'):
                 if T.is_leaf(v_next): continue
                 if not v_next in assignments.labels:
                     assignments.labels[v_next]=''
-                min_score = min([s[v_next][i] for i in range(len(alphabet))])
-                indices   = [i for i in range(len(alphabet)) if s[v_next][i]==min_score ]
-                matched   = False
+                min_score = np.min(s[v_next,:])
+                indices = [i for i in range(len(alphabet)) if s[v_next,i]==min_score ]
+                matched = False
                 for i in indices:
-                    if alphabet[i]==current_assignment:
+                    if alphabet[i] == current_assignment:
                         matched = True
-                        assignments.set_label(v_next,assignments.labels[v_next]+current_assignment)
+                        assignments.set_label(v_next,assignments.labels[v_next] + current_assignment)
                         backtrack(v_next,current_assignment)
                 if not matched:
                     # Black magic alert: I am not clear why the introduction of random numbers
@@ -868,7 +867,7 @@ def SmallParsimony(T,alphabet='ATGC'):
         processed = np.full((len(T)),False)
         s = np.full((len(T),len(alphabet)),np.inf)
 
-        # Compute scores for a leaves, and mark internal notes unprocessed
+        # Compute scores for leaves, and mark internal notes unprocessed
         for v in T.get_nodes():
             if T.is_leaf(v):
                 processed[v] = True
@@ -878,14 +877,12 @@ def SmallParsimony(T,alphabet='ATGC'):
             s[v,:] = calculate_score(v,len(alphabet))
             v_last = v
 
-        backtrack(v_last,update_assignments(v_last,s[v_last]))
-        return min([s[v_last][c] for c in range(len(alphabet))])
+        backtrack(v_last,update_assignments(v_last,s[v_last,:]))
+        return np.min(s[v_last,:])
 
     assignments = LabeledTree(T.N)
     assignments.initialize_from(T)
-    # This is the Delta symbol from  Chapter 7, page 38
-    Delta = np.ones((len(alphabet),len(alphabet)))
-    np.fill_diagonal(Delta,0)
+    Delta = create_delta(len(alphabet))
     return sum([SmallParsimonyC([v[i] for l,v in T.labels.items()]) for i in range(len(T.labels[0]))]),assignments
 
 def AdaptSmallParsimonyToUnrootedTrees(N,T):
