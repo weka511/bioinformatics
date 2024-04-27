@@ -18,7 +18,7 @@
 '''    Code for Chapter 4 and utilities for mass spectroscopy'''
 
 from sys import float_info
-from   unittest import TestCase, main, skip
+from  unittest import TestCase, main, skip
 import numpy as np
 
 from reference_tables import integer_masses,amino_acids, integer_masses, codon_table
@@ -991,6 +991,9 @@ def splc(fasta):
         if len(fragments)>1:
             dna=''.join(fragments)
     return prot(dna_to_rna(dna))
+
+def SequencePeptide(s):
+    pass
 
 if __name__=='__main__':
 
@@ -2543,6 +2546,9 @@ if __name__=='__main__':
                                      1238, 1239, 1245, 1246, 1249, 1253, 1256, 1258, 1265
                                        ]))
 
+        def test_ba11e(self):
+            '''BA11E 	Sequence a Peptide'''
+            self.assertEqual('XZZXX',SequencePeptide([0, 0, 0, 4, -2, -3, -1, -7, 6, 5, 3, 2, 1, 9, 3, -8, 0, 3, 1, 2, 1, 0]))
 
         def test_splc(self):
             '''SPLC	RNA Splicing'''
