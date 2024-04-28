@@ -32,35 +32,36 @@ def get_mass(peptide,mass=integer_masses):
     '''Total mass of amino acids in peptide'''
     return sum([mass[amino_acid] for amino_acid in peptide])
 
-
-
 def invert(masses):
     '''
-    SpectrumGraph
+    invert
 
-    Construct the Graph of a Spectrum
-    Input: A space-delimited list of integers Spectrum.
+    Input: A dictionary containing masses of amino acids
 
-    Return: Graph(Spectrum)
+    Return: A dictionary mapping masses to amino acids
     '''
-    inverted={}
-    for k,v in masses.items():
-        if not v in inverted:
-            inverted[v]=[k]
-    return inverted
+    return {v:k for k,v in masses.items()}
 
 def SpectrumGraph(spectrum):
-    # add
-    #
-    # Add one point to graph
+    '''
+    BA11A Construct the Graph of a Spectrum
+
+    We represent the masses in a spectrum as a sequence Spectrum of integers  s1,…,sm in increasing order,
+    where s1 is zero and sm is the total mass of the (unknown) peptide. We define a labeled graph
+    Graph(Spectrum) by forming a node for each element of Spectrum, then connecting nodes si and sj
+    by a directed edge labeled by an amino acid a if sj−si is equal to the mass of a.
+    As we assumed when sequencing antibiotics, we do not distinguish between amino acids having the same
+    integer masses (i.e., the pairs K/Q and I/L).
+    '''
     inverted = invert(integer_masses)
     def add(index=-1):
+        '''Add one point to graph'''
         value = spectrum[index] if index>-1 else 0
         for j in range(index+1,len(spectrum)):
             diff = spectrum[j]-value
             if diff in inverted:
                 if not value in product:
-                    product[value]=[]
+                    product[value] = []
                 for protein in inverted[diff]:
                     product[value].append((spectrum[j],protein))
 
@@ -98,7 +99,7 @@ def DecodeIdealSpectrum(Spectrum):
                 paths = new_paths
 
     for path in bfs(SpectrumGraph(Spectrum)):
-        peptide            = ''.join(s for (_,s) in path)
+        peptide = ''.join(s for (_,s) in path)
         generated_spectrum = linearSpectrum(peptide)
         if generated_spectrum[1:]==Spectrum:
             return peptide
@@ -2580,6 +2581,24 @@ if __name__=='__main__':
                                      1238, 1239, 1245, 1246, 1249, 1253, 1256, 1258, 1265
                                        ]))
 
+        def test_ba11a(self):
+            '''BA11A Construct the Graph of a Spectrum'''
+            graph = SpectrumGraph([57, 71, 154, 185, 301, 332, 415, 429, 486])
+            self.assertEqual(9,len(graph))
+        @skip('')
+        def test_ba11b(self):
+            '''BA11B Implement DecodingIdealSpectrum'''
+            self.assertEqual('GPFNA',DecodeIdealSpectrum([57, 71, 154, 185, 301, 332, 415, 429, 486]))
+
+        @skip('Code up test')
+        def test_ba11c(self):
+            '''BA11C Convert a Peptide into a Peptide Vector'''
+
+        @skip('Code up test')
+        def test_ba11d(self):
+            '''BA11D Convert a Peptide Vector into a Peptide'''
+
+        @skip('')
         def test_ba11e(self):
             '''BA11E Sequence a Peptide'''
             self.assertEqual('XZZXX',
