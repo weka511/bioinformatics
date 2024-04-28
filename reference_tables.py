@@ -69,6 +69,10 @@ integer_masses={
     'W': 186
 }
 
+test_masses = {
+    'X':4,
+    'Z':5
+}
 class AminoAcid:
     '''
     AminoAcid
