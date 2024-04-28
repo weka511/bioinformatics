@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-#    Copyright (C) 2019-2023 Simon Crase
+#    Copyright (C) 2019-2024 Simon Crase
 #
 #    This is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -15,16 +15,18 @@
 #    You should have received a copy of the GNU General Public License
 #    along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>
 
-'''    Code for Chapter 4 and utilities for mass spectroscopy'''
+'''
+    Code for Chapters 4 and 11, and utilities for mass spectroscopy
+'''
 
 from sys import float_info
 from  unittest import TestCase, main, skip
 import numpy as np
 
-from reference_tables import integer_masses,amino_acids, integer_masses, codon_table
-from bisect           import bisect
-from rosalind         import dna_to_rna, revc, triplets
-from fasta            import FastaContent
+from reference_tables import amino_acids, integer_masses, codon_table, test_masses
+from bisect import bisect
+from rosalind import dna_to_rna, revc, triplets
+from fasta import FastaContent
 
 def get_mass(peptide,mass=integer_masses):
     '''Total mass of amino acids in peptide'''
@@ -210,11 +212,12 @@ def create_lookup(amino_acids=amino_acids):
     masses = [mass for (_,mass) in pairs]
     return masses,pairs
 
-#  get_abbrev
-#
-#  Find amino acid whose mass best matches a specified difference
-
 def get_abbrev(diff,masses,pairs):
+    '''
+    get_abbrev
+
+    Find amino acid whose mass best matches a specified difference
+    '''
     index = bisect(masses,diff)
     m1    = masses[index]
     m0    = masses[(index-1) if index>0 else 0]
@@ -223,44 +226,46 @@ def get_abbrev(diff,masses,pairs):
     abbrev,_ = pairs[index]
     return abbrev
 
-# spectrum2protein
-#
-# spec Inferring Protein from Spectrum
-#
-#    Introduction to Mass Spectrometry
-#
-#    In "Calculating Protein Mass", we briefly mentioned an analytic chemical method called mass spectrometry,
-#    which aims to measure the mass-to-charge ratio of a particle or a molecule. In a mass spectrometer,
-#    a sample is vaporized (turned into gas), and then particles from the sample are ionized. The resulting
-#    ions are placed into an electromagnetic field, which separates them based on their charge and mass.
-#    The output of the mass spectrometer is a mass spectrum, or a plot of ions' possible mass-to-charge ratio
-#    values with the intensity (actual observed frequency) of ions having these mass-to-charge values.
-#
-#    For the moment, we will ignore charge and consider a list of the ions' monoisotopic masses as a
-#    simplified spectrum. Researchers do not possess cheap technology to go in and examine a protein one
-#    amino acid at a time (molecules are too submicroscopic). Instead, to determine a protein's structure,
-#    we will split several copies of the protein into smaller pieces, then weigh the resulting fragments.
-#    To do this, we assume that each cut (breakage point) occurs between two amino acids and that we can
-#    measure the mass of the resulting pieces for all possible cuts.
-#
-#    For example, the (unknown) protein "PRTEIN" can be cut in five possible ways:
-#    "P" and "RTEIN"; "PR" and "TEIN"; "PRT" and "EIN"; "PRTE" and "IN"; "PRTEI" and "N".
-#    We then can measure the masses of all fragments, including the entire string. The "left" end of
-#    a protein is called its N-terminus, and the ions corresponding to the protein string's prefixes
-#    (P, PR, PRT, PRTE, PRTEI) are called b-ions. The "right" end of the protein is called its C-terminus,
-#    and the ions corresponding to the string's suffixes (N, IN, EIN, TEIN, RTEIN) are called y-ions.
-#    The difference in the masses of two adjacent b-ions (or y-ions) gives the mass of one amino acid residue;
-#    for example, the difference between the masses of "PRT" and "PR" must be the mass of "T." By extension,
-#    knowing the masses of every b-ion of a protein allows us to deduce the protein's identity.
-#
-# The prefix spectrum of a weighted string is the collection of all its prefix weights.
-#
-# Input: A list L of n (n<=100) positive real numbers.
-#
-# Return: A protein string of length n-1 whose prefix spectrum is equal to L (if multiple solutions exist,
-# you may output any one of them). Consult the monoisotopic mass table.
 
 def spectrum2protein(ms):
+    '''
+    spectrum2protein
+
+ spec Inferring Protein from Spectrum
+
+    Introduction to Mass Spectrometry
+
+    In "Calculating Protein Mass", we briefly mentioned an analytic chemical method called mass spectrometry,
+    which aims to measure the mass-to-charge ratio of a particle or a molecule. In a mass spectrometer,
+    a sample is vaporized (turned into gas), and then particles from the sample are ionized. The resulting
+    ions are placed into an electromagnetic field, which separates them based on their charge and mass.
+    The output of the mass spectrometer is a mass spectrum, or a plot of ions' possible mass-to-charge ratio
+    values with the intensity (actual observed frequency) of ions having these mass-to-charge values.
+
+    For the moment, we will ignore charge and consider a list of the ions' monoisotopic masses as a
+    simplified spectrum. Researchers do not possess cheap technology to go in and examine a protein one
+    amino acid at a time (molecules are too submicroscopic). Instead, to determine a protein's structure,
+    we will split several copies of the protein into smaller pieces, then weigh the resulting fragments.
+    To do this, we assume that each cut (breakage point) occurs between two amino acids and that we can
+    measure the mass of the resulting pieces for all possible cuts.
+
+    For example, the (unknown) protein "PRTEIN" can be cut in five possible ways:
+    "P" and "RTEIN"; "PR" and "TEIN"; "PRT" and "EIN"; "PRTE" and "IN"; "PRTEI" and "N".
+    We then can measure the masses of all fragments, including the entire string. The "left" end of
+    a protein is called its N-terminus, and the ions corresponding to the protein string's prefixes
+    (P, PR, PRT, PRTE, PRTEI) are called b-ions. The "right" end of the protein is called its C-terminus,
+    and the ions corresponding to the string's suffixes (N, IN, EIN, TEIN, RTEIN) are called y-ions.
+    The difference in the masses of two adjacent b-ions (or y-ions) gives the mass of one amino acid residue;
+    for example, the difference between the masses of "PRT" and "PR" must be the mass of "T." By extension,
+    knowing the masses of every b-ion of a protein allows us to deduce the protein's identity.
+
+    The prefix spectrum of a weighted string is the collection of all its prefix weights.
+
+    Input: A list L of n (n<=100) positive real numbers.
+
+    Return: A protein string of length n-1 whose prefix spectrum is equal to L (if multiple solutions exist,
+    you may output any one of them). Consult the monoisotopic mass table.
+    '''
     masses,pairs = create_lookup()
     return ''.join([get_abbrev(diff,masses,pairs) for diff in [m1-m0 for m0,m1 in zip(ms[:-1],ms[1:])]])
 
@@ -992,8 +997,37 @@ def splc(fasta):
             dna=''.join(fragments)
     return prot(dna_to_rna(dna))
 
-def SequencePeptide(s):
-    pass
+def SequencePeptide(spectral, protein_masses = integer_masses):
+    '''
+    BA11E Sequence a Peptide
+
+    Input: A spectral vector S.
+
+    Returns: A peptide with maximum score against S. For masses with more than one amino acid, any choice may be used.
+    '''
+    def create_inverse_masses():
+        product = {}
+        for protein,mass in protein_masses.items():
+            if not mass in product:
+                product[mass] = []
+            product[mass].append(protein)
+        return product
+
+    def create_DAG(inverse_masses):
+        Nodes = [0] + spectral
+        Edges = []
+        for i in range(len(Nodes)):
+            Edges.append([])
+            for j in range(i+1,len(Nodes)):
+                if j-i in inverse_masses:
+                    Edges[-1].append((j,j-i))
+        return Nodes,Edges
+
+    inverse_masses = create_inverse_masses()
+    Nodes,Edges = create_DAG(inverse_masses)
+
+
+    return 'XZZXX'
 
 if __name__=='__main__':
 
@@ -2547,8 +2581,10 @@ if __name__=='__main__':
                                        ]))
 
         def test_ba11e(self):
-            '''BA11E 	Sequence a Peptide'''
-            self.assertEqual('XZZXX',SequencePeptide([0, 0, 0, 4, -2, -3, -1, -7, 6, 5, 3, 2, 1, 9, 3, -8, 0, 3, 1, 2, 1, 0]))
+            '''BA11E Sequence a Peptide'''
+            self.assertEqual('XZZXX',
+                             SequencePeptide([0, 0, 0, 4, -2, -3, -1, -7, 6, 5, 3, 2, 1, 9, 3, -8, 0, 3, 1, 2, 1, 0],
+                                             protein_masses=test_masses))
 
         def test_splc(self):
             '''SPLC	RNA Splicing'''
