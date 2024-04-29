@@ -2590,21 +2590,23 @@ if __name__=='__main__':
             '''BA11A Construct the Graph of a Spectrum'''
             graph = SpectrumGraph([57, 71, 154, 185, 301, 332, 415, 429, 486])
             self.assertEqual(9,len(graph))
-        @skip('')
+
+        @skip('Issue #139')
         def test_ba11b(self):
             '''BA11B Implement DecodingIdealSpectrum'''
             self.assertEqual('GPFNA',DecodeIdealSpectrum([57, 71, 154, 185, 301, 332, 415, 429, 486]))
 
-        @skip('Code up test')
         def test_ba11c(self):
             '''BA11C Convert a Peptide into a Peptide Vector'''
+            self.assertEqual([0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1],
+                             CreatePeptideVector('XZZXX'))
 
 
         def test_ba11d(self):
             '''BA11D Convert a Peptide Vector into a Peptide'''
-            self.assertAlmostEqual('XZZXX',CreatePeptide([0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1]))
+            self.assertEqual('XZZXX',CreatePeptide([0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1]))
 
-        @skip('')
+        @skip('Issue #91')
         def test_ba11e(self):
             '''BA11E Sequence a Peptide'''
             self.assertEqual('XZZXX',
