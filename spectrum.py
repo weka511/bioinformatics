@@ -23,7 +23,7 @@ from sys import float_info
 from unittest import TestCase, main, skip
 import numpy as np
 
-from reference_tables import amino_acids, integer_masses, codon_table, test_masses
+from reference_tables import amino_acids, integer_masses, codon_table, test_masses, create_inverse_masses
 from bisect import bisect
 from rosalind import dna_to_rna, revc, triplets
 from fasta import FastaContent
@@ -1011,25 +1011,19 @@ def SequencePeptide(spectral, protein_masses = integer_masses):
 
     Returns: A peptide with maximum score against S. For masses with more than one amino acid, any choice may be used.
     '''
-    def create_inverse_masses():
-        product = {}
-        for protein,mass in protein_masses.items():
-            if not mass in product:
-                product[mass] = []
-            product[mass].append(protein)
-        return product
+
 
     def create_DAG(spectral,inverse_masses):
         Nodes = [0] + spectral
-        Edges = []
+        Edges = {}
         for i in range(len(Nodes)):
-            Edges.append([])
+            Edges[i] = []
             for j in range(i+1,len(Nodes)):
                 if j-i in inverse_masses:
-                    Edges[-1].append((i,j))
+                    Edges[i].append(j)
         return Nodes,Edges
 
-    inverse_masses = create_inverse_masses()
+    inverse_masses = create_inverse_masses(protein_masses)
     Nodes,Edges = create_DAG(spectral,inverse_masses)
 
     return 'XZZXX'   # Fake it 'til you make it

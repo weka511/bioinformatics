@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Copyright (C) 2015-2023 Greenweaves Software Limited
+# Copyright (C) 2015-2024 Greenweaves Software Limited
 
 # This is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -20,10 +20,10 @@ This file contains a reference data, such as scoring masses and codon tables,
 to solve the problems at rosalind.info.
 '''
 
-from abc      import ABC
-from re       import compile
+from abc import ABC
+from re import compile
 from unittest import TestCase, main
-import numpy  as np
+import numpy as np
 
 bases='ACGT'
 
@@ -73,6 +73,7 @@ test_masses = {
     'X':4,
     'Z':5
 }
+
 class AminoAcid:
     '''
     AminoAcid
@@ -240,6 +241,23 @@ class PAM250(ScoringMatrix):
                               [0, -2, -2, -2, -1, -1, -2, 4, -2, 2, 2, -2, -1, -2, -2, -1, 0, 4, -6, -2],
                               [-6, -8, -7, -7, 0, -7, -3, -5, -3, -2, -4, -4, -6, -5, 2, -2, -5, -6, 17, 0],
                               [-3, 0, -4, -4, 7, -5, 0, -1, -4, -1, -2, -2, -5, -4, -4, -3, -3, -2, 0, 10]]))
+
+def create_inverse_masses(protein_masses = integer_masses):
+    '''
+    This function is used to map from masses back to weights
+
+    Inputs:
+       protein_masses    Map from amino acids to weights:
+
+    Returns:
+       Inverse mappeing
+    '''
+    product = {}
+    for protein,mass in protein_masses.items():
+        if not mass in product:
+            product[mass] = []
+        product[mass].append(protein)
+    return product
 
 if __name__=='__main__':
     class Test_Amino_acids(TestCase):
