@@ -20,7 +20,7 @@
 '''
 
 from sys import float_info
-from  unittest import TestCase, main, skip
+from unittest import TestCase, main, skip
 import numpy as np
 
 from reference_tables import amino_acids, integer_masses, codon_table, test_masses
@@ -28,11 +28,11 @@ from bisect import bisect
 from rosalind import dna_to_rna, revc, triplets
 from fasta import FastaContent
 
-def get_mass(peptide,mass=integer_masses):
+def get_mass(peptide,masses=integer_masses):
     '''Total mass of amino acids in peptide'''
-    return sum([mass[amino_acid] for amino_acid in peptide])
+    return sum([masses[amino_acid] for amino_acid in peptide])
 
-def invert(masses):
+def invert(masses=integer_masses):
     '''
     invert
 
@@ -50,25 +50,26 @@ def SpectrumGraph(spectrum):
     where s1 is zero and sm is the total mass of the (unknown) peptide. We define a labeled graph
     Graph(Spectrum) by forming a node for each element of Spectrum, then connecting nodes si and sj
     by a directed edge labeled by an amino acid a if sj−si is equal to the mass of a.
+
     As we assumed when sequencing antibiotics, we do not distinguish between amino acids having the same
     integer masses (i.e., the pairs K/Q and I/L).
     '''
-    inverted = invert(integer_masses)
-    def add(index=-1):
+    def add_one_point(product,inverted,index=-1):
         '''Add one point to graph'''
         value = spectrum[index] if index>-1 else 0
         for j in range(index+1,len(spectrum)):
-            diff = spectrum[j]-value
+            diff = spectrum[j] - value
             if diff in inverted:
                 if not value in product:
                     product[value] = []
                 for protein in inverted[diff]:
                     product[value].append((spectrum[j],protein))
 
+    inverted = invert(integer_masses)
     product = {}
-    add()
+    add_one_point(product,inverted)
     for i in range(len(spectrum)):
-        add(i)
+        add_one_point(product,inverted,index=i)
     return product
 
 
@@ -108,6 +109,10 @@ def DecodeIdealSpectrum(Spectrum):
 
 
 def create_extended():
+    '''
+    create_extended
+    Extend list of amino acids for testing
+    '''
     extended_masses = {'X':4,'Z':5}
     extended_masses.update(integer_masses)
     return extended_masses
@@ -136,8 +141,8 @@ def CreatePeptideVector(peptide):
      acids X and Z having respective integer masses 4 and 5.
     '''
     extended_masses = create_extended()
-    masses          = [extended_masses[p] for p in peptide]
-    result          = []
+    masses = [extended_masses[p] for p in peptide]
+    result = []
     for m in masses:
         result = result + ([0]*(m-1))
         result.append(1)
@@ -220,19 +225,18 @@ def get_abbrev(diff,masses,pairs):
     Find amino acid whose mass best matches a specified difference
     '''
     index = bisect(masses,diff)
-    m1    = masses[index]
-    m0    = masses[(index-1) if index>0 else 0]
+    m1 = masses[index]
+    m0 = masses[(index-1) if index>0 else 0]
     if index>0 and diff-m0 < m1-diff:
         index-=1
     abbrev,_ = pairs[index]
     return abbrev
 
-
 def spectrum2protein(ms):
     '''
     spectrum2protein
 
- spec Inferring Protein from Spectrum
+    spec Inferring Protein from Spectrum
 
     Introduction to Mass Spectrometry
 
@@ -278,34 +282,34 @@ def complete_spectrum(P):
     ss= [spectrum(p) for p in prefixes + suffixes]
     return ss
 
-
-#  prsm
-#
-# Match a Spectrum to a Protein
-#
-# Searching the Protein Database
-#
-# Many proteins have already been identified for a wide variety of organisms. Accordingly,
-# there are a large number of protein databases available, and so the first step after
-# creating a mass spectrum for an unidentified protein is to search through these databases
-# for a known protein with a highly similar spectrum. In this manner, many similar proteins
-# found in different species have been identified, which aids researchers in determining protein function.
-#
-# In "Comparing Spectra with the Spectral Convolution", we introduced the spectral convolution
-# and used it to measure the similarity of simplified spectra. In this problem, we would like
-# to extend this idea to find the most similar protein in a database to a spectrum taken from
-# an unknown protein. Our plan is to use the spectral convolution to find the largest possible
-# number of masses that each database protein shares with our candidate protein after shifting,
-# and then select the database protein having the largest such number of shared masses.
-
-# Inputs: A positive integer n followed by a collection of n protein strings s1, s2, ..., sn and a multiset R
-# of positive numbers (corresponding to the complete spectrum of some unknown protein string).
-
-# Return: The maximum multiplicity of R-S[sk]
-# taken over all strings sk, followed by the string sk for which this
-# maximum multiplicity occurs (you may output any such value if multiple solutions exist).
-
 def prsm(s,R):
+    '''
+    prsm
+
+    Match a Spectrum to a Protein
+
+    Searching the Protein Database
+
+    Many proteins have already been identified for a wide variety of organisms. Accordingly,
+    there are a large number of protein databases available, and so the first step after
+    creating a mass spectrum for an unidentified protein is to search through these databases
+    for a known protein with a highly similar spectrum. In this manner, many similar proteins
+    found in different species have been identified, which aids researchers in determining protein function.
+
+    In "Comparing Spectra with the Spectral Convolution", we introduced the spectral convolution
+    and used it to measure the similarity of simplified spectra. In this problem, we would like
+    to extend this idea to find the most similar protein in a database to a spectrum taken from
+    an unknown protein. Our plan is to use the spectral convolution to find the largest possible
+    number of masses that each database protein shares with our candidate protein after shifting,
+    and then select the database protein having the largest such number of shared masses.
+
+    Inputs: A positive integer n followed by a collection of n protein strings s1, s2, ..., sn and a multiset R
+            of positive numbers (corresponding to the complete spectrum of some unknown protein string).
+
+            Return: The maximum multiplicity of R-S[sk]
+                    taken over all strings sk, followed by the string sk for which this
+                    maximum multiplicity occurs (you may output any such value if multiple solutions exist).
+    '''
     def count(c):
         return c[1][0]
     m = 0
@@ -320,43 +324,44 @@ def prsm(s,R):
 
     return b,s[index]
 
-#    full
-#
-#    Inferring Peptide from Full Spectrum
-#
-#    Inputs : A list L containing 2n+3 positive real numbers (n<=100).
-#             The first number in L is the parent mass of a peptide P, and all
-#             other numbers represent the masses of some b-ions and y-ions of P
-#             (in no particular order). You may assume that if the mass of a b-ion is present,
-#             then so is that of its complementary y-ion, and vice-versa.
-#
-#    Return: A protein string t
-#            of length n for which there exist two positive real numbers w1 and w2
-#            such that for every prefix p and suffix s of t, each of w(p)+w1 and w(s)+w2
-#            is equal to an element of L.
-#            (In other words, there exists a protein string whose t-prefix and
-#            t-suffix weights correspond to the non-parent mass values of L.)
-#            If multiple solutions exist, you may output any one.
+
 
 def full(L,epsilon=0.000001):
+    '''
 
-    # get_n
-    #
-    # Get n, and verify that it is odd
+    Inferring Peptide from Full Spectrum
+
+    Inputs : A list L containing 2n+3 positive real numbers (n<=100).
+             The first number in L is the parent mass of a peptide P, and all
+             other numbers represent the masses of some b-ions and y-ions of P
+             (in no particular order). You may assume that if the mass of a b-ion is present,
+             then so is that of its complementary y-ion, and vice-versa.
+
+    Return: A protein string t
+            of length n for which there exist two positive real numbers w1 and w2
+            such that for every prefix p and suffix s of t, each of w(p)+w1 and w(s)+w2
+            is equal to an element of L.
+            (In other words, there exists a protein string whose t-prefix and
+            t-suffix weights correspond to the non-parent mass values of L.)
+            If multiple solutions exist, you may output any one.
+    '''
+
     def get_n():
+        '''
+        Get n, and verify that it is odd
+        '''
         n = (len(L)-3)//2
         assert(2*n+3==len(L))
         return n
 
-    # extract
-    #
-    # Extract prefixes or suffixes
-    # Inputs: seq  Start of prefixes of suffixes
-    #         candidates
-    #
-    # Returns: prefixes or suffixes
-
     def extract(seq,candidates):
+        '''
+         Extract prefixes or suffixes
+         Inputs: seq  Start of prefixes of suffixes
+                 candidates
+
+         Returns: prefixes or suffixes
+        '''
         while True:
             key = seq[-1]
             if not key in candidates:
@@ -2594,9 +2599,10 @@ if __name__=='__main__':
         def test_ba11c(self):
             '''BA11C Convert a Peptide into a Peptide Vector'''
 
-        @skip('Code up test')
+
         def test_ba11d(self):
             '''BA11D Convert a Peptide Vector into a Peptide'''
+            self.assertAlmostEqual('XZZXX',CreatePeptide([0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1]))
 
         @skip('')
         def test_ba11e(self):
