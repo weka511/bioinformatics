@@ -44,40 +44,43 @@ def SpectrumGraph(spectrum):
     '''
     BA11A Construct the Graph of a Spectrum
 
-    We represent the masses in a spectrum as a sequence Spectrum of integers  s[0],…,s[m] in increasing order,
-    where s[0] is zero and s[m] is the total mass of the (unknown) peptide. We define a labeled graph
-    Graph(Spectrum) by forming a node for each element of Spectrum, then connecting nodes s[i] and s[j]
-    by a directed edge labeled by an amino acid a if s[j]−s[i] is equal to the mass of a.
+    We represent the masses in a spectrum as a sequence Spectrum of integers  s[0],...,s[m] in increasing order,
+    where s[0] is zero and s[m] is the total mass of the (unknown) peptide.
 
     As we assumed when sequencing antibiotics, we do not distinguish between amino acids having the same
     integer masses (i.e., the pairs K/Q and I/L).
     '''
-    def add_one_point(graph,spectrum,inverted_masses,index=-1):
+    class Graph:
         '''
-        Add one point to graph
-
-        Parameters:
-            graph
-            spectrum
-            inverted_masses
-            index
+        We define a labeled graph  by forming a node for each element of Spectrum, then connecting nodes
+        s[i] and s[j] by a directed edge labeled by an amino acid a if s[j]−s[i] is equal to the mass of a.
         '''
-        value = spectrum[index] if index>-1 else 0
-        for j in range(index+1,len(spectrum)):
-            diff = spectrum[j] - value
-            if diff in inverted_masses:
-                if not value in graph:
-                    graph[value] = []
-                for protein in inverted_masses[diff]:
-                    graph[value].append((spectrum[j],protein))
+        def __init__(self,spectrum,inverted_masses):
+            self.spectrum = spectrum
+            self.inverted_masses = inverted_masses
+            self.Nodes = {}
 
-    inverted_masses = invert(integer_masses)
-    product = {}
-    add_one_point(product,spectrum,inverted_masses)
+        def accumulate(self,index=-1):
+            '''
+            Add one point to graph
+
+            Parameters:
+                index
+            '''
+            value = self.spectrum[index] if index>-1 else 0
+            for j in range(index+1,len(self.spectrum)):
+                diff = self.spectrum[j] - value
+                if diff in self.inverted_masses:
+                    if not value in self.Nodes:
+                        self.Nodes[value] = []
+                    for protein in self.inverted_masses[diff]:
+                        self.Nodes[value].append((self.spectrum[j],protein))
+
+    graph = Graph(spectrum,invert(integer_masses))
+    graph.accumulate()
     for i in range(len(spectrum)):
-        add_one_point(product,spectrum,inverted_masses,index=i)
-    return product
-
+        graph.accumulate(index=i)
+    return graph.Nodes
 
 def DecodeIdealSpectrum(Spectrum):
     '''
