@@ -19,10 +19,10 @@
     Code for Chapters 4 and 11, and utilities for mass spectroscopy
 '''
 
+from copy import deepcopy
 from sys import float_info
 from unittest import TestCase, main, skip
 import numpy as np
-
 from reference_tables import amino_acids, integer_masses, codon_table, test_masses, create_inverse_masses
 from bisect import bisect
 from rosalind import dna_to_rna, revc, triplets
@@ -34,9 +34,7 @@ def get_mass(peptide,masses=integer_masses):
 
 def invert(masses=integer_masses):
     '''
-    invert
-
-    Input: A dictionary containing masses of amino acids
+    Input: A dictionary mapping amino acids to masses
 
     Return: A dictionary mapping masses to amino acids
     '''
@@ -46,30 +44,38 @@ def SpectrumGraph(spectrum):
     '''
     BA11A Construct the Graph of a Spectrum
 
-    We represent the masses in a spectrum as a sequence Spectrum of integers  s1,…,sm in increasing order,
-    where s1 is zero and sm is the total mass of the (unknown) peptide. We define a labeled graph
-    Graph(Spectrum) by forming a node for each element of Spectrum, then connecting nodes si and sj
-    by a directed edge labeled by an amino acid a if sj−si is equal to the mass of a.
+    We represent the masses in a spectrum as a sequence Spectrum of integers  s[0],…,s[m] in increasing order,
+    where s[0] is zero and s[m] is the total mass of the (unknown) peptide. We define a labeled graph
+    Graph(Spectrum) by forming a node for each element of Spectrum, then connecting nodes s[i] and s[j]
+    by a directed edge labeled by an amino acid a if s[j]−s[i] is equal to the mass of a.
 
     As we assumed when sequencing antibiotics, we do not distinguish between amino acids having the same
     integer masses (i.e., the pairs K/Q and I/L).
     '''
-    def add_one_point(product,inverted,index=-1):
-        '''Add one point to graph'''
+    def add_one_point(graph,spectrum,inverted_masses,index=-1):
+        '''
+        Add one point to graph
+
+        Parameters:
+            graph
+            spectrum
+            inverted_masses
+            index
+        '''
         value = spectrum[index] if index>-1 else 0
         for j in range(index+1,len(spectrum)):
             diff = spectrum[j] - value
-            if diff in inverted:
-                if not value in product:
-                    product[value] = []
-                for protein in inverted[diff]:
-                    product[value].append((spectrum[j],protein))
+            if diff in inverted_masses:
+                if not value in graph:
+                    graph[value] = []
+                for protein in inverted_masses[diff]:
+                    graph[value].append((spectrum[j],protein))
 
-    inverted = invert(integer_masses)
+    inverted_masses = invert(integer_masses)
     product = {}
-    add_one_point(product,inverted)
+    add_one_point(product,spectrum,inverted_masses)
     for i in range(len(spectrum)):
-        add_one_point(product,inverted,index=i)
+        add_one_point(product,spectrum,inverted_masses,index=i)
     return product
 
 
@@ -110,7 +116,6 @@ def DecodeIdealSpectrum(Spectrum):
 
 def create_extended():
     '''
-    create_extended
     Extend list of amino acids for testing
     '''
     extended_masses = {'X':4,'Z':5}
@@ -148,7 +153,6 @@ def CreatePeptideVector(peptide):
         result.append(1)
     return result
 
-
 def CreatePeptide(vector):
     '''
     CreatePeptide
@@ -156,13 +160,10 @@ def CreatePeptide(vector):
     Convert a Peptide Vector into a Peptide
 
     '''
-    extended_masses = create_extended()
-    masses_offset   = [i+1 for i in range(len(vector)) if vector[i]>0]
-    masses          = [b-a for (a,b) in zip([0]+masses_offset[:-1],masses_offset)]
-    inverted_masses = invert(extended_masses)
+    masses_offset = [i+1 for i in range(len(vector)) if vector[i]>0]
+    masses = [b-a for (a,b) in zip([0]+masses_offset[:-1],masses_offset)]
+    inverted_masses = invert(create_extended())
     return ''.join( [str(inverted_masses[m][0]) for m in masses])
-
-
 
 def conv(S,T,eps=0.001):
     '''
@@ -571,12 +572,12 @@ def Turnpike(D,check=False):
 
     # Start by initializing array of points. We know that its length
     # must be the square root of the array of differences.
-    len_D=len (D)
-    len_X=int(np.sqrt(len_D))
-    X=[float('nan')]*len_X    #We fill in all values as "unknown"
-    X[0]=0                    #Actually we are given the first value, zero
-    X[-1]=D[-1]               # We also know that the last point must match the last difference.
-    reconstruction= find_remaining_points(X,[d for d in D[:-1] if d>0],0,-1)
+    len_D = len (D)
+    len_X = int(np.sqrt(len_D))
+    X = [float('nan')]*len_X    #We fill in all values as "unknown"
+    X[0] = 0                    #Actually we are given the first value, zero
+    X[-1] = D[-1]               # We also know that the last point must match the last difference.
+    reconstruction = find_remaining_points(X,[d for d in D[:-1] if d>0],0,-1)
     if check:
         check_diffs(reconstruction)
     return reconstruction
@@ -632,49 +633,50 @@ def findEncodings(text,peptide):
     candidates=[text[i:i+3*len(peptide)] for i in range(len(text)-3)]
     return [rna for rna in candidates if encodes(rna) or encodes(revc(rna))]
 
-    # BA4C	Generate the Theoretical Spectrum of a Cyclic Peptide
-    #
-    # The workhorse of peptide sequencing is the mass spectrometer, an expensive
-    # molecular scale that shatters molecules into pieces and then weighs the
-    # resulting fragments. The mass spectrometer measures the mass of a molecule
-    # in daltons (Da); 1 Da is approximately equal to the mass of a single nuclear
-    # particle (i.e., a proton or neutron).
-    #
-    # We will approximate the mass of a molecule by simply adding the number of
-    # protons and neutrons found in the molecule’s constituent atoms, which yields
-    # the molecule’s integer mass. For example, the amino acid "Gly", which has
-    # chemical formula C2H3ON, has an integer mass of 57,
-    # since 2·12 + 3·1 + 1·16 + 1·14 = 57. Yet 1 Da is not exactly equal to the mass
-    # of a proton/neutron, and we may need to account for different naturally
-    # occurring isotopes of each atom when weighing a molecule. As a result,
-    # amino acids typically have non-integer masses (e.g., "Gly" has total mass
-    # equal to approximately 57.02 Da); for simplicity, however, we will work with
-    # the integer mass table given in Figure 1.
-    #
-    # The theoretical spectrum of a cyclic peptide Peptide, denoted
-    # Cyclospectrum(Peptide), is the collection of all of the masses of its
-    # subpeptides, in addition to the mass 0 and the mass of the entire peptide.
-    # We will assume that the theoretical spectrum can contain duplicate elements,
-    # as is the case for "NQEL", where "NQ" and "EL" have the same mass.
-    #
-    # Input: An amino acid string Peptide (1 char abbreviations).
-    #
-    # Return: Cyclospectrum(Peptide).
 
 def cycloSpectrum(peptide,mass=integer_masses):
+    '''
+    BA4C	Generate the Theoretical Spectrum of a Cyclic Peptide
 
-    # get_pairs
-    #
-    # Inputs: index_range
-    #
-    # Return:  Pairs of indices delimiting sublists of peptide
+     The workhorse of peptide sequencing is the mass spectrometer, an expensive
+     molecular scale that shatters molecules into pieces and then weighs the
+     resulting fragments. The mass spectrometer measures the mass of a molecule
+     in daltons (Da); 1 Da is approximately equal to the mass of a single nuclear
+     particle (i.e., a proton or neutron).
+
+     We will approximate the mass of a molecule by simply adding the number of
+     protons and neutrons found in the molecule’s constituent atoms, which yields
+     the molecule’s integer mass. For example, the amino acid "Gly", which has
+     chemical formula C2H3ON, has an integer mass of 57,
+     since 2·12 + 3·1 + 1·16 + 1·14 = 57. Yet 1 Da is not exactly equal to the mass
+     of a proton/neutron, and we may need to account for different naturally
+     occurring isotopes of each atom when weighing a molecule. As a result,
+     amino acids typically have non-integer masses (e.g., "Gly" has total mass
+     equal to approximately 57.02 Da); for simplicity, however, we will work with
+     the integer mass table given in Figure 1.
+
+     The theoretical spectrum of a cyclic peptide Peptide, denoted
+     Cyclospectrum(Peptide), is the collection of all of the masses of its
+     subpeptides, in addition to the mass 0 and the mass of the entire peptide.
+     We will assume that the theoretical spectrum can contain duplicate elements,
+     as is the case for "NQEL", where "NQ" and "EL" have the same mass.
+
+     Input: An amino acid string Peptide (1 char abbreviations).
+
+    Return: Cyclospectrum(Peptide).
+    '''
 
     def get_pairs(index_range):
+        '''
+        Inputs: index_range
+
+        Return:  Pairs of indices delimiting sublists of peptide
+        '''
         return [(i,j) for i in index_range for j in range(i,i+len(index_range)) if j!=i]
 
     augmented_peptide = peptide+peptide   # allows easy extraction of substrings
                                           # fromcyclic peptide
-    spectrum          = [get_mass(augmented_peptide[a:b],mass) for (a,b) in get_pairs(range(len(peptide)))]
+    spectrum = [get_mass(augmented_peptide[a:b],mass) for (a,b) in get_pairs(range(len(peptide)))]
     spectrum.append(get_mass('',mass))
     spectrum.append(get_mass(peptide,mass))
     spectrum.sort()
@@ -1011,8 +1013,6 @@ def SequencePeptide(spectral, protein_masses = integer_masses):
 
     Returns: A peptide with maximum score against S. For masses with more than one amino acid, any choice may be used.
     '''
-
-
     def create_DAG(spectral,inverse_masses):
         Nodes = [0] + spectral
         Edges = {}
@@ -1023,9 +1023,60 @@ def SequencePeptide(spectral, protein_masses = integer_masses):
                     Edges[i].append(j)
         return Nodes,Edges
 
+    def prune_left(Edges,n):
+        Counts = np.zeros((n))
+        Counts[0] = 1
+        for i,Destinations in Edges.items():
+            if Counts[i]>0:
+                for j in Destinations:
+                    Counts[j] +=1
+        for i in range(n):
+            if Counts[i]==0:
+                del Edges[i]
+        return Edges
+
+    def prune_right(Edges):
+        return {a:bs for a,bs in Edges.items() if len(bs)>0}
+
+    class Peptide:
+        '''This class represents a candidate peptide'''
+        def __init__(self,
+                     indices = [0],
+                     score = 0):
+            self.indices = indices
+            self.score = score
+
+        def __repr__(self):
+            return f'Peptide(indices={self.indices},score={self.score}>'
+
+        def accumulate(self,index,inverse_masses):
+            jump = index - self.indices[-1]
+            self.indices.append(index)
+            self.score += jump
+
     inverse_masses = create_inverse_masses(protein_masses)
     Nodes,Edges = create_DAG(spectral,inverse_masses)
+    Edges = prune_right(prune_left(Edges,len(Nodes)))
+    Candidates = [Peptide()]
+    extendable = True
+    while extendable:
+        extendable = False
+        for candidate_peptide in Candidates:
+            tip = candidate_peptide.indices[-1]
+            if tip in Edges:
+                Extensions = [candidate_peptide]
+                for _ in Edges[tip][1:]:
+                    Extensions.append(deepcopy(candidate_peptide))
+                for i in range(len(Edges[tip])):
+                    Extensions[i].accumulate(Edges[tip][i],inverse_masses)
+                    if i>0:
+                        Candidates.append(Extensions[i])
+                extendable = True
+            else:
+                print (f'{candidate_peptide} died')
 
+    for candidate_peptide in Candidates:
+        print (candidate_peptide)
     return 'XZZXX'   # Fake it 'til you make it
 
 if __name__=='__main__':
@@ -1037,8 +1088,8 @@ if __name__=='__main__':
                              spectrum2protein([3524.8542,3710.9335,3841.974,3970.0326,4057.0646]))
 
         def test_conv(self):
-            m,x=conv([186.07931, 287.12699 ,548.20532 ,580.18077 ,681.22845, 706.27446, 782.27613 ,968.35544, 968.35544],
-                 [101.04768, 158.06914 ,202.09536 ,318.09979 ,419.14747, 463.17369])
+            m,x = conv([186.07931, 287.12699 ,548.20532 ,580.18077 ,681.22845, 706.27446, 782.27613 ,968.35544, 968.35544],
+                       [101.04768, 158.06914 ,202.09536 ,318.09979 ,419.14747, 463.17369])
             self.assertEqual(3,m)
             self.assertAlmostEqual(85.03163,x,places=5)
 
@@ -2580,9 +2631,19 @@ if __name__=='__main__':
                                        ]))
 
         def test_ba11a(self):
-            '''BA11A Construct the Graph of a Spectrum'''
-            graph = SpectrumGraph([57, 71, 154, 185, 301, 332, 415, 429, 486])
-            self.assertEqual(9,len(graph))
+            '''BA11A Construct the Graph of a Spectrum (after https://rosalind.info/problems/ba11a/)'''
+            self.assertDictEqual(
+                {0: [(57, 'G'), (71, 'A')],
+                 57: [(154, 'P'), (185, 'Q')],
+                 71: [(185, 'N')],
+                 154: [(301, 'F')],
+                 185: [(332, 'F')],
+                 301: [(415, 'N'), (429, 'Q')],
+                 332: [(429, 'P')],
+                 415: [(486, 'A')],
+                 429: [(486, 'G')]},
+                SpectrumGraph([57, 71, 154, 185, 301, 332, 415, 429, 486]))
+
 
         @skip('Issue #139')
         def test_ba11b(self):
@@ -2605,6 +2666,9 @@ if __name__=='__main__':
             self.assertEqual('XZZXX',
                              SequencePeptide([0, 0, 0, 4, -2, -3, -1, -7, 6, 5, 3, 2, 1, 9, 3, -8, 0, 3, 1, 2, 1, 0],
                                              protein_masses=test_masses))
+        @skip('Issue #91')
+        def test_ba11e1(self):
+            '''BA11E Sequence a Peptide'''
             self.assertEqual('GGPGGPGGAGG',
                              SequencePeptide([20, 2, -14, -4, -10, -4, 5, 16, 20, -12, -1, -9, 11, -11, 12, 3, -1, 0,
                                               3, 21, 3, -2, 10, 11, -11, 15, 17, 2, 4, 8, -19, 28, 28, 29, 1, 21, 27,
