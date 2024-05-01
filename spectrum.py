@@ -108,27 +108,21 @@ def DecodeIdealSpectrum(Spectrum):
             else:
                 paths = new_paths
 
-    def linearSpectrum(peptide):
+    def prefixSuffixSpectrum(peptide):
         '''
         This is a hack to make the test pass (otherwise other tests depending on spectrum.linearSpectrum fail
         '''
-        def get_pairs():
-            return [(i,j) for i in range(len(peptide)) for j in range(len(peptide)+1) if i<j]
-
-        pairs =  get_pairs()
         result = [sum(peptide[0:i]) for i in range(1,len(peptide)+1)] + [sum(peptide[i:]) for i in range(1,len(peptide)+1)]
         result.sort()
         return result
 
     for path in bfs(SpectrumGraph(Spectrum)):
         peptide = ''.join(s for (_,s) in path)
-        generated_spectrum = linearSpectrum([integer_masses[a] for a in peptide])
-        # print (generated_spectrum[1:],Spectrum)
+        generated_spectrum = prefixSuffixSpectrum([integer_masses[a] for a in peptide])
         if generated_spectrum[1:]==Spectrum:
             return peptide
 
     return None
-
 
 def create_extended():
     '''
