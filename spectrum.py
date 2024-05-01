@@ -108,9 +108,22 @@ def DecodeIdealSpectrum(Spectrum):
             else:
                 paths = new_paths
 
+    def linearSpectrum(peptide):
+        '''
+        This is a hack to make the test pass (otherwise other tests dpending on spectrum.linearSpectrum fail
+        '''
+        def get_pairs():
+            return [(i,j) for i in range(len(peptide)) for j in range(len(peptide)+1) if i<j]
+
+        pairs =  get_pairs()
+        result = [sum(peptide[0:i]) for i in range(1,len(peptide)+1)] + [sum(peptide[i:]) for i in range(1,len(peptide)+1)]
+        result.sort()
+        return result
+
     for path in bfs(SpectrumGraph(Spectrum)):
         peptide = ''.join(s for (_,s) in path)
-        generated_spectrum = linearSpectrum(peptide)
+        generated_spectrum = linearSpectrum([integer_masses[a] for a in peptide])
+        # print (generated_spectrum[1:],Spectrum)
         if generated_spectrum[1:]==Spectrum:
             return peptide
 
@@ -856,9 +869,18 @@ def score(peptide,spectrum,spect_from_peptide=cycloSpectrum):
     return countMatchesInSpectra(spect_from_peptide(peptide),spectrum)
 
 def linearSpectrum(peptide):
-    '''BA4J 	Generate the Theoretical Spectrum of a Linear Peptide'''
+    '''
+    BA4J 	Generate the Theoretical Spectrum of a Linear Peptide
+
+    Parameters:
+        An amino acid string Peptide.
+
+    Return:
+        The linear spectrum of Peptide.
+    '''
     def get_pairs():
         return [(i,j) for i in range(len(peptide)) for j in range(len(peptide)+1) if i<j]
+
     result = [sum(peptide[i:j]) for (i,j) in get_pairs()]
     result.append(0)
     result.sort()
@@ -942,7 +964,15 @@ def convolutionCyclopeptideSequencing(m,n,spectrum,low_mass=57,high_mass=200):
 
 
 def linearSpectrumFromString(peptide):
-    '''BA4J 	Generate the Theoretical Spectrum of a Linear Peptide'''
+    '''
+    BA4J 	Generate the Theoretical Spectrum of a Linear Peptide
+
+    Parameters:
+        An amino acid string Peptide.
+
+    Return:
+        The linear spectrum of Peptide.
+    '''
     return linearSpectrum([integer_masses[a] for a in peptide])
 
 def linearScore(peptide,spectrum):
@@ -1075,11 +1105,11 @@ def SequencePeptide(spectral, protein_masses = integer_masses):
                     if i>0:
                         Candidates.append(Extensions[i])
                 extendable = True
-            else:
-                print (f'{candidate_peptide} died')
+            # else:
+                # print (f'{candidate_peptide} died')
 
-    for candidate_peptide in Candidates:
-        print (candidate_peptide)
+    # for candidate_peptide in Candidates:
+        # print (candidate_peptide)
     return 'XZZXX'   # Fake it 'til you make it
 
 if __name__=='__main__':
@@ -2648,7 +2678,6 @@ if __name__=='__main__':
                 SpectrumGraph([57, 71, 154, 185, 301, 332, 415, 429, 486]))
 
 
-        @skip('Issue #139')
         def test_ba11b(self):
             '''BA11B Implement DecodingIdealSpectrum'''
             self.assertEqual('GPFNA',DecodeIdealSpectrum([57, 71, 154, 185, 301, 332, 415, 429, 486]))
