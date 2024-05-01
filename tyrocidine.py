@@ -1,5 +1,6 @@
 #!/usr/bin/env python
-#    Copyright (C) 2019 Greenweaves Software Limited
+
+#    Copyright (C) 2019-2024 Greenweaves Software Limited
 #
 #    This is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -14,12 +15,9 @@
 #    You should have received a copy of the GNU General Public License
 #    along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>
 #
-#    Utilities for mass spectroscopy
 
-from spectrum import create_lookup,get_abbrev
+from spectrum import create_lookup,get_abbrev,convolution
 from reference_tables import amino_acids
-from rosalind import convolution
-
 
 def sequence(spectrum,epsilon=0.1):
 
