@@ -49,13 +49,6 @@ def countMatchesInSpectra(spect1,spect2):
             i2+=1
     return count
 
-def linearSpectrum(peptide):
-    def get_pairs():
-        return [(i,j) for i in range(len(peptide)) for j in range(len(peptide)+1) if i<j]
-    result=[sum(peptide[i:j]) for (i,j) in get_pairs()]
-    result.append(0)
-    result.sort()
-    return result
 
 def cycloSpectrum1(peptide):
     def get_pairs(index_range):

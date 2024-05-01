@@ -77,14 +77,6 @@ def print_peptide(seq):
 
 
 
-def consistent(peptide,spectrum):
-    def count(element,spect):
-        return len ([s for s in spect if s==element])
-    peptide_spectrum=linearSpectrum(peptide)
-    for element in peptide_spectrum:
-        if count(element,peptide_spectrum)>count(element,spectrum):
-            return False
-    return True
 
 def read_list(file_name):
     with open(file_name) as f:
