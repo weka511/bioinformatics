@@ -110,7 +110,7 @@ def DecodeIdealSpectrum(Spectrum):
 
     def linearSpectrum(peptide):
         '''
-        This is a hack to make the test pass (otherwise other tests dpending on spectrum.linearSpectrum fail
+        This is a hack to make the test pass (otherwise other tests depending on spectrum.linearSpectrum fail
         '''
         def get_pairs():
             return [(i,j) for i in range(len(peptide)) for j in range(len(peptide)+1) if i<j]
@@ -140,32 +140,32 @@ def create_extended():
 
 def CreatePeptideVector(peptide):
     '''
-    CreatePeptideVector
 
-     Convert a Peptide into a Peptide Vector
+    BA11C Convert a Peptide into a Peptide Vector
 
-     Convert a peptide into a binary peptide vector.
+    Convert a peptide into a binary peptide vector.
 
-     Given an amino acid string Peptide = a1 . . . an of length n, we will represent its
-     prefix masses using a binary peptide vector Peptide' with mass(Peptide) coordinates.
-     This vector contains a 1 at each of the n prefix coordinates
+    Given an amino acid string Peptide = a1 . . . an of length n, we will represent its
+    prefix masses using a binary peptide vector Peptide' with mass(Peptide) coordinates.
+    This vector contains a 1 at each of the n prefix coordinates
+    mass(a1), mass(a1 a2), . . . , mass(a1 a2 . . . an ),
+    and it contains a 0 in each of the remaining noise coordinates.
 
-     mass(a1), mass(a1 a2), . . . , mass(a1 a2 . . . an ) ,
-     and it contains a 0 in each of the remaining noise coordinates.
+    Parameters:
+        peptide
 
-     Input: A peptide P.
+    Returns:
+        The peptide vector of P.
 
-     Return: The peptide vector of P.
-
-     Note: In this chapter, all dataset problems implicitly use the standard integer-valued mass
-     table for the regular twenty amino acids. Examples sometimes use imaginary amino
-     acids X and Z having respective integer masses 4 and 5.
+    Note: In this chapter, all dataset problems implicitly use the standard integer-valued mass
+    table for the regular twenty amino acids. Examples sometimes use imaginary amino
+    acids X and Z having respective integer masses 4 and 5.
     '''
     extended_masses = create_extended()
     masses = [extended_masses[p] for p in peptide]
     result = []
     for m in masses:
-        result = result + ([0]*(m-1))
+        result = result + [0]*(m-1)
         result.append(1)
     return result
 
