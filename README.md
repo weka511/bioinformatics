@@ -81,7 +81,7 @@ I have written this code in Python 3, generally with the most recent release at 
 |BA4K|spectrum.py|[Compute the Score of a Linear Peptide ](http://rosalind.info/problems/ba4k/) |
 |BA4L|spectrum.py|[Trim a Peptide Leaderboard](http://rosalind.info/problems/ba4l/) |
 |BA4M|ba4m.py spectrum.py| [Solve the Turnpike Problem](http://rosalind.info/problems/ba4m/) |
-|-|tyrocidine.py| Challenge Problems from [Bioinformatics Algorithms](http://bioinformaticsalgorithms.com/): sequence Tyrocidine from supplied spectrum (WIP)|
+|-|tyrocidine.py| Challenge Problems from [Bioinformatics Algorithms](http://bioinformaticsalgorithms.com/): sequence Tyrocidine from supplied spectrum [WIP](https://github.com/weka511/bioinformatics/issues/140)|
 |conv|conv.py+spectrum.py|[Comparing Spectra with the Spectral Convolution](http://rosalind.info/problems/conv/)|
 |full|full.py+spectrum.py|[Inferring Peptide from Full Spectrum](http://rosalind.info/problems/full/)|
 |prtm|spectrum.py|[Calculating Protein Mass](http://rosalind.info/problems/prtm/) - get_weight(...)|
