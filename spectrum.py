@@ -171,10 +171,14 @@ def CreatePeptideVector(peptide):
 
 def CreatePeptide(vector):
     '''
-    CreatePeptide
+    BA11D Convert a Peptide Vector into a Peptide
 
-    Convert a Peptide Vector into a Peptide
+    Input:
+        A binary vector P.
 
+    Return:
+        A peptide whose binary peptide vector matches the input. For masses with more than one amino acid,
+        any choice may be used.
     '''
     masses_offset = [i+1 for i in range(len(vector)) if vector[i]>0]
     masses = [b-a for (a,b) in zip([0]+masses_offset[:-1],masses_offset)]
@@ -2690,7 +2694,8 @@ if __name__=='__main__':
 
         def test_ba11d(self):
             '''BA11D Convert a Peptide Vector into a Peptide'''
-            self.assertEqual('XZZXX',CreatePeptide([0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1]))
+            self.assertEqual('XZZXX',
+                             CreatePeptide([0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1]))
 
         #@skip('Issue #91')
         def test_ba11e(self):
