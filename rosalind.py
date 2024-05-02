@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-#   (C) 2017-2023 Greenweaves Software Limited
+#   (C) 2017-2024 Greenweaves Software Limited
 
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -17,8 +17,6 @@
 
 ''' Rosalind utilities and simple problems'''
 
-
-from math import log10, ceil, sqrt
 from re import compile
 from unittest import main, skip, TestCase
 import numpy as np
@@ -27,59 +25,19 @@ from scipy.special import comb
 from fasta import FastaContent
 from reference_tables import codon_table,skew_step,bases,integer_masses,amino_acids
 
-def get_mass(peptide,mass=integer_masses):
-    return sum([mass[amino_acid] for amino_acid in peptide])
 
+def iterate_markov(e,p,g):
+    '''
+    Step through multiple iterations of  Markov chain
 
-def countMatchesInSpectra(spect1,spect2):
-    i1=0
-    i2=0
-    count=0
-    while i1<len(spect1) and i2<len(spect2):
-        diff=spect1[i1]-spect2[i2]
-        if diff==0:
-            count+=1
-            i1+=1
-            i2+=1
-        elif diff<0:
-            i1+=1
-        else:
-            i2+=1
-    return count
-
-
-def cycloSpectrum1(peptide):
-    def get_pairs(index_range):
-        n=len(index_range)
-        return [(i,j) for i in index_range for j in range(i,i+n) if j!=i]
-    augmented_peptide=peptide+peptide
-    result=[sum(augmented_peptide[a:b]) for (a,b) in get_pairs(range(len(peptide)))]
-    result.append(0)
-    result.append(sum(peptide))
-    result.sort()
-    return result
-
-
-
-
-def iterate_markov(e,p,g,n):
+    Parameters:
+        e
+        p
+        g
+    '''
     for i in range(g):
-        psum=sum(e)
-        e1=[]
-        for k in range(2*n+1):
-            ee=0
-            for j in range(2*n+1):
-                ee+=e[j]*p[j][k]
-            e1.append(ee)
-        for k in range(2*n+1):
-            e[k]=e1[k]
+        e = np.dot(e,p)
     return e
-
-def rotate(cycle,pos):
-    return cycle[pos:]+cycle[1:pos]+cycle[pos:pos+1]
-
-
-
 
 def create_wf_transition_matrix(n):
     '''
@@ -91,7 +49,6 @@ def create_wf_transition_matrix(n):
         p[j][k] = probabilty of a transition from j to k,
         where j and k is number of recessives
     '''
-
     product = np.empty((2*n+1,2*n+1))
     for j in range(2*n+1):
         for k in range(2*n+1):
@@ -994,33 +951,38 @@ def revp(fasta,len1=4,len2=12):
 def random_genome(s,a):
     def log_probability(prob_gc):
         log_prob={
-            'G' : log10(0.5*prob_gc),
-            'C' : log10(0.5*prob_gc),
-            'A' : log10(0.5*(1-prob_gc)),
-            'T' : log10(0.5*(1-prob_gc))
+            'G' : np.log10(0.5*prob_gc),
+            'C' : np.log10(0.5*prob_gc),
+            'A' : np.log10(0.5*(1-prob_gc)),
+            'T' : np.log10(0.5*(1-prob_gc))
         }
         return sum([log_prob[ch] for ch in s])
     return [log_probability(prob_gc) for prob_gc in a]
 
-# LGIS 	Longest Increasing Subsequence
-# A subsequence of a permutation is a collection of elements of the permutation
-# in the order in which they appear.
-# For example, (5, 3, 4) is a subsequence of (5, 1, 3, 4, 2).
-#
-# A subsequence is increasing if the elements of the subsequence increase,
-# and decreasing if the elements decrease. For example, given the permutation
-# (8, 2, 1, 6, 5, 7, 4, 3, 9), an increasing subsequence is (2, 6, 7, 9),
-# and a decreasing subsequence is (8, 6, 5, 4, 3). You may verify that these
-# two subsequences are as long as possible.
-#
-# Input: A positive integer n>=10000 followed by a permutation X of length n.
-#
-# Return: A longest increasing subsequence of X, followed by a longest
-#         decreasing subsequence of X.
-#
-# Uses algorithm at https://en.wikipedia.org/wiki/Longest_increasing_subsequence
+
 
 def longestIncreasingSubsequence(N,X):
+    '''
+    LGIS 	Longest Increasing Subsequence
+    A subsequence of a permutation is a collection of elements of the permutation
+    in the order in which they appear.
+    For example, (5, 3, 4) is a subsequence of (5, 1, 3, 4, 2).
+
+    A subsequence is increasing if the elements of the subsequence increase,
+    and decreasing if the elements decrease. For example, given the permutation
+    (8, 2, 1, 6, 5, 7, 4, 3, 9), an increasing subsequence is (2, 6, 7, 9),
+    and a decreasing subsequence is (8, 6, 5, 4, 3). You may verify that these
+    two subsequences are as long as possible.
+
+    Input:
+        A positive integer n>=10000 followed by a permutation X of length n.
+
+    Return:
+        A longest increasing subsequence of X, followed by a longest
+        decreasing subsequence of X.
+
+    Uses algorithm at https://en.wikipedia.org/wiki/Longest_increasing_subsequence
+    '''
     def longestMonotoneSubsequence(ascending):
         def ordered(x,y):
             if ascending:
@@ -1033,14 +995,14 @@ def longestIncreasingSubsequence(N,X):
         for i in range(N):
             lo = 1
             hi = L
-            while lo<=hi:
-                mid = ceil((lo+hi)/2)
+            while lo <= hi:
+                mid = int(np.ceil((lo+hi)/2))
                 if ordered(X[M[mid]],X[i]):
-                    lo = mid+1
+                    lo = mid + 1
                 else:
-                    hi = mid-1
-            newL    = lo
-            P[i]    = M[newL-1]
+                    hi = mid - 1
+            newL = lo
+            P[i] = M[newL-1]
             M[newL] = i
             if newL > L:
                 L = newL
@@ -1055,25 +1017,28 @@ def longestIncreasingSubsequence(N,X):
 
     return (longestMonotoneSubsequence(True),longestMonotoneSubsequence(False))
 
-# ORF 	Open Reading Frames
-#
-# Either strand of a DNA double helix can serve as the coding strand for RNA
-# transcription. Hence, a given DNA string implies six total reading frames,
-# or ways in which the same region of DNA can be translated into amino acids:
-# three reading frames result from reading the string itself,
-# whereas three more result from reading its reverse complement.
-
-# An open reading frame (ORF) is one which starts from the start codon and ends
-# by stop codon, without any other stop codons in between. Thus, a candidate
-# protein string is derived by translating an open reading frame into amino
-# acids until a stop codon is reached.
-#
-# Input: A DNA string s of length at most 1 kbp in FASTA format.
-#
-# Return: Every distinct candidate protein string that can be translated from
-#         ORFs of s. Strings can be returned in any order.
 
 def get_reading_frames(fasta):
+    '''
+    ORF 	Open Reading Frames
+
+    Either strand of a DNA double helix can serve as the coding strand for RNA
+    transcription. Hence, a given DNA string implies six total reading frames,
+    or ways in which the same region of DNA can be translated into amino acids:
+    three reading frames result from reading the string itself,
+    whereas three more result from reading its reverse complement.
+
+    An open reading frame (ORF) is one which starts from the start codon and ends
+    by stop codon, without any other stop codons in between. Thus, a candidate
+    protein string is derived by translating an open reading frame into amino
+    acids until a stop codon is reached.
+
+    Input: A DNA string s of length at most 1 kbp in FASTA format.
+
+    Return: Every distinct candidate protein string that can be translated from
+            ORFs of s. Strings can be returned in any order.
+
+    '''
     def get_start_symbols(peptide,char='M'):
         result=[]
         index=peptide.find(char)
@@ -1104,57 +1069,62 @@ def get_reading_frames(fasta):
     (_,dna)=fasta.pairs[0]
     return list(set(read_one_direction(dna) + read_one_direction(revc(dna))))
 
-
-
-
-#TRAN Transitions and Transversions
-#
-# For DNA strings s1 and s2 having the same length, their
-# transition/transversion ratio R(s1,s2) is the ratio of the total
-# number of transitions to the total number of transversions, where
-# symbol substitutions are inferred from mismatched corresponding symbols
-# as when calculating Hamming distance (see Counting Point Mutations).
-#
-# Input: Two DNA strings s1 and s2 of equal length (at most 1 kbp).
-#
-# Return: The transition/transversion ratio R(s1,s2).
 def tran(fasta):
+    '''
+    TRAN Transitions and Transversions
+
+    For DNA strings s1 and s2 having the same length, their
+    transition/transversion ratio R(s1,s2) is the ratio of the total
+    number of transitions to the total number of transversions, where
+    symbol substitutions are inferred from mismatched corresponding symbols
+    as when calculating Hamming distance (see Counting Point Mutations).
+
+    Input: Two DNA strings s1 and s2 of equal length (at most 1 kbp).
+
+    Return: The transition/transversion ratio R(s1,s2).
+    '''
     def is_transition(x,y):
         return                      \
                x=='A' and y=='G' or \
                x=='G' and y=='A' or \
                x=='C' and y=='T' or \
                x=='T' and y=='C'
-    (_,a)=fasta[0]
-    (_,b)=fasta[1]
-    n_transitions=0
-    n_transversions=0
+    (_,a) = fasta[0]
+    (_,b) = fasta[1]
+    n_transitions = 0
+    n_transversions = 0
     for (x,y) in zip(a,b):
-        if x!=y:
+        if x != y:
             if is_transition(x,y):
-                n_transitions+=1
+                n_transitions += 1
             else:
-                n_transversions+=1
+                n_transversions += 1
     return n_transitions/n_transversions
 
-# PDST 	Creating a Distance Matrix
-#
-# Input: A collection of n of equal
-# length (at most 1 kbp). Strings are given in FASTA format.
-#
-# Return: The matrix DD corresponding to the p-distance dpdp on the given
-# strings. As always, note that your answer is allowed an absolute error of 0.001.
+
 
 def distance_matrix(fasta):
+    '''
+    PDST 	Creating a Distance Matrix
+
+    Input: A collection of n of equal
+    length (at most 1 kbp). Strings are given in FASTA format.
+
+    Return: The matrix DD corresponding to the p-distance dpdp on the given
+    strings. As always, note that your answer is allowed an absolute error of 0.001.
+    '''
     def get_string(i):
         _,string=fasta[i]
         return string
-    # For two strings s and t of equal length, the p-distance between them
-    # is the proportion of corresponding symbols that differ between s and t.
-    def p_distance(s,t):
+
+    def get_p_distance(s,t):
+        '''
+        For two strings s and t of equal length, the p-distance between them
+        is the proportion of corresponding symbols that differ between s and t.
+        '''
         return hamm(s,t)/len(s)
     def row(i):
-        return [p_distance(get_string(i),get_string(j)) for j in range(len(fasta))]
+        return [get_p_distance(get_string(i),get_string(j)) for j in range(len(fasta))]
     return [row(i) for i in range(len(fasta))]
 
 def aspc(n,m):
@@ -1175,13 +1145,13 @@ def indc(n):
         return comb(2*n,k)
     def p_cumulative(k):
         return sum(p(kk) for kk in range(k,2*n+1))*mult
-    return [log10(p_cumulative(k+1)) for k in range(2*n)]
+    return [np.log10(p_cumulative(k+1)) for k in range(2*n)]
 
 
 def afrq(ps):
     '''AFRQ 	Counting Disease Carriers'''
     def p_recessive(p):
-        return 2*sqrt(p)-p
+        return 2*np.sqrt(p)-p
     return [p_recessive(p) for p in ps]
 
 
@@ -1202,16 +1172,7 @@ def wfmd(N,m,g,k):
         g generations at least k copies of a recessive allele.
     Assume the Wright-Fisher model
     '''
-
-    def accumulate(e):
-        return sum([e[j] for j in range(k,2*N+1)])
-
-    return  accumulate(
-       iterate_markov(
-           create_1hot_vector(N,m),
-           create_wf_transition_matrix(N),
-           g,
-           N))
+    return iterate_markov(create_1hot_vector(N,m),create_wf_transition_matrix(N),g)[k:].sum()
 
 def ebin(n,P):
     '''EBIN 	Wright-Fisher's Expected Behavior'''
@@ -1224,16 +1185,15 @@ def foun(N,m,A):
     def prob(g,a):
         if a==0:
             return 1
-        final=iterate_markov(
-                    create_1hot_vector(N,2*N-a),
-                    create_wf_transition_matrix(N),
-                    g,
-                    N)
+        final = iterate_markov(
+            create_1hot_vector(N,2*N-a),
+            create_wf_transition_matrix(N),
+            g)
         return final[0]
 
     result=[]
     for i in range(m):
-        result.append([log10(prob(i+1,a))  for a in A])
+        result.append([np.log10(prob(i+1,a))  for a in A])
     return result
 
 
@@ -1630,8 +1590,5 @@ if __name__=='__main__':
             self.assertIn(('TCA', 'CAT'),debruijn)
             self.assertIn(('GCA', 'CAT'),debruijn)
             self.assertIn(('TGA', 'GAT'),debruijn)
-
-
-
 
     main()
