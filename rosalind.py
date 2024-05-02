@@ -18,15 +18,13 @@
 ''' Rosalind utilities and simple problems'''
 
 
-from math     import log10, ceil, sqrt
-from re       import compile
+from math import log10, ceil, sqrt
+from re import compile
 from unittest import main, skip, TestCase
-
-import numpy          as np
-from numpy.testing    import assert_array_equal
-from deprecated       import deprecated
-
-from fasta            import FastaContent
+import numpy as np
+from numpy.testing import assert_array_equal
+from scipy.special import comb
+from fasta import FastaContent
 from reference_tables import codon_table,skew_step,bases,integer_masses,amino_acids
 
 def get_mass(peptide,mass=integer_masses):
@@ -63,23 +61,6 @@ def cycloSpectrum1(peptide):
 
 
 
-@deprecated('Use scipy.special.binom instead')
-def binomial_coefficients(n):
-    '''
-    Calculate binomial coefficients using recurrence relation
-
-    Input: n Number of oblects
-
-    Return: vector [C(n,0), C(n,1),...Cscipy(n,n)]
-    '''
-    coeffs=[[1,0]]
-    for i in range(1,n+1):
-        new_coeffs=[1]
-        for j in range(i):
-            new_coeffs.append(coeffs[-1][j]+coeffs[-1][j+1])
-        new_coeffs.append(0)
-        coeffs.append(new_coeffs)
-    return coeffs[-1][0:-1]
 
 def iterate_markov(e,p,g,n):
     for i in range(g):
@@ -97,45 +78,36 @@ def iterate_markov(e,p,g,n):
 def rotate(cycle,pos):
     return cycle[pos:]+cycle[1:pos]+cycle[pos:pos+1]
 
-def binomial_index(n,k):
-    return n*(n+1)//2+k
 
-def create_binomial(n):
-    def binomial(n,k,c):
-        if k>0 and k<n:
-            ii=binomial_index(n-1,k)
-            return c[ii-1]+c[ii]
-        return 1
-    c=[]
-    for nn in range(n):
-        for k in range(nn+1):
-            c.append(binomial(nn,k,c))
-    return c
 
-    # create transition matrix (Feller, page 380)
-    #   p[j][k] = probabilty of a transition from j to k,
-    #   where j and k i snumber of recessives
+
 def create_wf_transition_matrix(n):
-    c=create_binomial(2*n+1)
-    transition_matrix=[]
-    for j in range(2*n+1):
-        p_column=[]
-        pj=j/(2*n)
-        term1=1
-        term2=[1.0]
-        for k in range(2*n):
-            term2.append(term2[-1]*(1-pj))
-        kk=-1
-        for k in range(2*n+1):
-            p_column.append(c[binomial_index(2*n,k)] * term1 *term2[kk])
-            term1*=pj
-            kk-=1
-        transition_matrix.append(p_column)
-    return transition_matrix
+    '''
+    create transition matrix (Feller, page 380)
 
-def create_wf_initial_probabilites(n,m):
-    e        = np.zeros((2*n+1))
-    e[2*n-m] =1
+    Parameters:
+        n        Specified dimension of matrix (2*n + 1)
+    Returns:
+        p[j][k] = probabilty of a transition from j to k,
+        where j and k is number of recessives
+    '''
+
+    product = np.empty((2*n+1,2*n+1))
+    for j in range(2*n+1):
+        for k in range(2*n+1):
+            product[j,k] =  comb(2*n,k) * (j/(2*n))**k * (1-j/(2*n))**(2*n-k)
+
+    return product
+
+def create_1hot_vector(N,m):
+    '''
+    Create vector of zeros, except for on specifix element set to zero
+    Parameters:
+        m
+        N
+    '''
+    e = np.zeros((2*N+1))
+    e[2*N-m] =1
     return e
 
 def triplets(dna):
@@ -367,9 +339,7 @@ class Tree(object):
                     end,weight=edge
                     print ('{0}->{1}:{2}'.format(node,end,weight))
 
-    @deprecated('Use len() instead')
-    def next_node(self):
-        return len(self.nodes)
+
 
     def traverse(self,i,k,path=[],weights=[]):
         '''
@@ -879,12 +849,12 @@ def lia(k,n):
             for i in range(3):
                 new_probabilities[j] += transition_probabilities[j][i]*k_probabilities[i]
         k_probabilities = new_probabilities
-    counts = binomial_coefficients(2**k)
+
     probability = 0
     prob_individual = k_probabilities[1]**2
     for nn in range(n,2**k+1):
         n1 = 2**k-nn
-        probability += counts[nn]*(1-prob_individual)**n1*prob_individual**nn
+        probability += comb(2**k,nn) *(1-prob_individual)**n1*prob_individual**nn
     return probability
 
 def rstr(n,x,string):
@@ -1187,23 +1157,22 @@ def distance_matrix(fasta):
         return [p_distance(get_string(i),get_string(j)) for j in range(len(fasta))]
     return [row(i) for i in range(len(fasta))]
 
-# ASPC 	Introduction to Alternative Splicing
 def aspc(n,m):
-    c=create_binomial(n+1)
-    return sum (c[binomial_index(n,k)] for k in range(m,n+1))%1000000
+    '''ASPC 	Introduction to Alternative Splicing'''
+    return sum (comb(n,k) for k in range(m,n+1))%1000000
 
-# PPER 	Partial Permutations
+
 def pper(n,k):
+    '''PPER 	Partial Permutations'''
     return n if k==1 else n*pper(n-1,k-1)%1000000
 
-#INDC 	Independent Segregation of Chromosomes
 def indc(n):
-    c=create_binomial(2*n+1)
+    '''INDC 	Independent Segregation of Chromosomes'''
     mult=1.0
     for i in range(2*n):
         mult*=0.5
     def p(k):
-        return c[binomial_index(2*n,k)]
+        return comb(2*n,k)
     def p_cumulative(k):
         return sum(p(kk) for kk in range(k,2*n+1))*mult
     return [log10(p_cumulative(k+1)) for k in range(2*n)]
@@ -1217,29 +1186,36 @@ def afrq(ps):
 
 
 
-def wfmd(n,m,g,k):
+def wfmd(N,m,g,k):
     '''
     WFMD 	The Wright-Fisher Model of Genetic Drift
 
-    Return:  The probability that in a population of N diploid individuals
-    initially possessing m copies of a dominant allele, we will observe after
-    g generations at least k copies of a recessive allele.
+    Parameters:
+        N   Number of diploid individuals in a population
+        m   Initial number of copies of a dominant allele
+        g   Number of generations
+        k   Number of copies of a recessive allele observed after ge generations
+
+    Return:
+        The probability that in a population of N diploid individuals
+        initially possessing m copies of a dominant allele, we will observe after
+        g generations at least k copies of a recessive allele.
     Assume the Wright-Fisher model
     '''
 
     def accumulate(e):
-        return sum([e[j] for j in range(k,2*n+1)])
+        return sum([e[j] for j in range(k,2*N+1)])
 
     return  accumulate(
        iterate_markov(
-           create_wf_initial_probabilites(n,m),
-           create_wf_transition_matrix(n),g,n))
+           create_1hot_vector(N,m),
+           create_wf_transition_matrix(N),
+           g,
+           N))
 
 def ebin(n,P):
     '''EBIN 	Wright-Fisher's Expected Behavior'''
-    def expected(p):
-        return n*p
-    return [expected(p) for p in P]
+    return [ n*p for p in P]
 
 def foun(N,m,A):
     '''
@@ -1249,7 +1225,7 @@ def foun(N,m,A):
         if a==0:
             return 1
         final=iterate_markov(
-                    create_wf_initial_probabilites(N,2*N-a),
+                    create_1hot_vector(N,2*N-a),
                     create_wf_transition_matrix(N),
                     g,
                     N)
@@ -1433,8 +1409,6 @@ if __name__=='__main__':
             ATACA'''
             fasta=FastaContent(string.split('\n'))
             self.assertEqual(set(['TA', 'CA', 'AC']),set(lcsm(fasta)))
-
-
 
         def test_mrna(self):
             self.assertEqual(12,mrna("MA"))
