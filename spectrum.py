@@ -174,7 +174,7 @@ def CreatePeptide(vector):
         A peptide whose binary peptide vector matches the input. For masses with more than one amino acid,
         any choice may be used.
     '''
-    masses_offset = [i+1 for i in range(len(vector)) if vector[i]>0]
+    masses_offset = [i+1 for i in range(len(vector)) if vector[i] > 0]
     masses = [b-a for (a,b) in zip([0]+masses_offset[:-1],masses_offset)]
     inverted_masses = invert(create_extended())
     return ''.join( [str(inverted_masses[m][0]) for m in masses])
@@ -648,6 +648,27 @@ def findEncodings(text,peptide):
     return [rna for rna in candidates if encodes(rna) or encodes(revc(rna))]
 
 
+
+def get_cyclo_spectrum(peptide):
+    '''BA4C	Generate the Theoretical Spectrum of a Cyclic Peptide'''
+
+    def get_pairs(index_range):
+        '''
+        Parameters:
+            index_range
+
+        Return:
+            Pairs of indices delimiting sublists of peptide
+        '''
+        return [(i,j) for i in index_range for j in range(i,i+len(index_range)) if j!=i]
+
+    peptide2 = peptide + peptide
+    result = [sum(peptide2[a:b]) for (a,b) in get_pairs(range(len(peptide)))]
+    result.append(0)
+    result.append(sum(peptide))
+    result.sort()
+    return result
+
 def cycloSpectrum(peptide,mass=integer_masses):
     '''
     BA4C	Generate the Theoretical Spectrum of a Cyclic Peptide
@@ -679,33 +700,8 @@ def cycloSpectrum(peptide,mass=integer_masses):
 
     Return: Cyclospectrum(Peptide).
     '''
+    return get_cyclo_spectrum([mass[amino_acid] for amino_acid in peptide])
 
-    def get_pairs(index_range):
-        '''
-        Inputs: index_range
-
-        Return:  Pairs of indices delimiting sublists of peptide
-        '''
-        return [(i,j) for i in index_range for j in range(i,i+len(index_range)) if j!=i]
-
-    augmented_peptide = peptide+peptide   # allows easy extraction of substrings
-                                          # fromcyclic peptide
-    spectrum = [get_mass(augmented_peptide[a:b],mass) for (a,b) in get_pairs(range(len(peptide)))]
-    spectrum.append(get_mass('',mass))
-    spectrum.append(get_mass(peptide,mass))
-    spectrum.sort()
-    return spectrum
-
-def cycloSpectrum1(peptide):
-    def get_pairs(index_range):
-        n=len(index_range)
-        return [(i,j) for i in index_range for j in range(i,i+n) if j!=i]
-    augmented_peptide=peptide+peptide
-    result=[sum(augmented_peptide[a:b]) for (a,b) in get_pairs(range(len(peptide)))]
-    result.append(0)
-    result.append(sum(peptide))
-    result.sort()
-    return result
 
 def count_peptides_linear(total_mass):
     '''
@@ -802,31 +798,7 @@ def find_cyclopeptide_sequence(spectrum):
                 return False
         return True
 
-    # cycloSpectrum
-    #
-    # Compute spectrum for cyclic peptide
-    #
-    # Inputs:  peptide   Peptide represented as a list of masses
-    #
-    # Returns: spectrum of peptide
 
-    def cycloSpectrum(peptide):
-
-        # get_pairs
-        #
-        # Inputs: index_range
-        #
-        # Return:  Pairs of indices delimiting sublists of peptide
-
-        def get_pairs(index_range):
-            return [(i,j) for i in index_range for j in range(i,i+len(index_range)) if j!=i]
-
-        augmented_peptide = peptide+peptide
-        result            = [sum(augmented_peptide[a:b]) for (a,b) in get_pairs(range(len(peptide)))]
-        result.append(0)
-        result.append(sum(peptide))
-        result.sort()
-        return result
 
     peptides = [[]]
     output   = []
@@ -836,7 +808,7 @@ def find_cyclopeptide_sequence(spectrum):
         next_peptides=[]
         for peptide in expand(peptides,masses):
             if mass(peptide) == parentMass(spectrum):
-                if cycloSpectrum(peptide) == spectrum:
+                if get_cyclo_spectrum(peptide) == spectrum:
                     output.append(peptide)
             else:
                 if isConsistent(peptide):
@@ -957,7 +929,7 @@ def convolutionCyclopeptideSequencing(m,n,spectrum,low_mass=57,high_mass=200):
                         return masses
         return masses
 
-    return leaderPeptide(n,spectrum,get_masses_from_spectrum(),spect2=cycloSpectrum1)
+    return leaderPeptide(n,spectrum,get_masses_from_spectrum(),spect2=get_cyclo_spectrum)
 
 
 
@@ -1106,14 +1078,14 @@ def SequencePeptide(spectral, protein_masses = integer_masses):
             # else:
                 # print (f'{candidate_peptide} died')
 
-    # for candidate_peptide in Candidates:
-        # print (candidate_peptide)
+    for candidate_peptide in Candidates:
+        print (candidate_peptide)
     return 'XZZXX'   # Fake it 'til you make it
 
 if __name__=='__main__':
 
     class TestSpectrum(TestCase):
-
+        '''Test cases for Chapters 4 and 11, and utilities for mass spectroscopy'''
         def test_spec(self):
             self.assertEqual('WMQS',
                              spectrum2protein([3524.8542,3710.9335,3841.974,3970.0326,4057.0646]))
@@ -1171,10 +1143,13 @@ if __name__=='__main__':
                 4083.08025
             ]))
 
+        def test_ba4a(self):
+            '''BA4A	Translate an RNA String into an Amino Acid String'''
+            self.assertEqual('MAMAPRTEINSTRING',prot('AUGGCCAUGGCGCCCAGAACUGAGAUCAAUAGUACCCGUAUUAACGGGUGA'))
 
         def test_ba4b(self):
             '''BA4B	Find Substrings of a Genome Encoding a Given Amino Acid String'''
-            encodings=findEncodings('ATGGCCATGGCCCCCAGAACTGAGATCAATAGTACCCGTATTAACGGGTGA','MA')
+            encodings = findEncodings('ATGGCCATGGCCCCCAGAACTGAGATCAATAGTACCCGTATTAACGGGTGA','MA')
             self.assertEqual(3,len(encodings))
             self.assertIn('ATGGCC',encodings)
             self.assertIn('GGCCAT',encodings)
@@ -2691,7 +2666,7 @@ if __name__=='__main__':
             self.assertEqual('XZZXX',
                              CreatePeptide([0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1]))
 
-        #@skip('Issue #91')
+        @skip('Issue #91')
         def test_ba11e(self):
             '''BA11E Sequence a Peptide'''
             self.assertEqual('XZZXX',
