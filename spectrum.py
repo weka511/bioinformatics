@@ -1038,7 +1038,7 @@ def SequencePeptide(spectral, protein_masses = integer_masses):
 
     Returns: A peptide with maximum score against S. For masses with more than one amino acid, any choice may be used.
     '''
-    def build_DAG(DAG = {},index=0):
+    def build_DAG(DAG = {},Back={},index=0):
         for mass in inverse_masses:
             index1 = index + mass
             if index1 < m:
@@ -1046,8 +1046,11 @@ def SequencePeptide(spectral, protein_masses = integer_masses):
                     DAG[index] = []
                 if index1 not in DAG[index]:
                     DAG[index].append(index1)
-                    build_DAG(DAG,index1)
-        return DAG
+                    if index1 not in Back:
+                        Back[index1] = []
+                    Back[index1].append(index)
+                    build_DAG(DAG,Back,index=index1)
+        return DAG,Back
 
     m = len(spectral) + 1
     inverse_masses = invert(protein_masses)
@@ -1055,7 +1058,7 @@ def SequencePeptide(spectral, protein_masses = integer_masses):
     for i in range(1,m):
         spectrum[i] = spectral[i-1]
 
-    DAG = build_DAG()
+    DAG,Back = build_DAG()
 
     return convert_to_amino_acid_codes([4,5,5,4,4],inverse_masses )
 
