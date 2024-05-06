@@ -1039,25 +1039,35 @@ def SequencePeptide(spectral, protein_masses = integer_masses):
     Returns: A peptide with maximum score against S. For masses with more than one amino acid, any choice may be used.
     '''
     def compute_scores(Spectrum,masses):
+        '''
+        Calculate score for each node in Figure 11-9,
+        using maximum for all possible paths. Assuming this has already been done
+        for all previous nodes, we need to check the links to this node only.
+
+        Returns:
+            Scores   Best score for each node
+            Choices  The amino acids that have been chosen to maximize Scores
+        '''
         Scores = np.full_like(Spectrum,-np.inf,dtype=np.float64)
-        m = len(Scores)
+        n = len(Scores)
         Scores[0] = 0
-        Choices = {}
-        for i in range(1,m):
-            Predecessors = [i-k for k in masses if i>=k]
-            Candidates = [Scores[j] for j in Predecessors]
-            if len(Predecessors)>0:
-                k = np.argmax(Candidates)
-                Scores[i] = Spectrum[i] + Candidates[k]
-                Choices[i] = k
+        Choices = np.full_like(Spectrum,-1)
+        for i in range(1,n):
+            CandidatePredecessors = [i-k for k in masses if i>=k]  # All ways to get here with one amino acid
+            CandidateScores = [Scores[j] for j in CandidatePredecessors] # Scores of all possible predecessors
+            if len(CandidatePredecessors)>0:
+                best_candidate = np.argmax(CandidateScores)
+                Scores[i] = Spectrum[i] + CandidateScores[best_candidate]
+                Choices[i] = best_candidate
         return Scores,Choices
 
     def create_peptide(Scores,Choices,masses):
+        '''
+        Construct the peptide by backtracking through the choices
+        '''
         imax = np.argmax(Scores)
         max_score = Scores[imax]
         n = len(Scores) - 1
-        while Scores[n]<max_score:
-            n -= 1
         peptide = []
         while n > 0:
             i = Choices[n]
