@@ -34,32 +34,38 @@ def SequencePeptide(spectral, protein_masses = integer_masses):
 
     Returns: A peptide with maximum score against S. For masses with more than one amino acid, any choice may be used.
     '''
+    def compute_scores(Spectrum,masses):
+        Scores = np.full_like(Spectrum,-np.inf,dtype=np.float64)
+        m = len(Scores)
+        Scores[0] = 0
+        Choices = {}
+        for i in range(1,m):
+            Predecessors = [i-k for k in masses if i>=k]
+            Candidates = [Scores[j] for j in Predecessors]
+            if len(Predecessors)>0:
+                k = np.argmax(Candidates)
+                Scores[i] = Spectrum[i] + Candidates[k]
+                Choices[i] = k
+        return Scores,Choices
+
+    def create_peptide(Scores,Choices,masses):
+        imax = np.argmax(Scores)
+        max_score = Scores[imax]
+        n = len(Scores) - 1
+        while Scores[n]<max_score:
+            n -= 1
+        peptide = []
+        while n > 0:
+            i = Choices[n]
+            peptide.append(masses[i])
+            n -= masses[i]
+        return peptide[::-1]
+
     inverse_masses = invert(protein_masses)
     masses = sorted([mass for mass in inverse_masses])
     Spectrum = np.array([0] + spectral)
-    Scores = np.full_like(Spectrum,-np.inf,dtype=np.float64)
-    m = len(Scores)
-    Scores[0] = 0
-    Choices = {}
-    for i in range(1,m):
-        Predecessors = [i-k for k in masses if i>=k]
-        Candidates = [Scores[j] for j in Predecessors]
-        if len(Predecessors)>0:
-            k = np.argmax(Candidates)
-            Scores[i] = Spectrum[i] + Candidates[k]
-            Choices[i] = k
-
-    imax = np.argmax(Scores)
-    max_score = Scores[imax]
-    n = len(Scores) - 1
-    while Scores[n]<max_score:
-        n -= 1
-    peptide = []
-    while n > 0:
-        i = Choices[n]
-        peptide.append(masses[i])
-        n -= masses[i]
-    return ''.join(inverse_masses[i] for i in peptide[::-1])
+    Scores,Choices = compute_scores(Spectrum,masses)
+    return ''.join(inverse_masses[i] for i in create_peptide(Scores,Choices,masses))
 
 if __name__=='__main__':
     start = time()
