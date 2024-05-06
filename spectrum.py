@@ -411,7 +411,7 @@ def full(L,epsilon=0.000001):
     prefixes = extract( [min(candidates.keys())],candidates)
     suffixes = extract([min([r for r in candidates.keys() if not r in prefixes])],candidates)
     # Our algorithm is a bit greedy, so there may be some overlap between prefixes and suffices
-    # Thius must be fixed!
+    # This must be fixed!
 
     while len(prefixes)>len(suffixes):
         for r in suffixes:
@@ -1048,31 +1048,37 @@ def SequencePeptide(spectral, protein_masses = integer_masses):
             Scores   Best score for each node
             Choices  The amino acids that have been chosen to maximize Scores
         '''
-        Scores = np.full_like(Spectrum,-np.inf,dtype=np.float64)
+        Scores = np.full_like(Spectrum,-np.inf,dtype=np.float64) # Set all scores to - infinity,
+                                                                 # Later we want best scores, so
+                                                                 # defualt values will be ignored
         n = len(Scores)
         Scores[0] = 0
         Choices = np.full_like(Spectrum,-1)
         for i in range(1,n):
             CandidatePredecessors = [i-k for k in masses if i>=k]  # All ways to get here with one amino acid
             CandidateScores = [Scores[j] for j in CandidatePredecessors] # Scores of all possible predecessors
-            if len(CandidatePredecessors)>0:
+            if len(CandidatePredecessors) > 0:   # Choose the highest scoring predecessor
                 best_candidate = np.argmax(CandidateScores)
                 Scores[i] = Spectrum[i] + CandidateScores[best_candidate]
                 Choices[i] = best_candidate
+
         return Scores,Choices
 
     def create_peptide(Scores,Choices,masses):
         '''
-        Construct the peptide by backtracking through the choices
+        Construct the peptide by backtracking through the DAG
+        and adding the amino acid that was chosen to the peptide.
         '''
         imax = np.argmax(Scores)
         max_score = Scores[imax]
         n = len(Scores) - 1
-        peptide = []
+        peptide = []                    # We will construct peptide in reverse order
+                                        # so will need to reverse later
         while n > 0:
-            i = Choices[n]
-            peptide.append(masses[i])
-            n -= masses[i]
+            i = Choices[n]              # This is the peptide that was chosen
+            peptide.append(masses[i])   # accumulate it in peptide
+            n -= masses[i]              # since mass was used to dicide how much to step forward
+                                        # in compute_scores(), we step back by same amount
         return peptide[::-1]
 
     inverse_masses = invert(protein_masses)
