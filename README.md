@@ -231,7 +231,7 @@ I have written this code in Python 3, generally with the most recent release at 
 |BA11B|BA11B.py spectrum.py| [Implement DecodingIdealSpectrum](http://rosalind.info/problems/ba11b/) |
 |BA11C|BA11C.py spectrum.py| [Convert a Peptide into a Peptide Vector ](http://rosalind.info/problems/ba11c/) |
 |BA11D|BA11D.py spectrum.py| [Convert a Peptide Vector into a Peptide ](http://rosalind.info/problems/ba11d/) |
-|BA11E|BA11E.py spectrum.py| [Sequence a Peptide](http://rosalind.info/problems/ba11e/) [WIP](https://github.com/weka511/bioinformatics/issues/91)|
+|BA11E|BA11E.py spectrum.py| [Sequence a Peptide](http://rosalind.info/problems/ba11e/)|
 |BA11F|BA11F.py spectrum.py| [Find a Highest-Scoring Peptide in a Proteome against a Spectrum](http://rosalind.info/problems/ba11f/) [WIP](https://github.com/weka511/bioinformatics/issues/92)|
 |BA11G|BA11G.py spectrum.py| [Implement PSMSearch](http://rosalind.info/problems/ba11g/) [WIP](https://github.com/weka511/bioinformatics/issues/93)|
 |BA11H|BA11H.py spectrum.py| [Compute the Size of a Spectral Dictionary](http://rosalind.info/problems/ba11h/) [WIP](https://github.com/weka511/bioinformatics/issues/94)|
