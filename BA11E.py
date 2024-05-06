@@ -18,10 +18,9 @@
 '''BA11E 	Sequence a Peptide'''
 
 from argparse import ArgumentParser
-from os.path import  basename,splitext,join
+from os.path import  basename
 from time import time
 import numpy as np
-from matplotlib.pyplot import figure, show
 from helpers import read_strings
 from spectrum import SequencePeptide
 from reference_tables import integer_masses, test_masses
