@@ -1034,6 +1034,33 @@ def splc(fasta):
             dna=''.join(fragments)
     return prot(dna_to_rna(dna))
 
+def compute_scores(Spectrum,masses = integer_masses):
+    '''
+    Used by BA11E Sequence a Peptide and BA11F Find a Highest-Scoring Peptide in a Proteome against a Spectrum
+    to calculate score for each node in Figure 11-9,
+    using maximum for all possible paths. Assuming this has already been done
+    for all previous nodes, we need to check the links to this node only.
+
+    Returns:
+        Scores   Best score for each node
+        Choices  The amino acids that have been chosen to maximize Scores
+    '''
+    Scores = np.full_like(Spectrum,-np.inf,dtype=np.float64) # Set all scores to - infinity,
+                                                             # Later we want best scores, so
+                                                             # default values will be ignored
+    n = len(Scores)
+    Scores[0] = 0
+    Choices = np.full_like(Spectrum,-1)
+    for i in range(1,n):
+        CandidatePredecessors = [i-k for k in masses if i>=k]  # All ways to get here with one amino acid
+        CandidateScores = [Scores[j] for j in CandidatePredecessors] # Scores of all possible predecessors
+        if len(CandidatePredecessors) > 0:   # Choose the highest scoring predecessor
+            best_candidate = np.argmax(CandidateScores)
+            Scores[i] = Spectrum[i] + CandidateScores[best_candidate]
+            Choices[i] = best_candidate
+
+    return Scores,Choices
+
 def SequencePeptide(spectral, protein_masses = integer_masses):
     '''
     BA11E Sequence a Peptide
@@ -1042,31 +1069,7 @@ def SequencePeptide(spectral, protein_masses = integer_masses):
 
     Returns: A peptide with maximum score against S. For masses with more than one amino acid, any choice may be used.
     '''
-    def compute_scores(Spectrum,masses):
-        '''
-        Calculate score for each node in Figure 11-9,
-        using maximum for all possible paths. Assuming this has already been done
-        for all previous nodes, we need to check the links to this node only.
 
-        Returns:
-            Scores   Best score for each node
-            Choices  The amino acids that have been chosen to maximize Scores
-        '''
-        Scores = np.full_like(Spectrum,-np.inf,dtype=np.float64) # Set all scores to - infinity,
-                                                                 # Later we want best scores, so
-                                                                 # defualt values will be ignored
-        n = len(Scores)
-        Scores[0] = 0
-        Choices = np.full_like(Spectrum,-1)
-        for i in range(1,n):
-            CandidatePredecessors = [i-k for k in masses if i>=k]  # All ways to get here with one amino acid
-            CandidateScores = [Scores[j] for j in CandidatePredecessors] # Scores of all possible predecessors
-            if len(CandidatePredecessors) > 0:   # Choose the highest scoring predecessor
-                best_candidate = np.argmax(CandidateScores)
-                Scores[i] = Spectrum[i] + CandidateScores[best_candidate]
-                Choices[i] = best_candidate
-
-        return Scores,Choices
 
     def create_peptide(Scores,Choices,masses):
         '''
