@@ -22,49 +22,9 @@ from os.path import  basename,splitext,join
 from time import time
 import numpy as np
 from helpers import read_strings
-from reference_tables import integer_masses, test_masses
-from spectrum import  compute_scores, invert
+from reference_tables import  test_masses
+from spectrum import  IdentifyPeptide
 
-def IdentifyPeptide(S,Proteome,protein_masses = integer_masses):
-    '''
-    Find a peptide from a proteome with maximum score against a spectrum.
-
-        Inputs:
-           S         A space-delimited spectral vector
-           Proteome  An amino acid string Proteome
-
-        Returns:
-            A peptide in Proteome with maximum score against S.
-    '''
-
-    inverse_masses = invert(protein_masses)
-    masses = sorted([mass for mass in inverse_masses])
-    Spectrum = np.array([0] + S)
-    Scores,_ = compute_scores(Spectrum,masses)
-    proteome_masses = np.array([protein_masses[p] for p in Proteome])
-    n = len(Scores)
-    m = len(proteome_masses)
-    Candidates = {}
-    best_score = -np.inf
-    peptide = []
-    for i in range(m):   # Iterate over starting positions of candidate peptides
-        candidate = []
-        score = 0
-        index = 0            # Used to select Node in DAG
-        S0 = []
-
-        for k in range(m-i): # Iterate over lengths of candidate peptides
-            if index >= n: break
-            S0.append( Spectrum[index])
-            score += Spectrum[index]
-            candidate.append(proteome_masses[i + k])
-            index += proteome_masses[i + k]
-            # print (i,k, i+k, index, proteome_masses[i + k], S0, candidate,score)
-            if score>best_score:
-                best_score = score
-                peptide = candidate.copy()
-
-    return ''.join([inverse_masses[p] for p in peptide[:-1]])
 
 if __name__=='__main__':
     start = time()
@@ -87,6 +47,7 @@ if __name__=='__main__':
         Input  = read_strings(f'data/rosalind_{basename(__file__).split(".")[0]}.txt')
 
         Spectral = [int(s) for s in Input[0].split()]
+
         Result = IdentifyPeptide(Spectral,Input[1])
 
         print (Result)
