@@ -45,20 +45,26 @@ def IdentifyPeptide(S,Proteome,protein_masses = integer_masses):
     n = len(Scores)
     m = len(proteome_masses)
     Candidates = {}
+    best_score = -np.inf
+    peptide = []
     for i in range(m):   # Iterate over starting positions of candidate peptides
         candidate = []
         score = 0
         index = 0            # Used to select Node in DAG
         S0 = []
+
         for k in range(m-i): # Iterate over lengths of candidate peptides
             if index >= n: break
             S0.append( Spectrum[index])
             score += Spectrum[index]
-            index += proteome_masses[i + k]
             candidate.append(proteome_masses[i + k])
-            print (i,k, i+k, index, proteome_masses[i + k], S0, candidate,score)
+            index += proteome_masses[i + k]
+            # print (i,k, i+k, index, proteome_masses[i + k], S0, candidate,score)
+            if score>best_score:
+                best_score = score
+                peptide = candidate.copy()
 
-    return None
+    return ''.join([inverse_masses[p] for p in peptide[:-1]])
 
 if __name__=='__main__':
     start = time()
@@ -80,11 +86,12 @@ if __name__=='__main__':
     if args.rosalind:
         Input  = read_strings(f'data/rosalind_{basename(__file__).split(".")[0]}.txt')
 
-        Result = None
+        Spectral = [int(s) for s in Input[0].split()]
+        Result = IdentifyPeptide(Spectral,Input[1])
+
         print (Result)
         with open(f'{basename(__file__).split(".")[0]}.txt','w') as f:
-            for line in Result:
-                f.write(f'{line}\n')
+            f.write(Result)
 
     elapsed = time() - start
     minutes = int(elapsed/60)
