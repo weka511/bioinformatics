@@ -21,9 +21,11 @@ from argparse import ArgumentParser
 from os.path import  basename,splitext,join
 from time import time
 import numpy as np
-from   helpers import read_strings
+from helpers import read_strings
+from reference_tables import integer_masses, test_masses
+from spectrum import  compute_scores, invert
 
-def IdentifyPeptide(S):
+def IdentifyPeptide(S,Proteome,protein_masses = integer_masses):
     '''
     Find a peptide from a proteome with maximum score against a spectrum.
 
@@ -34,17 +36,46 @@ def IdentifyPeptide(S):
         Returns:
             A peptide in Proteome with maximum score against S.
     '''
-    pass
+
+    inverse_masses = invert(protein_masses)
+    masses = sorted([mass for mass in inverse_masses])
+    Spectrum = np.array([0] + S)
+    Scores,_ = compute_scores(Spectrum,masses)
+    proteome_masses = np.array([protein_masses[p] for p in Proteome])
+    n = len(Scores)
+    m = len(proteome_masses)
+    Candidates = {}
+    for i in range(m):   # Iterate over starting positions of candidate peptides
+        candidate = []
+        score = 0
+        index = 0            # Used to select Node in DAG
+        S0 = []
+        for k in range(m-i): # Iterate over lengths of candidate peptides
+            if index >= n: break
+            S0.append( Spectrum[index])
+            score += Spectrum[index]
+            index += proteome_masses[i + k]
+            candidate.append(proteome_masses[i + k])
+            print (i,k, i+k, index, proteome_masses[i + k], S0, candidate,score)
+
+    return None
 
 if __name__=='__main__':
     start = time()
     parser = ArgumentParser('BA11F 	Find a Highest-Scoring Peptide in a Proteome against a Spectrum ')
     parser.add_argument('--sample',   default=False, action='store_true', help='process sample dataset')
+    parser.add_argument('--extra',   default=False, action='store_true', help='process extra dataset')
     parser.add_argument('--rosalind', default=False, action='store_true', help='process Rosalind dataset')
     args = parser.parse_args()
     if args.sample:
         print (IdentifyPeptide([0, 0, 0, 4, -2, -3, -1, -7, 6, 5, 3, 2, 1, 9, 3, -8, 0, 3, 1, 2, 1, 8],
-                               'XZZXZXXXZXZZXZXXZ'))
+                               'XZZXZXXXZXZZXZXXZ',
+                               protein_masses=test_masses))
+
+    if args.extra:
+        Input,Expected = read_strings(f'data/IdentifyPeptide.txt',init=0)
+        Spectral = [int(s) for s in Input[0].split()]
+        print (IdentifyPeptide(Spectral,Input[1]))
 
     if args.rosalind:
         Input  = read_strings(f'data/rosalind_{basename(__file__).split(".")[0]}.txt')
