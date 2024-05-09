@@ -1093,7 +1093,8 @@ def SequencePeptide(spectral, protein_masses = integer_masses):
     Scores,Choices = compute_scores(Spectrum,masses)
     return ''.join(inverse_masses[i] for i in create_peptide(Scores,Choices,masses))
 
-def IdentifyPeptide(S,Proteome,protein_masses = integer_masses):
+def IdentifyPeptide(S,Proteome,
+                    protein_masses = integer_masses):
     '''
     Find a peptide from a proteome with maximum score against a spectrum.
 
@@ -1104,30 +1105,26 @@ def IdentifyPeptide(S,Proteome,protein_masses = integer_masses):
         Returns:
             A peptide in Proteome with maximum score against S.
     '''
-
-    inverse_masses = invert(protein_masses)
-    masses = sorted([mass for mass in inverse_masses])
     Spectrum = np.array([0] + S)
     proteome_masses = np.array([protein_masses[p] for p in Proteome])
     n = len(Spectrum)
     m = len(proteome_masses)
     best_score = -np.inf
     peptide = []
+
     for i in range(m):   # Iterate over starting positions of candidate peptides
-        candidate = []
         score = 0
         index = 0            # Used to select Node in DAG
 
-        for k in range(m-i): # Iterate over lengths of candidate peptides
+        for k in range(i,m): # Iterate over lengths of candidate peptides
             if index >= n: break
             score += Spectrum[index]
-            candidate.append(proteome_masses[i + k])
-            index += proteome_masses[i + k]
-            if score>best_score:
+            index += proteome_masses[k]
+            if score > best_score:
                 best_score = score
-                peptide = candidate.copy()
+                peptide = Proteome[i:k+1]
 
-    return ''.join([inverse_masses[p] for p in peptide[:-1]])
+    return ''.join(peptide[:-1])
 
 if __name__=='__main__':
 
@@ -2901,7 +2898,7 @@ if __name__=='__main__':
 
         def test_ba11f_extra(self):
             '''BA11E Sequence a Peptide -- extra test'''
-            self.assertEqual('QLEAARSCFSTRNE',
+            self.assertEqual('KLEAARSCFSTRNE',
                              IdentifyPeptide([
                                  -10, 8, -15, -8, 28, 29, 8, -17, -8, 19, 6, -9, 7, 16, -15, -13, -9, 29, 21, 17, -12, 28, 22,
                                  -7, 5, -20, -8, 13, 15, 20, -11, 21, -5, 8, 20, 21, 16, 8, -4, 4, -20, 25, -18, 11, 15, 20, 12,

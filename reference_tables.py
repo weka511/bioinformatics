@@ -25,9 +25,9 @@ from re import compile
 from unittest import TestCase, main
 import numpy as np
 
-bases='ACGT'
+bases='ACGT'     # DNA bases
 
-codon_table={
+codon_table={ # Map RNA to amino acids, from Chapter 2
      'UUU': 'F',      'CUU': 'L',      'AUU': 'I',      'GUU': 'V',
      'UUC': 'F',      'CUC': 'L',      'AUC': 'I',      'GUC': 'V',
      'UUA': 'L',      'CUA': 'L',      'AUA': 'I',      'GUA': 'V',
@@ -46,7 +46,7 @@ codon_table={
      'UGG': 'W',      'CGG': 'R',      'AGG': 'R',      'GGG': 'G'
  }
 
-integer_masses={
+integer_masses={ # Masses of amino acids to nearest integer, from Chapter 2
     'G': 57,
     'A': 71,
     'S': 87,
@@ -69,7 +69,7 @@ integer_masses={
     'W': 186
 }
 
-test_masses = {
+test_masses = {  # Dummy amino acid weights, Used for some test cases in Chapter 11
     'X':4,
     'Z':5
 }
@@ -158,10 +158,10 @@ def createSimpleDNASubst(match=+1,subst=1,bases='ATGC'):
         subst    Penalty for a mismatch
         bases    Replace with 'AUGC' for RNA
     '''
-    weights={}
+    weights = {}
     for i in range(len(bases)):
         for j in range(len(bases)):
-            weights[(bases[i],bases[j])] = +match if i==j else -subst
+            weights[(bases[i],bases[j])] =+ match if i==j else -subst
     return weights
 
 
@@ -250,7 +250,7 @@ def create_inverse_masses(protein_masses = integer_masses):
        protein_masses    Map from amino acids to weights:
 
     Returns:
-       Inverse mappeing
+       Inverse mapping
     '''
     product = {}
     for protein,mass in protein_masses.items():

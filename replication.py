@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-#   Copyright (C) 2017-2023 Simon Crase
+#   Copyright (C) 2017-2024 Simon Crase
 
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -19,10 +19,8 @@
 
 from unittest import main, skip, TestCase
 import numpy as np
-
-from numpy.testing    import assert_array_equal
-
-from rosalind         import subs, hamm, create_frequency_table, k_mers
+from numpy.testing import assert_array_equal
+from rosalind import subs, hamm, create_frequency_table, k_mers
 from reference_tables import bases, skew_step
 
 
@@ -59,10 +57,10 @@ def find_most_frequent_words(string,k):
     Output: All most frequent k-mers in Text (in any order).
     '''
     most_frequent_words = []
-    max_k               = -1
+    max_k = -1
     for kmer,count in create_frequency_table(string,k).items():
         if count>max_k:
-            max_k               = count
+            max_k = count
             most_frequent_words = []
         if count == max_k:
             most_frequent_words.append(kmer)
@@ -101,17 +99,17 @@ def findClumps(genome,k,L,t):
             if count>=t:
                 patterns.append(kmer)
 
-    patterns    = []
+    patterns = []
     frequencies = create_frequency_table(genome[0:L],k)
     update_patterns(frequencies)
     for i in range(1,len(genome)-L+1):
-        head=genome[i-1:i+k-1]
-        frequencies[head]-=1
-        tail=genome[i+L-k:i+L]
+        head = genome[i-1:i+k-1]
+        frequencies[head] -= 1
+        tail = genome[i+L-k:i+L]
         if tail in frequencies:
-            frequencies[tail]+=1
+            frequencies[tail] += 1
         else:
-            frequencies[tail]=1
+            frequencies[tail] = 1
         update_patterns(frequencies)
 
     return list(set(patterns))
@@ -132,15 +130,15 @@ def find_minimum_skew(genome):
     '''
     positions = []
     min_skew = 2
-    skew     = 0
-    pos      = 0
+    skew = 0
+    pos = 0
     for nucleotide in genome:
-        pos+=1
-        skew+=skew_step[nucleotide]
-        if min_skew>skew:
-            min_skew=skew
-            positions=[pos]
-        elif min_skew==skew:
+        pos += 1
+        skew += skew_step[nucleotide]
+        if min_skew > skew:
+            min_skew = skew
+            positions = [pos]
+        elif min_skew == skew:
             positions.append(pos)
 
     return positions, min_skew
@@ -188,14 +186,14 @@ def findMostFrequentWordsWithMismatches(text,k,d,
 
      Return: All most frequent k-mers with up to d mismatches in Text.
     '''
-    matches   = []
+    matches = []
     max_count = -1
     for pattern in k_mers(k):
-        count=len(find(pattern,text,d))
-        if count>max_count:
-            max_count=count
-            matches=[]
-        if count==max_count:
+        count = len(find(pattern,text,d))
+        if count > max_count:
+            max_count = count
+            matches = []
+        if count == max_count:
             matches.append(pattern)
 
     return (max_count,matches)
@@ -211,7 +209,7 @@ def generateFrequencyArray(text,k):
 
     Return: The frequency array of k-mers in Text.
     '''
-    frequencies=np.zeros((4**k))
+    frequencies = np.zeros((4**k))
     for i in range(len(text)-k+1):
         frequencies[patternToNumber(text[i:i+k])] += 1
     return frequencies
@@ -219,26 +217,24 @@ def generateFrequencyArray(text,k):
 
 def patternToNumber(kmer):
     '''BA1L	Implement PatternToNumber'''
-    n=0
+    n = 0
     for letter in kmer:
-        n*=4
-        n+=bases.find(letter)
+        n *= 4
+        n += bases.find(letter)
     return n
 
 def numberToPattern(n,k):
     '''BA1M	Implement NumberToPattern'''
-    pattern=''
-    nn=n
+    pattern = ''
+    nn = n
     for i in range(k):
-        pattern=pattern+bases[nn%4]
-        nn//=4
+        pattern = pattern+bases[nn%4]
+        nn //= 4
     return pattern[::-1]
-
-
 
 def generate_dNeighborhood(pattern,d):
     '''
-    BA1N	Generate the d-Neighborhood of a String
+    BA1N Generate the d-Neighborhood of a String
 
     The d-neighborhood Neighbors(Pattern, d) is the set of all k-mers whose
     Hamming distance from Pattern does not exceed d.
@@ -248,20 +244,20 @@ def generate_dNeighborhood(pattern,d):
     Return: The collection of strings Neighbors(Pattern, d).
     '''
     def neighbours(p):
-        neighbours=[]
+        neighbours = []
         for i in range(len(p)):
             for ch in bases:
-                neighbours.append(p[0:i]+ch+p[i+1:])
+                neighbours.append(p[0:i] + ch + p[i+1:])
         return neighbours
     if d==0:
         return [pattern]
     else:
-        neighbourhood=[]
-        start=generate_dNeighborhood(pattern,d-1)
+        neighbourhood = []
+        start = generate_dNeighborhood(pattern,d-1)
         for p in start:
             for n in neighbours(p):
                 neighbourhood.append(n)
-        return list(set(start+neighbourhood))
+        return list(set(start + neighbourhood))
 
 if __name__=='__main__':
     class TestCase_1_Replication(TestCase):
@@ -305,14 +301,14 @@ if __name__=='__main__':
             self.assertIn('TGCGGCGGGAGA',most_frequent_words)
 
         def test_ba1e(self):
-            clumps=findClumps('CGGACTCGACAGATGTGAAGAAATGTGAAGACTGAGTGAAGAGAAGAGGAAAC'\
+            clumps=findClumps('CGGACTCGACAGATGTGAAGAAATGTGAAGACTGAGTGAAGAGAAGAGGAAAC'
                               'ACGACACGACATTGCGACATAATGTACGAATGTAATGTGCCTATGGC',5,75,4)
             self.assertIn('CGACA',clumps)
             self.assertIn('GAAGA',clumps)
             self.assertIn('AATGT',clumps)
 
         def test_ba1f(self):
-            positions,_=find_minimum_skew(\
+            positions,_=find_minimum_skew(
                 'CCTATCGGTGGATTAGCATGTCCCTGTACGTTTCGCCGCGAACTAGTTCACACGGCT'\
                 'TGATGGCAAATGGTTTTTCCGGCGACCGTAATCGTCCACCGAG')
             self.assertIn(53,positions)
@@ -323,7 +319,7 @@ if __name__=='__main__':
 
         def test_ba1h(self):
             self.assertEqual([6, 7, 26, 27, 78],
-                             findApproximateOccurrences('ATTCTGGA',\
+                             findApproximateOccurrences('ATTCTGGA',
                                                         'CGCCCGAATCCAGAACGCATTCCCATATTTCGGGACCACTGGCCTCCACGGTACGGACGTCAATCAAATGCCTAGCGGCTTGTGGTTTCTCCTACGCTCC',\
                                                            3))
 

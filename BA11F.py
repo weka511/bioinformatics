@@ -44,13 +44,11 @@ if __name__=='__main__':
 
     if args.rosalind:
         Input  = read_strings(f'data/rosalind_{basename(__file__).split(".")[0]}.txt')
-
         Spectral = [int(s) for s in Input[0].split()]
-
         Result = IdentifyPeptide(Spectral,Input[1])
         print (Result)
         with open(f'{basename(__file__).split(".")[0]}.txt','w') as f:
-            f.write(Result)
+            f.write(f'{Result}\n')
 
     elapsed = time() - start
     minutes = int(elapsed/60)
