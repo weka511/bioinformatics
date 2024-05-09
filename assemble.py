@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-#   Copyright (C) 2023 Simon Crase
+#   Copyright (C) 2023-2024 Simon Crase
 
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -20,9 +20,7 @@
 from unittest import main, TestCase, skip
 import numpy as np
 from numpy.testing import assert_array_equal
-
-from fasta       import FastaContent
-from rosalind    import rotate
+from fasta import FastaContent
 from replication import patternToNumber
 
 def kmer_composition(k,dna):
@@ -48,20 +46,18 @@ def reconstruct_as_list(k,n,fragments,extract=lambda fragments,i: fragments[i]):
       Return: A string Text of length k+n-1 where the i-th k-mer in Text is equal
       to Pattern[i] for all i.
     '''
-    result=[]
+    result = []
     for i in range(0,n,k):
         result.append(extract(fragments,i))
-    target_len=n+k-1
-    actual_len=len(result)*k
-    overlap=target_len-actual_len
+    target_len = n+k-1
+    actual_len = len(result)*k
+    overlap = target_len-actual_len
     if overlap>0:
-        result.append(fragments[-1][k-overlap:k])
+        result.append(fragments[-1][k - overlap:k])
     return result
 
 def reconstruct(fragments):
     return ''.join(reconstruct_as_list(len(fragments[0]),len(fragments),fragments))
-
-
 
 def grph_kmers(strings):
     '''
@@ -92,20 +88,20 @@ def deBruijn(k,text):
 
     Return:DeBruijnk(Text), in the form of an adjacency list.
     '''
-    kmers=kmer_composition(k-1,text)
+    kmers = kmer_composition(k-1,text)
     def standardize(ll):
-        lll=list(set(ll))
+        lll = list(set(ll))
         lll.sort()
         return lll
 
     pathgraph=grph_kmers(kmers)
 
-    deBruijn_dict={}
+    deBruijn_dict = {}
     for [a,b] in pathgraph:
         if not a in deBruijn_dict:
             deBruijn_dict[a]=[]
         deBruijn_dict[a].append(b)
-    graph= [(a,standardize(deBruijn_dict[a])) for a in deBruijn_dict.keys()]
+    graph = [(a,standardize(deBruijn_dict[a])) for a in deBruijn_dict.keys()]
     graph.sort()
     return graph
 
@@ -120,16 +116,25 @@ def deBruijn_collection(pattern,
 
     Return: The de Bruijn graph DeBruijn(Patterns), in the form of an adjacency list.
     '''
-    graph={}
-    k=len(pattern[0])
+    graph = {}
+    k = len(pattern[0])
     for kmer in pattern:
         if not head(kmer) in graph:
-            graph[head(kmer)]=[]
+            graph[head(kmer)] = []
         graph[head(kmer)].append(tail(kmer))
     for kmer in graph.keys():
         graph[kmer].sort()
     return graph
 
+def rotate(cycle,pos):
+    '''
+    Rotate data
+
+    Parameters:
+        cycle Data to be rotated
+        pos   Once data has been rotated, it will start from this position
+    '''
+    return cycle[pos:]+cycle[1:pos]+cycle[pos:pos+1]
 
 def find_eulerian_cycle(graph):
     '''
@@ -139,6 +144,7 @@ def find_eulerian_cycle(graph):
 
      Return: An Eulerian cycle in this graph.
     '''
+
     def create_unexplored_edges():
         edges=[]
         for a in graph.keys():
@@ -153,33 +159,32 @@ def find_eulerian_cycle(graph):
         return None
 
     def find_branch(cycle):
-        pos=0
+        pos = 0
         for node in cycle:
-            succ=find_next(node)
-            if succ!=None:
+            succ = find_next(node)
+            if succ != None:
                 return (pos,node)
-            pos+=1
+            pos += 1
 
     def find_cycle(cycle0,node):
-        cycle=cycle0
-        succ=find_next(node)
-        while succ!=None:
+        cycle = cycle0
+        succ = find_next(node)
+        while succ != None:
             cycle.append(succ)
             unexplored.remove((node,succ))
-            node=succ
-            succ=find_next(node)
+            node = succ
+            succ = find_next(node)
         return cycle
 
-    unexplored= create_unexplored_edges()
-    target_edges=len(unexplored)
-    node,_=unexplored[0]
-    cycle=find_cycle([node],node)
+    unexplored = create_unexplored_edges()
+    target_edges = len(unexplored)
+    node,_ = unexplored[0]
+    cycle = find_cycle([node],node)
     while len(unexplored)>0:
-        (pos,branch)=find_branch(cycle)
-        cycle=rotate(cycle,pos)
-        cycle=find_cycle(cycle,cycle[len(cycle)-1])
+        (pos,branch) = find_branch(cycle)
+        cycle = rotate(cycle,pos)
+        cycle = find_cycle(cycle,cycle[len(cycle)-1])
     return cycle
-
 
 
 def find_eulerian_path(graph):
@@ -195,42 +200,42 @@ def find_eulerian_path(graph):
         return list(set(list(graph.keys())+
                         [out for outs in graph.values() for out in outs]))
     def get_start():
-        start=[]
+        start = []
         for candidate in graph.keys():
-            in_count=0
+            in_count = 0
             for _,ins in graph.items():
-                in_count+=sum([1 for i in ins if i==candidate])
-            if in_count<len(graph[candidate]):
+                in_count += sum([1 for i in ins if i==candidate])
+            if in_count < len(graph[candidate]):
                 start.append(candidate)
         return start
 
     def get_finish():
-        finish=[]
-        closed=[]
+        finish = []
+        closed = []
         for outs in graph.values():
             for candidate in outs:
                 if not candidate in closed:
-                    in_count=0
+                    in_count = 0
                     for os in graph.values():
                         for o in os:
-                            if o==candidate:
-                                in_count+=1
-                    if not candidate in graph or in_count>len(graph[candidate]):
+                            if o == candidate:
+                                in_count += 1
+                    if not candidate in graph or in_count > len(graph[candidate]):
                         finish.append(candidate)
                     closed.append(candidate)
         return finish
 
     def adjust(path,start,finish):
-        i=len(path)
-        while i>0 and (path[0]!=start[0] or path[-1]!=finish[0]):
-            path=path[1:]+[path[0]]
-            i-=1
+        i = len(path)
+        while i > 0 and (path[0] != start[0] or path[-1] != finish[0]):
+            path=path[1:] + [path[0]]
+            i -= 1
         return path
 
-    start=get_start()
-    finish=get_finish()
-    if len(start)==1 and len(finish)==1:
-        graph[finish[0]]=start[0:1]
+    start = get_start()
+    finish = get_finish()
+    if len(start) == 1 and len(finish) == 1:
+        graph[finish[0]] = start[0:1]
         return adjust(find_eulerian_cycle(graph)[0:-1],start,finish)
     raise RosalindException(\
         'Start %(start)s and finish %(finish)s should have one element each'%locals())
@@ -272,37 +277,33 @@ def reconstruct_from_paired_kmers(k,d,patterns):
     (If multiple answers exist, you may return any one.)
     '''
     def create_pair(string):
-        [a,b]=string.split('|')
+        [a,b] = string.split('|')
         return (a,b)
     def prefix(pair):
-        (a,b)=pair
+        (a,b) = pair
         return (a[0:-1],b[0:-1])
     def suffix(pair):
-        (a,b)=pair
+        (a,b) = pair
         return (a[1:],b[1:])
     def reconstruct_from_graph(path):
         def extract(pairs,i):
-            (a,_)=pairs[i]
+            (a,_) = pairs[i]
             return a
-        head_reconstruction=                         \
-            ''.join(reconstruct_as_list(k-1,\
-                                        len(path),\
-                                        path,
-                                        extract)[:-1])
-        expected_length=len(patterns)+2*k+d-1
-        deficit=expected_length-len(head_reconstruction)
-        _,tail_reconstruction=path[-1]
-        i=-2
+        head_reconstruction = ''.join(reconstruct_as_list(k-1,len(path), path, extract)[:-1])
+        expected_length = len(patterns) + 2*k+d - 1
+        deficit = expected_length - len(head_reconstruction)
+        _,tail_reconstruction = path[-1]
+        i = -2
         while len(tail_reconstruction)<deficit:
-            _,tail=path[i]
-            tail_reconstruction=tail[0]+tail_reconstruction
-            i-=1
-        return head_reconstruction+tail_reconstruction
-    return reconstruct_from_graph(                            \
-        find_eulerian_path(                                   \
-            deBruijn_collection(                              \
-                [create_pair(string) for string in patterns], \
-                prefix,                                       \
+            _,tail = path[i]
+            tail_reconstruction = tail[0] + tail_reconstruction
+            i -= 1
+        return head_reconstruction + tail_reconstruction
+    return reconstruct_from_graph(
+        find_eulerian_path(
+            deBruijn_collection(
+                [create_pair(string) for string in patterns],
+                prefix,
                 suffix)))
 
 def create_contigs(patterns):
