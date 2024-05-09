@@ -22,6 +22,7 @@ import numpy as np
 from numpy.testing import assert_array_equal
 from fasta import FastaContent
 from replication import patternToNumber
+from rosalind import RosalindException
 
 def kmer_composition(k,dna):
     '''
@@ -254,18 +255,14 @@ def reconstruct_from_kmers(k,patterns):
 def k_universal_circular_string(k):
     '''
     BA3I 	Find a k-Universal Circular String
-    something off - I have taken this out of tests, even though the
-    website accepts my answers. A small test case appears to give different
-    answers on successive runs - maybe iterating through dict is not deterministic?
+
+    Parameters:
+        k   Length of k-mers
     '''
     def bits(i):
         return ('{0:b}'.format(i)).zfill(k)
-    patterns=[bits(i) for i in range(2**k)]
-    result= reconstruct(find_eulerian_cycle(deBruijn_collection(patterns)))[k-1:]
-    for pattern in patterns:
-        if not pattern in result:
-            raise RosalindException('%(pattern)s %(result)s'%locals())
-    return result
+    patterns = [bits(i) for i in range(2**k)]
+    return reconstruct(find_eulerian_cycle(deBruijn_collection(patterns)))[k-1:]
 
 def reconstruct_from_paired_kmers(k,d,patterns):
     '''
@@ -510,7 +507,7 @@ if __name__=='__main__':
                                   'GCTT',
                                   'TTAC']))
 
-        @skip('#17')
+        # @skip('#17')
         def test_ba3i(self):
             ''' BA3I 	Find a k-Universal Circular String'''
             self.assertEqual('0110010100001111',k_universal_circular_string(4))
