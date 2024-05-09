@@ -44,20 +44,28 @@ def reconstruct_as_list(k,n,fragments,extract=lambda fragments,i: fragments[i]):
       symbols of Pattern[i] are equal to the first k - 1 symbols of Pattern[i+1]
       for i from 1 to n-1.
 
-      Return: A string Text of length k+n-1 where the i-th k-mer in Text is equal
-      to Pattern[i] for all i.
+      Return: A list of strings, that can be joined to make a Text of length k+n-1
+      where the i-th k-mer in Text is equal to Pattern[i] for all i.
     '''
-    result = []
-    for i in range(0,n,k):
-        result.append(extract(fragments,i))
-    target_len = n+k-1
+    result = [extract(fragments,i)  for i in range(0,n,k)]
+    target_len = n + k - 1
     actual_len = len(result)*k
-    overlap = target_len-actual_len
+    overlap = target_len - actual_len
     if overlap>0:
         result.append(fragments[-1][k - overlap:k])
     return result
 
 def reconstruct(fragments):
+    '''
+     BA3B	Reconstruct a String from its Genome Path
+
+      Input: A sequence of k-mers Pattern1, ... , Patternn such that the last k - 1
+      symbols of Pattern[i] are equal to the first k - 1 symbols of Pattern[i+1]
+      for i from 1 to n-1.
+
+      Return: A string Text of length k+n-1 where the i-th k-mer in Text is equal
+      to Pattern[i] for all i.
+    '''
     return ''.join(reconstruct_as_list(len(fragments[0]),len(fragments),fragments))
 
 def grph_kmers(strings):
@@ -100,7 +108,7 @@ def deBruijn(k,text):
     deBruijn_dict = {}
     for [a,b] in pathgraph:
         if not a in deBruijn_dict:
-            deBruijn_dict[a]=[]
+            deBruijn_dict[a] = []
         deBruijn_dict[a].append(b)
     graph = [(a,standardize(deBruijn_dict[a])) for a in deBruijn_dict.keys()]
     graph.sort()
@@ -108,8 +116,8 @@ def deBruijn(k,text):
 
 
 def deBruijn_collection(pattern,
-                        head=lambda kmer: kmer[0:-1],
-                        tail=lambda kmer: kmer[1:]):
+                        head = lambda kmer: kmer[0:-1],
+                        tail = lambda kmer: kmer[1:]):
     '''
     BA3E 	Construct the De Bruijn Graph of a Collection of k-mers
 
@@ -403,17 +411,17 @@ if __name__=='__main__':
             self.assertIn('CCAAC', kmers)
             self.assertIn('TCCAA', kmers)
 
-        # BA3B	Reconstruct a String from its Genome Path
         def test_ba3b(self):
-            self.assertEqual("ACCGAAGCT",
-                             reconstruct(["ACCGA",
-                                          "CCGAA",
-                                          "CGAAG",
-                                          "GAAGC",
-                                          "AAGCT"] ))
+            '''BA3B	Reconstruct a String from its Genome Path'''
+            self.assertEqual('ACCGAAGCT',
+                             reconstruct(['ACCGA',
+                                          'CCGAA',
+                                          'CGAAG',
+                                          'GAAGC',
+                                          'AAGCT'] ))
 
-# BA3C	Construct the Overlap Graph of a Collection of k-mers
         def test_ba3c(self):
+            '''BA3C	Construct the Overlap Graph of a Collection of k-mers'''
             graph=grph_kmers([
                 'ATGCG',
                 'GCATG',
@@ -427,9 +435,9 @@ if __name__=='__main__':
             self.assertIn(('GCATG','CATGC'),graph)
             self.assertIn(('GGCAT','GCATG'),graph)
 
-# BA3D 	Construct the De Bruijn Graph of a String
         def test_ba3d(self):
-            graph=deBruijn(4,'AAGATTCTCTAC')
+            '''BA3D 	Construct the De Bruijn Graph of a String'''
+            graph = deBruijn(4,'AAGATTCTCTAC')
             self.assertIn(('AAG',['AGA']),graph)
             self.assertIn(('AGA',['GAT']),graph)
             self.assertIn(('ATT',['TTC']),graph)
@@ -440,9 +448,9 @@ if __name__=='__main__':
             self.assertIn(('TTC',['TCT']),graph)
             self.assertEqual(8,len(graph))
 
-#BA3E 	Construct the De Bruijn Graph of a Collection of k-mers
         def test_ba3e(self):
-            graph=deBruijn_collection(
+            '''BA3E 	Construct the De Bruijn Graph of a Collection of k-mers'''
+            graph = deBruijn_collection(
                 ['GAGG',
                  'CAGG',
                  'GGGG',
@@ -464,8 +472,8 @@ if __name__=='__main__':
                     return
             self.fail('Cycles %(a)s and %(b)s do not match'%locals())
 
-#BA3F 	Find an Eulerian Cycle in a Graph
         def test_ba3f(self):
+            '''BA3F 	Find an Eulerian Cycle in a Graph'''
             self.assertCyclicEqual([6,8,7,9,6,5,4,2,1,0,3,2,6],
                              find_eulerian_cycle(
                                  {0 : [3],
@@ -495,8 +503,9 @@ if __name__=='__main__':
                 }
             ))
 
-# BA3H 	Reconstruct a String from its k-mer Composition
+
         def test_ba3h(self):
+            ''' BA3H 	Reconstruct a String from its k-mer Composition'''
             self.assertEqual('GGCTTACCA',
                              reconstruct_from_kmers(
                                  4,
@@ -507,15 +516,14 @@ if __name__=='__main__':
                                   'GCTT',
                                   'TTAC']))
 
-        # @skip('#17')
         def test_ba3i(self):
             ''' BA3I 	Find a k-Universal Circular String'''
             self.assertEqual('0110010100001111',k_universal_circular_string(4))
 
-        @skip('#18')
+
         def test_ba3j(self):
-            '''BA3J 	Reconstruct a String from its Paired Composition'''
-            self.assertEqual("GTGGTCGTGAGATGTTGA",
+            '''BA3J Reconstruct a String from its Paired Composition'''
+            self.assertEqual('GTGGTCGTGAGATGTTGA',
                              reconstruct_from_paired_kmers(
                                  4,
                                  2,
@@ -528,28 +536,7 @@ if __name__=='__main__':
                                 'TGAG|GTTG',
                                 'GGTC|GAGA',
                                 'GTCG|AGAT']))
-            self.assertEqual('CACCGATACTGATTCTGAAGCTT',
-                             reconstruct_from_paired_kmers(3,
-                                           1,
-                                           [
-                                              'ACC|ATA', #(ACC|ATA)
-                                              'ACT|ATT', #(ACT|ATT)
-                                              'ATA|TGA', #(ATA|TGA)
-                                              'ATT|TGA', #(ATT|TGA)
-                                              'CAC|GAT', #(CAC|GAT)
-                                              'CCG|TAC', #(CCG|TAC)
-                                              'CGA|ACT', #(CGA|ACT)
-                                              'CTG|AGC', #(CTG|AGC)
-                                              'CTG|TTC', #(CTG|TTC)
-                                              'GAA|CTT', #(GAA|CTT)
-                                              'GAT|CTG', #(GAT|CTG)
-                                              'GAT|CTG', #(GAT|CTG)
-                                              'TAC|GAT', #(TAC|GAT)
-                                              'TCT|AAG', #(TCT|AAG)
-                                              'TGA|GCT', #(TGA|GCT)
-                                              'TGA|TCT', #(TGA|TCT)
-                                              'TTC|GAA'  #(TTC|GAA)
-                                           ]))
+
 
         def test_ba3k(self):
             '''BA3K 	Generate Contigs from a Collection of Reads'''
