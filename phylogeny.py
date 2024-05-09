@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-#   Copyright (C) 2020-2023 Greenweaves Software Limited
+#   Copyright (C) 2020-2024 Greenweaves Software Limited
 
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -23,19 +23,19 @@ that divides a collection of taxa into two groups--https://rosalind.info/problem
 therefore use the name "char" to the Python lexical elements, e.g. "list of chars".
 '''
 
-from   unittest      import TestCase, main, skip
-from   io            import StringIO
-from   random        import randrange
-from   re            import compile
-import numpy         as     np
-from   Bio.Phylo     import read
-from   scipy.special import comb
-from   scipy.stats   import entropy
-from   newick        import newick_to_adjacency_list, Parser, Tokenizer, Hierarchy
-from   rosalind      import LabeledTree, hamm, Tree, RosalindException
-from   fasta         import FastaContent
-from   helpers       import flatten, expand
-
+from math import factorial
+from unittest import TestCase, main, skip
+from io import StringIO
+from random import randrange
+from re import compile
+import numpy as np
+from Bio.Phylo import read
+from scipy.special import comb
+from scipy.stats import entropy
+from newick import newick_to_adjacency_list, Parser, Tokenizer, Hierarchy
+from rosalind import LabeledTree, hamm, Tree, RosalindException
+from fasta import FastaContent
+from helpers import flatten, expand
 
 def CompleteTree(n, adj):
     '''
@@ -153,7 +153,7 @@ def NumberBinaryTrees(n, rooted=True):
 
     See the equations given in the last slide of http://carrot.mcb.uconn.edu/~olgazh/bioinf2010/class16.html
     '''
-    return np.math.factorial(2*n - 3)/(2**(n-2) * np.math.factorial(n-2)) if rooted else NumberBinaryTrees(n-1)
+    return factorial(2*n - 3)/(2**(n-2) * factorial(n-2)) if rooted else NumberBinaryTrees(n-1)
 
 
 class UnrootedBinaryTree:
@@ -1582,7 +1582,7 @@ if __name__=='__main__':
             '''BA7A Compute Distances Between Leaves'''
             def create_weighted_adjacency(n,Edges):
                 T = [[] for _ in range(n+2)]
-                re_edge = compile('(\d+)->(\d+):(\d+)')
+                re_edge = compile(r'(\d+)->(\d+):(\d+)')
                 for edge in Edges:
                     matched = re_edge.match(edge)
                     i,node,weight = (int(j) for j in matched.groups())

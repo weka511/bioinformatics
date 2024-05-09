@@ -20,7 +20,6 @@
 from argparse import ArgumentParser
 from os.path import  basename,splitext,join
 from time import time
-import numpy as np
 from helpers import read_strings
 from reference_tables import  test_masses
 from spectrum import  IdentifyPeptide
@@ -49,7 +48,6 @@ if __name__=='__main__':
         Spectral = [int(s) for s in Input[0].split()]
 
         Result = IdentifyPeptide(Spectral,Input[1])
-
         print (Result)
         with open(f'{basename(__file__).split(".")[0]}.txt','w') as f:
             f.write(Result)
