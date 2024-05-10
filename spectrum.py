@@ -1146,7 +1146,6 @@ def SizeSpectralDictionary(S,threshold,max_score,
         def __getitem__(self, key):
             t,i = key
             if i < 0: return 0
-            # if i == 0: return 0
             if t >= self.m: return 0
             return self.size[t,i]
 
@@ -1157,8 +1156,8 @@ def SizeSpectralDictionary(S,threshold,max_score,
         def __repr__(self):
             return str(self.size)
 
-        def get_total(self):
-            return self.size[:,-1].sum()
+        def get_total(self,threshold):
+            return self.size[threshold:,-1].sum()
 
     Spectrum = np.array([0] + S)
     n = len(Spectrum)
@@ -1174,7 +1173,7 @@ def SizeSpectralDictionary(S,threshold,max_score,
                 s += size[t-Spectrum[i],i-masses[k]]
             size[t,i] = s
 
-    return size.get_total()
+    return size.get_total(threshold)
 
 
 if __name__=='__main__':

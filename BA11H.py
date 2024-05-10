@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-#   Copyright (C) 2020 Greenweaves Software Limited
+#   Copyright (C) 2020-2024 Greenweaves Software Limited
 
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -15,14 +15,14 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-#  BA11H 	Compute the Size of a Spectral Dictionary
+''' BA11H 	Compute the Size of a Spectral Dictionary'''
 
 import argparse
 import os
 import time
 from   helpers import read_strings
-
-
+from reference_tables import  test_masses
+from spectrum import SizeSpectralDictionary
 if __name__=='__main__':
     start = time.time()
     parser = argparse.ArgumentParser('BA11H 	Compute the Size of a Spectral Dictionary ')
@@ -30,18 +30,18 @@ if __name__=='__main__':
     parser.add_argument('--rosalind', default=False, action='store_true', help='process Rosalind dataset')
     args = parser.parse_args()
     if args.sample:
-        pass
+        print (SizeSpectralDictionary([4, -3, -2, 3, 3, -4, 5, -3, -1, -1, 3, 4, 1, 3],1,8,
+                                                    protein_masses = test_masses))
 
 
 
     if args.rosalind:
         Input  = read_strings(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt')
 
-        Result = None
+        Result = SizeSpectralDictionary( [int(s) for s in Input[0].split()],int(Input[1]),int(Input[2]))
         print (Result)
         with open(f'{os.path.basename(__file__).split(".")[0]}.txt','w') as f:
-            for line in Result:
-                f.write(f'{line}\n')
+            f.write(f'{Result}\n')
 
     elapsed = time.time() - start
     minutes = int(elapsed/60)
