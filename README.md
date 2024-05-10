@@ -235,7 +235,7 @@ I have written this code in Python 3, generally with the most recent release at 
 |BA11F|BA11F.py spectrum.py| [Find a Highest-Scoring Peptide in a Proteome against a Spectrum](http://rosalind.info/problems/ba11f/) [WIP](https://github.com/weka511/bioinformatics/issues/92)|
 |BA11G|BA11G.py spectrum.py| [Implement PSMSearch](http://rosalind.info/problems/ba11g/) [WIP](https://github.com/weka511/bioinformatics/issues/93)|
 |BA11H|BA11H.py spectrum.py| [Compute the Size of a Spectral Dictionary](http://rosalind.info/problems/ba11h/)|
-|BA11I|BA11I.py spectrum.py| [Compute the Probability of a Spectral Dictionary](http://rosalind.info/problems/ba11i/) [WIP](https://github.com/weka511/bioinformatics/issues/95)|
+|BA11I|BA11I.py spectrum.py| [Compute the Probability of a Spectral Dictionary](http://rosalind.info/problems/ba11i/)|
 |BA11J|BA11J.py spectrum.py| [Find a Highest-Scoring Modified Peptide against a Spectrum](http://rosalind.info/problems/ba11j/) [WIP](https://github.com/weka511/bioinformatics/issues/96)|
 
 

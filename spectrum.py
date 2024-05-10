@@ -1127,7 +1127,9 @@ def IdentifyPeptide(S,Proteome,
     return ''.join(peptide[:-1])
 
 def SizeSpectralDictionary(S,threshold,max_score,
-                    protein_masses = integer_masses):
+                            protein_masses = integer_masses,
+                            get = lambda size,Spectrum,masses,t,i,k: size[t-Spectrum[i],i-masses[k]],
+                            dtype = int):
     '''
     BA11H Compute the Size of a Spectral Dictionary
 
@@ -1141,10 +1143,10 @@ def SizeSpectralDictionary(S,threshold,max_score,
         Represents number of peptides of specified mass and score. This class
         is basically a number array, wrapped up to return zero if indices out of range.
         '''
-        def __init__(self,m,n):
+        def __init__(self,m,n,dtype=int):
             self.m = m
             self.n = n
-            self.size = np.zeros((m,n),dtype=int)
+            self.size = np.zeros((m,n),dtype=dtype)
             self.size[0,0] = 1
 
         def __getitem__(self, key):
@@ -1176,11 +1178,11 @@ def SizeSpectralDictionary(S,threshold,max_score,
     masses = [mass for mass in protein_masses.values()]
     m = max_score
 
-    size = Size(m,n)
+    size = Size(m,n,dtype=dtype)
 
     for i in range(1,n):
         for t in range(m-1):
-            size[t,i] = sum([size[t-Spectrum[i],i-masses[k]] for k in range(len(masses))])
+            size[t,i] = sum([get(size,Spectrum,masses,t,i,k) for k in range(len(masses))])
 
     return size.get_total(threshold)
 
@@ -3021,6 +3023,15 @@ if __name__=='__main__':
             self.assertEqual(3,
                              SizeSpectralDictionary([4, -3, -2, 3, 3, -4, 5, -3, -1, -1, 3, 4, 1, 3],1,8,
                                                     protein_masses = test_masses))
+
+        def test_ba11i(self):
+            '''BA11I Compute the Probability of a Spectral Dictionary'''
+            self.assertEqual(0.375,
+                             SizeSpectralDictionary([4, -3, -2, 3, 3, -4, 5, -3, -1, -1, 3, 4, 1, 3],1,8,
+                                                    protein_masses = test_masses,
+                                                    get = lambda size,Spectrum,masses,t,i,k: (size[t-Spectrum[i],i-masses[k]]/
+                                                                                              len(masses)),
+                                                    dtype=float))
 
         def test_splc(self):
             '''SPLC	RNA Splicing'''
