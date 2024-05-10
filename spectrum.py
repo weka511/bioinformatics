@@ -1132,11 +1132,13 @@ def SizeSpectralDictionary(S,threshold,max_score,
                             dtype = int):
     '''
     BA11H Compute the Size of a Spectral Dictionary
-
+    BA11I Compute the Probability of a Spectral Dictionary
     Parameters:
         S
         threshold
         max_score
+        get    For BA11I, set to lambda size,Spectrum,masses,t,i,k: (size[t-Spectrum[i],i-masses[k]]/len(masses)),
+        dtype  For BA11I, set to float
     '''
     class Size:
         '''
