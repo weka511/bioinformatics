@@ -17,15 +17,16 @@
 
 ''' BA11H 	Compute the Size of a Spectral Dictionary'''
 
-import argparse
-import os
-import time
-from   helpers import read_strings
+from  argparse import ArgumentParser
+from os.path import basename
+from time import time
+from helpers import read_strings
 from reference_tables import  test_masses
 from spectrum import SizeSpectralDictionary
+
 if __name__=='__main__':
-    start = time.time()
-    parser = argparse.ArgumentParser('BA11H 	Compute the Size of a Spectral Dictionary ')
+    start = time()
+    parser = ArgumentParser('BA11H 	Compute the Size of a Spectral Dictionary ')
     parser.add_argument('--sample',   default=False, action='store_true', help='process sample dataset')
     parser.add_argument('--rosalind', default=False, action='store_true', help='process Rosalind dataset')
     args = parser.parse_args()
@@ -36,14 +37,14 @@ if __name__=='__main__':
 
 
     if args.rosalind:
-        Input  = read_strings(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt')
+        Input  = read_strings(f'data/rosalind_{basename(__file__).split(".")[0]}.txt')
 
         Result = SizeSpectralDictionary( [int(s) for s in Input[0].split()],int(Input[1]),int(Input[2]))
         print (Result)
-        with open(f'{os.path.basename(__file__).split(".")[0]}.txt','w') as f:
+        with open(f'{basename(__file__).split(".")[0]}.txt','w') as f:
             f.write(f'{Result}\n')
 
-    elapsed = time.time() - start
+    elapsed = time() - start
     minutes = int(elapsed/60)
     seconds = elapsed - 60*minutes
     print (f'Elapsed Time {minutes} m {seconds:.2f} s')

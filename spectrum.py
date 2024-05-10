@@ -1137,6 +1137,10 @@ def SizeSpectralDictionary(S,threshold,max_score,
         max_score
     '''
     class Size:
+        '''
+        Represents number of peptides of specified mass and score. This class
+        is basically a number array, wrapped up to return zero if indices out of range.
+        '''
         def __init__(self,m,n):
             self.m = m
             self.n = n
@@ -1144,6 +1148,13 @@ def SizeSpectralDictionary(S,threshold,max_score,
             self.size[0,0] = 1
 
         def __getitem__(self, key):
+            '''
+            Number of peptides of mass i and score t
+            This function computes values where parameters are out of range as specifed in text
+            Parameters:
+                i
+                t
+            '''
             t,i = key
             if i < 0: return 0
             if t >= self.m: return 0
@@ -1157,6 +1168,7 @@ def SizeSpectralDictionary(S,threshold,max_score,
             return str(self.size)
 
         def get_total(self,threshold):
+            '''Number of peptides exceeding threshold'''
             return self.size[threshold:,-1].sum()
 
     Spectrum = np.array([0] + S)
@@ -1168,10 +1180,7 @@ def SizeSpectralDictionary(S,threshold,max_score,
 
     for i in range(1,n):
         for t in range(m-1):
-            s = 0
-            for k in range(len(masses)):
-                s += size[t-Spectrum[i],i-masses[k]]
-            size[t,i] = s
+            size[t,i] = sum([size[t-Spectrum[i],i-masses[k]] for k in range(len(masses))])
 
     return size.get_total(threshold)
 
