@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-#   Copyright (C) 2020 Greenweaves Software Limited
+#   Copyright (C) 2020-2024 Greenweaves Software Limited
 
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -15,14 +15,14 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-#  BA9R 	Construct a Suffix Tree from a Suffix Array
+'''BA9R Construct a Suffix Tree from a Suffix Array'''
 
-import argparse
-import os
-import time
-from   helpers  import read_strings
-from   rosalind import RosalindException
-from   snp      import SuffixArray
+from argparse import ArgumentParser
+from os.path import basename
+from time import time
+from helpers import read_strings
+from rosalind import RosalindException
+from snp import SuffixArray
 
 # SuffixArray2Tree
 #
@@ -226,8 +226,8 @@ def SuffixArray2Tree(Text, SuffixArray, LCP, trace=False):
     yield from root.gather_edge_labels()
 
 if __name__=='__main__':
-    start = time.time()
-    parser = argparse.ArgumentParser('BA9R Construct a Suffix Tree from a Suffix Array ')
+    start = time()
+    parser = ArgumentParser('BA9R Construct a Suffix Tree from a Suffix Array ')
     parser.add_argument('--banana',   default=False, action='store_true', help='process bana example from textbook')
     parser.add_argument('--sample',   default=False, action='store_true', help='process sample dataset')
     parser.add_argument('--extra',    default=False, action='store_true', help='process extra dataset')
@@ -281,8 +281,8 @@ if __name__=='__main__':
             j+=1
 
     if args.rosalind:
-        Input  = read_strings(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt')
-        with open(f'{os.path.basename(__file__).split(".")[0]}.txt','w') as f:
+        Input  = read_strings(f'data/rosalind_{basename(__file__).split(".")[0]}.txt')
+        with open(f'{basename(__file__).split(".")[0]}.txt','w') as f:
             for edge,_ in SuffixArray2Tree(Input[0],
                                          [int(s) for s in Input[1].split(',')],
                                          [int(s) for s in Input[2].split(',')],
@@ -290,7 +290,7 @@ if __name__=='__main__':
                 print (edge)
                 f.write(f'{edge}\n')
 
-    elapsed = time.time() - start
+    elapsed = time() - start
     minutes = int(elapsed/60)
     seconds = elapsed - 60*minutes
     print (f'Elapsed Time {minutes} m {seconds:.2f} s')
