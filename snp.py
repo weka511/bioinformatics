@@ -619,14 +619,18 @@ def ColourTree(adj,colours):
             for i in range(n):
                 Coloured [node].append(any([Coloured[child][i] for child in adj [node]]))
 
-#  BA9Q 	Construct the Partial Suffix Array of a String
-#
-# Given: A string Text and a positive integer K.
-#
-# Return: SuffixArrayK(Text), in the form of a list of ordered pairs (i, SuffixArray(i))
-#                             for all nonempty entries in the partial suffix array.
+
 
 def PartialSuffixArray(String,K) :
+    '''
+    BA9Q 	Construct the Partial Suffix Array of a String
+
+    Given: A string Text and a positive integer K.
+
+    Return: SuffixArrayK(Text), in the form of a list of ordered pairs (i, SuffixArray(i))
+    for all nonempty entries in the partial suffix array.
+
+    '''
     Suffixes = SuffixArray(String)
     return [(i,Suffixes[i]) for i in range(len(Suffixes)) if Suffixes[i]%K ==0]
 
@@ -902,27 +906,36 @@ if __name__=='__main__':
             '''BA9E Find the Longest Substring Shared by Two Strings'''
             self.assertEqual('AGA',LongestSharedSubstring('TCGGTAGATTGCGCCCACTC','AGGGGCTCGCAGTGTAAGAA'))
 
-        @skip('TBP')
+        @skip('#73')
         def test_ba9f(self):
-            ''''''
-        @skip('TBP')
+            '''BA9F Find the Shortest Non-Shared Substring of Two Strings'''
+            self.assertEqual('AA',FindShortestNonShared('CCAAGCTGCTAGAGG','CATGCTGGGCTGGCT'))
+
         def test_ba9g(self):
-            ''''''
-        @skip('TBP')
+            '''BA9G Construct the Suffix Array of a String'''
+            self.assertEqual([15, 14, 0, 1, 12, 6, 4, 2, 8, 13, 3, 7, 9, 10, 11, 5],SuffixArray('AACGATAGCGGTAGA$'))
+
         def test_ba9h(self):
-            ''''''
-        @skip('TBP')
+            '''BA9H Pattern Matching with the Suffix Array'''
+            self.assertEqual([1, 4, 11, 15],MatchPatternsUsingSuffixArray('AATCGGGTTCAATCGGGGT',['ATCG','GGGT']))
+
         def test_ba9i(self):
-            ''''''
-        @skip('TBP')
+            '''BA9I Construct the Burrows-Wheeler Transform of a String'''
+            self.assertEqual('ACTGGCT$TGCGGC',BurrowsWheeler('GCGTGCCTGGTCA$'))
+
         def test_ba9j(self):
-            ''''''
-        @skip('TBP')
+            '''BA9J Reconstruct a String from its Burrows-Wheeler Transform'''
+            self.assertEqual('TACATCACGT$',InverseBWT('TTCCTAACG$A'))
+
         def test_ba9k(self):
-            ''''''
-        @skip('TBP')
+            '''BA9K Generate the Last-to-First Mapping of a String'''
+            self.assertEqual(1,LastToFirst('T$GACCA',3))
+
         def test_ba9l(self):
-            ''''''
+            '''BA9L Implement BWMatching'''
+            self.assertEqual([2, 1, 1, 0, 1],
+                             BW_Match('TCCTCTATGAGATCCTATTCTATGAAACCTTCA$GACCAAAATTCTCCGGC',
+                                      ['CCT', 'CAC', 'GAG', 'CAG', 'ATC']))
 
         def test_ba9m(self):
             '''BA9M Implement BetterBWMatching'''
@@ -935,16 +948,12 @@ if __name__=='__main__':
             self.assertEqual([11, 1, 15, 4],
                              EvenBetterBWMatching('AATCGGGTTCAATCGGGGT', ['ATCG', 'GGGT'], K=5))
 
-        @skip('TBP')
+        @skip('#79')
         def test_ba9o(self):
             '''BA9O Find All Approximate Occurrences of a Collection of Patterns in a String'''
             self.assertEqual([2, 4, 4, 6, 7, 8, 9],
                              FindApproximateMatches('ACATGCTACTTT', ['ATT', 'GCC', 'GCTA', 'TATT'], 1))
 
-
-        @skip('TBP')
-        def test_ba9q(self):
-            ''''''
 
         def test_ba9p(self):
             ''' BA9P 	Implement TreeColoring'''
@@ -967,8 +976,12 @@ if __name__=='__main__':
                                   6 : [],
                                   7 : [4,5,6]},Colours)
 
+        def test_ba9q(self):
+            '''BA9Q 	Construct the Partial Suffix Array of a String'''
+            self.assertEqual([(1, 5), (11, 10), (12, 0)],
+                             PartialSuffixArray('PANAMABANANAS$',5))
 
-        @skip('TBP')
+        @skip('#81')
         def test_ba9r(self):
             '''BA9R Construct a Suffix Tree from a Suffix Array'''
             Tree = SuffixArray2Tree('GTAGT$',
