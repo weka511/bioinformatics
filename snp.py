@@ -562,6 +562,19 @@ def BetterBWMatching(LastColumn,Patterns):
     FirstOccurrences = {ch:getFirstOccurrence(FirstColumn,ch) for ch in FirstColumn}
     return [Match(Pattern,FirstOccurrences) for Pattern in Patterns]
 
+
+
+def FindApproximateMatches(Text,Patterns,d):
+    '''
+    BA9O Find all approximate occurrences of a collection of patterns in a text.
+    Given: A string Text, a collection of strings Patterns, and an integer d.
+
+    Return: All positions in Text where a string from Patterns appears as a substring with at most d mismatches.
+    '''
+    for p in Patterns:
+        pass
+
+
 #  BA9P 	Implement TreeColoring
 #
 #  Colour the internal nodes of a suffix tree given colours of the leaves.
@@ -593,8 +606,8 @@ def ColourTree(adj,colours):
                 Rest.append(node)
         Discovered = Rest
         #Ripe       = [node for node in Discovered if all(child in Coloured for child in adj[node])]
-        if iteration%1==0:
-            print (f'{iteration}: Discovered={len(Discovered)}, Ripe={len(Ripe)}')
+        # if iteration%1==0:
+            # print (f'{iteration}: Discovered={len(Discovered)}, Ripe={len(Ripe)}')
         iteration += 1
         #Discovered = [node for node in Discovered if node not in Ripe]
         if len(Ripe)==0:
@@ -831,7 +844,9 @@ if __name__=='__main__':
 
     class TestSNP(TestCase):
         '''Test cases for: Chapter 9, how do we locate disease causing mutations?'''
+
         def test_ba9a(self):
+            ''' BA9A Construct a Trie from a Collection of Patterns'''
             Trie = create_trie(['ATAGA','ATC','GAT'],root=0)
             self.assertEqual(10,len(list(Trie.keys())))
             trie0 = Trie[0]
@@ -854,4 +869,110 @@ if __name__=='__main__':
             self.assertEqual(9,trie8['T'])
             self.assertEqual(0,len(Trie[9]))
 
+        def test_ba9b(self):
+            '''BA9B Implement TrieMatching'''
+            Trie = create_trie(['ATCG','GGGT'])
+            self.assertEqual([1,4,11,15],MatchAll('AATCGGGTTCAATCGGGGT',Trie))
+
+
+        def test_ba9c(self):
+            '''BA9C Construct the Suffix Tree of a String'''
+            tree = SuffixTree()
+            tree.build('ATAAATG$')
+            Edges = tree.collectEdges()
+            self.assertEqual(12,len(Edges))
+            self.assertIn('AAATG$',Edges)
+            self.assertIn('G$',Edges)
+            self.assertIn('T',Edges)
+            self.assertIn('ATG$',Edges)
+            self.assertIn('TG$',Edges)
+            self.assertIn('A',Edges)
+            self.assertIn('A',Edges)
+            self.assertIn('AAATG$',Edges)
+            self.assertIn('G$',Edges)
+            self.assertIn('T',Edges)
+            self.assertIn('G$',Edges)
+            self.assertIn('$',Edges)
+
+        def test_ba9d(self):
+            '''BA9D Find the Longest Repeat in a String'''
+            self.assertEqual('TATCGTT', FindLongestRepeat('ATATCGTTTTATCGTT'))
+
+        def test_ba9e(self):
+            '''BA9E Find the Longest Substring Shared by Two Strings'''
+            self.assertEqual('AGA',LongestSharedSubstring('TCGGTAGATTGCGCCCACTC','AGGGGCTCGCAGTGTAAGAA'))
+
+        @skip('TBP')
+        def test_ba9f(self):
+            ''''''
+        @skip('TBP')
+        def test_ba9g(self):
+            ''''''
+        @skip('TBP')
+        def test_ba9h(self):
+            ''''''
+        @skip('TBP')
+        def test_ba9i(self):
+            ''''''
+        @skip('TBP')
+        def test_ba9j(self):
+            ''''''
+        @skip('TBP')
+        def test_ba9k(self):
+            ''''''
+        @skip('TBP')
+        def test_ba9l(self):
+            ''''''
+
+        def test_ba9m(self):
+            '''BA9M Implement BetterBWMatching'''
+            self.assertEqual([1,2,1],
+                             BetterBWMatching('GGCGCCGC$TAGTCACACACGCCGTA',
+                                              ['ACC', 'CCG', 'CAG']))
+
+        def test_ba9n(self):
+            '''BA9N Find All Occurrences of a Collection of Patterns in a String'''
+            self.assertEqual([11, 1, 15, 4],
+                             EvenBetterBWMatching('AATCGGGTTCAATCGGGGT', ['ATCG', 'GGGT'], K=5))
+
+        @skip('TBP')
+        def test_ba9o(self):
+            '''BA9O Find All Approximate Occurrences of a Collection of Patterns in a String'''
+            self.assertEqual([2, 4, 4, 6, 7, 8, 9],
+                             FindApproximateMatches('ACATGCTACTTT', ['ATT', 'GCC', 'GCTA', 'TATT'], 1))
+
+
+        @skip('TBP')
+        def test_ba9q(self):
+            ''''''
+
+        def test_ba9p(self):
+            ''' BA9P 	Implement TreeColoring'''
+            def colour2list(colour):
+                if colour=='red': return [True,False]
+                if colour=='blue': return [False,True]
+            Colours = {node: colour2list(c) for (node),c in  {
+                                  0: 'red',
+                                  1: 'red',
+                                  3: 'blue',
+                                  4: 'blue',
+                                  6: 'red'}.items()}
+            Coloured = ColourTree({
+                                  0 : [],
+                                  1 : [],
+                                  2 : [0,1],
+                                  3 : [],
+                                  4 : [],
+                                  5 : [3,2],
+                                  6 : [],
+                                  7 : [4,5,6]},Colours)
+
+
+        @skip('TBP')
+        def test_ba9r(self):
+            '''BA9R Construct a Suffix Tree from a Suffix Array'''
+            Tree = SuffixArray2Tree('GTAGT$',
+                             [5, 2, 3, 0, 4, 1],
+                             [0, 0, 0, 2, 0, 1])
+            z=0
     main()
