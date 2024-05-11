@@ -1,4 +1,7 @@
 #!/usr/bin/env python
+
+#   Copyright (C) 2020-2024 Greenweaves Software Limited
+
 # This is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
@@ -12,59 +15,60 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>
 
-# Code for: Chapter 9, how do we locate disease causing mutations?
+'''Code for: Chapter 9, how do we locate disease causing mutations?'''
 
-
-from rosalind   import RosalindException
+from unittest import TestCase, main, skip
 from deprecated import deprecated
-from numpy      import empty_like,arange,argsort,argmax
+import numpy as np
+from rosalind import RosalindException
 
-# BA9A Construct a Trie from a Collection of Patterns
-# Trie - a trie, represented as a collection of Nodes and Edges
-#
-# create_trie
-#    The trie has a single root node with indegree 0, denoted root.
-#    Each edge of Trie(Patterns) is labeled with a letter of the alphabet.
-#    Edges leading out of a given node have distinct labels.
-#    Every string in Patterns is spelled out by concatenating the letters along some path from the root downward.
-#    Every path from the root to a leaf, or node with outdegree 0, spells a string from Patterns.
-#
-# Parameters:
-#    Patterns   List of patterns
-#    root       Controls whther root is 0, 1, or some other value
-#
-# Representation:
-#      Trie is represented as a dict or dicts
-#      {node: {symbol:node}}
 def create_trie(Patterns,root=1):
+    '''
+    BA9A Construct a Trie from a Collection of Patterns
+    Trie - a trie, represented as a collection of Nodes and Edges
+
+    create_trie
+       The trie has a single root node with indegree 0, denoted root.
+       Each edge of Trie(Patterns) is labeled with a letter of the alphabet.
+       Edges leading out of a given node have distinct labels.
+       Every string in Patterns is spelled out by concatenating the letters along some path from the root downward.
+       Every path from the root to a leaf, or node with outdegree 0, spells a string from Patterns.
+
+    Parameters:
+       Patterns   List of patterns
+       root       Controls whther root is 0, 1, or some other value
+
+    Representation:
+         Trie is represented as a dict or dicts
+         {node: {symbol:node}}
+    '''
     next_node = root + 1
-    Trie      = {root:{}}
+    Trie = {root:{}}
     for Pattern in Patterns:
         currentNode = root
         for currentSymbol in Pattern:
             if currentSymbol in Trie[currentNode]:
                 currentNode = Trie[currentNode][currentSymbol]
             else:
-                new_node                         = next_node
-                Trie[new_node]                   = {}
+                new_node = next_node
+                Trie[new_node] = {}
                 Trie[currentNode][currentSymbol] = new_node
-                currentNode                      = new_node
-                next_node                       += 1
+                currentNode = new_node
+                next_node += 1
 
     return Trie
 
 
-
-
-# BA9B Implement TrieMatching
-#
-# MatchPrefix
-#
-# Given: A string Text and a collection of strings Patterns.
-#
-# Return: First starting positions in Text where a string from Patterns appears as a substring.
-
 def MatchPrefix(Text,Trie):
+    '''
+    BA9B Implement TrieMatching
+
+    MatchPrefix
+
+    Given: A string Text and a collection of strings Patterns.
+
+    Return: First starting positions in Text where a string from Patterns appears as a substring.
+    '''
     i      = iter(Text)
     symbol = next(i)
     v      = min(Trie.keys())
@@ -264,29 +268,31 @@ def LongestSharedSubstring(s,t):
     text           = s + '$' + t + '#'
     r,_,lcp        = SuffixArray(text,auxiliary=True,padLCP=True)
     candidate_LCPs = [lcp[i] if i in  find_straddling() else 0 for i in range(len(lcp))]
-    index          = argmax(candidate_LCPs)
+    index          = np.argmax(candidate_LCPs)
     return text[r[index]:r[index]+candidate_LCPs[index]]
 
-# BA9G Construct the Suffix Array of a String
-
-# Suffix Array
-#
-# In 1993, Udi Manber and Gene Myers introduced suffix arrays as a memory-efficient alternative to suffix trees.
-# To construct SuffixArray(Text), we first sort all suffixes of Text lexicographically, assuming that "$"
-# $ comes first in the alphabet. The suffix array is the list of starting positions of these sorted suffixes.
-#
-# I have used a naive algorithm, as it appears to be adequate for the test data
-#
-# This can also create the auxiliary arrays used by Efficient repeat finding via suffix arrays
-# Ver�nica Becher, Alejandro Deymonnaz, and Pablo Ariel Heiber
 
 def SuffixArray(s,auxiliary=False,padLCP=False):
+    '''
+    BA9G Construct the Suffix Array of a String
+
+    Suffix Array
+
+    In 1993, Udi Manber and Gene Myers introduced suffix arrays as a memory-efficient alternative to suffix trees.
+    To construct SuffixArray(Text), we first sort all suffixes of Text lexicographically, assuming that "$"
+    comes first in the alphabet. The suffix array is the list of starting positions of these sorted suffixes.
+
+    I have used a naive algorithm, as it appears to be adequate for the test data
+
+    This can also create the auxiliary arrays used by Efficient repeat finding via suffix arrays
+    Veronica Becher, Alejandro Deymonnaz, and Pablo Ariel Heiber
+    '''
     r = [i for (_,i) in sorted([(s[i:],i) for i in range(len(s))],
                                key=lambda x:x[0])]
     if auxiliary:
         n    = len(s)
-        p    = empty_like(r)
-        p[r] = arange(len(p), dtype=p.dtype)   # https://stackoverflow.com/questions/9185768/inverting-permutations-in-python
+        p    = np.empty_like(r)
+        p[r] = np.arange(len(p), dtype=p.dtype)   # https://stackoverflow.com/questions/9185768/inverting-permutations-in-python
         LCP  = []
         for i in range(len(r)-1):
             i0     = r[i]
@@ -750,7 +756,7 @@ def mrep(w,ml=20):
     n       = len(w)
     r,p,LCP = SuffixArray(w,auxiliary=True)
     S       = create_LCP_already_seen()
-    I       = argsort(LCP)
+    I       = np.np.argsort(LCP)
 
     for t in range(min([t for t in range(len(I)) if LCP[I[t]]>=ml]),
                    n-1):
@@ -820,3 +826,32 @@ def EvenBetterBWMatching(Text,Patterns,K=10):
     FirstColumn      = sorted(LastColumn)
     FirstOccurrences = {ch:getFirstOccurrence(FirstColumn,ch) for ch in FirstColumn}
     return [match for Pattern in Patterns for match in Match(Pattern,FirstOccurrences)]
+
+if __name__=='__main__':
+
+    class TestSNP(TestCase):
+        '''Test cases for: Chapter 9, how do we locate disease causing mutations?'''
+        def test_ba9a(self):
+            Trie = create_trie(['ATAGA','ATC','GAT'],root=0)
+            self.assertEqual(10,len(list(Trie.keys())))
+            trie0 = Trie[0]
+            self.assertEqual(1,trie0['A'])
+            self.assertEqual(7,trie0['G'])
+            trie1 = Trie[1]
+            self.assertEqual(2,trie1['T'])
+            trie2 = Trie[2]
+            self.assertEqual(3,trie2['A'])
+            self.assertEqual(6,trie2['C'])
+            trie3 = Trie[3]
+            self.assertEqual(4,trie3['G'])
+            trie4 = Trie[4]
+            self.assertEqual(5,trie4['A'])
+            self.assertEqual(0,len(Trie[5]))
+            self.assertEqual(0,len(Trie[6]))
+            trie7 = Trie[7]
+            self.assertEqual(8,trie7['A'])
+            trie8 = Trie[8]
+            self.assertEqual(9,trie8['T'])
+            self.assertEqual(0,len(Trie[9]))
+
+    main()
