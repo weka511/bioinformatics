@@ -20,9 +20,7 @@ from argparse import ArgumentParser
 from os.path import basename
 from time import time
 from helpers import read_strings
-from numpy import zeros
-from snp import create_trie
-
+import numpy as np
 
 def ksim(k,s,t):
    '''
@@ -35,17 +33,26 @@ def ksim(k,s,t):
            Return: All substrings t' of t such that the edit distance dE(s,t') is less than or equal to k.
            Each substring should be encoded by a pair containing its location in t followed by its length.
 
-     The following code is an attempt to see wther we can execure the Manhattan algorithm for rosalind data
-     within 5 minutes (300 seconds). It looks as if this isn't possible.
-
-     4900 iterations along t axis required 456 sec, so all of th will need 3934 sec.
    '''
-   Trie = create_trie([t])
-   x=0
+   m = len(s)
+   n = len(t)
+   matrix = np.full((m+1,n+1),-m*n,dtype=np.int64)
+   matrix[0,:] = 0
+   matrix[:,0] = 0
+   indel = 1
+   mismatch = 1
+   for i in range(1,m+1):
+      for j in range(1,n+1):
+            matrix[i,j] = max(matrix[i-1,j] - indel,
+                              matrix[i,j-1] - indel,
+                              matrix[i-1,j-1] + (1 if s[i-1] == t[j-1] else - mismatch),
+                              0)
+   print (matrix)
+   return [(-1,-1)]
 
 if __name__=='__main__':
    start = time()
-   parser = ArgumentParser('KSIM Finding All Similar Motifs')
+   parser = ArgumentParser(__doc__)
    parser.add_argument('--sample',   default=False, action='store_true', help='process sample dataset')
    parser.add_argument('--rosalind', default=False, action='store_true', help='process Rosalind dataset')
    args = parser.parse_args()
@@ -54,7 +61,7 @@ if __name__=='__main__':
          print (a,b)
 
    if args.rosalind:
-      Input  = read_strings(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt')
+      Input  = read_strings(f'data/rosalind_{basename(__file__).split(".")[0]}.txt')
 
       with open(f'{basename(__file__).split(".")[0]}.txt','w') as f:
          for a,b in ksim(int(Input[0]),Input[1],Input[2]):
