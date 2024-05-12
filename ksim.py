@@ -22,7 +22,9 @@ from time import time
 from helpers import read_strings
 import numpy as np
 
-def ksim(k,s,t):
+def ksim(k,s,t,
+         indel_cost   = 1,
+         replace_cost = 1):
    '''
    Finding All Similar Motifs
 
@@ -34,21 +36,36 @@ def ksim(k,s,t):
            Each substring should be encoded by a pair containing its location in t followed by its length.
 
    '''
+   def backtrack(l):
+      i = m
+      j = l
+      while i > 0 and j > 0:
+         match choices[i,j]:
+            case 0:
+               i -= 1
+            case 1:
+               j -= 1
+            case 2:
+               i -=  1
+               j -= 1
+      return (j+1,l)
+
    m = len(s)
    n = len(t)
-   matrix = np.full((m+1,n+1),-m*n,dtype=np.int64)
-   matrix[0,:] = 0
-   matrix[:,0] = 0
-   indel = 1
-   mismatch = 1
+   matrix = np.zeros((m+1,n+1),dtype=np.int32)
+   choices = np.zeros((m+1,n+1),dtype=np.int32)
+   matrix[0,:] = list(range(n+1))
+   matrix[:,0] = list(range(m+1))
    for i in range(1,m+1):
       for j in range(1,n+1):
-            matrix[i,j] = max(matrix[i-1,j] - indel,
-                              matrix[i,j-1] - indel,
-                              matrix[i-1,j-1] + (1 if s[i-1] == t[j-1] else - mismatch),
-                              0)
-   print (matrix)
-   return [(-1,-1)]
+         scores = [matrix[i-1,j] + indel_cost,
+                   matrix[i,j-1] + indel_cost,
+                   matrix[i-1,j-1] + (0 if s[i-1]==t[j-1] else replace_cost)]
+         choices[i,j] = np.argmin(scores)
+         matrix[i,j] = scores[choices[i,j]]
+
+   terminals = [j for j in range(1,n+1) if matrix[-1,j] <= k]
+   return [backtrack(l) for l in terminals]
 
 if __name__=='__main__':
    start = time()
@@ -59,7 +76,8 @@ if __name__=='__main__':
    if args.sample:
       for a,b in ksim(2,'ACGTAG','ACGGATCGGCATCGT'):
          print (a,b)
-
+      for a,b in ksim(1,'ACGTAG','GGACGATAGGTAAAGTAGTAGCGACGTAGG'):
+         print (a,b)
    if args.rosalind:
       Input  = read_strings(f'data/rosalind_{basename(__file__).split(".")[0]}.txt')
 
