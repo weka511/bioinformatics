@@ -23,13 +23,13 @@ CC          = gcc
 CXX         = g++
 RM          = rm -f
 MKDIR       = mkdir
-SRCS        = 	kmin.cpp    \
+SRCS        = 	ksim.cpp    \
 				newick.cpp 	\
 				qrtd.cpp    \
 				tree.cpp
 
 
-TESTS       = 	test-kmin.cpp   	\
+TESTS       = 	test-ksim.cpp   	\
 				test-newick.cpp     \
 				test-qrtd.cpp 	    \
 				test-tree.cpp

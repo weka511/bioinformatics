@@ -17,9 +17,9 @@
  
 #include <iostream>
 #include "catch.hpp"
-#include "kmin.h"
+#include "ksim.h"
 
-TEST_CASE( "KMIN tests", "[kmin]" ) {
+TEST_CASE( "KSIM tests", "[ksim]" ) {
 	
    	SECTION("Sample"){
 		EditDistanceCalculator calc;

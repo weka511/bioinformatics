@@ -15,7 +15,7 @@
  * along with this software.  If not, see <http://www.gnu.org/licenses/>
  */
 
-#include "kmin.h"
+#include "ksim.h"
 
 
 std::vector< std::pair<int, int>>  EditDistanceCalculator::get_distance(int k, std::string s, std::string t) {
