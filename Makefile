@@ -1,4 +1,4 @@
-# Copyright (C) 2023 Simon Crase. simon@greenweavez.nz
+# Copyright (C) 2023-2024 Simon Crase. simon@greenweavez.nz
 #
 # This is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -23,13 +23,15 @@ CC          = gcc
 CXX         = g++
 RM          = rm -f
 MKDIR       = mkdir
-SRCS        = 	newick.cpp 	\
+SRCS        = 	kmin.cpp    \
+				newick.cpp 	\
 				qrtd.cpp    \
 				tree.cpp
 
 
-TESTS       = 	test-newick.cpp	\
-				test-qrtd.cpp 	\
+TESTS       = 	test-kmin.cpp   	\
+				test-newick.cpp     \
+				test-qrtd.cpp 	    \
 				test-tree.cpp
 		
 OBJS1      = $(subst .cpp,.o,$(SRCS)) 
