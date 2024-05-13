@@ -18,3 +18,7 @@
 #include "kmin.h"
 
 
+std::vector< std::pair<int, int>>  EditDistanceCalculator::get_distance(int k, std::string s, std::string t) {
+	std::vector< std::pair<int, int>> Result;
+	return Result;
+}

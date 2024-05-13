@@ -19,11 +19,13 @@
 #define _KMIN_H
 
 #include <string>
+#include <vector>
+
 
 class EditDistanceCalculator {
 	
   public:
-	EditDistanceCalculator() {}
-	int get_distance(int k, std::string s, std::string t) {return 0;}
+	EditDistanceCalculator() {};
+	std::vector< std::pair<int, int>>  get_distance(int k, std::string s, std::string t) ;
 };
 #endif //_KMIN_H
