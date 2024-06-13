@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# Copyright (C) 2017-2023 Greenweaves Software Limited
+# Copyright (C) 2017-2024 Greenweaves Software Limited
 
 # This is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -27,14 +27,14 @@ class FastaContent(object):
     def __init__(self,file_text):
         '''parse text and build data structures'''
         self.pairs = []             # Description + data -- all text so fae
-        nn         = ''             # Description        -- current
-        text       = ''             # data               -- current
+        nn = ''             # Description        -- current
+        text = ''             # data               -- current
         for line in file_text:
             line = line.strip()
             if line.startswith('>'):     # Description
                 if len(nn)>0:
                     self.pairs.append((nn,text))
-                nn   = line[1:]
+                nn = line[1:]
                 text = ''
             else:                         # Data
                 text = text + line
@@ -67,8 +67,6 @@ class FastaContent(object):
 
     def to_dict(self):
         '''
-        to_dict
-
         Used if caller wants a dictionary
         '''
         Dict = {}

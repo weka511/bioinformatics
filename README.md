@@ -119,7 +119,7 @@ I have written this code in Python 3, generally with the most recent release at 
 |mgap|mmgap.py|[Maximizing the Gap Symbols of an Optimal Alignment](http://rosalind.info/problems/mgap/)|
 |mult|mult.py align.py|[Multiple Alignment](http://rosalind.info/problems/mult/)|
 |oap|oap.py|[Overlap Alignment](http://rosalind.info/problems/oap/) |
-|osym|osym.py|[Isolating Symbols in Alignments](http://rosalind.info/problems/osym/) [WIP](https://github.com/weka511/bioinformatics/issues/97)|
+|osym|osym.py align.py|[Isolating Symbols in Alignments](http://rosalind.info/problems/osym/) [WIP](https://github.com/weka511/bioinformatics/issues/97)|
 |pdst|rosalind.py|[Creating a Distance Matrix ](http://rosalind.info/problems/pdst/) |
 |sims|sims.py align.py|[Finding Mutated Motifs](http://rosalind.info/problems/sims/)|
 |smgb|smgb.py |[Semiglobal Alignment](http://rosalind.info/problems/smgb/) |

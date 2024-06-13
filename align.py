@@ -1077,11 +1077,10 @@ def FindMultipleSequenceAlignment(
 
     return backtrack(build_matrix())
 
-# sims
-
-# Finding Mutated Motifs
-
 def sims(s,t, match=1,mismatch=-1):
+    '''
+    Finding Mutated Motifs
+    '''
     def get_score(a,b, match=1,mismatch=-1):
         return match if a==b else mismatch
 
@@ -1143,19 +1142,44 @@ def sims(s,t, match=1,mismatch=-1):
 
     return (max(scores[-1]), ''.join(s_match[::-1]), ''.join(t_match[::-1]))
 
+def osym(s,t, match=1,mismatch=-1):
+    '''
+    Say that we have two strings s and t of respective lengths m and n and an alignment score.
+    Let's define a matrix M corresponding to s and t by setting Mj,k equal to the maximum score of any
+    alignment that aligns s[j] with t[k]. So each entry in M can be equal to at most the maximum
+    score of any alignment of s and t
 
-#  ITWV Finding Disjoint Motifs in a Gene
+    Given:
+        Two DNA strings s and t in FASTA format, each having length at most 1000 bp.
 
-# itwv
-#
-# Given: A text DNA string s of length at most 10 kbp, followed by a collection of n DNA strings of
-#        length at most 10 bp acting as patterns.
-#
-# Return: An nxn matrix M for which M[j,k]==1 if the jth and kth pattern strings can be interwoven into s and Mj,k=0 otherwise.
+    Return:
+       The maximum alignment score of a global alignment of s and t, followed by
+       the sum of all elements of the matrix M corresponding to s and t that was defined above.
+       Apply the mismatch score introduced in Finding a Motif with Modifications.
+    '''
+    def get_score(a,b, match=1,mismatch=-1):
+        return match if a==b else mismatch
 
+    def score_string(s,t):
+        return sum(get_score(a,b) for (a,b) in zip(s,t))
+
+    m = len(s)
+    n = len(t)
+
+    M = np.zeros((m,n),dtype=np.int64)
+    return np.max(M),np.sum(M)
 
 
 def itwv(s,patterns):
+    '''
+    ITWV Finding Disjoint Motifs in a Gene
+
+    Given: A text DNA string s of length at most 10 kbp, followed by a collection of n DNA strings of
+           length at most 10 bp acting as patterns.
+
+    Return: An nxn matrix M for which M[j,k]==1 if the jth and kth pattern strings can be interwoven into s and Mj,k=0 otherwise.
+
+    '''
 
     # itwv2
     #
