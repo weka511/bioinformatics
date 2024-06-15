@@ -39,22 +39,30 @@ def ksim(k,s,t,
    def backtrack(l):
       i = m
       j = l
+      s0 = []
+      t0 = []
       while i > 0 and j > 0:
          match choices[i,j]:
             case 0:
                i -= 1
+               s0.append(s[i])
+               t0.append('-')
             case 1:
                j -= 1
+               s0.append('-')
+               t0.append(t[j])
             case 2:
                i -=  1
                j -= 1
-      return (j+1,l)
+               s0.append(s[i])
+               t0.append(t[j])
+      return (j+1,l,''.join(c for c in s0[::-1]),''.join(c for c in t0[::-1]))
 
    m = len(s)
    n = len(t)
    matrix = np.zeros((m+1,n+1),dtype=np.int32)
    choices = np.zeros((m+1,n+1),dtype=np.int32)
-   matrix[0,:] = list(range(n+1))
+   matrix[0,:] = 0#list(range(n+1))
    matrix[:,0] = list(range(m+1))
    for i in range(1,m+1):
       for j in range(1,n+1):
@@ -74,10 +82,12 @@ if __name__=='__main__':
    parser.add_argument('--rosalind', default=False, action='store_true', help='process Rosalind dataset')
    args = parser.parse_args()
    if args.sample:
-      for a,b in ksim(2,'ACGTAG','ACGGATCGGCATCGT'):
-         print (a,b)
-      for a,b in ksim(1,'ACGTAG','GGACGATAGGTAAAGTAGTAGCGACGTAGG'):
-         print (a,b)
+      for a,b,s,t in ksim(2,'ACGTAG','ACGGATCGGCATCGT'):
+         print (a,b,s,t)
+      print ('----')
+      for a,b,s,t in ksim(1,'ACGTAG','GGACGATAGGTAAAGTAGTAGCGACGTAGG'):
+         print (a,b,s,t)
+      print ('----')
    if args.rosalind:
       Input  = read_strings(f'data/rosalind_{basename(__file__).split(".")[0]}.txt')
 
