@@ -15,7 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>
 
-'''Code for: Chapter 9, how do we locate disease causing mutations?'''
+'''Code for Chapter 9, how do we locate disease causing mutations?'''
 
 from unittest import TestCase, main, skip
 from deprecated import deprecated
@@ -36,90 +36,89 @@ def create_trie(Patterns,root=1):
 
     Parameters:
        Patterns   List of patterns
-       root       Controls whther root is 0, 1, or some other value
+       root       Controls whether root is 0, 1, or some other value
 
     Representation:
-         Trie is represented as a dict or dicts
+         Trie is represented as a dict of dicts
          {node: {symbol:node}}
     '''
-    next_node = root + 1
+    next_available_node = root + 1   # Used to allocate new node numbers
     Trie = {root:{}}
     for Pattern in Patterns:
         currentNode = root
         for currentSymbol in Pattern:
-            if currentSymbol in Trie[currentNode]:
+            if currentSymbol in Trie[currentNode]: # We already have this symbol in correct position in Trie
                 currentNode = Trie[currentNode][currentSymbol]
-            else:
-                new_node = next_node
+            else:  # We have to insert a new node and incrment next available
+                new_node = next_available_node
                 Trie[new_node] = {}
                 Trie[currentNode][currentSymbol] = new_node
                 currentNode = new_node
-                next_node += 1
+                next_available_node += 1
 
     return Trie
 
-
-def MatchPrefix(Text,Trie):
+def MatchAll(Text,Trie):
     '''
     BA9B Implement TrieMatching
 
-    MatchPrefix
-
     Given: A string Text and a collection of strings Patterns.
 
-    Return: First starting positions in Text where a string from Patterns appears as a substring.
+    Return: All starting positions in Text where a string from Patterns appears as a substring.
     '''
-    i      = iter(Text)
-    symbol = next(i)
-    v      = min(Trie.keys())
-    path   = [v]
-    while True:
-        if len(Trie[v])==0:
-            return path
-        elif symbol in Trie[v]:
-            w      = Trie[v][symbol]
-            try:
-                symbol = next(i)
-                v      = w
-                path.append(v)
-            except StopIteration:
-                if len(Trie[w])==0:
-                    return path
-                else:
-                    return []
-        else:
-            return []
+    def MatchPrefix(Text):
+        '''
+        PrefixTrieMatching, prelude to BA9B
 
-# MatchAll
-#
-# Given: A string Text and a collection of strings Patterns.
-#
-# Return: All starting positions in Text where a string from Patterns appears as a substring.
+        Given: A string Text and a collection of strings Patterns.
 
-def MatchAll(Text,Trie):
-    return [i for i in range(len(Text)) if MatchPrefix(Text[i:],Trie)]
+        Return: First starting positions in Text where a string from Patterns appears as a substring.
+        '''
+        i = iter(Text)
+        symbol = next(i)
+        v = min(Trie.keys())
+        path = [v]
+        while True:
+            if len(Trie[v]) == 0:
+                return path
+            elif symbol in Trie[v]:
+                w = Trie[v][symbol]
+                try:
+                    symbol = next(i)
+                    v = w
+                    path.append(v)
+                except StopIteration:
+                    if len(Trie[w])==0:
+                        return path
+                    else:
+                        return []
+            else:
+                return []
 
+    return [i for i in range(len(Text)) if MatchPrefix(Text[i:])]
 
-
-
-# BA9C Construct the Suffix Tree of a String
-
-# ConstructModifiedSuffixTrie
-#
-# Construct Modified Suffix Trie, as described in
-# Charging Station Bioinformatics Algorithms Vol II page 165
-#
-# See also https://sandipanweb.wordpress.com/2017/05/10/suffix-tree-construction-and-the-longest-repeated-substring-problem-in-python/
 
 
 class SuffixTree:
-    next_seq = 0
+    '''
+    BA9C Construct the Suffix Tree of a String
+
+    Construct Modified Suffix Trie, as described in
+    Charging Station Bioinformatics Algorithms Vol II page 165
+
+    See also https://sandipanweb.wordpress.com/2017/05/10/suffix-tree-construction-and-the-longest-repeated-substring-problem-in-python/
+
+    '''
+    next_seq = 0  # Class variable used to allocate node numbers
     class Node:
+        '''
+        A node in the Trie, consisting of a set of edges and a sequnce number
+        '''
         def __init__(self):
-            self.symbol         = None
-            self.edges          = {}
-            self.label          = None
-            self.seq            = SuffixTree.next_seq
+            self.symbol = None
+            self.edges = {}
+            self.label = None
+            self.seq = SuffixTree.next_seq
             SuffixTree.next_seq += 1
 
         def hasLabelledEdge(self,symbol):
@@ -129,12 +128,25 @@ class SuffixTree:
             return self.edges[symbol]
 
         def isLeaf(self):
-            return len(self.edges)==0
+            '''Used to ascertain whether node is a Leaf'''
+            return len(self.edges) == 0
 
-        def setLabel(self,j):
-            self.label=j
+        def assignLabel(self,i):
+            '''
+            Assign label: used for Leaves
+
+            Parameters:
+                i
+            '''
+            self.label = i
 
         def print(self,path=[]):
+            '''
+            Used to print tree recursively
+
+            Parameters:
+                path
+            '''
             if len(self.edges)==0:
                 print (f"{self.label}, {''.join(path)}" )
             else:
@@ -150,50 +162,79 @@ class SuffixTree:
                     edge.node.create_adj(adj)
 
         def collectEdges(self,path=[],accumulator=[]):
-            if len(self.edges)==0:
-                accumulator.append(path+[self.symbol])
-            elif len(self.edges)==1:
+            '''
+            Collect all edges of tree by recursively traversing structure
+
+            Parameters:
+                path
+                accumulator
+            '''
+            if len(self.edges) == 0:
+                accumulator.append(path + [self.symbol])
+            elif len(self.edges) == 1:
                 for symbol,edge in self.edges.items():
-                    edge.node.collectEdges(path+[symbol],accumulator=accumulator)
+                    edge.node.collectEdges(path + [symbol],accumulator=accumulator)
             else:
-                if len(path)>0:
-                    accumulator.append(path+[self.symbol])
+                if len(path) > 0:
+                    accumulator.append(path + [self.symbol])
                 for symbol,edge in self.edges.items():
                     edge.node.collectEdges([symbol],accumulator=accumulator)
             return accumulator
 
     class Edge:
+        '''
+        An edge in the tree
+        '''
         def __init__(self,node,position):
-            self.node     = node
+            self.node = node
             self.position = position
 
+    '''
+    Create an empty Tree, which will be constructed using build(...)
+    '''
     def __init__(self):
         self.root = self.Node()
 
     def build(self,text):
-        Leaves   = []
+        '''
+        Construct the Suffix Tree
+
+        Parameters:
+            text    Used to construct tree
+
+        Returns:
+            Leaves     List of all Leaves of Tree
+            Internal   List of all internal nodes
+            Nodes      Dictionary of all nodes, indexed by sequence number
+        '''
+        Leaves = []
         Internal = []
-        Nodes    = {}
+        Nodes = {}
         for i in range(len(text)):
             currentNode = self.root
             for j in range(i,len(text)):
                 currentSymbol = text[j]
+
+                # Is there an outgoing Edge from currentNode labelled by current symbol?
                 if currentNode.hasLabelledEdge(currentSymbol):
                     currentNode = currentNode.endEdge(currentSymbol).node
                 else:
-                    newNode                          = self.Node()
-                    Nodes[newNode.seq]               = newNode
+                    newNode = self.Node()
+                    Nodes[newNode.seq] = newNode
                     currentNode.edges[currentSymbol] = self.Edge(newNode,j)
-                    currentNode                      = newNode
+                    currentNode = newNode
                     Internal.append(newNode)
-            if currentNode.isLeaf():
-                currentNode.setLabel(i)
-                Leaves.append(currentNode)
 
+            if currentNode.isLeaf():
+                currentNode.assignLabel(i)
+                Leaves.append(currentNode)
 
         return Leaves,Internal,Nodes
 
     def print(self):
+        '''
+        Used to print tree
+        '''
         self.root.print()
 
     def create_adj(self):
@@ -204,23 +245,29 @@ class SuffixTree:
     def collectEdges(self):
         return [ ''.join(run[:-1]) for run in self.root.collectEdges(accumulator=[])]
 
-# BA9D Find the Longest Repeat in a String
 
-def sort_by_descending_length(edges):
-    return [e for _,e in sorted([(len(edge),edge) for edge in edges],reverse=True)]
 
-# FindLongestRepeat
-#
-# Given: A string Text.
-#
-# Return: A longest substring of Text that appears in Text more than once.
+
 
 def FindLongestRepeat(string1,string2=None):
+    '''
+    BA9D Find the Longest Repeat in a String
+
+     Given: A string Text.
+
+     Return: A longest substring of Text that appears in Text more than once.
+    '''
+    def sort_by_descending_length(edges):
+        '''
+        Sort edges by descending length
+        '''
+        return [e for _,e in sorted([(len(edge),edge) for edge in edges],reverse=True)]
+
     tree = SuffixTree()
     string = string1 if string2 == None else string1 + string2
     tree.build(string)
-    edges = sort_by_descending_length(tree.collectEdges())
-    for edge in edges:
+
+    for edge in sort_by_descending_length(tree.collectEdges()):
         index1 = string.find(edge,0,-1 if string2==None else len(string1))
         if index1==-1: continue
         index2 = string.find(edge,(index1+1) if string2==None else len(string1))
@@ -237,38 +284,39 @@ def FindLongestRepeat(string1,string2=None):
 
         return string[index1-i:index1+j]
 
-# BA9E Find the Longest Substring Shared by Two Strings
-
-# LongestSharedSubstring
-#
-# Find the Longest Substring Shared by Two Strings
-#
-# Given: Strings Text1 and Text2.
-#
-# Return: The longest substring that occurs in both Text1 and Text2.
-#
-# See https://en.wikipedia.org/wiki/Longest_common_substring_problem
 
 def LongestSharedSubstring(s,t):
-    # find_straddling
-    #
-    # Find indices of LCPs that straddle end of s,
-    # i.e. one string is from s, the other from t
+    '''
+    BA9E Find the Longest Substring Shared by Two Strings
+
+    Given: Strings Text1 and Text2.
+
+    Return: The longest substring that occurs in both Text1 and Text2.
+
+    See https://en.wikipedia.org/wiki/Longest_common_substring_problem
+    '''
+
 
     def find_straddling():
+        '''
+        find_straddling
+
+        Find indices of LCPs that straddle end of s,
+        i.e. one string is from s, the other from t
+        '''
         previous_from_s = False
-        Pairs           = []
+        Pairs = []
         for i in range(len(lcp)):
-            from_s          = r[i]<len(s)+2
+            from_s = r[i] < len(s)+2
             if i>0 and previous_from_s != from_s:
                 Pairs.append(i)
             previous_from_s = from_s
         return Pairs
 
-    text           = s + '$' + t + '#'
-    r,_,lcp        = SuffixArray(text,auxiliary=True,padLCP=True)
+    text = s + '$' + t + '#'
+    r,_,lcp = SuffixArray(text,auxiliary=True,padLCP=True)
     candidate_LCPs = [lcp[i] if i in  find_straddling() else 0 for i in range(len(lcp))]
-    index          = np.argmax(candidate_LCPs)
+    index = np.argmax(candidate_LCPs)
     return text[r[index]:r[index]+candidate_LCPs[index]]
 
 
@@ -276,27 +324,29 @@ def SuffixArray(s,auxiliary=False,padLCP=False):
     '''
     BA9G Construct the Suffix Array of a String
 
-    Suffix Array
-
     In 1993, Udi Manber and Gene Myers introduced suffix arrays as a memory-efficient alternative to suffix trees.
-    To construct SuffixArray(Text), we first sort all suffixes of Text lexicographically, assuming that "$"
-    comes first in the alphabet. The suffix array is the list of starting positions of these sorted suffixes.
 
     I have used a naive algorithm, as it appears to be adequate for the test data
 
-    This can also create the auxiliary arrays used by Efficient repeat finding via suffix arrays
-    Veronica Becher, Alejandro Deymonnaz, and Pablo Ariel Heiber
+    Parameters:
+        s           The string to be converted
+        auxiliary   Used to create the auxiliary arrays used by: Efficient repeat finding via suffix arrays
+                    Veronica Becher, Alejandro Deymonnaz, and Pablo Ariel Heiber
+        padLCP      Used in BA9R. Why?
     '''
-    r = [i for (_,i) in sorted([(s[i:],i) for i in range(len(s))],
-                               key=lambda x:x[0])]
+
+    # sort all suffixes of Text lexicographically, assuming that "$"
+    # comes first in the alphabet. The suffix array is the list of starting positions of these sorted suffixes.
+    r = [i for (_,i) in sorted([(s[i:],i) for i in range(len(s))], key=lambda x:x[0])]
+
     if auxiliary:
-        n    = len(s)
-        p    = np.empty_like(r)
+        n = len(s)
+        p = np.empty_like(r)
         p[r] = np.arange(len(p), dtype=p.dtype)   # https://stackoverflow.com/questions/9185768/inverting-permutations-in-python
-        LCP  = []
+        LCP = []
         for i in range(len(r)-1):
-            i0     = r[i]
-            i1     = r[i+1]
+            i0 = r[i]
+            i1 = r[i+1]
             LCP.append(0)
             for j in range(n-max(i0,i1)):
                 if s[i0+j] == s[i1+j]:
@@ -309,13 +359,15 @@ def SuffixArray(s,auxiliary=False,padLCP=False):
     else:
         return r
 
-#  BA9H 	Pattern Matching with the Suffix Array
 
-# MatchOnePatternUsingSuffixArray
-#
-# Used by MatchPatternsUsingSuffixArray to match one pattern
-#
 def MatchOnePatternUsingSuffixArray(Text,Pattern,SuffixArray):
+    '''
+    BA9H 	Pattern Matching with the Suffix Array
+
+    MatchOnePatternUsingSuffixArray
+
+    Used by MatchPatternsUsingSuffixArray to match one pattern
+    '''
     minIndex = 0
     maxIndex = len(Text)
     while minIndex < maxIndex:
@@ -337,13 +389,14 @@ def MatchOnePatternUsingSuffixArray(Text,Pattern,SuffixArray):
     last = maxIndex
     return (first,last)
 
-# MatchPatternsUsingSuffixArray
-#
-# Given: A string Text and a collection of strings Patterns.
-#
-# Return: All starting positions in Text where a string from Patterns appears as a substring.
-
 def MatchPatternsUsingSuffixArray(Text,Patterns):
+    '''
+    BA9H Pattern Matching with the Suffix Array
+
+    Given: A string Text and a collection of strings Patterns.
+
+    Return: All starting positions in Text where a string from Patterns appears as a substring.
+    '''
     sfa = SuffixArray(Text)
     Matches = []
     for Pattern in Patterns:
@@ -352,55 +405,59 @@ def MatchPatternsUsingSuffixArray(Text,Patterns):
             Matches.append(sfa[i])
     return sorted(Matches)
 
-# BA9I Construct the Burrows-Wheeler Transform of a String
-#
-# Given a string Text, form all possible cyclic rotations of Text; a cyclic
-# rotation is defined by chopping off a suffix from the end of Text and appending
-# this suffix to the beginning of Text. Next - similarly to suffix arrays - order
-# all the cyclic rotations of Text lexicographically to form a |Text| x |Text| matrix of symbols
-# that we call the Burrows-Wheeler matrix and denote by M(Text).
-#
-# Note that the first column of M(Text) contains the symbols of Text ordered lexicographically.
-# In turn, the second column of M(Text) contains the second symbols of all cyclic rotations of Text,
-# and so it too represents a (different) rearrangement of symbols from Text.
-# The same reasoning applies to show that any column of M(Text) is some rearrangement
-# of the symbols of Text. We are interested in the last column of M(Text),
-# called the Burrows-Wheeler transform of Text, or BWT(Text).
-def BurrowsWheeler(s):
 
+def BurrowsWheeler(s):
+    '''
+     BA9I Construct the Burrows-Wheeler Transform of a String
+
+     Given a string Text, form all possible cyclic rotations of Text; a cyclic
+     rotation is defined by chopping off a suffix from the end of Text and appending
+     this suffix to the beginning of Text. Next - similarly to suffix arrays - order
+     all the cyclic rotations of Text lexicographically to form a |Text| x |Text| matrix of symbols
+     that we call the Burrows-Wheeler matrix and denote by M(Text).
+
+     Note that the first column of M(Text) contains the symbols of Text ordered lexicographically.
+     In turn, the second column of M(Text) contains the second symbols of all cyclic rotations of Text,
+     and so it too represents a (different) rearrangement of symbols from Text.
+     The same reasoning applies to show that any column of M(Text) is some rearrangement
+     of the symbols of Text. We are interested in the last column of M(Text),
+     called the Burrows-Wheeler transform of Text, or BWT(Text).
+    '''
     return ''.join([row[-1] for row in sorted([s[k:] + s[0:k] for k in range(len(s))])])
 
-# BA9J Reconstruct a String from its Burrows-Wheeler Transform
-# BA9K Generate the Last-to-First Mapping of a String
-
-# getN
-#
-# Used by InverseBWT and LastToFirst: given a character that is known to appear in a
-# specific position in a column, deterine whether is is the first, 2nd, ..., occurrence
-#
-# Parameters:
-#     ch
-#     row
-#     column
 def getN(ch,row,column):
+    '''
+    BA9J Reconstruct a String from its Burrows-Wheeler Transform
+    BA9K Generate the Last-to-First Mapping of a String
+
+    Used by InverseBWT and LastToFirst: given a character that is known to appear in a
+    specific position in a column, deterine whether is is the first, 2nd, ..., occurrence
+
+    Parameters:
+        ch
+        row
+        column
+    '''
     n = 0
     i = 0
-    while i<=row:
-        if ch==column[i]:
-            n+=1
-        i+=1
+    while i <= row:
+        if ch == column[i]:
+            n += 1
+        i += 1
     return n
 
-# get_char
-#
-# Used by InverseBWT and LastToFirst: find a specific occurrence of chracter in column
-#
-# Parameters:
-#     ch      Character to search for
-#     column  Column to be searched
-#     seq     Number of occurrence - 1 for first occurence, 2 for 2nd, etc.
-
 def get_char(ch,column,seq):
+    '''
+    BA9J Reconstruct a String from its Burrows-Wheeler Transform
+    BA9K Generate the Last-to-First Mapping of a String
+
+    Used by InverseBWT and LastToFirst: find a specific occurrence of character in column
+
+    Parameters:
+        ch      Character to search for
+        column  Column to be searched
+        seq     Number of occurrence - 1 for first occurence, 2 for 2nd, etc.
+    '''
     count = 0
     for pos in range(len(column)):
         if column[pos]==ch:
@@ -408,98 +465,102 @@ def get_char(ch,column,seq):
             if count==seq:
                 return pos
 
-# Inverse BWT
-#
-# Reconstruct a String from its Burrows-Wheeler Transform
-#
-# See pages 139-149 of Compeau Pevzner, Volume II
 
 def InverseBWT(BWT):
-    lastColumn  = [a for a in BWT]
+    '''
+    BA9J Reconstruct a String from its Burrows-Wheeler Transform
+
+    See pages 139-149 of Compeau Pevzner, Volume II
+    '''
+    lastColumn = [a for a in BWT]
     firstColumn = sorted(lastColumn)
-    Result      = [firstColumn[0]]
-    ch          = min(BWT)        # $ in examples in textbook
-    seq         = 1               # Keep track of whether this is 1st, 2nd,... occurence
+    Result = [firstColumn[0]]
+    ch = min(BWT)        # $ in examples in textbook
+    seq = 1               # Keep track of whether this is 1st, 2nd,... occurrence
                                   # Of course there is only one occurrence of $, but this
                                   # isn't necessarly true for other characters
     while len(Result) < len(BWT):
         row = get_char(ch,lastColumn,seq)  # Find row number for seq-th occurence of character in last coumn
-        ch  = firstColumn[row]             # Find coresponding symbol in first column
+        ch = firstColumn[row]             # Find coresponding symbol in first column
                                            # this is the next character arising from a cyclic permutation
         seq = getN(ch,row,firstColumn)     # Indicates whether 1st, 2nd, ... occurrence
         Result.append(ch)
 
     return ''.join(Result[1:]+Result[0:1])
 
-# BA9K Generate the Last-to-First Mapping of a String
-#
-#  LastToFirst
-#
-#  Parameters:
-#      BWT
-#      i
-#
-#  Return:
-#    The position LastToFirst(i) in FirstColumn in the Burrows-Wheeler matrix if LastColumn = BWT.
 
 def LastToFirst(BWT,i):
+    '''
+    BA9K Generate the Last-to-First Mapping of a String
+
+    Parameters:
+        BWT
+        i
+
+    Return:
+      The position LastToFirst(i) in FirstColumn in the Burrows-Wheeler matrix if LastColumn = BWT.
+    '''
     first = sorted(BWT)         # First column = last column, sorted
-    ch    = BWT[i]              # ith character, 0 based
-    n     = getN(ch,i,BWT)      # character is nth occurrence
+    ch = BWT[i]              # ith character, 0 based
+    n = getN(ch,i,BWT)      # character is nth occurrence
     return get_char(ch,first,n) # nth occurence in first column
 
-# ColumnContains
-#
-# Used by Match to search the last column for last symbol in Pattern
-#
-# Parameters:
-#     symbol   Current last symbol in Pattern
-#     top      The first row in last column that matches current suffix (excluding symbol)
-#     bottom   The last row in last column that matches current suffix (excluding symbol)
-#
-# Returns:
-#     topIndex     Index in first column of first row that matches current suffix (including symbol)
-#     bottomIndex  Index in first column of last row that matches current suffix (including symbol)
 
 def ColumnContains(Column,symbol,top,bottom):
-    topIndex    = None
+    '''
+    Used by Match to search the last column for last symbol in Pattern
+
+    Parameters:
+        symbol   Current last symbol in Pattern
+        top      The first row in last column that matches current suffix (excluding symbol)
+        bottom   The last row in last column that matches current suffix (excluding symbol)
+
+    Returns:
+        topIndex     Index in first column of first row that matches current suffix (including symbol)
+        bottomIndex  Index in first column of last row that matches current suffix (including symbol)
+    '''
+    topIndex = None
     bottomIndex = None
 
     for i in range(top,len(Column)):
-        if Column[i]==symbol:
+        if Column[i] == symbol:
             bottomIndex = i
             break
 
     for i in range(bottom,-1,-1):
-        if Column[i]==symbol:
+        if Column[i] == symbol:
             topIndex = i
             break
 
     return topIndex,bottomIndex
 
-# getCount
-#
-# Count number of occurrences of symbol in first i positions of last column.
-def getCount(Column, symbol, i):
-    return sum([1 for ch in Column[:i] if ch==symbol])
 
-# getFirstOccurrence
-#
-# Find first occurrence of symbol in first column
+def getCount(Column, symbol, i):
+    '''
+    Count number of occurrences of symbol in first i positions of last column.
+    '''
+    return sum([1 for ch in Column[:i] if ch == symbol])
+
 
 def getFirstOccurrence(Column,symbol):
+    '''
+    Find first occurrence of symbol in first column
+    '''
     for i in range(len(Column)):
-        if Column[i]==symbol:
+        if Column[i] == symbol:
             return i
 
-# BA9L 	Implement BWMatching
-#
-# Given: A string BWT(Text), followed by a collection of strings Patterns.
-#
-# Return: A list of integers, where the i-th integer corresponds to the number
-#          of substring matches of the i-th member of Patterns in Text.
+
 
 def BW_Match(LastColumn,Patterns):
+    '''
+    BA9L 	Implement BWMatching
+
+    Given: A string BWT(Text), followed by a collection of strings Patterns.
+
+    Return: A list of integers, where the i-th integer corresponds to the number
+             of substring matches of the i-th member of Patterns in Text.
+    '''
 
     # Match
     #
@@ -752,14 +813,15 @@ def PrefixTreeMatching(Text,Tree):
 def MatchTries(s,t):
     return [i for i in range(len(s)-1) if PrefixTreeMatching(s[i:],t) ]
 
-# mrep
 
-#  MREP Identifying Maximal Repeats
-#
-# Based on Efficient repeat finding via suffix arrays
-# Ver�nica Becher, Alejandro Deymonnaz, and Pablo Ariel Heiber
 
 def mrep(w,ml=20):
+    '''
+    MREP Identifying Maximal Repeats
+
+    Based on Efficient repeat finding via suffix arrays
+    Veronica Becher, Alejandro Deymonnaz, and Pablo Ariel Heiber
+    '''
     # create_LCP_already_seen
     #
     # Create list of LCP values that have already been seen
@@ -773,7 +835,7 @@ def mrep(w,ml=20):
     n       = len(w)
     r,p,LCP = SuffixArray(w,auxiliary=True)
     S       = create_LCP_already_seen()
-    I       = np.np.argsort(LCP)
+    I       = np.argsort(LCP)
 
     for t in range(min([t for t in range(len(I)) if LCP[I[t]]>=ml]),
                    n-1):
@@ -786,9 +848,11 @@ def mrep(w,ml=20):
                 yield w[r[i]:r[i]+LCP[i]]                                                              # banzai
 
 
-# BA9N 	Find All Occurrences of a Collection of Patterns in a String
-
 def EvenBetterBWMatching(Text,Patterns,K=10):
+    '''
+    BA9N 	Find All Occurrences of a Collection of Patterns in a String
+
+    '''
     # get_entry
     #
     # Search partial suffix array for a value whose position matches row
@@ -988,4 +1052,12 @@ if __name__=='__main__':
                              [5, 2, 3, 0, 4, 1],
                              [0, 0, 0, 2, 0, 1])
             z=0
+
+        def test_mrep(self):
+            '''MREP Identifying Maximal Repeats'''
+            self.assertEqual(['ATGGGTCCAGAGTTTTGTAATTT','TAGAGATAGAATGGGTCCAGAGTTTTGTAATTTCCATGGGTCCAGAGTTTTGTAATTTAT'],
+                             list(mrep('TAGAGATAGAATGGGTCCAGAGTTTTGTAATTTCCATGGGTCCAGAGTTTTGTAATTTATTATATAGAGATAGAATGGGTCCAGAGT'
+                                  'TTTGTAATTTCCATGGGTCCAGAGTTTTGTAATTTAT')))
+
+
     main()
