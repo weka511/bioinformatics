@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-#    Copyright (C) 2019-2023 Greenweaves Software Limited
+#    Copyright (C) 2019-2024 Greenweaves Software Limited
 #
 #    This is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -17,15 +17,15 @@
 
 '''Common code for alignment problems'''
 
-from sys        import float_info
-from unittest   import TestCase, main, skip
+from os import environ
+from sys import float_info
+from unittest import TestCase, main, skip, skipIf
 from deprecated import deprecated
 import numpy as np
-
 from reference_tables import createSimpleDNASubst,  BLOSUM62, PAM250
+from rosalind import RosalindException
 
-
-def get_number_of_coins(money,coins):
+def get_number_of_coins(money,Coins):
     '''
     BA5A 	Find the Minimum Number of Coins Needed to Make Change
 
@@ -42,46 +42,47 @@ def get_number_of_coins(money,coins):
         Find a coin such that we can make change using it
         plus a previously computed value
         '''
-        number_of_coins = 1 + money//min(coins)  # This is an an upper bound: we will try to reduce it
-        for coin in coins:
-            if m>=coin and number[m-coin]+1<number_of_coins:
+        number_of_coins = 1 + money//min(Coins)  # This is an an upper bound: we will try to reduce it
+        for coin in Coins:
+            if m >= coin and number[m-coin] + 1 < number_of_coins:
                 number_of_coins = number[m-coin] + 1
         return number_of_coins
 
     number = np.zeros((money+1),dtype=int)
-    for m in range(1,money+1):             # solve for m
+    for m in range(1,money+1):
         number[m] = get_next_number_of_coins(m)
     return number[money]
 
-def longest_manhattan_path(n,m,down,right):
+def longest_manhattan_path(n,m,Down,Right):
     '''
     BA5B 	Find the Length of a Longest Path in a Manhattan-like Grid
 
-    Input: Integers n and m, followed by an n*(m+1) matrix Down and an
-           (n+1)*m matrix Right. The two matrices are separated by the "-" symbol.
+    Parameters:
+        n
+        m
+        Down an n x (m+1) matrix
+        Right an (n+1) x m matrix
 
-    Return: The length of a longest path from source (0, 0) to sink (n, m)
-        in the n*m rectangular grid whose edges are defined by the matrices
-        Down and Right.
+    Returns: The length of a longest path from source (0, 0) to sink (n, m)
+            in the n*m rectangular grid whose edges are defined by the matrices
+            Down and Right.
 
     http://rosalind.info/problems/ba5b/
     '''
     s = np.zeros((n+1,m+1))
 
     for i in range(1,n+1):
-        s[i][0] = s[i-1,0] + down[i-1,0]
+        s[i][0] = s[i-1,0] + Down[i-1,0]
 
     for j in range(1,m+1):
-        s[0][j] = s[0,j-1] + right[0,j-1]
+        s[0][j] = s[0,j-1] + Right[0,j-1]
 
     for i in range(1,n+1):
         for j in range(1,m+1):
-            s[i,j] = max(s[i-1,j] + down[i-1,j],
-                         s[i,j-1] + right[i,j-1])
+            s[i,j] = max(s[i-1,j] + Down[i-1,j],
+                         s[i,j-1] + Right[i,j-1])
 
     return s[n,m]
-
-
 
 def get_longest_common_subsequence(v,w):
     '''
@@ -93,34 +94,34 @@ def get_longest_common_subsequence(v,w):
 
      http://rosalind.info/problems/ba5a/
     '''
-    m            = len(v)
-    n            = len(w)
-    s            = np.zeros((m+1,n+1))
+    m  = len(v)
+    n  = len(w)
+    s  = np.zeros((m+1,n+1))
     predecessors = -1 * np.ones_like(s)
     for i in range(1,m+1):
         for j in range(1,n+1):
-            choices           = [s[i,j-1], s[i-1,j],s[i-1,j-1]]
+            choices = [s[i,j-1], s[i-1,j],s[i-1,j-1]]
             if v[i-1]==w[j-1]:
                 choices[-1] += 1
-            index             = np.argmax(choices)
-            s[i,j]            = choices[index]
+            index = np.argmax(choices)
+            s[i,j] = choices[index]
             predecessors[i,j] = index
 
-    i       = m
-    j       = n
     matches = []
-    while i>0 and j > 0:
-        if predecessors[i,j]==0:
-            j -= 1
-        elif predecessors[i,j]==1:
-            i -= 1
-        elif predecessors[i,j]==2:
-            i -= 1
-            j -= 1
-            if v[i]==w[j]:
-                matches.append(v[i])
-        else:
-            raise Exception(f'Predecessors[{i},{j}] referenced, but not defined')
+    while m>0 and n > 0:
+        match predecessors[m,n]:
+            case 0:
+                n -= 1
+            case 1:
+                m -= 1
+            case 2:
+                m -= 1
+                n -= 1
+                if v[m] == w[n]:
+                    matches.append(v[m])
+            case _:
+                raise RosalindException(f'Predecessors[{m},{n}] referenced, but not defined')
+
     return ''.join(matches[-1::-1])
 
 def get_longest_path(source,sink,graph):
@@ -419,12 +420,10 @@ def alignUsingLinearSpace(v,w,
 
     pass
 
-# BA5F 	Find a Highest-Scoring Local Alignment of Two Strings
-#
-# common code
 
 def calculate_scores_for_alignment(s,string1, string2, weights,sigma,
                                    init_predecessors = None):
+    '''BA5F 	Find a Highest-Scoring Local Alignment of Two Strings'''
     predecessors={}
     for i in range(len(string1)+1):
         for j in range(len(string2)+1):
@@ -752,7 +751,7 @@ def create_topological_order(graph):
                     candidates.append(b)
 
     if len(mygraph)>0:
-        raise Exception('Input graph is not a DAG')
+        raise RosalindException('Input graph is not a DAG')
 
     return product
 
@@ -1163,10 +1162,15 @@ def osym(s,t, match=1,mismatch=-1):
     def score_string(s,t):
         return sum(get_score(a,b) for (a,b) in zip(s,t))
 
-    m = len(s)
-    n = len(t)
+    def createM(m, n):
+        M = np.empty((m,n),dtype=np.int64)
+        for i in range(m):
+            for j in range(n):
+                M[i,j] = - abs(i-j) - abs(m-n)
 
-    M = np.zeros((m,n),dtype=np.int64)
+        return M
+
+    M = createM(len(s), len(s))
     return np.max(M),np.sum(M)
 
 
@@ -1325,83 +1329,74 @@ def ctea(s,t,indel_cost=1,replace_cost=lambda a,b: 1, mod=134217727):
 if __name__=='__main__':
 
     class Test_5_Alignment(TestCase):
-
-        def test_simple(self):
-            '''
-            A simple test of the align function, based on https://rosalind.info/problems/glob/
-            '''
-            score,s1,s2 = align('PLEASANTLY','MEANLY',
-                                replace_score = BLOSUM62(),
-                                indel_cost    = 5)
-            self.assertEqual(8,score)
-            self.assertEqual('LEASANTLY',''.join(s1))
-            self.assertEqual('MEA--N-LY',''.join(s2))
-
+        '''
+        Tests for Bioinformatics Chapter 5 and alignment problems
+        '''
 
         def test_ba5a(self):
-            '''BA5A 	Find the Minimum Number of Coins Needed to Make Change'''
+            '''BA5A Find the Minimum Number of Coins Needed to Make Change'''
             self.assertEqual(2, get_number_of_coins(40,[1,5,10,20,25,50]))
             self.assertEqual(338, get_number_of_coins(8074,[24,13,12,7,5,3,1]))
 
         def test_ba5b_sample(self):
-            '''BA5B 	Find the Length of a Longest Path in a Manhattan-like Grid'''
-            self.assertEqual(34,\
-                             longest_manhattan_path(4,\
-                                                    4,\
-                                                    np.array([[1, 0, 2, 4, 3],\
-                                                     [4, 6, 5, 2, 1],\
-                                                     [4, 4, 5, 2, 1],\
-                                                     [5, 6, 8, 5, 3]]),\
-                                                    np.array([[3, 2, 4, 0],\
-                                                     [3, 2, 4, 2],\
-                                                     [0, 7, 3, 3],\
-                                                     [3, 3, 0, 2],\
-                                                     [1, 3, 2, 2]])))
+            '''BA5B Find the Length of a Longest Path in a Manhattan-like Grid'''
+            self.assertEqual(34,
+                             longest_manhattan_path(4,
+                                                    4,
+                                                    np.array([[1, 0, 2, 4, 3],
+                                                              [4, 6, 5, 2, 1],
+                                                              [4, 4, 5, 2, 1],
+                                                              [5, 6, 8, 5, 3]]),
+                                                    np.array([[3, 2, 4, 0],
+                                                              [3, 2, 4, 2],
+                                                              [0, 7, 3, 3],
+                                                              [3, 3, 0, 2],
+                                                              [1, 3, 2, 2]])))
         def test_ba5b_rosalind(self):
-            '''BA5B 	Find the Length of a Longest Path in a Manhattan-like Grid'''
-            self.assertEqual(84,\
-                             longest_manhattan_path(17,\
-                                                    9,\
+            '''BA5B Find the Length of a Longest Path in a Manhattan-like Grid'''
+            self.assertEqual(84,
+                             longest_manhattan_path(17,
+                                                    9,
                                                     np.array([[2,3,4,0,3,1,1,1,1,1],
-                                                     [4,2,3,4,3,3,0,4,1,1],\
-                                                     [4,4,0,1,4,3,2,0,2,2],\
-                                                     [4,3,0,3,4,4,3,2,4,4],\
-                                                     [0,1,0,1,3,0,3,0,3,4],\
-                                                     [3,2,4,4,4,3,1,0,0,0],\
-                                                     [3,4,3,1,2,3,0,0,4,0],\
-                                                     [2,4,3,4,1,2,0,3,2,0],\
-                                                     [1,4,4,1,4,4,3,1,1,4],\
-                                                     [3,1,2,2,3,3,0,4,0,0],\
-                                                     [0,2,1,4,1,3,1,3,1,0],\
-                                                     [1,0,4,0,4,3,3,2,3,1],\
-                                                     [2,0,0,4,3,4,0,3,0,0],\
-                                                     [4,1,0,4,3,2,1,1,3,1],\
-                                                     [2,4,4,3,3,4,0,0,4,3],\
-                                                     [1,0,2,3,3,0,4,0,2,0],\
-                                                     [3,1,0,3,2,3,2,2,1,4]]),\
-                                                    np.array([[1,0,4,4,3,3,1,0,4],\
-                                                     [0,2,0,3,3,0,1,2,1],\
-                                                     [3,2,3,1,1,4,2,4,4],\
-                                                     [1,3,4,4,2,1,1,1,4],\
-                                                     [1,4,2,2,3,1,3,2,3],\
-                                                     [0,3,1,0,1,0,4,1,4],\
-                                                     [1,3,4,4,1,0,3,2,1],\
-                                                     [2,3,1,2,3,2,2,2,3],\
-                                                     [3,2,1,4,0,2,4,2,4],\
-                                                     [4,0,2,0,1,3,1,4,4],\
-                                                     [1,3,0,2,2,1,0,3,2],\
-                                                     [1,4,0,4,4,1,2,4,2],\
-                                                     [0,2,4,3,4,0,3,2,2],\
-                                                     [2,3,4,4,0,4,3,0,4],\
-                                                     [1,0,4,1,3,3,1,4,2],\
-                                                     [4,3,4,3,2,3,2,2,0],\
-                                                     [0,1,2,2,4,4,2,4,2],\
+                                                     [4,2,3,4,3,3,0,4,1,1],
+                                                     [4,4,0,1,4,3,2,0,2,2],
+                                                     [4,3,0,3,4,4,3,2,4,4],
+                                                     [0,1,0,1,3,0,3,0,3,4],
+                                                     [3,2,4,4,4,3,1,0,0,0],
+                                                     [3,4,3,1,2,3,0,0,4,0],
+                                                     [2,4,3,4,1,2,0,3,2,0],
+                                                     [1,4,4,1,4,4,3,1,1,4],
+                                                     [3,1,2,2,3,3,0,4,0,0],
+                                                     [0,2,1,4,1,3,1,3,1,0],
+                                                     [1,0,4,0,4,3,3,2,3,1],
+                                                     [2,0,0,4,3,4,0,3,0,0],
+                                                     [4,1,0,4,3,2,1,1,3,1],
+                                                     [2,4,4,3,3,4,0,0,4,3],
+                                                     [1,0,2,3,3,0,4,0,2,0],
+                                                     [3,1,0,3,2,3,2,2,1,4]]),
+                                                    np.array([[1,0,4,4,3,3,1,0,4],
+                                                     [0,2,0,3,3,0,1,2,1],
+                                                     [3,2,3,1,1,4,2,4,4],
+                                                     [1,3,4,4,2,1,1,1,4],
+                                                     [1,4,2,2,3,1,3,2,3],
+                                                     [0,3,1,0,1,0,4,1,4],
+                                                     [1,3,4,4,1,0,3,2,1],
+                                                     [2,3,1,2,3,2,2,2,3],
+                                                     [3,2,1,4,0,2,4,2,4],
+                                                     [4,0,2,0,1,3,1,4,4],
+                                                     [1,3,0,2,2,1,0,3,2],
+                                                     [1,4,0,4,4,1,2,4,2],
+                                                     [0,2,4,3,4,0,3,2,2],
+                                                     [2,3,4,4,0,4,3,0,4],
+                                                     [1,0,4,1,3,3,1,4,2],
+                                                     [4,3,4,3,2,3,2,2,0],
+                                                     [0,1,2,2,4,4,2,4,2],
                                                      [2,3,1,4,4,3,4,0,3]])))
 
 
         def test_ba5c_sample(self):
             '''
-            BA5C 	Find a Longest Common Subsequence of Two Strings
+            BA5C Find a Longest Common Subsequence of Two Strings
 
             My result doesn't match Rosalind, but it is the same length, and is a common subsequence,
             so is a longest common subsequence.
@@ -1412,7 +1407,7 @@ if __name__=='__main__':
                                  'ACACTGTGA'))
         @skip('Issue  #117')
         def test_ba5c_rosalind(self):
-            '''BA5C 	Find a Longest Common Subsequence of Two Strings'''
+            '''BA5C Find a Longest Common Subsequence of Two Strings'''
             self.assertEqual('AGAATCCATCGACAACTGGATAAGTAGAGGTTGATTGTAACGAGGGTCTCGAATAAGCCTGGCACCGCTACATCGGAGTTGCTGAACAAGATATAGGCCTAGGACAACGCGGGCTATCTGCTTAAATAGAGAAGTGTGATGGCTGGGTCTTGTAGGGAGACCCCCGTGACCAAGTGGTCCGGCATAGAAACCGCCGTGGCTTGAGGTCCGGCAGCGCTTATCCATCCCCATCGCAGAGACTCATTACAAGTTTGCCCCACGCAGGACTTGGTGGCCGGGATACAGGGTGGAACTCGCTCAAAATTTGGACGAAAATTGGTCCGCCAGTGCGACAGAACGGGAGCTCATTTCAAGTGGAGTGAGGAACGTGCACGTTTAAAATAATCCTGTGGTAGACCAATCCCGTGTGCAGGTAAAACTCCGTTAGTCATGTGACCTTTGATCGCCCGTCAATGGCCAACTCGTCTCGGTGTTCCATTGAAAGATCGGAATACCCTATTAGCGCCCATCTCTTACAGGAGAGCGCAGGCATTGAAAGGGAGTTGCAACTTCAGTGCACCCGCATTGA',
                              get_longest_common_subsequence(
                                  'CAAGAACAATTCGCCAATCGTAAACTACACTTTGGAGTCTAAGCTTCAGAGGCTTGGAATCTGCGCCCTTAACGAGGGTCGTCGAATACATTGCTCTGTTGCGACCGGCTATTCTAGTCGCAAGAGTCTTGGGGCTGTAACGGAATGATAATATGGGCCTAAGTGGGACGGAGAGAGCGGCGGGCTGAATGTCTGACCTTGAAATAGAAGAAGATCGATAGATGGCTGGGTCTCTGTAGGGAGACTCCCCTGTTGACGCGAAGTGGTCCGGCATACGACACCACCGCCTTTGTGGCTTCGGACCCCGGGTACCGGACAGCGGCGTTCATCATTCATCCACAAGCATACAAGAAAAGACAGGTGAATGGACGGGTGCATTACAAGTCTTTGCCGCCTACGCGTAGTCAGACTTGGGTGGGGCCGGCGGCCATAGCCAGGTGTGGCAAGTTCTACAAGCTCATATTAATTGTGGACAGACAAAATTGGTCCGACCAGTAGCGACAGAAGCCGGAATAGGAAGCTATCGATTATTTCGAAAGGCAACTGGACGTGAAGATGACACCAACCGTCGCACGTTAATAATAATAAGTCCTATGATTTGGATAGGACCATATTCTCCTTTTGTGCCTCACGCAGGTATAGGGATGAATCTCCTGGTTGAGCTCAGTAGATTAGACCTTGTTAAAGTCGACTACGGTCCCGATCGCAAGTGGAACCACATACCACCTCCGTCTCCCCGGTGATCTGCCATTGGAAAGATGCGAGAATGAGCGCCTAGGATGTTAAGGCGGACCCAGTAACTACATTACACCGCTGTTTCAGAGTCCGCATGGTCAATTCGAACCGGTAGGTCGAGTTTTGTCAACTGTACACCGTGCACTTTCGGGGCTTGTTTTAGGTCGATGTTGCCA',
@@ -1420,7 +1415,7 @@ if __name__=='__main__':
                              ))
 
         def test_ba5d_sample(self):
-            '''BA5D 	Find the Longest Path in a DAG'''
+            '''BA5D Find the Longest Path in a DAG'''
             n,path = get_longest_path(0,4,
                                 [(0,1,7),
                                  (0,2,4),
@@ -1432,198 +1427,200 @@ if __name__=='__main__':
             self.assertEqual([0,2,3,4],path)
 
         def test_ba5d_extra(self):
-            '''BA5D 	Find the Longest Path in a DAG'''
+            '''BA5D Find the Longest Path in a DAG'''
             n,path = get_longest_path(0, 44,
-                                      [[6, 26, 32],
-                                       [10, 39, 30],
-                                       [26, 28, 24],
-                                       [3, 16, 19],
-                                       [10, 35, 35],
-                                       [10, 37, 19],
-                                       [10, 31, 36],
-                                       [10, 33, 32],
-                                       [10, 32, 4],
-                                       [15, 23, 0],
-                                       [15, 21, 0],
-                                       [22, 24, 0],
-                                       [22, 27, 31],
-                                       [1, 3, 36],
-                                       [5, 43, 37],
-                                       [8, 30, 23],
-                                       [19, 34, 11],
-                                       [12, 13, 38],
-                                       [39, 40, 35],
-                                       [12, 15, 29],
-                                       [27, 29, 13],
-                                       [1, 42, 31],
-                                       [24, 25, 2],
-                                       [1, 10, 4],
-                                       [4, 30, 11],
-                                       [13, 35, 17],
-                                       [24, 28, 2],
-                                       [23, 25, 37],
-                                       [31, 43, 7],
-                                       [31, 40, 17],
-                                       [3, 28, 2],
-                                       [5, 12, 39],
-                                       [5, 11, 37],
-                                       [3, 4, 4],
-                                       [2, 31, 23],
-                                       [14, 29, 13],
-                                       [19, 27, 21],
-                                       [27, 36, 20],
-                                       [31, 33, 23],
-                                       [30, 40, 27],
-                                       [28, 42, 29],
-                                       [21, 35, 33],
-                                       [21, 37, 5],
-                                       [20, 37, 24],
-                                       [2, 9, 38],
-                                       [0, 14, 19],
-                                       [4, 20, 0],
-                                       [1, 41, 8],
-                                       [8, 14, 28],
-                                       [19, 20, 13],
-                                       [4, 43, 3],
-                                       [14, 31, 25],
-                                       [14, 30, 22],
-                                       [13, 41, 19],
-                                       [13, 40, 32],
-                                       [14, 35, 10],
-                                       [10, 11, 5],
-                                       [14, 38, 23],
-                                       [2, 23, 9],
-                                       [2, 25, 1],
-                                       [24, 40, 37],
-                                       [12, 38, 38],
-                                       [20, 23, 34],
-                                       [20, 21, 29],
-                                       [12, 30, 10],
-                                       [12, 37, 12],
-                                       [29, 44, 30],
-                                       [33, 35, 15],
-                                       [33, 37, 22],
-                                       [0, 36, 8],
-                                       [37, 38, 17],
-                                       [10, 29, 13],
-                                       [17, 44, 11],
-                                       [6, 14, 5],
-                                       [10, 22, 8],
-                                       [22, 37, 19],
-                                       [22, 34, 3],
-                                       [32, 43, 4],
-                                       [15, 36, 28],
-                                       [11, 35, 20],
-                                       [2, 16, 27],
-                                       [7, 10, 22],
-                                       [11, 31, 19],
-                                       [16, 41, 24],
-                                       [15, 30, 25],
-                                       [32, 37, 29],
-                                       [0, 27, 9],
-                                       [0, 28, 7],
-                                       [32, 38, 0],
-                                       [12, 43, 5],
-                                       [22, 35, 37],
-                                       [24, 30, 7],
-                                       [24, 32, 19],
-                                       [24, 38, 38] ])
+                        [[6, 26, 32],
+                         [10, 39, 30],
+                         [26, 28, 24],
+                         [3, 16, 19],
+                         [10, 35, 35],
+                         [10, 37, 19],
+                         [10, 31, 36],
+                         [10, 33, 32],
+                         [10, 32, 4],
+                         [15, 23, 0],
+                         [15, 21, 0],
+                         [22, 24, 0],
+                         [22, 27, 31],
+                         [1, 3, 36],
+                         [5, 43, 37],
+                         [8, 30, 23],
+                         [19, 34, 11],
+                         [12, 13, 38],
+                         [39, 40, 35],
+                         [12, 15, 29],
+                         [27, 29, 13],
+                         [1, 42, 31],
+                         [24, 25, 2],
+                         [1, 10, 4],
+                         [4, 30, 11],
+                         [13, 35, 17],
+                         [24, 28, 2],
+                         [23, 25, 37],
+                         [31, 43, 7],
+                         [31, 40, 17],
+                         [3, 28, 2],
+                         [5, 12, 39],
+                         [5, 11, 37],
+                         [3, 4, 4],
+                         [2, 31, 23],
+                         [14, 29, 13],
+                         [19, 27, 21],
+                         [27, 36, 20],
+                         [31, 33, 23],
+                         [30, 40, 27],
+                         [28, 42, 29],
+                         [21, 35, 33],
+                         [21, 37, 5],
+                         [20, 37, 24],
+                         [2, 9, 38],
+                         [0, 14, 19],
+                         [4, 20, 0],
+                         [1, 41, 8],
+                         [8, 14, 28],
+                         [19, 20, 13],
+                         [4, 43, 3],
+                         [14, 31, 25],
+                         [14, 30, 22],
+                         [13, 41, 19],
+                         [13, 40, 32],
+                         [14, 35, 10],
+                         [10, 11, 5],
+                         [14, 38, 23],
+                         [2, 23, 9],
+                         [2, 25, 1],
+                         [24, 40, 37],
+                         [12, 38, 38],
+                         [20, 23, 34],
+                         [20, 21, 29],
+                         [12, 30, 10],
+                         [12, 37, 12],
+                         [29, 44, 30],
+                         [33, 35, 15],
+                         [33, 37, 22],
+                         [0, 36, 8],
+                         [37, 38, 17],
+                         [10, 29, 13],
+                         [17, 44, 11],
+                         [6, 14, 5],
+                         [10, 22, 8],
+                         [22, 37, 19],
+                         [22, 34, 3],
+                         [32, 43, 4],
+                         [15, 36, 28],
+                         [11, 35, 20],
+                         [2, 16, 27],
+                         [7, 10, 22],
+                         [11, 31, 19],
+                         [16, 41, 24],
+                         [15, 30, 25],
+                         [32, 37, 29],
+                         [0, 27, 9],
+                         [0, 28, 7],
+                         [32, 38, 0],
+                         [12, 43, 5],
+                         [22, 35, 37],
+                         [24, 30, 7],
+                         [24, 32, 19],
+                         [24, 38, 38] ])
             self.assertEqual(62,n)
             self.assertEqual([0, 14, 29, 44],path)
 
 
         def test_ba5d_rosalind(self):
+            '''BA5D Find the Longest Path in a DAG'''
             n,path = get_longest_path(11,18,
-                                [(21,33,29),
-                                 (5,19,8),
-                                 (11,17,25),
-                                 (10,35,33),
-                                 (14,27,19),
-                                 (6,27,20),
-                                 (6,20,32),
-                                 (14,23,4),
-                                 (7,8,29),
-                                 (12,18,9),
-                                 (20,27,16),
-                                 (15,35,39),
-                                 (1,27,2),
-                                 (9,19,37),
-                                 (12,14,20),
-                                 (30,34,9),
-                                 (2,9,5),
-                                 (24,31,37),
-                                 (8,18,33),
-                                 (8,13,20),
-                                 (17,23,20),
-                                 (6,34,13),
-                                 (9,29,20),
-                                 (16,29,12),
-                                 (1,22,8),
-                                 (2,32,27),
-                                 (13,26,25),
-                                 (3,21,2),
-                                 (13,20,22),
-                                 (3,23,20),
-                                 (8,9,13),
-                                 (12,16,30),
-                                 (3,29,22),
-                                 (1,3,2),
-                                 (19,35,7),
-                                 (14,19,36),
-                                 (10,21,38),
-                                 (19,30,38),
-                                 (23,32,3),
-                                 (5,6,19),
-                                 (9,33,2),
-                                 (6,10,17),
-                                 (21,24,8),
-                                 (9,15,36),
-                                 (10,27,17),
-                                 (25,33,20),
-                                 (9,11,1),
-                                 (0,10,39),
-                                 (6,31,39),
-                                 (6,16,24),
-                                 (0,6,34),
-                                 (14,15,30),
-                                 (1,7,0),
-                                 (0,22,3),
-                                 (4,30,3),
-                                 (4,15,20),
-                                 (0,21,18),
-                                 (0,26,28),
-                                 (22,27,20),
-                                 (3,32,32),
-                                 (3,33,10),
-                                 (5,28,13),
-                                 (17,32,33),
-                                 (7,13,25),
-                                 (17,18,37),
-                                 (8,31,33),
-                                 (7,18,20),
-                                 (20,35,20)
-                                 ])
+                        [(21,33,29),
+                         (5,19,8),
+                         (11,17,25),
+                         (10,35,33),
+                         (14,27,19),
+                         (6,27,20),
+                         (6,20,32),
+                         (14,23,4),
+                         (7,8,29),
+                         (12,18,9),
+                         (20,27,16),
+                         (15,35,39),
+                         (1,27,2),
+                         (9,19,37),
+                         (12,14,20),
+                         (30,34,9),
+                         (2,9,5),
+                         (24,31,37),
+                         (8,18,33),
+                         (8,13,20),
+                         (17,23,20),
+                         (6,34,13),
+                         (9,29,20),
+                         (16,29,12),
+                         (1,22,8),
+                         (2,32,27),
+                         (13,26,25),
+                         (3,21,2),
+                         (13,20,22),
+                         (3,23,20),
+                         (8,9,13),
+                         (12,16,30),
+                         (3,29,22),
+                         (1,3,2),
+                         (19,35,7),
+                         (14,19,36),
+                         (10,21,38),
+                         (19,30,38),
+                         (23,32,3),
+                         (5,6,19),
+                         (9,33,2),
+                         (6,10,17),
+                         (21,24,8),
+                         (9,15,36),
+                         (10,27,17),
+                         (25,33,20),
+                         (9,11,1),
+                         (0,10,39),
+                         (6,31,39),
+                         (6,16,24),
+                         (0,6,34),
+                         (14,15,30),
+                         (1,7,0),
+                         (0,22,3),
+                         (4,30,3),
+                         (4,15,20),
+                         (0,21,18),
+                         (0,26,28),
+                         (22,27,20),
+                         (3,32,32),
+                         (3,33,10),
+                         (5,28,13),
+                         (17,32,33),
+                         (7,13,25),
+                         (17,18,37),
+                         (8,31,33),
+                         (7,18,20),
+                         (20,35,20)
+                         ])
 
             self.assertEqual(62,n)
             self.assertEqual([11,17,18],path)
 
 
         def test_ba5e_sample(self):
-            ''' BA5E 	Find a Highest-Scoring Alignment of Two Strings'''
+            ''' BA5E Find a Highest-Scoring Alignment of Two Strings'''
             score,s1,s2 = get_highest_scoring_alignment('PLEASANTLY','MEANLY')
             self.assertEqual(8,score)
             self.assertEqual('PLEASANTLY',s1)
             self.assertEqual('-MEA--N-LY',s2)
 
+        @skipIf('WINGDB_ACTIVE' in environ, 'slow tests must be run from command line')
         def test_ba5e_rosalind(self):
-            ''' BA5E 	Find a Highest-Scoring Alignment of Two Strings'''
+            ''' BA5E Find a Highest-Scoring Alignment of Two Strings'''
             score,s1,s2 = get_highest_scoring_alignment('HSQLDPPHCYCVPPWSWLDYACRLNDCSCHCMGKFWKKDGTTPYPLFTFEGWKQVTFVCDCFKYITINAEPQSTRSMPKIGMGELPHFINDFHNGGRDKICRTHQICALYLVSGPQGKCWSGQDNTKVKSFHRFMFLTYEIMYSSPWVNGYFREFSACPSPEVQYSDQLNEPNFTNGLHIMIMREWKRWNVQDYLSMICDQCCGWCSCGKPVIDPAVHLYSVWCRCTGMDKEMLQTDRWAFMWHCCSFRNERTEHKFFWFGSDVAVRPRLKGWMNTACNRTKNMCHCATHWCNEMGPRIAVIGGFQECLDHWGHHGRLLEFGISRLGQAKSASCMICMKCGGVLGGKVFTKKVNCVFCGDPYCYLYAKCCAEPTNTGTPKLPAGRLNNVNESYYGGSEITDFIEALSCKTMNKCAFNDAWTKHIAESAMGDEVAKFYSRGSPFNINQERFCWPRHTNDDWDIHMFPINHDTYHRACGWTFNHQKVGIRWAAASSPVQETCTDIPHEFSVPASQYIMIRLRIHCKYPQYWPYGKDMKRGTAIRMVAQNKHCPDLADRQRSEYNVDLMSYHVPFEYRNQRGFATDDNSWKPNDLHIERHDDRQCMPHITTWIAQSPPNSCGTCNAMFWAPRRGYSSNKVWHNPDDHHNQDWCHQEGAMLAQQGELHDCIRSDWRGNPDPAGFPYDNQLSHSQHIRDDWLEEFEEMAYYTQFLQWHRGYIEDGIKQECIQDGPNENIAPREVLKIEHFQMWGETKEHWYHIYYFTEMISRDRVAVEYWKFPFKISTYMVADIGEFCKTHQYGDSCPHQDPLDIKFSQMLKDEKQKKGICKQWINVCHLPMDCIFYRNGTTQQFNCHWCTCNWMFRGNIVATTMWWEDNHNYDLWDLDDCAVQRLFVYVTTGHMVQHYDCFDIECSDDSEDELTRLCFSGLKSMRSEYTQHSCKPMWFYLCNDCCKRHRFCTMEAYHSVMQGHCMTMGTTRQVYELVRVPMSQVYEHWIAHVREHLLVATTIFCAETFQGKQYQRQHHQTAAFCLNHNEEDGSAFIENQYWYLCKNNIWCYYQAAEKFQEKVPELLNRARPGIKNDPCMEMPLFSMKIMHYNYMCCMACYRKRCRPTFAMFVDPCRIVLESEQVNWMFLFLCGLYNLRYTSVTPVNCWGGLYECRYDRHWPYIRKEEGRDHQMYYNQLLRTNTADGDEAHWCAFLEKVPLLEMYKNVKEAGPNSHKKVYDCAMSPQFCQEKQVAMTYQGNRMSQKCAETDYGAHLQGPMDNLGNLHEMARIFRLSNSIPPKSPTIMWWMDAARIINQRHKRSDKLRWGKCGGPIMAFINEIRFEYYPVNICKRIASTLVERYTFSFYKPYCVRWVTPQKTVVCEISCAGHGCCSPWHKHWTMCYSVCCLRQQWTVTCCKPLNAIYGTSPQSGIFHIAMVYNKVFQDQLMYYSKITHAEKTSTTAEMSEDYWPRIIFLKSCLDWLINDDMIELYKLYQMWRCTASQMKDDLVSDEIDDWVSLGRQMGHIDGKYATSCRIAAHMAVKECEACCHFCEIVPCKAHGQTNFPAGGLQCCYHRNMVQRHSMCFNQENHWDMANFIVQFVTEICTYGFMEVKMYWEGHKMHVKPAYQCIWSQWEMFCRANFGQWWKHGRQRGYRSNMKTSYPGMWFYAWVCAGPWWLLHLEFGRCNNCLSQSFCQLRNDWTPCGLCPAVTGDMDWVTEGAKYDRDTLQKPFMASFFEYIHNVIYKDFAQKPCPEVEQHERCFRKYARSKRCNFFGMWSLRISGCHWDENKIYIDIGEHHRHLSMAMSPTKKKIYMRIFLSPHARKSAMNVADAIYHANHGPMEWLRQSFFRHHGHDSKNQPCHDTEKLDQNSFFDDKNRSFNTWHGCRTTAAKFNWYMFAVHPQKLYVTAEHFFVGQIFLVMFSIMLFVYMAHVFACHPNASHSGLVPWAYFNMYFRLEKVDCQCAFYLFFDLACRIKHAQMKCPDQICTQPGQLTLLKYRAGMINDDQSCEFTHMWRNYTYCVTHTPEHNQYKRHNGESYCRTVTDFWRWSRHNQFGYMDDKWGMSNRVQYNDSHGAVRGCLVRMGYIYDVLCFYGFFNHKFACSWCSDFHHTWDTKIPLMFCDWEGFNEVSHRHVCIRSEVFTISYWHASLRAQIRGALLNRRTRIPPRIRYEMQGCCVNNMRWVPFSTLNTVMHNQYQEECNTPCCGDSYQSPAGQDCGIVLGAKEFRIMRINYTWELDRCQLMKGTMKLDVAHKYWKKMPMPHEVPMTRRCGFQFSSPRTMWLNIGLAGTGLYKLCHNCCPKIRTVEAAGWGCWLQMCDAKSFCKDTKWKMARFHNIRNRHIKYPGKCFMHNMLLWPFAFPQWYDANYYWFYPDTGPYIFPCGGLFYFDGFTAFCAQLNGYRMQTHAGLFFHHAKHRYCHSVSREHLWAMVGAGVEQPRMNGTRSYYKQSWFDWSENSCGYKQDQILLRNNGTAWRRPEHHVMYIGDAFYLENKMRYQNIHCPESQHATQIWAAYAFQPCSVSNSTSTSKRFTRCMYLSAYAITQTYYDYWKGALNNFNRGDAPQYNHPWEFSNWRTVNPWAMWDQTREGKCMFLAEACNWFVSGSHQDWFIPDLANTWGCSKEKKYMHNPKIVTYNEMLAVAFRQEQRYSIHSPCKTKGCIGHKCMNWKIIKWMTLCGDHCGMVQIYFKLCKPGVPINRCFTAILHEIPPLYTGGAVVKMNHYSRTGIWHDGPQYCYWKIDIHYFKFNAWNPIATWDWVRWLASSAWSHGHSKIQRVVMHREGWMVAWYIKWVFKGKDEQDNWEQPHVAMASEVAWAGLKGFCPKGTIPGSHPKILYKRTEKGPDWMYYRAMTQGGKGGVIQGSWGVEHDSHANFIKCVTLALSVTKWQHRRHEAKKQVAEPSMDMVYWDYEVWCPCSPIAPRSKPAIMSLNCWNDRHPGAIQHQLGKLFSTQGAGFWFVIHKCGWAADRRQIHSLNMYRFQPDLCIPKVRGANPLYMADAWWPCAACVKYFSRLTFLYRMNFLKWIHGAHNVIYCDHTWHNCMRASRTDMDAHARAKACDLMPHHVDGRRWPIDSHCPNGKSPAPAIYQAWDLECKQLAPKESWKWSIVRFHIASASEMTWHMWYCVLCAMTHHPDAVDGANLWDSPGEMNIMHWEFEEFPHEWARCVGPDKHWPKMFERGFPMEGNWKCDRKEWQKIERLFITRLCINRPSKNVSYQEYNDICDMKTSIRYKYDQPSQPERAGYLDAMYVYECGSDGLAHNSIEGEWPRVNQAFFARQSLYHNQWRPEMEKYAICLHKFKNWHTYKDQITRPQMVATNDSQFNDWNMMELQIEDVLAGQINDPMPSFKQVMPMPYCKNIDTKEVMYMETEPVYRFYDHHMVHIQNEYTAMDNCESVQNRKSWLVFRMFMIDKEGQKVQRGCYHPKRTIEHKNVDSFIMEVNSCEFGENHDATDTLKRDMPKKNDCGVHEDQVEQVSRHGLPYYQNMCKNHTPVWVNVMIWIAPCVIFMKTGFHSNIHPWFWVCYCSYTYQIGPRGMIWLPITHSCQYQTGQQQWFPRCSLAPEYTQAPEYLGYGPLFDAKMEFHFAWRCMMEIWGAPVKPCYITSNMKACCCIKLNGGYISSFISHVVMKDPLKMDMPQFEMEADNDDMDNNTKCETLSLFCCMEYTWQPCTTFAKLRKECCNGDGKTVSEHQVFWPFPNACQHSPYKTCVYAITLNMVTRLASMPISSANIWKGMMHIPSLDTLPWEAPGVIMAKWFPCKTWINWYIYCVATIGEPDPSQPECSVPSIDKMIKKMHERPAIQPHRTYTAHPTADVYRGMTWFADSPVHYLKTGMPKGHYYFVRTHSEGGSLESTMKNWANCYDDQSAVYCHACTKKTVYGDFNMYKKKHQEHHGYTRLGIRPPIYEHPAWMLMHYRKVMGQPEACLETDCAPIASQIMTCPAKTPYELWNRRRSYGMMPAHWCLFLTCEESAVKDRPDSHTKDMWAGYICKRGAMHPVKDSDRTNNKQISCMNCEWTYLRMCRETYSRQNNKGASQPMSGMREHICRCWMMHAHHAGYECPQTGMFLNFCNFYNCHDTVLMENIYHETVQNGCLLKHLF',
                                                                'HSQCHRMWVDPCQGKNVFHCYPWSWLGNDNDGIRESSCHCNGKGWKQVEFVCDLFSYITKAPATRSMPKIGWIRRYFNFGELPHFAYDFHNGGRDKKCRTHQITALYLVSGPQGKCWGNDKVKGRIGTAEFHRFMFLTFWVNGYFREFSKNPCPSFEVQYHDQLNEPNFTNGLHIKIMREWKVTWNVQDYLSMITCQCIRYDDQTWPQTCGWCSCGKPVIQDWMLQTDRWAFMWHCCSFREERTEHKFPDWWFGSDVAVTACNRQSNMWKCATSWCNEMPGERIAYIRGVMCISSECFLEYSRLGQWKVVNHNMKSASCMICMKCGGVLGGKVMEYYKKVNCVFCHVKDPQCYGMEPKLPAGNNVNESYYGGSEITSCKTMNKCAFRPLDDAWTKHIASSAMGDEVAWISYEHFGDYFPPARPTMSRGSNNNINQERFCDDWDIIHNCFESDLSINHDTYHRACGQKPGIRWAAASSTIYIMIRLRIHCKYPQYWPYGRMMIDMKRGTAIRMVAQDRQRSEYNMSYHYRNQRQDKTDDNSRKPNDLHIEDHDDRMPTNTPYCMPHDYYNKDFIKICIAMFEASSPEHKVWHTFLTMKNPWEDVPLSLDDHHNQAWCHQEGAMLAQQYELHDCIRSDWRGNEDPSHSQQNMVNLEEFREMAYYTQNLQWPRGYIEITIKQHCAPQEVLKIEYDIQTFFQMWGQVKHWYEMRIQVTMIYYFTEMIVGYWKFPKDDIECQAGKTPPSTYMVADGCTPGQYGDSCMHDVQFSQMKGIFMGPTMLAVKQWICWCHWPMDCIFRNGTTQQTPLCCHWCCNWMFRGFIVATTMGWEDNHNYDLWDLDDCAVQRLFVYVTTGHMVQHYDCFDIECSDDELTRLCFSGLKCKGCWMRSEYTQHCCKPMGFYLQYLSQTCVHSVMQGRVPMSHVRERLLVATTIMFCTWPTEKEASKQYQRQHWAQTAAFCTALYRECNENQVRYHCGMLMINNIWCYYYYEKFQEKVPELLARARIKNQGPSYRSPCMEMPLFSMKIMSQHGNDKRCRPTKAMCVDSCAIVLENEQVNWMFHCFKVGLYNLRYDSVTLQINCWGGLKERMRYIRKRNAPCLAKSSCLWSKKTYNQLLRTNTADGDELERSYGQQKSHKKVCMCTNRDCAGSAQDHQEKQVAMTYQWNRMKCAEINPDMYPKKYAAHLGPMDNLANLHEMARINSIPPKSPTPMVWKDARRIINQRAKYSDKLRWGKEGEPIMAFWCHRQRFEYYVNQCCNHLYVERYTFIWATNQYTVICEISCALKRIHWPWGQHKVCYLRQQWGVTCCKPLNAIYSAQSGIFHFSGFQWYAFQDQFMYYLKIEHAEKTSTSLYWVQVYVAEMSRHDYWPSYKTVHVGVNYDLINKDMIELYKLYRSFTDNMWRCCASQMKDDDGCLARQHIPWFIHPCIVGKYAAAMAVKEACKYHMDAMMKAEFWACSPINQYYKSNCCYHRNMVQRHSHCFNQENHWDMANFIVQFVTEIMTYLFMEYKMYWEGHWCGQQGTTFCIWSQWEMFCRANFLRDDQQWTWHLWNHGRQYGYRSNMWLIWKPAYRTSYPGMWQIAWDDMSHKCWMADGGVAGPWQLVIHLEKKFWFGRCNNCLQQSFCQCRLFTFLTNFMNAFNWWTPCGLCPATNGPWGCMDWVTEGAFRIDFMASFFEYLHNVIYKDFASEYQNENPIPEAEQHEYARSKRQHTDERKIYIDGFSCSKVTKKKIYMRIFKSAMNVAKAIYDPNMVWGLRGSFCRTHGHDSKNQPCDTEKLDQCGTITARAFLYHDFTWHGCRTTAAKFNWYAFSVDDVTAEWFFFGQIFRVMFSIMLFVYMAIASHSGLVPWAYFNMYFRCAFYLFDMEWKFDLACWIKHAQMKCCKTFMQICTQQLTLLKYRAGMSNPLRMGIFRMWRNYCHWEQSCVTHTPQVKSKLKSNNGESYCRTVTDNVVQWLSDDWRWSRHNHIWKWGMSDRVQYTSHGRMPYIYDVLCFYGFFECMMENGSEHKFLICSDFHHLMFCDWRNEVSHRHVYMLRGFFTISYAHASWRAQLSRRTRIPPRIRYDLHDIWRSRVPHNKINMRWFMTLNTVMHNQYQEECNTPCSAQHPAGVDCGIVLGADEFRIMRINYTWELDRCQGTMVAENYKVQKYWKKMPYPHLEYMTRRCGFQQSSSPRLAGTGLYKFPTEQCHNCLAGMVGYLQWLQMCDAKFCDDTKWKMARFHNGRNRHQKKMKYPGNCWYLLQHNAVTQWYDANYEHEDKNLCFYYDEGPYIFPCGGYCRFQSCVWYDGFYAFCKVKMMEYWCGMGATCLRMHPPNEDDLKHRYCHSTSREHFWIHMVNGTRQTNHCYKQPMRILGQNWFDSENSCGSKQDQILLWNAWWLHIYLQVPEVHVMDIGSKYNMDNVHCPESQEATQIMNKILQQYEAAYSKRKYFVTVCTSCMYLSAYAITQTQFVCYDYWKGACGNDNNFNRPIQRPEEFSNWATVNPWAMWDREGKCMFFCSGSHQDWFKMHNPKIVTYNKMLAVAFNRNCDMANAFGEEYWNQPKRRNQVDWPTKGCIGHKCMNWKYIKWGMVQIYFCSCKLDVFYLCDKHLHINRCFTAIPRSAHKIPVIYTGGAVNKMNHYSRTICYWKHDIHYFKFNAWWPIATSDWVRAMTLPPPALASQAHGHSKIQRVVMHRCGWMVAWYIKWVFKGKDEQDCIEQPAWAGLKGFCPKGTINVGMKNGSHPKILYKRTEKGPYPGWWHKIYWMYYRAMKRGGKGGVIQGPKMVGVEHGSHANFIKFQGYFCCVPLALSVMQDIKFSKKKLTLFPLTTQHRRHEAKKQVILYEQYIPREPSPMYEIAPRSLWYYVPAIMSVHWLVLPNFNCWNDRHPGAIQHQNGEDFSEAESGTQGAVFKFVIHKCGWAADRSLNMYRFQPDLWAMAACPLYMWDAWWPARRLTHLPRMNFLKWIHGTHITDKANYNQWCQHTKGWLWKTYNIQVSNWMRASRDAHKWRAKACDMPHSVDGRRWPIDSHCPNGHSPAVAIYQAWETIHPLILECKQLAPKESWKWSIVRFQCDHGPTINIASASEMTWTMWYCVLCAMTGALWDSPGEMNIMHGAFSDAEREGWLHPKQNVCVKHEMARCVGPDKHWPKMFERGAPMEGNWKCKRKEDQKIERLFITRLCINRPSKNVSDHKWFQEYNDICDMTTFIRYKYDQPMSHVTGYLDEMYVYEYGSDGLAHNSIEGEWPRVNQAFFARQSLYHNQWRPKERWPYFKYKDQPTRPQFAPAMEGHATRDSQFNDWNMMNLQIEDVLAGQINDALDVPSRVTWQHKQVMAMPYCKKEPDFAYWVMYRETECRYGDWHHMVHIQNEYTAMDCGSVQRYSWLVAAQSMIDTEGQKVQRGCYHPMKRTIEHKNVVNSDEFEFGENHDATSTLKRDMPKKVHEDQVEQVSRSGLPNYLNMYKNHTPWQKSQFWVNVMIWIAPCVIVFTQCYEPIIKTFFHSNIHPWFWVCYCSYTYQIGPGIKGMWWLPITHSCQSRSHIHSLQQQQWFPRCSLFPEYTQAPLGYGPLFDAKMEFHFAWRCWSAKVKPIYITSNMKCCIKLISHVVMGQDPLKMDLPVFEMEADFRPCQPPDDMDNNTKCKTLSLECCMEYTWCPCTTFAKLRKECCNGDGVFWPQLFRAYKTQVYNMVTRLMDHLVVYSSANIWKGMMQIPSNDNLWEAPGWAKWFPWTDWKKTWINWYIYCVAPHFPRGSIGEPDPSQPPSIDLMRPACQRRTYTAHYRGGTWFADHGDHYNNNPPVHYLKTGMVRYSTMKNWANCYDDQSAVTVYEFRHISKDFNMYKKKHQEQHGINLNKTRLGIRPPIYEHDAWMLMHKRKVPGSACKCWCTETCHEIGHCGWLVKPIASQIMKPVTTLEDTPYELWNRRRYGGYGWMPAHWCLFCEESQTWRDPVKRPSSHTKDMWAGYISPYVDSDRTNLLHCKQLSCMNCEWTYLRMCRHGATNKCNDQSCKVTYYDEATGPHREGEAQLTCRCCMMHAHHAGYENFCNRVCQYSYNVGHDTVLMENIYHFDITVQQMHPRHGCLLKHLF')
             self.assertEqual(9842,score)
 
 
         def test_ba5f_sample(self):
-            '''BA5F 	Find a Highest-Scoring Local Alignment of Two Strings'''
+            '''BA5F Find a Highest-Scoring Local Alignment of Two Strings'''
             score,s1,s2 = get_highest_scoring_alignment('MEANLY','PENALTY',
                                                                weights = PAM250(),
                                                                local   = True)
@@ -1631,21 +1628,22 @@ if __name__=='__main__':
             self.assertEqual('EANL-Y',s1)
             self.assertEqual('ENALTY',s2)
 
+        @skipIf('WINGDB_ACTIVE' in environ, 'slow tests must be run from command line')
         def test_ba5f_rosalind(self):
-            '''BA5F 	Find a Highest-Scoring Local Alignment of Two Strings'''
-            score,s1,s2 = get_highest_scoring_alignment(\
-                'AMTAFRYRQGNPRYVKHFAYEIRLSHIWLLTQMPWEFVMGIKMPEDVFQHWRVYSVCTAEPMRSDETYEQKPKPMAKWSGMTIMYQAGIIRQPPRGDRGVSDRNYSQCGKQNQAQLDNNPTWTKYEIEWRVQILPPGAGVFEGDNGQNQCLCPNWAWEQPCQWGALHSNEQYPNRIHLWAPMSKLHIKIEKSSYNRNAQFPNRCMYECEFPSYREQVDSCHYENVQIAFTIFSGAEQKRKFCSCHFWSNFIDQAVFSTGLIPWCYRRDDHSAFFMPNWNKQYKHPQLQFRVAGEGTQCRPFYTREMFTKVSAWRIAGRFAGPYERHHDAHLELWYQHHKVRTGQQLGIIWNNRDKTRNPCPFSAYYNKLPWWKINQNAFYNCLQNIAHSTHDETHEFNPVKCIDWLQGTMVPTECKKGFVHEKCECYRNPGPPLHDMYHQMEDIFGVRFDCLTGWKHLSDYNPCQERRNINDFYIFAYEIAPAVKNLVLSPQPLADATKKCAFNYTPLDQSPVVIACKWYIHQPICMLLIVLICAMDKYNAHMIVIRTTEGQQPMHACRMTEGPGMCMKEPLVTFTLPAQWQWPNHEFKYVYMYVLNYHLSQYTYTDEGHAGGQHYSFNVAVDVGMAWGHNRCYCQPACYSQQETQTRTIDYEKWQYMKHQAFKWGLWFCEQERHAWFKGQNRCEMFTAKMTRMGADSNLDQYKLMLAQNYEEQWEQPIMECGMSEIIEIDPPYRSELIFTFWPFCTYSPWQNLIKCRCNNVIEEMDQCVPLTFIGFGVKQAGGIQAWAFYKEEWTSTYYLMCQCMKSDKAQYPYEIILFWMQPMDTGEQEPPQQNMWIFLPHSWFFDWCCNAPWSEICSSRHDHGQCQDAFYPCELFTVFDDIFTAEPVVCSCFYDDPM',\
+            '''BA5F Find a Highest-Scoring Local Alignment of Two Strings'''
+            score,s1,s2 = get_highest_scoring_alignment(
+                'AMTAFRYRQGNPRYVKHFAYEIRLSHIWLLTQMPWEFVMGIKMPEDVFQHWRVYSVCTAEPMRSDETYEQKPKPMAKWSGMTIMYQAGIIRQPPRGDRGVSDRNYSQCGKQNQAQLDNNPTWTKYEIEWRVQILPPGAGVFEGDNGQNQCLCPNWAWEQPCQWGALHSNEQYPNRIHLWAPMSKLHIKIEKSSYNRNAQFPNRCMYECEFPSYREQVDSCHYENVQIAFTIFSGAEQKRKFCSCHFWSNFIDQAVFSTGLIPWCYRRDDHSAFFMPNWNKQYKHPQLQFRVAGEGTQCRPFYTREMFTKVSAWRIAGRFAGPYERHHDAHLELWYQHHKVRTGQQLGIIWNNRDKTRNPCPFSAYYNKLPWWKINQNAFYNCLQNIAHSTHDETHEFNPVKCIDWLQGTMVPTECKKGFVHEKCECYRNPGPPLHDMYHQMEDIFGVRFDCLTGWKHLSDYNPCQERRNINDFYIFAYEIAPAVKNLVLSPQPLADATKKCAFNYTPLDQSPVVIACKWYIHQPICMLLIVLICAMDKYNAHMIVIRTTEGQQPMHACRMTEGPGMCMKEPLVTFTLPAQWQWPNHEFKYVYMYVLNYHLSQYTYTDEGHAGGQHYSFNVAVDVGMAWGHNRCYCQPACYSQQETQTRTIDYEKWQYMKHQAFKWGLWFCEQERHAWFKGQNRCEMFTAKMTRMGADSNLDQYKLMLAQNYEEQWEQPIMECGMSEIIEIDPPYRSELIFTFWPFCTYSPWQNLIKCRCNNVIEEMDQCVPLTFIGFGVKQAGGIQAWAFYKEEWTSTYYLMCQCMKSDKAQYPYEIILFWMQPMDTGEQEPPQQNMWIFLPHSWFFDWCCNAPWSEICSSRHDHGQCQDAFYPCELFTVFDDIFTAEPVVCSCFYDDPM',
                 'WQEKAVDGTVPSRHQYREKEDRQGNEIGKEFRRGPQVCEYSCNSHSCGWMPIFCIVCMSYVAFYCGLEYPMSRKTAKSQFIEWCDWFCFNHWTNWAPLSIVRTSVAFAVWGHCWYPCGGVCKTNRCKDDFCGRWRKALFAEGPRDWKCCKNDLQNWNPQYSQGTRNTKRMVATTNQTMIEWKQSHIFETWLFCHVIIEYNWSAFWMWMNRNEAFNSIIKSGYPKLLLTQYPLSQGSTPIVKPLIRRDQGKFWAWAQMWWFREPTNIPTADYCHSWWQSRADLQNDRDMGPEADASFYVEFWYWVRCAARTYGQQLGIIWNNRLKTRNPCPYSADGIQNKENYVFWWKNMCTKSHIAFYYCLQNVAHYTHDVTAEFNPVKCIDWLQGHMVLSSWFKYNTECKKLFVHEKCECYRMFCGVVEDIFGVRFHTGWKHLSTAKPVPHVCVYNPSVQERRNINDFYIFYEIAPAVKNLVLSAQPLHDYTKKCAFNYTPITITRIISTRNQIIWAHVVIACQFYSPHQMLLIELAMDKYCADMNVRRSTEGHQPMHACRSTFGPGMAAKEPLVTFTLVAFWQWPNHEFQYVYMYTEDKIIQIGPHLSNGCEMVEYCVDCYAKRPCYRAYSAEAQYWRMITEAEDYSYKTRNAIAATATVRGQYCHPFRWLGIVWMAHHDCFFANECGTICIPQMAEMRPPETTPYEIDIIFMMFWKEHMSTTILDVVGMYRPATFSHWHDAHHQCEPYLTPLMCQSKLVFDAAFTQVGVKGVWYHTEKLELMAGFNHMKFKKEEAQQSCFYWFQDCPDYDPPDAVRKTDEKHIRAHGEIWWLMRYYCMYHILHIASRHEWMHLRWDQACTNPGYELFEFIPWVLRRYVVYDKIRYNYSYRNSASMEFV',
                 weights = PAM250(),
-                local   = True)
+                local = True)
             self.assertEqual(1062,score)
             self.maxDiff=None
             # self.assertEqual('YQAGIIRQPPRGD-RGVSDRNYSQCGKQ-NQ-AQLDNNPTWTKYEIEWRVQI-LPPGAGVFEGDNGQNQCLCPNW--A-W-EQPCQW----GALHS-NEQYPNRIHLWAPMSKLHIKIEKSSYN-RNAQ-FPNRCMYECE-FPSY-REQVDSCHYENVQIAF-TIFSGAEQKRKFCSCHFWSNFIDQAVFSTGLI-PWCYRRDDHSAFFMPNWNKQ--YKHPQLQFRVAGEGTQCRPFYTREMFTKVSAWRIAGRFAGPYERHHDAHLELWY-QHHKVRT-GQQLGIIWNNRDKTRNPCPFSAY-Y-NK--LP-WWK-I-NQ-N-AFYNCLQNIAHSTHDETHEFNPVKCIDWLQGTMV-P------TECKKGFVHEKCECYRNPGPPLHDMYHQMEDIFGVRFDCLTGWKHLS------D---YNPC-QERRNINDFYIFAYEIAPAVKNLVLSPQPLADATKKCAFNYTPLDQSPVVIACK---WYIHQPI-CMLL----IVLIC-AMDKYNAHMIVIRTTEGQQPMHACRMTEGPGMCMKEPLVTFTLPAQWQWPNHEFKYVYMYVLNYHLSQYTYTDEGHAGGQHYSFNVAVDVGMAWGHNRCYCQPACYSQQETQTRTIDYEKWQYMKHQAFKWGLWFCEQER-HA--WFKGQNRCEMFTAKMTRMGADSNLDQYKLMLAQNYEEQWEQPIMECGMSEIIEIDPPYRSELIFTFWPFCTYSPWQNLIKCRCNNVIEEMDQCVP-LTF-IGFGVKQAGGIQA-WAFYKE--EWTSTYYLMCQCMKSDKAQYPYEIILFWMQ--P-MDTGE--QEPPQQNMWIFLPHSWFFDWCCNAPWSEICSSRHD--H---GQ-CQDAFYPCELFTVF',s1)
             # self.assertEqual('Y-P-MSRKTAKSQFIEWCDW-F--CFNHWTNWAPLSIVRTSVAFAV-W-GHCWYPCG-GVCKTNRCKDD-FCGRWRKALFAEGPRDWKCCKNDLQNWNPQYSQGTR--NTK-RMVATTNQTMIEWKQSHIFETW-LF-CHVIIEYNWSAF-W-MWMNRNEAFNSIIKSGYPKLLL-T-QY-P-L-SQG--STPIVKPL-IRRD-QGKFW-A-WAQMWWFREPT-NIPTA-D-Y-CHSW--WQ--SR-ADLQ-NDRDMGP-EADASFYVEFWYWVRCAARTYGQQLGIIWNNRLKTRNPCPYSADGIQNKENYVFWWKNMCTKSHIAFYYCLQNVAHYTHDVTAEFNPVKCIDWLQGHMVLSSWFKYNTECKKLFVHEKCECYRM----FCGV---VEDIFGVRFH--TGWKHLSTAKPVPHVCVYNPSVQERRNINDFYIF-YEIAPAVKNLVLSAQPLHDYTKKCAFNYTPITITRIISTRNQIIW-AHVVIACQFYSPHQMLLIELAMDKYCADMNVRRSTEGHQPMHACRSTFGPGMAAKEPLVTFTLVAFWQWPNHEFQYVYMYTED-KIIQIG-PHLSN-GCEMVEYCVDC-YAK-RPCYRAYSAEAQYWRMITEAEDYSYKTRNAIAATATVRGQ-YCHPFRWLGIVWM-AHHDC-FFANECGTICI-PQMAEMRPPETTPYEI--DIIFMMF-WKE--HMSTTIL-DVVGMYRP-ATFSHWHDAHH-QCEPYLTPL-MCQSKLVFDAAFT--QVG-VKGVW-YHTEKLELMAGFNHM-K-FKKEEAQ---QSCFYWFQDCPDYDPPDAVRKTDEKHIRAHGEIWWLMRYYCMYHILHI-ASRHEWMHLRWDQACTNPGY--ELFE-F',s2)
 
-
+        @skipIf('WINGDB_ACTIVE' in environ, 'slow tests must be run from command line')
         def test_ba5f_rosalind1(self):
-            '''BA5F 	Find a Highest-Scoring Local Alignment of Two Strings'''
+            '''BA5F Find a Highest-Scoring Local Alignment of Two Strings'''
             score,s1,s2 = get_highest_scoring_alignment('KGWLILYGMTAEEIVLVMSVNFTDPVERCWDCEYHEHNLIWEGAKNNHNGFVKHNSWGGTGENQWCYANATMCVTSRCHLRKFLHEPWASNSRLEKKPMWHEPLAHQVAVLMWLMDGQCGWQSMVKKPMDAYTHCAASFWMVMYIIYQQCFRHYNICQVQCDPHVRVFCLWNSRHHIFNEDYWDRLRQSHQVQILPMMMQTHDCAKVQWIRRQFGNYNYEPSRRIKTTEGVCFKFPNWDWVATDGEHSEETPYFPHNNLMHDWADQFSAKRTQSHTDEQTGQFEEHCFFRPWCTWNWEKKGDASGWQLEVSSMYKGNGRGHANFLLDRDGDMSFCGKDGMHDYAQMFFTRYLGCRFMMIICQNMCDQRKDKHKHMQCPCGISHKCAKENHHCKMIAITIRPDAIEVAAYAGFPSCICWFWIPHLCWRSEIAWAVGESGDKIEQVMNRWWEIWASRAEPPMNSNASMQHISGYFQCGPTDSVCDAKPCILIYHSQTIPRTQYDTFNIYERGSNTKRQICHGGLTCSNSVLHVCREMWGMLPSVFNFPWWLWWFHQTIQEGMIARVWRLCFCYWCNPQKFYTHSRDSAAYMNHTAEWPYGGKRRQGGCSEFMDDEQMTDHGRLYIDHCMQQLEDGSISNYGFTFNEKYNCCISDDCYANCVAIEKMANVPWAHRTLTTLLIQHWECMNADYNTGSTHPFCEPADNPVHMDQCTNVENFDSRCSKVKCHHHESHLHDADKYAITELQAWHWWMLNVQEITDWWRMAAQANMELFYKCDPWGNWTKLALMVFLPSWNGRYRMCFCCFSARMCCTMVPEAICGPITVSAASQIHTRDLILCNTQQQLVVHAQSDQVKGLNKHMREFGAPHWWIRDRSPHHVPICSRWCKITNNHTVCDEWSYNGMPMEFLVNIRYLNLSDQYCHDRARHSKTSVIRCIDPGLWYAGSGYQKAGVDESFCVMNCDEGKSQYKTQWHMPMRNFIHPGEFWMEQEVFSYSCDLMIVYTGYPIAWAPVDFPTIHMQEGKIKQSKYLHMIIIAGLYYHCPWPFVISDYRFPLYCRINDCMRESHEFGEQYLGYKNVANKCWDFVMDSVSEKLYWTFVKAYKTWHRWCMMCMDGISFEDNHMDKWGKTIWVSKGCITQCMLKSKSTRTPRTTWADAIGDPHNYCEMNRERPSPVVGAPQIRCDSCMTKGTPDFIHAMNGPDTTQYYRRSRSLWDIYMAIECTYLQECHENTDWLCRQAPGRNGEWGPAVSVVYINHLGHKDNYNSLQHIVRHWWVPEIMEPIYKCPSVEWVQQWFRRHHDQIATDMNCAAPVGLAECQLGVEFQMMWNEWDPFDSNLMFCCGCQTEATPPAMLCEPVDLHNCIALCAMISMWNYSWYLRSYGKPNKFWILCSFTEIYVPYRAIWQVSDHQCWGRVYNYGFLDFCREWHRPKDTGGQFLSKSSGFMLVEFRKSACFMFGDFPNCLWTNGFMAWHKLVPCNMSHHNSIQIGPKAYRHKMFGFNYLQQFMFMWKMMRKDHANERNYKLGWCYWWITWGDMTRQAQVGYVIYELVNKVWFTMQRVTKMETDASRQCFDVERHNDPTVFRSQDAGDHVYLVRTRSFATSSYCGMAVPSHQDKFFQKDCDCMQRSKENSFQSGETDKYNGYDHRFRKGWDNEFPTSPGVIAHWWFNNNNGMTQLGRVVSWMFNFYVSRTPTNLTISAEFNEVCWQQYLGMIASYCHQLFVVMKVVTRVDFASQGFENEMPPQSVASYNVWQCNGMYWHDEKTQTSSRMFTMDGGNDQVSIIGVLRVEMEVQARWCWRSFFNIIMNSHGNHSAIDFPGTVPEMDNPRYHEKDALIYEDACLFPWYNMKNQFIIASHWQYWDMTWNRCLDFDVQHTNYDYQRFPQTNEYPAKEMCRKNTSHQAPRIETRQMYTHPYNKQCFHYTPSAFCAAWTSTVRYTCAKRETYVLPIVRDMLPGDMNYFHRYRFCIQDVFNWVCGWQIVPMMYVRYILENTSPPLWCFYIIEVKGWIMYNEEKFWRDANHSMTIAQYCCQCWEWQLEMNARKDQCAKLETIDWHQMESKYSMRRQHKKFFKWGYRMEGHVNERKSTAHFKKVANWLLEAQLVGNLHGNEQYMAQLKVLVMFFSNKFPCRVADQAAMRKVMCRAVHEFVLYKEQTVHRTVDIINEEGEGAYAYWVHEQGHWGLQPAFVWGFRQAYWIKYRQCDSMKHQWWDAPFHSPFNWCTYFWILWFTMFTVKYWDVCQCMYWDMHIRNIVVSQCLCWGGYRQVEYQSAEWAKAFKLQCVWKCLKWSRVALTCANTASIMCDEHSTRNHVANYSMQNHSAQSTPCIWAAFWAKQCMTFLPYVDFAEIIFTELAYHRGEDSCKGKMKAGFRHCWEVNRGNHGNEGCQGRMIPWLKHAVVLPYNRGWGYYCFKKARPVVAEADRGAVDIHACDWRCKSALTKIYRIKKQIGDYVQMVCAKFPWKVAVINVLEWPSQLDDYAFTIDSRNRNCESVHACEPHHRNQGWNEMDHNNHQGPWRENWWDLFKFDNHFGVKLWWQLPARNVMDKLVIFADIRDWFYKKVHYNIERQMGDCEIEMMHTKMDMFTSCQNIHYKHTMCMVYHIYIFMVHCGRENAPISNKMMPLISKENGFHRWGFLVNCYQFGYCGGIIMMNERGVMGRQMREMLMGFRLVGKPNCHNMCVLNMMCHNTKHMKME',
                                                         'SVNILVTWMQKWPHTTLMLRGLWSKSMDRTYTHDYMGRKRHIAQQLKSKAKHSAKPWVNMRISWMYQIYRGRKVYEMERRCQPGAMWVGNECGCMIEHNWEYFRLYAWVKYFSIRYTQCIFHNIKDPDMDGQHLLKRMDKVRVKHFDTYDNHLMATYMLLPCIHESIGCNTMSFDGEHKPAILGNAKEDTDKGASHHLYGKALDMDPFTWCVNDDQPMMFVKVSYWTYRRTQKYGCFRCSLGWGHDPCSTCPVRSNNITELDEFTNEKFGQCEWDLEGRCVKQECWIMCSWAVSQVQTMVFMWLDQLKIFFNAMMWYAEMVEANHMEFWPEEDETLTGMTHENEMECSQFGPSWVDGMDQSWGEGEGPFCHQNCGPLVMYFAWNHWSHRWVFIYRLTGNYITIMKCRKMDVVKMSCNTCGWYQRCFEPWFLAVCACVGFCTHYDVWTFKDIAYMRSRSYQIFMHVYCTGNGVEFAYMNKYAKDHWVEEEKMIQVIWPLMAMWFHFMYRIQFKYKAHEHLRFAECHHSATMAAKREHAQTNFRFKQVKGTDTENLTDWQKLARCPYIQQICVLYDEHLYPGNTYWYEWTCNRAARILKGTISYIMHKRWGEFLCETITAKDVKSEEWYYEGDVSYLECGSYTAWGCDTKTESSHRWRVIFWHYCFWPNTQFIIQNQGSPCTFDAYPSCYLMFFHACKWEPAGAARCQWPIPERFSHTERHRAHHENPWSHHPGKCNMGCRSLYTWMSIVPTLGVNNCWQSLPDAGVAYCMYGYAYAVGHIIQGQSMEHETINEHFRVCADSIVFNECCEAVNPAPDQCWQWCWGIMACLVIEMGDCHRCLNNKLNNHMANWAEEKCHMFNRQHPHVFNDTINTGQQGAPGWKKEFDVMTYAISHGLAGPIYRVYKTGWLTSAAARIHTRDLTLCNTQQQLVVHQSQLVQWLMGLNKHMRELASMHMEFGAPDKYKSESWPICSRWCKITNNHKPVCNSKRPACMHMEFLVNINLSDQYCHDRARHSSGYWKAIPQTYVDESFCVLECDEGKSQYKTQWHMGKCAHNIMRRFIHPGEFWMYWGQWVFSSSCDLIAWADVDFPTEHQMKIIAGLYYHCPHGFYLPGSEHGAYFEVISDYWFPLYNENDFINACMRESHEFGEQYATKCWDFVSDSVSCKLYWTFVKAYITWHRWECGMCKVMIHWNICMDGISFCDNWVSRYSNWLNGELCATCKTTQCMKGGTKSKTHLDFRWWADAIGDPHNWCEPNDERPSPVVGAPQIRCDSCMTTPDFIHAMNGPDTPDLQCYEVPQYCYSQRSRSLWDIYMAIECNYLQDNLCRQAPGMNGEWGPAVANCGVTAAHKDNYNSRQHIVRHFCFWWVPEIMKPIYKCPSIEWVQNWLRRLHIKDTACHDQPVENTLPAATDDACAAPVGLACGMCPHNNCQPGVHEQMMWREWDPFDSNLMFCIGCATPPAMLCEPVDLHNCIALRMAPEPNKFWIKCSFTEIYVPGKYRAIWQVSDMTWCMGSLIRQYNYFLMFCREWHSPKFIWVMYIEGTGGQFLERGDNKMLVNFSWDRCPLNCFMFGDFGFMAWHMDFSLVYNKCEHMYVFPMSHHNSMQIGPKAYRHKMFGFNYLQQFMDHLNEGRGCFSNYKLGWCYWWITWGAKCFIGHPMPRQQQVGYVIYELQNKSQFVMQRVTKMETDASRQCDPTVFRSVYLVEASYCGMGFCHHPGTVPSHQDDFFQKDCDNMQRSFQDGETDKYNGYDVYTQASEARMHESNKKPSMCCLRVEVHAAHWWFNNNNGMTQLGRVVSWMFMKWMNPMEQFYWAKRTLKHSRTPTNLEVCWWFCPFYSLPQAEYCHQWFVVRKHRFVTWYKVVTRVDFASQGFENRMPPQSVASYNVWQCNGMYWHDEKTWFAMTPKTLNDQYIGHARVELEVLMQSNSFSAHFYNKQASYGTLLPWCNNAGCVPYGSIWCHVLGIWTRYNPFDPGPHFIVGIYHHPNSPHHSCPQQWTVYTAPIFRIFMSDVFMKMVYSSRTSDTSTPVLRSRIHDDNSKHLGNCSMLTEIGKRAAWFWQAVLQQDNRSNFRCYRHLAWFRWKFQRVTIWWSRRFAHRQTKKGCFGTIHPSGQYNFMTTWERQGCEIFQVNRTTKHTVKDEIDPHHCVNNCHDHQTEPDNPGYHIHFEKRSVHRENQYVECGRGWQTQLTGVYEGDSTQCRHEGHTDLIGPYAFSSNNKNELKQCALRDIWKEGVDKYLRRQEDQEIRSYIHNPDQFTRISYHCNMSPAVCWDPNYEWSRQMTIDMHLGFRRWPLYNQKVDWSAALKVRSALTAETADSNMCVRRNIMVAPADMAPGAEPRQQNNFLYIVCTFIESGACSRNFNHQAQGDNNKHIQMMWMWVNSWEKGIIKPKHDNAAPMLGYSPSWVITPLAEHFPPRCNGACFCNDGWLLNAVNVCFDHTGQYWEKFPMHMIKHEHSSPEQEMGFTKYPFDRVDHSKAHKTGAKAWCSRKAQFALEYFYYERYGQDLDCWHQVLNPRIISVFITFTHLKQYWVLSSCVPMMTLTARPETSKIVWYTRALPIMPPWTLEMEPKDWEHAQVNNTHADKKLHQKSWSEHMEAYEGRDKNLKAQPYACQMPGHVYCMSGIFKDYECVPAGVGICAFFLAFQFQVFWLVIGLGRSVKIIWELLYIYHYKMVTIPNPFGYKWIEKFNIVFKEIVFHNTLCNENGTVLELVWKHAPIMNFSHDEQHCMWRRGMQQECDTGPDHCETIYGVYPRPTPMAIANYETHKQGTASMGVSKFQVNQHRVNNTVSFM',
                                                         weights = PAM250(),
@@ -1658,8 +1656,8 @@ if __name__=='__main__':
             ''' BA5H Find a Highest-Scoring Fitting Alignment of Two Strings '''
             score, s1,s2 = FindHighestScoringFittingAlignment('GTAGGCTTAAGGTTA','TAGATA')
             self.assertEqual(2,score)
-            # self.assertEqual('TAGGCTTA',s1)
-            # self.assertEqual('TAGA--TA',s2)
+            self.assertEqual('TAGGCTTA',s1) # Not same string as specified, but gives same score
+            self.assertEqual('TAGA-T-A',s2) # Not same string as specified, but gives same score
 
         def test_ba5k_sample(self):
             '''BA5K Find a middle edge in the alignment graph in linear space.'''
@@ -1667,29 +1665,33 @@ if __name__=='__main__':
                              FindMiddleEdge('PLEASANTLY',
                                             'MEASNLY'))
 
+        @skipIf('WINGDB_ACTIVE' in environ, 'slow tests must be run from command line')
         def test_ba5k_rosalind(self):
             '''BA5K Find a middle edge in the alignment graph in linear space.'''
             self.assertEqual(((514,519), (515,520)),
                              FindMiddleEdge('AMEIATWSDTKMSPDTNMVYHEFDNCWALYNNTEFCKYDDKVFFRELNYHQISMWEMNHDIHEETCADDTDSNTQAIRVLCMKIGCWTEFMSSAQRYDFEPHNPESMQDFLREEYHLKWVAWCCSEECYFRQIRPLVALRCDIMYQCSRFIYYNYQNYMEFCKQQEDDIHFIKYNVYSSSLGHFQLRFPSCFFIMPCPVIVSDSVCTPDFHADSFHHPFVLYRGYYWEPFKVGTSRQQKMVGQKDDGCMPCIPCRLIIWLGMMKGWRPTLDMNAKMWHSAKTMAPWIFIADWAFHKYTKSSWMKTQEWHDCTGFAHGLCDALTEIGDHMVATSKSAPSHLITNGLFNRLPELPFTSHFRPDCCWFEKAYEMCISHFFVCTTYEKPSENGNYKNRTNRQITVSEDKHPDVMAEGVDRAYHREQDWCIGQGKQYKAISMDCVIMHWMPLGPTTNQLQPWYKFKNIAPVDFWDKHWCHKGQNSQWQPNRCSFPPPVIGHHINPACDFWESYSYYNFWNHDCYTDWSETMYTLVGETPDVWEFLYKFGIQWEKGGKEKTSSTNTFDFKDKYRMQHYDYDSPNSPTHFMREEKRYSQMDGLENHNYDDHHWKIRNRYYVHGLPWCWKADRPRYFTHSPICSMLEHVTYNNNPMGGSCQCLYETMCWAHFYRPEADFYDMQEQIHVNFWYLNMIDSYNQEHIILYGSGQNAWYCDGTWSIYKGAGAITLDNFMQSARSKQFGTTCQYMPTVRSQLIQASWWFPFASEHPSRYRDIPAECQCHPRKGDKMVWDPQHGAHIDWMNDSYYQCDHDYVALMDYSGFNNLHMFECKTCPPAIIEQIMLYIDYGDRYGDYETTPVRMGSKDMFCASSNDTKDHLRSAGYVEMVGWGTVLDVHQGCQEGWHSRGPNCIVPFDNTMPLVHWHFIHWGQQIRASMGQNFFVCIMLYDPDNPSYNFSHVDQHLVYHFGHVCEEPHGVIIIHEMLQHNSMHEIMYDMVCYYWASLDCDWVAVLGYECGGYGAEYQANKGYLEMDDNEVHDTV',
                                             'RCVKPFIAYGSDDLGHQDCHPEPTHDFWARFEETDHEMHAEFWTNCFDMFDPHGRNDLNCPTHSRGWLMSNPFCSDESETGFMKSHRWHGNQTMSWVKDEYRRSANCRPADGQFTRVASFIRSSQDFDYGARGPCKWTEFTFICDYKCTWVCVCTCMWSWWTCKSPEEHHEIQSKDTFFPQQKEQTHIHKSITRPALSHGIHWALCLQWFHWAEMGPCFNTTAVMNPSVYFMFTAAWQPQWNHFHKNKHVREDSHQADWETMFYRRQAVYTGCQWEIYISVWHFVEGFIMEMDRLMATSDDQNFVHDIEELRVGMNADHIQVDLRAHWMDVTVHPKGGSNFGPIPYWHSGLCGSANEESMKLADLYVKMELKDMAEVAAPGFTNDVLYLEPMCYMINYHIDHFLREQKKTERLGYMTDIVYLCMNQHHKQLIVWFVYFMGTQRNQVKNNKTNQHQRWYKFPNIADEVDFWNKHWVHKGQNSQWQTEMTRPPPVIVHHINPFWESYSYYNFWLFWPRRGRNHGCYTDWSETYMTLVGETPDVWEFLYKCKAEIAYNIQWSSTNTFDFKDKYRMQHYDYDSPNMPTHFMRCSMSRDNTNGFHCFEKPACTHHFWEFLKGVMYFGCWNLFSWEQLPGCMNEPTPVGWWFWPSNWYAHTNEHNWPIDSLPLGLNHCACHQEHYCTACKMQPGMMWHDEPKHYRVCQDRALQYAEICEPNNKYMMVPQCWQCHIVVREFNATAPNGYTGSPSRVSNFLIGWFMCAKKLMTRENACQHVHMCTQYDCENPQPFIYPRGSYTLPAHYEQRVTGIVFRVRFTVSREDCAWPYARKPMVYAGLINMYSDPEMVDPMTPDVDIHTWVENMLTQHGTLFGKHRNKMGRPKGYDFSQILSKMRNQPAACKWATGCEHCNKLMMCGRVCHLMNQGDIIAWACYVINARNLYVHDCYGYMHFGNYGCRDYRIDEMHPIFNGQKIKHWGRILDQMPFTANFVVRPLHDYREDQWKSPIRYQFPMDGMGDVDYNVAWTQDSRKIRHTCFRNIDFA'))
 
-        # def test_ba5l_sample(self):
-            # '''BA5L Align Two Strings Using Linear Space'''
-            # score, s1,s2 = alignUsingLinearSpace('PLEASANTLY','MEANLY')
-            # self.assertEqual(8,score)
-            # self.assertEqual('PLEASANTLY',s1)
-            # self.assertEqual('-MEA--N-LY',s2)
+        @skip('Issue #29')
+        def test_ba5l_sample(self):
+            '''BA5L Align Two Strings Using Linear Space'''
+            score, s1,s2 = alignUsingLinearSpace('PLEASANTLY','MEANLY')
+            self.assertEqual(8,score)
+            self.assertEqual('PLEASANTLY',s1)
+            self.assertEqual('-MEA--N-LY',s2)
+
 
         def test_ba5m_sample(self):
             '''BA5M Find a Highest-Scoring Multiple Sequence Alignment'''
             s,u,v,w = FindHighestScoringMultipleSequenceAlignment('ATATCCG','TCCGA','ATGTACTG')
             self.assertEqual(3,s)
-            self.assertEqual('ATATCC-G-',u)
-            self.assertEqual('---TCC-GA',v)
-            self.assertEqual('ATGTACTG-',w)
+            self.assertEqual('---AT-ATCCG-',u) # Not same string as specified, but gives same score
+            self.assertEqual('----T---CCGA',v) # Not same string as specified, but gives same score
+            self.assertEqual('ATG-TA--CTG-',w) # Not same string as specified, but gives same score
+
 
         def test_ba5n_sample(self):
-            '''BA5N 	Find a Topological Ordering of a DAG'''
+            '''BA5N Find a Topological Ordering of a DAG'''
             self.assertEqual([5, 4, 1, 2, 3],
                              create_topological_order({
                                  1 : [2],
@@ -1699,30 +1701,31 @@ if __name__=='__main__':
                              }))
 
         def test_ba5n_rosalind(self):
+            '''BA5N Find a Topological Ordering of a DAG'''
             self.assertEqual([5, 19, 11, 4, 22, 2, 6, 12, 0, 10, 1, 9, 7, 8, 20, 18, 14, 23, 21, 24, 3, 13, 25, 16, 15, 17],
                              create_topological_order({
-                                 0 :[ 1,10,13,16,17,21],
-                                 1 :[ 13,15,3,7,8,9],
-                                 10 :[ 16,20,25],
-                                 11 :[ 13,15,23],
-                                 12 :[ 14,20,25],
-                                 13 :[ 16,17,25],
-                                 14 :[ 21,23],
-                                 15 :[ 17],
-                                 16 :[ 17],
-                                 18 :[ 21],
-                                 19 :[ 20,21],
-                                 2 :[ 12,15,16,20,3,6,7,9],
-                                 20 :[ 21],
-                                 21 :[ 24],
-                                 22 :[ 23],
-                                 3 :[ 13],
-                                 4 :[ 10,22,24,25],
-                                 5 :[ 11,19,21,23,7],
-                                 6 :[ 14,7],
-                                 7 :[ 14,18,20,23,25,8],
-                                 8 :[ 13],
-                                 9 :[ 17,20,21]
+                                 0  : [ 1,10,13,16,17,21],
+                                 1  : [ 13,15,3,7,8,9],
+                                 10 : [ 16,20,25],
+                                 11 : [ 13,15,23],
+                                 12 : [ 14,20,25],
+                                 13 : [ 16,17,25],
+                                 14 : [ 21,23],
+                                 15 : [ 17],
+                                 16 : [ 17],
+                                 18 : [ 21],
+                                 19 : [ 20,21],
+                                 2  : [ 12,15,16,20,3,6,7,9],
+                                 20 : [ 21],
+                                 21 : [ 24],
+                                 22 : [ 23],
+                                 3  : [ 13],
+                                 4  : [ 10,22,24,25],
+                                 5  : [ 11,19,21,23,7],
+                                 6  : [ 14,7],
+                                 7  : [ 14,18,20,23,25,8],
+                                 8  : [ 13],
+                                 9  : [ 17,20,21]
                              }))
 
         def test_edit_sample(self):
@@ -1733,32 +1736,32 @@ if __name__=='__main__':
         def test_edit_rosalind(self):
             '''EDIT Edit Distance'''
             dist,_ = edit('IAEWFANIDRHKMCSFDSPNEVPNSWIWQWYRVEYFRMHWDYSSFACDYAPKTRTLQGDH'
-                                      'RYMMANKEENEVTGVSVWNVEETYLCPFDLSRPHVMPKFTGEDNRLERMDRKYLPQCSAI'
-                                      'GKDLCMVFEFNSDTSIREAIVDAAVFHRAGHGGNSNKEARHQTAHFNDTAWYELGNCEVI'
-                                      'GRITNDGKTSKHRYMGVLCWECCLEYGPPSHHFEVATKIWPPTGQWHTIKSVTNPHPKSF'
-                                      'RTDSCVNNRYNSMWTESGKVASTIAVLYKQYYIQVCKRDWNMMSRNHVTLTSLNKTMFAS'
-                                      'FFWFRSCNTHSLHHHHMGECDWSEPMRPCWISMYPYCATHSQVNDTHIYVEHGARMKEST'
-                                      'EDTQGKGVGGIAGDARRYNSQTLTITWFIKISKWKPVHGNPFRPPWVETHEYAYWHQKVI'
-                                      'NGFVRRCGIKDHHKNCAYYITTEFVLNGLFKDANSPSYLDADYYDVQHGGGPFRVHTGTW'
-                                      'MNAIITHFFLPSVPDCQAWLCAPKRNSLVTREVHCWNGRQYYPATLWHMVLIKGPYNAYN'
-                                      'IGSMFCAWRCPEFNWSPACPCVYNNLWHWCCCCPQRLKMPFCWATPMPKMHSTFNDTTCE'
-                                      'PCMRVGAWTEIITMNYCYGHDSFTGVFMIYMVRFVTQGRIPPRGCVPFHAIWFAQNRRIC'
-                                      'DQMEDVSWQTMMHDYSKRCDPRQTTNNCVSNLEGQAQESKQFPHVQMPAEFTHHENGWMD'
-                                      'CMYQKHGPIIGDPQTTTDVRWGREKCMEDIGSARQDWPFIHNDNRWKDPMSICSAHGIND'
-                                      'ALAKYKGAAWISH',
-                                      'IANQPPKSLYHWFINIPRQINGFTSFDFPNEFVYAHWEITDRHWYRVEYFRAHWDYSSFF'
-                                      'CMYAPDYHYWWVTRELQGDHRYMMANKDEEVIRVPPSKVSVWNVEEGPFCLSRPHSHKGL'
-                                      'MMPKFTGEDNLTTWWYVYAKYLPPHAIGKDLCMVTSSREAIVDVSVFDCAQWRAGHDGAL'
-                                      'SNKEARWQTAHSCDLRNGLRAWYEWVVAHNCEVIGRITNDGKTWEHRYMGVLWKSECPQA'
-                                      'GVVDVATKIWHTIKSVTPHPKSCVNNNSMWTGKVWCTIAVLYKQYYIQWNNMWADRVVTL'
-                                      'HSLNKTMFASFFWFRDHSKHHHRMGEHDDWSEKIAEYMCWISMYPYCATHAQVNDTHIYV'
-                                      'EHGARLVWGGKISTHEGDDTQGKGMEWHYILLCGGIMGDARRYNITDAGFIKIHGPMAKW'
-                                      'KPVHHTHEYAYVHQKVINGWVRRCFPRISKDHHYYITTLSNTWDYYDVQHGGGTGTWMNA'
-                                      'IQTHFFLPSVRHTWCVCVMYLVAIPCHLEFEVHCWNSATLWHMVQMGQRKPHDAKGPYNA'
-                                      'YNIGSYFCPKCFWRCPEQNWSPACPPVYDNLWHWRCPFCWATPMDVMHSTTNDTTMWKTM'
-                                      'MVVEPCTDESIPRVGSYSWMIQEFMIYMVRPPVGCVPGHAIWFAQGRRICDQMYIVGRDV'
-                                      'SWQTMMHDYHKRCDPRCVSNLEVADFVYFEAEAQAQSQMYAENGWMDCMKHGPIIGDTQT'
-                                      'TTDVRWGGKIIGDARQDWPFIHNDKRWKDPMSIHWNDALAKYFGAAWVCQEHSISL')
+                          'RYMMANKEENEVTGVSVWNVEETYLCPFDLSRPHVMPKFTGEDNRLERMDRKYLPQCSAI'
+                          'GKDLCMVFEFNSDTSIREAIVDAAVFHRAGHGGNSNKEARHQTAHFNDTAWYELGNCEVI'
+                          'GRITNDGKTSKHRYMGVLCWECCLEYGPPSHHFEVATKIWPPTGQWHTIKSVTNPHPKSF'
+                          'RTDSCVNNRYNSMWTESGKVASTIAVLYKQYYIQVCKRDWNMMSRNHVTLTSLNKTMFAS'
+                          'FFWFRSCNTHSLHHHHMGECDWSEPMRPCWISMYPYCATHSQVNDTHIYVEHGARMKEST'
+                          'EDTQGKGVGGIAGDARRYNSQTLTITWFIKISKWKPVHGNPFRPPWVETHEYAYWHQKVI'
+                          'NGFVRRCGIKDHHKNCAYYITTEFVLNGLFKDANSPSYLDADYYDVQHGGGPFRVHTGTW'
+                          'MNAIITHFFLPSVPDCQAWLCAPKRNSLVTREVHCWNGRQYYPATLWHMVLIKGPYNAYN'
+                          'IGSMFCAWRCPEFNWSPACPCVYNNLWHWCCCCPQRLKMPFCWATPMPKMHSTFNDTTCE'
+                          'PCMRVGAWTEIITMNYCYGHDSFTGVFMIYMVRFVTQGRIPPRGCVPFHAIWFAQNRRIC'
+                          'DQMEDVSWQTMMHDYSKRCDPRQTTNNCVSNLEGQAQESKQFPHVQMPAEFTHHENGWMD'
+                          'CMYQKHGPIIGDPQTTTDVRWGREKCMEDIGSARQDWPFIHNDNRWKDPMSICSAHGIND'
+                          'ALAKYKGAAWISH',
+                          'IANQPPKSLYHWFINIPRQINGFTSFDFPNEFVYAHWEITDRHWYRVEYFRAHWDYSSFF'
+                          'CMYAPDYHYWWVTRELQGDHRYMMANKDEEVIRVPPSKVSVWNVEEGPFCLSRPHSHKGL'
+                          'MMPKFTGEDNLTTWWYVYAKYLPPHAIGKDLCMVTSSREAIVDVSVFDCAQWRAGHDGAL'
+                          'SNKEARWQTAHSCDLRNGLRAWYEWVVAHNCEVIGRITNDGKTWEHRYMGVLWKSECPQA'
+                          'GVVDVATKIWHTIKSVTPHPKSCVNNNSMWTGKVWCTIAVLYKQYYIQWNNMWADRVVTL'
+                          'HSLNKTMFASFFWFRDHSKHHHRMGEHDDWSEKIAEYMCWISMYPYCATHAQVNDTHIYV'
+                          'EHGARLVWGGKISTHEGDDTQGKGMEWHYILLCGGIMGDARRYNITDAGFIKIHGPMAKW'
+                          'KPVHHTHEYAYVHQKVINGWVRRCFPRISKDHHYYITTLSNTWDYYDVQHGGGTGTWMNA'
+                          'IQTHFFLPSVRHTWCVCVMYLVAIPCHLEFEVHCWNSATLWHMVQMGQRKPHDAKGPYNA'
+                          'YNIGSYFCPKCFWRCPEQNWSPACPPVYDNLWHWRCPFCWATPMDVMHSTTNDTTMWKTM'
+                          'MVVEPCTDESIPRVGSYSWMIQEFMIYMVRPPVGCVPGHAIWFAQGRRICDQMYIVGRDV'
+                          'SWQTMMHDYHKRCDPRCVSNLEVADFVYFEAEAQAQSQMYAENGWMDCMKHGPIIGDTQT'
+                          'TTDVRWGGKIIGDARQDWPFIHNDKRWKDPMSIHWNDALAKYFGAAWVCQEHSISL')
             self.assertEqual(376,dist)
 
         def test_edta_sample(self):
@@ -1802,4 +1805,16 @@ if __name__=='__main__':
             self.assertEqual(406,dist)
             self.assertEqual('MEIPNQCT---Y---TM------NNGERMLKM-DNKY--A--DN---------MGVRQEENK----Q----H---REDISRWDDWG--QFTTCEGFTRWF---K-L----HHLNAHQISPCLLRMPTWLQCKMTFA------Q--MDLAIDPP-TCHTFPMFTMHSHCIFDPSFYAARRCHMNKVCQFRYDHQIHCSMMQSGTTWWYMYNGCETMSWDYLVEMAVGWWVYRNRHNGMMS--YV--D--HGD----DD--CWHRGHHSSLPWKLDAYSALYCVHGFEYCSAY-FKVDAFNLTCERPDITNTQCRCEKPTEGPAYFNYTKTMSKGPEEWEYNCPCVYYEEVEGL--ANNRESSIPCSKMSNRCRMRCLGHKWFSILPEMHKYNAQSQVKTREKAGRSYNWGNQPLVKFDSLEPMWFHRQHCQSRLETWSTDPPSQDWQFFHICNTQKDAINSTWAGG-RIFWTENDSRRKVCCMENKNKNLFRR--G---WISGIDITMHYHLTSSHGQFGICDPEVHIVPCHMLGLTTFMQERNNLGQCPMVAIFEHHQLPPPCEGYVLQKVHPSWHMSMMKKNEFDRPWAPVF-ARDAEHMQPCEPMIAPHIKFWNYCHKKSGMCLGGQGGIDFHGYMYQNYHLCLFCTYKAMKFLVQDTFEDLISGEKYPMEATMTETFAWVCMTVFTTMRTFIVFWGDPY----RIHELYMFSCAA-----HGYLRTADRSCKWTNKPHLSYGCHLSKTYCSCKMIDAPMVCRCLMWIDHPFVHYP------HMVWCMNY----CC-YNTTCRMHEPTFWHLALVFCPCLYWQQNLEINEIRQGSLGHVGQSEMLQMTI-MKKYMQPCMMWDCGFHCCGTYWD-AMGETSGTEG---IVTTRTRVTPCYRWQHLKKEGH---AL-A-NTVPKMDLYQMRHHGLMGPVLDRAPKPCHAQTEV--D----LVNIVPYNWES',s)
             self.assertEqual('SEIPNQCNEFMYMNYTVRIIYHPNNGERMHEQSDNHHFTAPMDNYHGILLRQRMGVRQEENRDIDLQCIVNHSYLREDISRWDDWDRAQFTTCEGFTRWFRYPKHLSEQLHHLNADQISPCLLCMGTWLQCKMTFARFTMIWQHWMDLAI-PPYTCHTN-----HSHCIFDPSFYLAR-----KVLQF-------CSMMQSGTTW-----GQQ------LVEMAPGWWVYRNRHNGMMSLAYVLTDVDHYDQMQHDDDDCWHRGHHSSAPWKLDAYS-----HGFEYFSAYRF-VDAFNLTCERDD-TNTQCR-E----GPAYFNYT---SQN------N-PLHDFEMSKGPEIAMWQEV-IPCSKMSNRKRWRCLGNKIKSGDVGG-KT-A-S-V--------SYNWGNQPLVKFDSIE-MTFHKQHCQSRLETW------Q--Q--------KDAINSTWAGGFR-FWTECWNKNAYEHTVPWFM-LFRCLAGGHGWISGA--TMHYHLTSSHIQFGICDPEMHIKLCFMLSY-----ESNNLGQCPMVAI------PPPCEG------HPSGNMSMMKKNEFTRPWAP-FEARYAEHMQPCIPGFCQMRE---YR-K-SGMCLGGQGGIDFHGLMYQNYHLCLFCTGKFMKFLGQDTFE-------YPME--MTESFAKVSMEVFTTMRTFIVFWGDYYKLFYRITELYMFDEVDTDNNWHGYLRTAQ---KWEC--HLSYGCHLSKTYCS------PMVC-----ID-PFVHYPNGACELH-VWCMAYVHRTCCCYNTAWRMHE--F-------CPCLYWQQNLEINE-----LGH--QNEMLQMQPCMF-YEF--MGKLQ--HCCGPYGETAT-EFFGTCSTCAIVTT-TD---CYRWQHLKKEGFKPSALQAHNTVPKMDLYQMRHHGLMGPVLDRAPKPCHAQKFVIRDAVWHLVNIVPYNWES',t)
+
+        def test_glob(self):
+            '''
+            A simple test of the align function, based on https://rosalind.info/problems/glob/
+            '''
+            score,s1,s2 = align('PLEASANTLY','MEANLY',
+                                replace_score = BLOSUM62(),
+                                indel_cost = 5)
+            self.assertEqual(8,score)
+            self.assertEqual('LEASANTLY',''.join(s1))
+            self.assertEqual('MEA--N-LY',''.join(s2))
+
     main()
