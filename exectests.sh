@@ -21,3 +21,6 @@ echo sequence.py
 ./sequence.py
 echo spectrum.py
 ./spectrum.py
+echo snp.py
+./snp.py
+
