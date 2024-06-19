@@ -1166,7 +1166,8 @@ def osym(s,t, match=1,mismatch=-1):
         M = np.empty((m,n),dtype=np.int64)
         for i in range(m):
             for j in range(n):
-                M[i,j] = - abs(i-j) - abs(m-n)
+                M[i,j] = - ((m-(i+1))  + (n-(j+1)))
+
 
         return M
 
@@ -1184,31 +1185,29 @@ def itwv(s,patterns):
     Return: An nxn matrix M for which M[j,k]==1 if the jth and kth pattern strings can be interwoven into s and Mj,k=0 otherwise.
 
     '''
-
-    # itwv2
-    #
-    # Check to see whether two specific strings can be interweaved
-    #
-    def itwv2(u,v):
-        # score
-        # Compare one character from s with one from u or v
+    def interweave(u,v):
+        '''
+        Check to see whether two specific strings can be interweaved
+        '''
         def score(a,b):
-            return 1 if a==b else 0
+            '''
+            Compare one character from s with one from u or v
+            '''
+            return 1 if a == b else 0
 
-        # match
-        #
-        # Try to match u and v with substrict of s starting at k.
-
-        # We will adapt the regular Manhattan algorithm to use a 2D grid along u and v
-        # to keep track of the score when we try to aling successive characters chosen
-        # from u and v with s.
         def match(k):
-            # update_score
-            #
-            # Update each position with match-so-far
-            # We wil keep track of updated positions by storing the in Closed
+            '''
+            Try to match u and v with substrict of s starting at k.
 
+            We will adapt the regular Manhattan algorithm to use a 2D grid along u and v
+            to keep track of the score when we try to align successive characters chosen
+            from u and v with s.
+            '''
             def update_score(i,j):
+                '''
+                Update each position with match-so-far
+                We will keep track of updated positions by storing the in Closed
+                '''
                 if (i,j) in Closed: return
                 s0 = s[k+i+j-1]
                 u0 = u[i-1]
@@ -1230,55 +1229,58 @@ def itwv(s,patterns):
 
         # Only try to match if 1st character matches
         for i in range(len(s)-len(u)-len(v)+1):
-            if s[i]==u[0] or s[i]==v[0]:
-                if match(i)>0:
+            if s[i] == u[0] or s[i] == v[0]:
+                if match(i) > 0:
                     return 1
         return 0
 
-    return [[itwv2(u,v)  for v in patterns] for u in patterns]
+    return [[interweave(u,v)  for v in patterns] for u in patterns]
 
 
-#  CTEA Counting Optimal Alignments
 
-# ctea
-#
-# Given: Two protein strings s and t in FASTA format, each of length at most 1000 aa.
-#
-# Return: The total number of optimal alignments of s and t with respect to edit alignment score, modulo 134,217,727.
 
-def ctea(s,t,indel_cost=1,replace_cost=lambda a,b: 1, mod=134217727):
+def ctea(s,t,
+         indel_cost = 1,
+         replace_cost = lambda a,b: 1,
+         mod = 134217727):
 
-    # create_adjacency_list
-    #
-    # Backtrack through matrix and create DAG made from all possible paths
-    # Inputs: matrix from computing edit distance
-    # Returns:   Adjacency matrix for traversing from last posotion
-    #            Leaves of graph
+    '''
+    CTEA Counting Optimal Alignments
+    Given: Two protein strings s and t in FASTA format, each of length at most 1000 aa.
 
+    Return: The total number of optimal alignments of s and t with respect to edit alignment score, modulo 134,217,727.
+    '''
     def create_adjacency_list(matrix):
-        Closed       = set()      # Positions in matrix that have been visited
-        Open         = []         # Positions in matrix that need to be visited
-        Leaves       = []         # Terminal positions
-        Adj          = {}         # Adjacency list
+        '''
+         acktrack through matrix and create DAG made from all possible paths
+         Inputs: matrix from computing edit distance
+         Returns:   Adjacency matrix for traversing from last posotion
+                    Leaves of graph
+        '''
+        Closed = set()      # Positions in matrix that have been visited
+        Open = []         # Positions in matrix that need to be visited
+        Leaves = []         # Terminal positions
+        Adj  = {}         # Adjacency list
 
-        # explore
-        # Used to build adjacancy list for graph moving back to origin of matrix
-        # It processes first element from Open List, and adds its successors to Open if necessary
         def explore():
             mn = Open.pop(0)
+            '''
+            Used to build adjacency list for graph moving back to origin of matrix
+            It processes first element from Open List, and adds its successors to Open if necessary
+            '''
             if mn in Closed: return
             Closed.add(mn)
             m,n = mn
             Adj[(m,n)] = []
-            if m>0 and n>0:    # if not a leaf
-                moves      = [(m-1,n),(m,n-1),(m-1,n-1)]
-                scores     = [matrix[m-1][n]+indel_cost,
-                              matrix[m][n-1]+indel_cost,
-                              matrix[m-1][n-1] + (0 if s[m-1]==t[n-1] else replace_cost(s[m-1],t[n-1]))]
-                index      = np.argmin(scores)
-                lowest     = scores[index]
+            if m > 0 and n > 0:    # if not a leaf
+                moves = [(m-1,n),(m,n-1),(m-1,n-1)]
+                scores = [matrix[m-1][n]+indel_cost,
+                          matrix[m][n-1]+indel_cost,
+                          matrix[m-1][n-1] + (0 if s[m-1] == t[n-1] else replace_cost(s[m-1],t[n-1]))]
+                index = np.argmin(scores)
+                lowest = scores[index]
                 # Find all possible nodes links to this node, i.e. all that have lowest score
-                candidates = [i for i in range(len(scores)) if scores[i]==lowest]
+                candidates = [i for i in range(len(scores)) if scores[i] == lowest]
                 Adj[(m,n)] = [moves[i] for i in candidates]
                 # We need to process any that we haven't already processed
                 for i in candidates:
@@ -1292,21 +1294,19 @@ def ctea(s,t,indel_cost=1,replace_cost=lambda a,b: 1, mod=134217727):
             explore()
         return Adj,Leaves
 
-    # invert
-    # Invert adcancy list - build list of backward links
-
     def invert(Adj):
+        '''Invert adjacency list - build list of backward links'''
         Inverse = {a:[] for links in Adj.values() for a in links}
         for source,destinations in Adj.items():
             for destination in destinations:
                 Inverse[destination].append(source)
         return Inverse
 
-    # count_paths
-
-    # Used the algorithm of https://cs.stackexchange.com/questions/118799/counting-number-of-paths-between-two-vertices-in-a-dag
-    # to count paths through DAG
     def count_paths(Adj,Inverse,start=None):
+        '''
+        Use the algorithm of https://cs.stackexchange.com/questions/118799/counting-number-of-paths-between-two-vertices-in-a-dag
+        to count paths through DAG
+        '''
         C  = {ground:1}
         for node in create_topological_order(dict(Inverse)):
             if node == ground: continue
@@ -1316,8 +1316,8 @@ def ctea(s,t,indel_cost=1,replace_cost=lambda a,b: 1, mod=134217727):
 
     # Build matrix of distances
 
-    _,matrix   = edit(s,t,indel_cost,replace_cost)
-    m,n        = len(matrix)-1, len(matrix[0])-1
+    _,matrix = edit(s,t,indel_cost,replace_cost)
+    m,n = len(matrix)-1, len(matrix[0])-1
     Adj,Leaves = create_adjacency_list(matrix)
 
     ground     = (-1,-1) # Link all leaves to dummy node, so we can just do one pass through tree to count paths
@@ -1728,6 +1728,10 @@ if __name__=='__main__':
                                  9  : [ 17,20,21]
                              }))
 
+        def test_ctea(self):
+            '''CTEA Counting Optimal Alignments'''
+            self.assertEqual(4,ctea('PLEASANTLY','MEANLY'))
+
         def test_edit_sample(self):
             '''EDIT Edit Distance'''
             dist,_ = edit('PLEASANTLY','MEANLY')
@@ -1816,5 +1820,12 @@ if __name__=='__main__':
             self.assertEqual(8,score)
             self.assertEqual('LEASANTLY',''.join(s1))
             self.assertEqual('MEA--N-LY',''.join(s2))
+
+        @skip('#97')
+        def test_osym(self):
+            '''OSYM Isolating Symbols in Alignments'''
+            score,sum = osym('ATAGATA','ACAGGTA')
+            # self.assertEqual(3,score)
+            self.assertEqual(-139,sum)
 
     main()
