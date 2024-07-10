@@ -25,20 +25,21 @@ from rosalind import hamm, k_mers
 from reference_tables import bases
 
 
-def enumerateMotifs(k,d,dna):
+def enumerateMotifs(k,d,Dna):
     '''
      BA2A 	Implement MotifEnumeration
 
-    Input: Integers k and d, followed by a collection of strings Dna.
+    Parameters:
+        k
+        d
+        Dna
 
     Return: All (k, d)-motifs in Dna.
     '''
-    approximate_matches = {}
-    kmers = k_mers(k)
 
     def near_matches(kmer):
         if not kmer in approximate_matches:
-            approximate_matches[kmer]=[kk for kk in kmers if hamm(kk,kmer)<=d]
+            approximate_matches[kmer] = [kk for kk in kmers if hamm(kk,kmer) <=d ]
         return approximate_matches[kmer]
 
     def good_enough(pattern):
@@ -49,19 +50,21 @@ def enumerateMotifs(k,d,dna):
                     return True
             return False
 
-        for string in dna:
+        for string in Dna:
             if not match(string):
                 return False
         return True
 
+    approximate_matches = {}
+    kmers = k_mers(k)
     patterns = []
-    for string in dna:
+    for string in Dna:
         for i in range(len(string)-k+1):
             kmer = string[i:i+k]
             for pattern in near_matches(kmer):
                 if good_enough(pattern):
                     patterns.append(pattern)
-    return ' '.join(sorted(list(set(patterns))))
+    return list(set(patterns))
 
 
 def medianString(k,dna):
@@ -370,14 +373,84 @@ if __name__=='__main__':
     class Test_2_Sequence(TestCase):
 
         def test_ba2a(self):
-            '''BA2A 	Implement MotifEnumeration'''
-            self.assertEqual('ATA ATT GTT TTT',
-                             enumerateMotifs(3,
-                                             1,
-                                             ['ATTTGGC',
-                                            'TGCCTTA',
-                                            'CGGTATC',
-                                            'GAAAATT']))
+            '''
+            BA2A Implement MotifEnumeration
+
+            Test with sample data
+            '''
+            self.assertEqual(['ATA', 'ATT', 'GTT', 'TTT'],
+                             sorted(
+                                 enumerateMotifs(3,
+                                                 1,
+                                                 ['ATTTGGC',
+                                                  'TGCCTTA',
+                                                  'CGGTATC',
+                                                  'GAAAATT'])))
+
+        def test_ba2a_rosalind(self):
+            '''
+            BA2A Implement MotifEnumeration
+
+            Test with a Rosalind dataset
+            '''
+            self.assertEqual([
+                            'AAAGC', 'AACAG', 'AACTG', 'AAGCG', 'AAGCT', 'AAGGC', 'AAGGG', 'AATAG', 'AATGG', 'ACAAG',
+                            'ACACG', 'ACAGG', 'ACAGT', 'ACATG', 'ACATT', 'ACCGG', 'ACCTC', 'ACGAC', 'ACGAT', 'ACGCA',
+                            'ACGCC', 'ACGCG', 'ACGCT', 'ACGGC', 'ACGGG', 'ACGGT', 'ACGTG', 'ACGTT', 'ACTCA', 'ACTCC',
+                            'ACTCG', 'ACTGA', 'ACTGG', 'ACTGT', 'ACTTC', 'AGAAT', 'AGACC', 'AGAGG', 'AGAGT', 'AGATA',
+                            'AGATC', 'AGATT', 'AGCAT', 'AGCCT', 'AGCGA', 'AGCGC', 'AGCGG', 'AGCGT', 'AGCTC', 'AGCTG',
+                            'AGGAC', 'AGGAT', 'AGGCC', 'AGGGA', 'AGGGC', 'AGGGT', 'AGGTC', 'AGTCC', 'AGTCT', 'AGTGA',
+                            'AGTGG', 'ATAAC', 'ATAAG', 'ATAGA', 'ATAGC', 'ATAGT', 'ATATC', 'ATCAC', 'ATCCA', 'ATCGA',
+                            'ATCGC', 'ATCGG', 'ATCGT', 'ATCTC', 'ATCTG', 'ATGAT', 'ATGCC', 'ATGCG', 'ATGCT', 'ATGGC',
+                            'ATGGT', 'ATTCA', 'ATTCG', 'ATTCT', 'ATTGA', 'ATTGG', 'CAAAG', 'CAAAT', 'CAACC', 'CAAGA',
+                            'CAAGG', 'CAATG', 'CACAA', 'CACAG', 'CACAT', 'CACCG', 'CACCT', 'CACGA', 'CACGG', 'CACTG',
+                            'CAGAA', 'CAGAT', 'CAGCA', 'CAGGA', 'CAGGG', 'CAGTA', 'CAGTC', 'CAGTG', 'CAGTT', 'CATAG',
+                            'CATCA', 'CATCG', 'CATGA', 'CATGC', 'CATGG', 'CATTC', 'CATTG', 'CCAAT', 'CCACA', 'CCACC',
+                            'CCACG', 'CCAGG', 'CCATA', 'CCATC', 'CCATG', 'CCCAA', 'CCCCG', 'CCCGT', 'CCCTA', 'CCCTG',
+                            'CCGAA', 'CCGAT', 'CCGCG', 'CCGCT', 'CCGGA', 'CCGGT', 'CCGTC', 'CCGTG', 'CCGTT', 'CCTAA',
+                            'CCTAT', 'CCTCA', 'CCTCG', 'CCTGA', 'CCTGT', 'CCTTC', 'CCTTG', 'CGAAC', 'CGAAG', 'CGACA',
+                            'CGACC', 'CGACT', 'CGAGA', 'CGAGC', 'CGAGG', 'CGATC', 'CGATT', 'CGCAA', 'CGCAG', 'CGCCA',
+                            'CGCCT', 'CGCGA', 'CGCGT', 'CGCTA', 'CGCTG', 'CGCTT', 'CGGAC', 'CGGAT', 'CGGCT', 'CGGGA',
+                            'CGGTA', 'CGGTC', 'CGGTG', 'CGGTT', 'CGTCA', 'CGTCG', 'CGTCT', 'CGTGA', 'CGTGC', 'CGTGG',
+                            'CGTGT', 'CGTTA', 'CGTTC', 'CGTTG', 'CGTTT', 'CTAAA', 'CTAAT', 'CTACA', 'CTACG', 'CTACT',
+                            'CTATC', 'CTCAG', 'CTCAT', 'CTCCA', 'CTCGA', 'CTCGC', 'CTCGG', 'CTCGT', 'CTCTC', 'CTCTG',
+                            'CTGAA', 'CTGAC', 'CTGAG', 'CTGAT', 'CTGCC', 'CTGGA', 'CTGGC', 'CTGGT', 'CTGTC', 'CTGTG',
+                            'CTTCA', 'CTTCG', 'CTTGC', 'CTTTC', 'GAAGC', 'GAATT', 'GACAT', 'GACCA', 'GACCT', 'GAGAT',
+                            'GAGCC', 'GAGCG', 'GAGCT', 'GAGGA', 'GAGGG', 'GAGGT', 'GATAC', 'GATAG', 'GATCA', 'GATCC',
+                            'GATCG', 'GATCT', 'GATGC', 'GATGG', 'GATTA', 'GATTC', 'GATTG', 'GCAAG', 'GCACC', 'GCACG',
+                            'GCACT', 'GCAGT', 'GCATC', 'GCATG', 'GCATT', 'GCCAT', 'GCCCA', 'GCCCG', 'GCCTA', 'GCCTC',
+                            'GCCTG', 'GCCTT', 'GCGAA', 'GCGAT', 'GCGCG', 'GCGCT', 'GCGGT', 'GCGTA', 'GCGTC', 'GCGTT',
+                            'GCTAT', 'GCTCA', 'GCTCC', 'GCTCG', 'GCTCT', 'GCTGA', 'GCTGC', 'GCTGG', 'GCTGT', 'GCTTG',
+                            'GCTTT', 'GGAAT', 'GGACG', 'GGACT', 'GGAGC', 'GGATC', 'GGATG', 'GGATT', 'GGCAC', 'GGCAT',
+                            'GGCCG', 'GGCCT', 'GGCTC', 'GGCTG', 'GGCTT', 'GGGAT', 'GGGCG', 'GGGCT', 'GGTAC', 'GGTAT',
+                            'GGTCC', 'GGTCG', 'GGTCT', 'GGTGC', 'GGTGG', 'GGTTG', 'GTAAC', 'GTACC', 'GTACT', 'GTAGT',
+                            'GTCAC', 'GTCAT', 'GTCCA', 'GTCCC', 'GTCCT', 'GTCGC', 'GTCTA', 'GTCTC', 'GTGAA', 'GTGAC',
+                            'GTGAG', 'GTGAT', 'GTTAC', 'GTTAG', 'GTTCA', 'GTTCG', 'GTTGC', 'GTTGG', 'TAAAG', 'TAACA',
+                            'TAACC', 'TAACG', 'TAAGC', 'TAAGG', 'TAATG', 'TACGA', 'TACGG', 'TACGT', 'TACTA', 'TACTC',
+                            'TACTT', 'TAGAG', 'TAGAT', 'TAGCA', 'TAGCG', 'TAGCT', 'TAGGA', 'TAGGT', 'TAGTC', 'TAGTG',
+                            'TAGTT', 'TATAG', 'TATCC', 'TATCG', 'TATGC', 'TATGG', 'TCAAG', 'TCACA', 'TCACC', 'TCACT',
+                            'TCAGA', 'TCAGC', 'TCAGT', 'TCATG', 'TCATT', 'TCCAC', 'TCCAT', 'TCCCG', 'TCCCT', 'TCCGG',
+                            'TCCTT', 'TCGAA', 'TCGAG', 'TCGAT', 'TCGCA', 'TCGCG', 'TCGCT', 'TCGGA', 'TCGGG', 'TCGGT',
+                            'TCGTA', 'TCGTG', 'TCGTT', 'TCTAG', 'TCTAT', 'TCTCC', 'TCTCG', 'TCTCT', 'TCTGA', 'TCTGG',
+                            'TGACA', 'TGACG', 'TGACT', 'TGAGC', 'TGATC', 'TGATG', 'TGCAA', 'TGCAC', 'TGCCC', 'TGCCT',
+                            'TGCGT', 'TGCTC', 'TGCTG', 'TGGAT', 'TGGCA', 'TGGCC', 'TGGCG', 'TGGCT', 'TGGGT', 'TGGTC',
+                            'TGTCG', 'TGTCT', 'TTACC', 'TTACG', 'TTACT', 'TTAGC', 'TTAGG', 'TTATA', 'TTATG', 'TTCAC',
+                            'TTCAG', 'TTGAC', 'TTGCA', 'TTGCC', 'TTGCG', 'TTGCT', 'TTGGC', 'TTGGT', 'TTGTC', 'TTTCG'
+                            ],
+                             sorted(
+                                 enumerateMotifs(5,
+                                                 2,
+                                                 ['CATTAACGTGGTCCTCCGATGTAAT',
+                                                  'CCTCATGATGTCTTTATTGAACGTT',
+                                                  'CCGCTCAGGTCTAGCTTTGGGATAT',
+                                                  'TAGAGTCTTAATCGTTCACGGCGGT',
+                                                  'GCGCGCTAGCGCATACTGCCCCGGT',
+                                                  'CCGATAGGCACTCGCTTAGGCAATA',
+                                                  'CACAGGGTTCTCACGCCCCAGCGAT',
+                                                  'CAAGTCACGATCGATGACTATCAAT',
+                                                  'ATACAGCGGTCGGTGGCCGGATGGC',
+                                                  'TTCGACTCCACTAGCGCGATGCGCC'])))
+
 
         def test_ba2b(self):
             '''BA2B 	Find a Median String'''
