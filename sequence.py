@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-#   Copyright (C) 2023 Simon Crase
+#   Copyright (C) 2023-2024 Simon Crase
 
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -17,13 +17,11 @@
 
 '''Chapter 2: Which DNA Patterns play the role of molecular clocks'''
 
-from random   import randint, random
-from sys      import float_info
+from random import randint, random
+from sys import float_info
 from unittest import main, TestCase, skip
-
-import numpy  as np
-
-from rosalind         import hamm, k_mers
+import numpy as np
+from rosalind import hamm, k_mers
 from reference_tables import bases
 
 
@@ -138,28 +136,24 @@ def greedyMotifSearch(k,t,dna,pseudo_counts=False):
         return count_occurrences_of_bases(motifs)/float(len(motifs))
 
     def score(motifs):
-        matrix=count_occurrences_of_bases(motifs)
-        total=0
+        matrix = count_occurrences_of_bases(motifs)
+        total = 0
         for j in range(k):
-            m=0
+            m = 0
             for i in range(len(bases)):
-                if m<matrix[i,j]:
-                    m=matrix[i,j]
-            total+=(len(bases)-m)
+                if m < matrix[i,j]:
+                    m = matrix[i,j]
+            total += (len(bases) - m)
         return total
 
-    bestMotifs=[genome[0:k] for genome in dna]
+    bestMotifs = [genome[0:k] for genome in dna]
     for motif in [dna[0][i:i+k] for i in range(len(dna[0])-k+1)]:
-        motifs=[motif]
+        motifs = [motif]
         for i in range(1,t):
             motifs.append(mostProbable(dna[i],k,profile(motifs)))
-        if score(motifs)<score(bestMotifs):
-            bestMotifs=motifs
+        if score(motifs) < score(bestMotifs):
+            bestMotifs = motifs
     return bestMotifs
-
-
-
-
 
 def randomized_motif_search(k,t,dna,eps=1):
     '''
@@ -272,89 +266,89 @@ def gibbs(k,t,n,dna,eps=1):
      Remember to use pseudocounts
     '''
     def score(k,motifs):
-        total=0
+        total = 0
         for j in range(k):
-            counts=np.zeros(len(bases),dtype=np.int32)
+            counts = np.zeros(len(bases),dtype=np.int32)
             for motif in motifs:
-                i=bases.find(motif[j])
-                counts[i]+=1
-            max=-1
-            ii=-1
+                i = bases.find(motif[j])
+                counts[i] += 1
+            max =- 1
+            ii = -1
             for i in range(len(bases)):
-                if max<counts[i]:
-                    ii=i
+                if max < counts[i]:
+                    ii = i
                     max=counts[ii]
             for i in range(len(bases)):
-                if i!=ii:
-                    total+=counts[i]
+                if i != ii:
+                    total += counts[i]
         return total
 
     def random_kmer(string):
-        i=randint(0,len(string)-k)
+        i = randint(0,len(string)-k)
         return string[i:i+k]
 
     def dropOneMotif(motifs,i):
         return [motifs[j] for j in range(len(motifs)) if j!=i]
 
     def counts(motifs):
-        matrix=np.ones((len(bases),k),dtype=int)
+        matrix = np.ones((len(bases),k),dtype=int)
         for i in range(len(bases)):
             for j in range(k):
-                matrix[i,j]*=eps
+                matrix[i,j] *= eps
         for kmer in motifs:
             for j in range(k):
-                i=bases.find(kmer[j])
-                matrix[i,j]+=1
+                i = bases.find(kmer[j])
+                matrix[i,j] += 1
         return matrix
 
     def Profile(motifs):
-        matrix=counts(motifs)
-        probabilities=np.zeros((len(bases),k),dtype=float)
+        matrix = counts(motifs)
+        probabilities = np.zeros((len(bases),k),dtype=float)
         for i in range(len(bases)):
             for j in range(k):
-                probabilities[i,j]=matrix[i,j]/float(len(motifs))
+                probabilities[i,j] = matrix[i,j]/float(len(motifs))
         return probabilities
 
     def probability(kmer,profile):
-        p=1
+        p = 1
         for j in range(len(kmer)):
-            i=bases.find(kmer[j])
-            p*=profile[i][j]
+            i = bases.find(kmer[j])
+            p *= profile[i][j]
         return p
 
     def accumulate(probabilities):
-        total=0
-        cumulative=[]
+        total = 0
+        cumulative = []
         for p in probabilities:
-            total+=p
+            total += p
             cumulative.append(total)
         return cumulative
 
     def generate(probabilities):
         accumulated=accumulate(probabilities)
-        rr=accumulated[len(accumulated)-1]*random()
-        i=0
-        while accumulated[i]<=rr:
-            i+=1
+        rr = accumulated[len(accumulated)-1]*random()
+        i = 0
+        while accumulated[i] <= rr:
+            i += 1
         return i
 
-    motifs=[]
+    motifs = []
 
     for i in range(t):
         motifs.append(random_kmer(dna[i]))
-    bestMotifs=motifs
+    bestMotifs = motifs
 
-    trace=[]
-    best_score=float_info.max
+    trace = []
+    best_score = float_info.max
     for j in range(n):
-        i=randint(0,t-1)
-        profile=Profile(dropOneMotif(motifs,i))
-        motif_index=generate([probability(dna[i][ll:ll+k],profile)\
+        i = randint(0,t-1)
+        profile = Profile(dropOneMotif(motifs,i))
+        motif_index = generate([probability(dna[i][ll:ll+k],profile)\
                               for ll in range(len(dna[i])-k)])
-        motifs[i]=dna[i][motif_index:motif_index+k]
-        sc=score(k,motifs)
-        if  sc< best_score:
-            best_score=sc
+        motifs[i] = dna[i][motif_index:motif_index+k]
+        sc = score(k,motifs)
+        if  sc < best_score:
+            best_score = sc
             bestMotifs = motifs
         trace.append(best_score)
 
