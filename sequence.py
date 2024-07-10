@@ -36,7 +36,7 @@ def enumerateMotifs(k,d,dna):
     Return: All (k, d)-motifs in Dna.
     '''
     approximate_matches = {}
-    kmers               = k_mers(k)
+    kmers = k_mers(k)
 
     def near_matches(kmer):
         if not kmer in approximate_matches:
@@ -46,19 +46,20 @@ def enumerateMotifs(k,d,dna):
     def good_enough(pattern):
         def match(string):
             for i in range(len(string)-k+1):
-                kmer=string[i:i+k]
-                if hamm(kmer,pattern)<=d:
+                kmer = string[i:i+k]
+                if hamm(kmer,pattern) <= d:
                     return True
             return False
+
         for string in dna:
             if not match(string):
                 return False
         return True
 
-    patterns=[]
+    patterns = []
     for string in dna:
         for i in range(len(string)-k+1):
-            kmer=string[i:i+k]
+            kmer = string[i:i+k]
             for pattern in near_matches(kmer):
                 if good_enough(pattern):
                     patterns.append(pattern)
@@ -76,12 +77,12 @@ def medianString(k,dna):
 
     '''
     def findClosest(d):
-        distance=float_info.max
-        closest=None
+        distance = float_info.max
+        closest = None
         for k_mer in k_mers(k):
-            if distance>d(k_mer,dna):
-                distance=d(k_mer,dna)
-                closest=k_mer
+            if distance > d(k_mer,dna):
+                distance = d(k_mer,dna)
+                closest = k_mer
         return closest
     return findClosest(distanceBetweenPatternAndStrings)
 
@@ -161,75 +162,84 @@ def greedyMotifSearch(k,t,dna,pseudo_counts=False):
 
 
 def randomized_motif_search(k,t,dna,eps=1):
-    '''BA2F 	Implement RandomizedMotifSearch'''
+    '''
+    BA2F 	Implement RandomizedMotifSearch
+
+    Parameters:
+        k
+        t
+        dna
+        eps
+    '''
     def score(k,motifs):
-        total=0
+        total = 0
         for j in range(k):
-            counts=np.zeros(len(bases),dtype=np.int32)
+            counts = np.zeros(len(bases),dtype=np.int32)
             for motif in motifs:
-                i=bases.find(motif[j])
-                counts[i]+=1
-            max=-1
-            ii=-1
+                i = bases.find(motif[j])
+                counts[i] += 1
+            max_count = -1
+            ii = -1
             for i in range(len(bases)):
-                if max<counts[i]:
-                    ii=i
-                    max=counts[ii]
+                if max_count < counts[i]:
+                    ii = i
+                    max_count = counts[ii]
             for i in range(len(bases)):
-                if i!=ii:
-                    total+=counts[i]
+                if i != ii:
+                    total += counts[i]
         return total
+
     def counts(motifs):
-        matrix=np.ones((len(bases),k),dtype=int)
+        matrix = np.ones((len(bases),k),dtype=int)
         for i in range(len(bases)):
             for j in range(k):
-                matrix[i,j]*=eps
+                matrix[i,j] *= eps
         for kmer in motifs:
             for j in range(k):
-                i=bases.find(kmer[j])
-                matrix[i,j]+=1
+                i = bases.find(kmer[j])
+                matrix[i,j] += 1
         return matrix
+
     def Motifs(profile,dna):
         def get_k(Profile):
             return len(Profile[0])
         def prob(kmer):
-            p=1
+            p = 1
             for j in range(k):
-                i=bases.find(kmer[j])
-                p*=profile[i][j]
+                i = bases.find(kmer[j])
+                p *= profile[i][j]
             return p
-        k=get_k(profile)
-        motifs=[]
+        k = get_k(profile)
+        motifs = []
         for s in dna:
-            max_probability=-1
-            most_probable_kmer=''
+            max_probability =- 1
+            most_probable_kmer = ''
             for kmer in [s[i:i+k].upper() for i in range(len(s)-k+1)]:
-                #if len(kmer)<k:
-                    #print kmer,s,i
-                if max_probability<prob(kmer):
-                    max_probability=prob(kmer)
-                    most_probable_kmer=kmer
+                if max_probability < prob(kmer):
+                    max_probability = prob(kmer)
+                    most_probable_kmer = kmer
             motifs.append(most_probable_kmer)
         return motifs
+
     def Profile(motifs):
-        matrix=counts(motifs)
-        probabilities=np.zeros((len(bases),k),dtype=float)
+        matrix = counts(motifs)
+        probabilities = np.zeros((len(bases),k),dtype=float)
         for i in range(len(bases)):
             for j in range(k):
-                probabilities[i,j]=matrix[i,j]/float(len(motifs))
+                probabilities[i,j] = matrix[i,j]/float(len(motifs))
         return probabilities
 
     def random_kmer(string):
-        i=randint(0,len(string)-k)
+        i = randint(0,len(string)-k)
         return string[i:i+k]
 
-    motifs=[]
+    motifs = []
 
     for i in range(t):
         motifs.append(random_kmer(dna[i]))
-    bestMotifs=motifs
+    bestMotifs = motifs
     while True:
-        profile=Profile(motifs)
+        profile = Profile(motifs)
         motifs = Motifs(profile, dna)
         if score(k,motifs) < score(k,bestMotifs):
             bestMotifs = motifs
@@ -237,17 +247,17 @@ def randomized_motif_search(k,t,dna,eps=1):
             return (score(k,bestMotifs),bestMotifs)
 
 def randomized_motif_search_driver(k,t,dna,N=1000):
-    best=float_info.max
-    mm=[]
+    '''
+    BA2F Implement RandomizedMotifSearch
+    '''
+    best = float_info.max
+    mm = []
     for i in range(N):
         (sc,motifs) =randomized_motif_search(k,t,dna)
         if sc<best:
-            best=sc
-            mm=motifs
-        if i%100==0:
-            print (i,best)
-            for m in mm:
-                print (m)
+            best = sc
+            mm = motifs
+
     return (best,mm)
 
 
@@ -428,8 +438,12 @@ if __name__=='__main__':
             self.assertEqual(['ATC','ATC','TTC','TTC','TTC'],sorted(motifs))
 
         def test_ba2f(self):
-            '''BA2F 	Implement RandomizedMotifSearch'''
-            (c,x)=randomized_motif_search_driver(8, 5,[
+            '''
+            BA2F Implement RandomizedMotifSearch
+
+            NB: this test fails sometimes (randomness!)
+            '''
+            (c,x) = randomized_motif_search_driver(8, 5,[
                 'CGCCCCTCTCGGGGGTGTTCAGTAAACGGCCA',
                 'GGGCGAGGTATGTGTAAGTGCCAAGGTGCCAG',
                 'TAGTACCGAGACCGAAAGAAGTATACAGGCGT',
