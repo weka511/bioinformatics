@@ -30,20 +30,38 @@ def enumerateMotifs(k,d,Dna):
      BA2A 	Implement MotifEnumeration
 
     Parameters:
-        k
-        d
-        Dna
+        k        Length of the motifs that we are looking for
+        d        Maximum allowable distance
+        Dna      The strings to be searched
 
-    Return: All (k, d)-motifs in Dna.
+    Returns:
+        All (k, d)-motifs in Dna, i.e. all k-mer that appear in every string from Dna with at most d mismatches.
     '''
+    class ApproximateMatches:
+        '''
+        This class is used to build a dictionary of near matches for kmers
+        '''
+        def __init__(self):
+            self.matches = {}
 
-    def near_matches(kmer):
-        if not kmer in approximate_matches:
-            approximate_matches[kmer] = [kk for kk in kmers if hamm(kk,kmer) <=d ]
-        return approximate_matches[kmer]
+        def add_matches(self,kmer):
+            '''
+            Add other kmers to dictionary entry for supplied kmer if within d
+            '''
+            if not kmer in self.matches:
+                self.matches[kmer] = [km for km in kmers if hamm(km,kmer) <=d ]
+
+        def get_matches(self,kmer):
+            return self.matches[kmer]
 
     def good_enough(pattern):
+        '''
+        Verify that a pattern is within specified maximum distance of every string in Dna
+        '''
         def match(string):
+            '''
+            Verify that a string is within specified maximum distance of pattern
+            '''
             for i in range(len(string)-k+1):
                 kmer = string[i:i+k]
                 if hamm(kmer,pattern) <= d:
@@ -55,16 +73,17 @@ def enumerateMotifs(k,d,Dna):
                 return False
         return True
 
-    approximate_matches = {}
+    approximate_matches = ApproximateMatches()
     kmers = k_mers(k)
-    patterns = []
+    patterns = set()
     for string in Dna:
         for i in range(len(string)-k+1):
             kmer = string[i:i+k]
-            for pattern in near_matches(kmer):
+            approximate_matches.add_matches(kmer)
+            for pattern in approximate_matches.get_matches(kmer):
                 if good_enough(pattern):
-                    patterns.append(pattern)
-    return list(set(patterns))
+                    patterns.add(pattern)
+    return list(patterns)
 
 
 def medianString(k,dna):
