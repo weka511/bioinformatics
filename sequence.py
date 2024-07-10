@@ -82,8 +82,9 @@ def enumerateMotifs(k,d,Dna):
             approximate_matches.add_matches(kmer)
             for pattern in approximate_matches.get_matches(kmer):
                 if good_enough(pattern):
-                    patterns.add(pattern)
-    return list(patterns)
+                    if pattern not in patterns:
+                        patterns.add(pattern)
+                        yield pattern
 
 
 def medianString(k,dna):
@@ -399,12 +400,13 @@ if __name__=='__main__':
             '''
             self.assertEqual(['ATA', 'ATT', 'GTT', 'TTT'],
                              sorted(
-                                 enumerateMotifs(3,
+                                 list(
+                                     enumerateMotifs(3,
                                                  1,
                                                  ['ATTTGGC',
                                                   'TGCCTTA',
                                                   'CGGTATC',
-                                                  'GAAAATT'])))
+                                                  'GAAAATT']))))
 
         def test_ba2a_rosalind(self):
             '''
@@ -457,7 +459,7 @@ if __name__=='__main__':
                             'TTCAG', 'TTGAC', 'TTGCA', 'TTGCC', 'TTGCG', 'TTGCT', 'TTGGC', 'TTGGT', 'TTGTC', 'TTTCG'
                             ],
                              sorted(
-                                 enumerateMotifs(5,
+                                 list(enumerateMotifs(5,
                                                  2,
                                                  ['CATTAACGTGGTCCTCCGATGTAAT',
                                                   'CCTCATGATGTCTTTATTGAACGTT',
@@ -468,7 +470,7 @@ if __name__=='__main__':
                                                   'CACAGGGTTCTCACGCCCCAGCGAT',
                                                   'CAAGTCACGATCGATGACTATCAAT',
                                                   'ATACAGCGGTCGGTGGCCGGATGGC',
-                                                  'TTCGACTCCACTAGCGCGATGCGCC'])))
+                                                  'TTCGACTCCACTAGCGCGATGCGCC']))))
 
 
         def test_ba2b(self):
