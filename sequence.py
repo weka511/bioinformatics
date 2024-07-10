@@ -427,7 +427,6 @@ if __name__=='__main__':
                                      pseudo_counts=True)
             self.assertEqual(['ATC','ATC','TTC','TTC','TTC'],sorted(motifs))
 
-        @skip('#124')
         def test_ba2f(self):
             '''BA2F 	Implement RandomizedMotifSearch'''
             (c,x)=randomized_motif_search_driver(8, 5,[
@@ -435,7 +434,7 @@ if __name__=='__main__':
                 'GGGCGAGGTATGTGTAAGTGCCAAGGTGCCAG',
                 'TAGTACCGAGACCGAAAGAAGTATACAGGCGT',
                 'TAGATCAAGTTTCAGGTGCACGTCGGTGAACC',
-                'AATCCACCAGCTCCACGTGCAATGTTGGCCTA'],100000)
+                'AATCCACCAGCTCCACGTGCAATGTTGGCCTA'],1000)
 
             self.assertIn('TCTCGGGG',x)
             self.assertIn('CCAAGGTG',x)
