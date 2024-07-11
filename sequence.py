@@ -54,17 +54,16 @@ def enumerateMotifs(k,d,Dna):
         def get_matches(self,kmer):
             return self.matches[kmer]
 
-    def good_enough(pattern):
+    def close_enough(pattern):
         '''
         Verify that a pattern is within specified maximum distance of every string in Dna
         '''
         def match(string):
             '''
-            Verify that a string is within specified maximum distance of pattern
+            Verify that a pattern is within specified maximum distance of some substring
             '''
             for i in range(len(string)-k+1):
-                kmer = string[i:i+k]
-                if hamm(kmer,pattern) <= d:
+                if hamm(string[i:i+k],pattern) <= d:
                     return True
             return False
 
@@ -81,10 +80,9 @@ def enumerateMotifs(k,d,Dna):
             kmer = string[i:i+k]
             approximate_matches.add_matches(kmer)
             for pattern in approximate_matches.get_matches(kmer):
-                if good_enough(pattern):
-                    if pattern not in patterns:
-                        patterns.add(pattern)
-                        yield pattern
+                if close_enough(pattern) and pattern not in patterns:
+                    patterns.add(pattern)
+                    yield pattern
 
 
 def medianString(k,dna):
@@ -120,7 +118,13 @@ def mostProbable(text,n,profile):
     '''
     def log_prob(kmer):
         '''log(probability of kmer given profile)'''
-        return sum([np.log(profile[bases.find(kmer[j])][j]) for j in range(n)])
+        def log(x):
+            '''
+            Workaround for #149. This suppresses the warning, but does not affect result of mostProbable,
+            since result is computed using argmax
+            '''
+            return np.log(x) if x > 0 else -np.inf
+        return sum([log(profile[bases.find(kmer[j])][j]) for j in range(n)])
 
     def findMostProbable():
         kmers = [text[i:i+n] for i in range(len(text)-n+1)]
