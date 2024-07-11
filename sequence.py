@@ -92,21 +92,15 @@ def medianString(k,dna):
     Input: An integer k and a collection of strings Dna.
 
     Return: A k-mer Pattern that minimizes d(Pattern, Dna) over all k-mers
-    Pattern. (If multiple answers exist, you may return any one.)
-
     '''
-    def findClosest(d):
-        distance = float_info.max
-        closest = None
-        for k_mer in k_mers(k):
-            if distance > d(k_mer,dna):
-                distance = d(k_mer,dna)
-                closest = k_mer
-        return closest
-    return findClosest(distanceBetweenPatternAndStrings)
-
-
-
+    distance = float_info.max
+    closest_k_mer = None
+    for candidate_k_mer in k_mers(k):
+        candidate_distance = distanceBetweenPatternAndStrings(candidate_k_mer,dna)
+        if distance > candidate_distance:
+            distance = candidate_distance
+            closest_k_mer = candidate_k_mer
+    return closest_k_mer
 
 def mostProbable(text,n,profile):
     '''
