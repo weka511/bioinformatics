@@ -25,9 +25,12 @@ from rosalind import hamm, k_mers
 from reference_tables import bases
 
 
-def enumerateMotifs(k,d,Dna):
+def generate_motifs(k,d,Dna):
     '''
-     BA2A 	Implement MotifEnumeration
+    BA2A Implement MotifEnumeration
+
+    This generator supports iteration over all (k, d)-motifs in Dna,
+    i.e. all k-mers that appear in every string from Dna with at most d mismatches.
 
     Parameters:
         k        Length of the motifs that we are looking for
@@ -60,7 +63,7 @@ def enumerateMotifs(k,d,Dna):
         '''
         def match(string):
             '''
-            Verify that a pattern is within specified maximum distance of some substring
+            Verify that a pattern is within specified maximum distance of some specified substring
             '''
             for i in range(len(string)-k+1):
                 if hamm(string[i:i+k],pattern) <= d:
@@ -84,8 +87,18 @@ def enumerateMotifs(k,d,Dna):
                     patterns.add(pattern)
                     yield pattern
 
+def get_distance_between_pattern_and_strings (pattern,Dna):
+    '''
+    BA2H 	Implement get_distance_between_pattern_and_strings
+    '''
+    def hamming(pattern,genome):
+        '''Extend Hamming distance to work with string of unequal length'''
+        return min([hamm(pattern,genome[i:i+len(pattern)])
+                    for i in range(len(genome)-len(pattern)+1)])
 
-def medianString(k,dna):
+    return sum([hamming(pattern,motif) for motif in Dna])
+
+def create_median_string(k,Dna):
     '''
     BA2B 	Find a Median String
 
@@ -96,13 +109,13 @@ def medianString(k,dna):
     distance = float_info.max
     closest_k_mer = None
     for candidate_k_mer in k_mers(k):
-        candidate_distance = distanceBetweenPatternAndStrings(candidate_k_mer,dna)
+        candidate_distance = get_distance_between_pattern_and_strings(candidate_k_mer,Dna)
         if distance > candidate_distance:
             distance = candidate_distance
             closest_k_mer = candidate_k_mer
     return closest_k_mer
 
-def mostProbable(text,n,profile):
+def get_profile_most_probable_kmer(text,k,profile):
     '''
      BA2C Find a Profile-most Probable k-mer in a String
 
@@ -114,31 +127,33 @@ def mostProbable(text,n,profile):
         '''log(probability of kmer given profile)'''
         def log(x):
             '''
-            Workaround for #149. This suppresses the warning, but does not affect result of mostProbable,
+            Workaround for #149. This suppresses the warning, but does not affect result of get_profile_most_probable_kmer,
             since result is computed using argmax
             '''
             return np.log(x) if x > 0 else -np.inf
-        return sum([log(profile[bases.find(kmer[j])][j]) for j in range(n)])
+        return sum([log(profile[bases.find(kmer[j])][j]) for j in range(k)])
 
-    def findMostProbable():
-        kmers = [text[i:i+n] for i in range(len(text)-n+1)]
-        return kmers[np.argmax( [log_prob(s) for s in kmers])]
-
-    return findMostProbable()
+    all_kmers_in_text = [text[i:i+k] for i in range(len(text)-k+1)]
+    return all_kmers_in_text[np.argmax( [log_prob(s) for s in all_kmers_in_text])]
 
 
-def greedyMotifSearch(k,t,dna,
+def greedyMotifSearch(k,t,Dna,
                       pseudo_counts=False):
     '''
     BA2D 	Implement GreedyMotifSearch
     BA2E 	Implement GreedyMotifSearch with Pseudocounts
 
-    Input: Integers k and t, followed by a collection of strings Dna.
-           Optional parameter pseudo_counts specifies whether pseudo counts are to be used
+    Parameters:
+        k
+        t
+        Dna
+        pseudo_counts    Specifies whether pseudo counts are to be used
+
+
 
     Return: A collection of strings BestMotifs resulting from running
-    GreedyMotifSearch(Dna, k, t). If at any step you find more than one
-    Profile-most probable k-mer in a given string, use the one occurring first.
+            GreedyMotifSearch(Dna, k, t). If at any step you find more than one
+            Profile-most probable k-mer in a given string, use the one occurring first.
     '''
     def ones_or_zeros(pseudo_counts):
         '''
@@ -167,11 +182,11 @@ def greedyMotifSearch(k,t,dna,
             total += (len(bases) - counts[:,j].max())
         return total
 
-    bestMotifs = [genome[0:k] for genome in dna]
-    for motif in [dna[0][i:i+k] for i in range(len(dna[0])-k+1)]:
+    bestMotifs = [genome[0:k] for genome in Dna]
+    for motif in [Dna[0][i:i+k] for i in range(len(Dna[0])-k+1)]:
         motifs = [motif]
         for i in range(1,t):
-            motifs.append(mostProbable(dna[i],k,profile(motifs)))
+            motifs.append(get_profile_most_probable_kmer(Dna[i],k,profile(motifs)))
         if score(motifs) < score(bestMotifs):
             bestMotifs = motifs
     return bestMotifs
@@ -215,29 +230,33 @@ def random_kmer(string,k):
     i = randint(0,len(string)-k)
     return string[i:i+k]
 
-def randomized_motif_search(k,t,dna,eps=1):
+def Profile(k,eps,motifs):
+    matrix = counts(k,eps,motifs)
+    return matrix/len(motifs)
+
+def randomized_motif_search(k,t,Dna,eps=1):
     '''
     BA2F Implement RandomizedMotifSearch
 
     Parameters:
         k
         t
-        dna
+        Dna
         eps
     '''
 
-    def Motifs(profile,dna):
-        def get_k(Profile):
-            return len(Profile[0])
+    def Motifs(profile,Dna):
+
         def prob(kmer):
             p = 1
             for j in range(k):
                 i = bases.find(kmer[j])
                 p *= profile[i][j]
             return p
-        k = get_k(profile)
+
+        k = len(profile[0])
         motifs = []
-        for s in dna:
+        for s in Dna:
             max_probability =- 1
             most_probable_kmer = ''
             for kmer in [s[i:i+k].upper() for i in range(len(s)-k+1)]:
@@ -247,29 +266,18 @@ def randomized_motif_search(k,t,dna,eps=1):
             motifs.append(most_probable_kmer)
         return motifs
 
-    def Profile(motifs):
-        matrix = counts(k,eps,motifs)
-        probabilities = np.zeros((len(bases),k),dtype=float)
-        for i in range(len(bases)):
-            for j in range(k):
-                probabilities[i,j] = matrix[i,j]/float(len(motifs))
-        return probabilities
+    motifs = [random_kmer(Dna[i],k) for i in range(t)]
 
-
-    motifs = []
-
-    for i in range(t):
-        motifs.append(random_kmer(dna[i],k))
     bestMotifs = motifs
     while True:
-        profile = Profile(motifs)
-        motifs = Motifs(profile, dna)
+        profile = Profile(k,eps,motifs)
+        motifs = Motifs(profile, Dna)
         if score(k,motifs) < score(k,bestMotifs):
             bestMotifs = motifs
         else:
             return (score(k,bestMotifs),bestMotifs)
 
-def randomized_motif_search_driver(k,t,dna,N=2000):
+def randomized_motif_search_driver(k,t,Dna,N=2000):
     '''
     BA2F Implement RandomizedMotifSearch
 
@@ -278,7 +286,7 @@ def randomized_motif_search_driver(k,t,dna,N=2000):
     best_score = float_info.max
     best_motifs = []
     for i in range(N):
-        (score,candidate_motifs) = randomized_motif_search(k,t,dna)
+        (score,candidate_motifs) = randomized_motif_search(k,t,Dna)
         if score < best_score:
             best_score = score
             best_motifs = candidate_motifs
@@ -286,37 +294,25 @@ def randomized_motif_search_driver(k,t,dna,N=2000):
     return (best_score,best_motifs)
 
 
-def gibbs(k,t,dna,
+def gibbs(k,t,Dna,
           n = 20,
           eps = 1):
     '''
     BA2G 	Implement GibbsSampler
 
-     Input: Integers k, t, and N, followed by a collection of strings Dna.
+    Parameters:
+        k
+        t, and N, followed by a collection of strings Dna.
 
      Return: The strings BestMotifs resulting from running
-     GibbsSampler(Dna, k, t, N) with 20 random starts.
+     GibbsSampler(Dna, k, t, N) with n random starts.
     '''
-
-
-
-    def dropOneMotif(motifs,i):
-        return [motifs[j] for j in range(len(motifs)) if j!=i]
-
-    def Profile(motifs):
-        matrix = counts(k, eps, motifs)
-        probabilities = np.zeros((len(bases),k),dtype=float)
-        for i in range(len(bases)):
-            for j in range(k):
-                probabilities[i,j] = matrix[i,j]/float(len(motifs))
-        return probabilities
-
-    def probability(kmer,profile):
-        p = 1
+    def get_probability(kmer,profile):
+        probability = 1.0
         for j in range(len(kmer)):
             i = bases.find(kmer[j])
-            p *= profile[i][j]
-        return p
+            probability *= profile[i][j]
+        return probability
 
     def accumulate(probabilities):
         total = 0
@@ -327,46 +323,34 @@ def gibbs(k,t,dna,
         return cumulative
 
     def generate(probabilities):
-        accumulated=accumulate(probabilities)
+        accumulated = accumulate(probabilities)
         rr = accumulated[len(accumulated)-1]*random()
         i = 0
         while accumulated[i] <= rr:
             i += 1
         return i
 
-    motifs = []
-
-    for i in range(t):
-        motifs.append(random_kmer(dna[i],k))
+    motifs = [random_kmer(Dna[i],k) for i in range(t)]
     bestMotifs = motifs
-
-    trace = []
     best_score = float_info.max
+    log_scores = []
+
     for j in range(n):
-        i = randint(0,t-1)
-        profile = Profile(dropOneMotif(motifs,i))
-        motif_index = generate([probability(dna[i][ll:ll+k],profile)
-                              for ll in range(len(dna[i])-k)])
-        motifs[i] = dna[i][motif_index:motif_index+k]
+        row_to_replace = randint(0,t-1)
+        profile = Profile(k,eps,np.delete(motifs,row_to_replace))
+        motif_index = generate([get_probability(Dna[row_to_replace][ll:ll+k],profile)
+                              for ll in range(len(Dna[row_to_replace])-k)])
+        motifs[row_to_replace] = Dna[row_to_replace][motif_index:motif_index+k]
         sc = score(k,motifs)
         if  sc < best_score:
             best_score = sc
             bestMotifs = motifs
-        trace.append(best_score)
+        log_scores.append(best_score)
 
-    return (score(k,bestMotifs),bestMotifs,trace)
+    return (score(k,bestMotifs),bestMotifs,log_scores)
 
 
-def distanceBetweenPatternAndStrings (pattern,dna):
-    '''
-    BA2H 	Implement DistanceBetweenPatternAndStrings
-    '''
 
-    def hamming(pattern,genome):
-        '''Extend Hamming distance to work with string of unequal length'''
-        return min([hamm(pattern,genome[i:i+len(pattern)])
-                    for i in range(len(genome)-len(pattern)+1)])
-    return sum([hamming(pattern,motif) for motif in dna])
 
 if __name__=='__main__':
     class Test_2_Sequence(TestCase):
@@ -380,7 +364,7 @@ if __name__=='__main__':
             self.assertEqual(['ATA', 'ATT', 'GTT', 'TTT'],
                              sorted(
                                  list(
-                                     enumerateMotifs(3,
+                                     generate_motifs(3,
                                                  1,
                                                  ['ATTTGGC',
                                                   'TGCCTTA',
@@ -438,7 +422,7 @@ if __name__=='__main__':
                             'TTCAG', 'TTGAC', 'TTGCA', 'TTGCC', 'TTGCG', 'TTGCT', 'TTGGC', 'TTGGT', 'TTGTC', 'TTTCG'
                             ],
                              sorted(
-                                 list(enumerateMotifs(5,
+                                 list(generate_motifs(5,
                                                  2,
                                                  ['CATTAACGTGGTCCTCCGATGTAAT',
                                                   'CCTCATGATGTCTTTATTGAACGTT',
@@ -455,7 +439,7 @@ if __name__=='__main__':
         def test_ba2b_light(self):
             '''BA2B Find a Median String'''
             self.assertEqual('GAC',
-                             medianString(3,
+                             create_median_string(3,
                                           [
                                             'AAATTGACGCAT',
                                             'GACGACCACGTT',
@@ -469,7 +453,7 @@ if __name__=='__main__':
             '''BA2C Find a Profile-most Probable k-mer in a String'''
             self.assertEqual(
                 'CCGAG',
-                mostProbable(
+                get_profile_most_probable_kmer(
                     'ACCTGTTTATTGCCTAAGTTCCGAACAAACCCAATATAGCCCGAGGGCCT',\
                     5,
                     [[0.2, 0.2, 0.3, 0.2, 0.3],
@@ -555,10 +539,10 @@ if __name__=='__main__':
 
 
         def test_ba2h_light(self):
-            '''BA2H Implement DistanceBetweenPatternAndStrings'''
+            '''BA2H Implement get_distance_between_pattern_and_strings'''
             self.assertEqual(
                 5,
-                distanceBetweenPatternAndStrings('AAA',
+                get_distance_between_pattern_and_strings('AAA',
                                                  ['TTACCTTAAC',
                                                   'GATATCTGTC',
                                                   'ACGGCGTTCG',
