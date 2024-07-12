@@ -393,7 +393,7 @@ def distanceBetweenPatternAndStrings (pattern,dna):
 if __name__=='__main__':
     class Test_2_Sequence(TestCase):
 
-        def test_ba2a(self):
+        def test_ba2a_light(self):
             '''
             BA2A Implement MotifEnumeration
 
@@ -474,7 +474,7 @@ if __name__=='__main__':
                                                   'TTCGACTCCACTAGCGCGATGCGCC']))))
 
 
-        def test_ba2b(self):
+        def test_ba2b_light(self):
             '''BA2B Find a Median String'''
             self.assertEqual('GAC',
                              medianString(3,
@@ -487,7 +487,7 @@ if __name__=='__main__':
                              ]))
 
 
-        def test_ba2c(self):
+        def test_ba2c_light(self):
             '''BA2C Find a Profile-most Probable k-mer in a String'''
             self.assertEqual(
                 'CCGAG',
@@ -499,7 +499,7 @@ if __name__=='__main__':
                      [0.3, 0.3, 0.5, 0.2, 0.4],
                      [0.1, 0.2, 0.1, 0.1, 0.2]]))
 
-        def test_ba2d(self):
+        def test_ba2d_light(self):
             ''' BA2D Implement GreedyMotifSearch'''
             motifs = greedyMotifSearch(3,
                                        5,
@@ -513,7 +513,7 @@ if __name__=='__main__':
             self.assertEqual(['CAA','CAA','CAA','CAG','CAG'],sorted(motifs))
 
 
-        def test_ba2e(self):
+        def test_ba2e_light(self):
             '''BA2E Implement GreedyMotifSearch with Pseudocounts'''
             motifs = greedyMotifSearch(3,
                                        5,
@@ -526,7 +526,7 @@ if __name__=='__main__':
                                         ],
                                        pseudo_counts=True)
             self.assertEqual(['ATC','ATC','TTC','TTC','TTC'],sorted(motifs))
-        @skip('')
+
         def test_ba2f(self):
             '''
             BA2F Implement RandomizedMotifSearch
@@ -550,7 +550,7 @@ if __name__=='__main__':
             '''
             BA2G Implement GibbsSampler
 
-            We will run Gibbs multiple times, as it does not always find theoptimim solution.
+            We will run Gibbs multiple times, as it does not always find the optimum solution.
             '''
             s0 = float_info.max
             for i in range(1000):
@@ -563,7 +563,7 @@ if __name__=='__main__':
                                                 'AATCCACCAGCTCCACGTGCAATGTTGGCCTA'],
                                                n = 20
                                                )
-                if score<s0:
+                if score < s0:
                     s0=score
                     bestMotifs = motifs
                     print (score,bestMotifs)
@@ -576,8 +576,8 @@ if __name__=='__main__':
 
 
 
-        def test_ba2h(self):
-            '''BA2H 	Implement DistanceBetweenPatternAndStrings'''
+        def test_ba2h_light(self):
+            '''BA2H Implement DistanceBetweenPatternAndStrings'''
             self.assertEqual(
                 5,
                 distanceBetweenPatternAndStrings('AAA',
@@ -586,8 +586,6 @@ if __name__=='__main__':
                                                   'ACGGCGTTCG',
                                                   'CCCTAAAGAG',
                                                   'CGTCAGAGGT']))
-        pass
-
 
 
     main()
