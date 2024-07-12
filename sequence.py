@@ -176,6 +176,45 @@ def greedyMotifSearch(k,t,dna,
             bestMotifs = motifs
     return bestMotifs
 
+def score(k,motifs):
+    '''
+    Used by BA2F Implement RandomizedMotifSearch and  BA2G Implement GibbsSampler
+    to compute score for a set of motifs.
+    '''
+    total = 0
+    for j in range(k):
+        counts = np.zeros(len(bases),dtype=np.int32)
+        for motif in motifs:
+            counts[bases.find(motif[j])] += 1
+        index_max_count = np.argmax(counts)
+        total += sum([counts[i] for i in range(len(bases)) if i != index_max_count])
+    return total
+
+def counts(k,eps,motifs):
+    '''
+    Used by BA2F Implement RandomizedMotifSearch and  BA2G Implement GibbsSampler
+    to count number of each base in columns of motifs.
+
+    Parameters:
+        k       Number of columns
+        eps     Used to initialize counts to allow for Cromwell's rule
+        motifs
+    '''
+    matrix = np.full((len(bases),k),eps,dtype=int)
+    for kmer in motifs:
+        for j in range(k):
+            i = bases.find(kmer[j])
+            matrix[i,j] += 1
+    return matrix
+
+def random_kmer(string,k):
+    '''
+    Used by BA2F Implement RandomizedMotifSearch and  BA2G Implement GibbsSampler
+    to extract random substrings of a string
+    '''
+    i = randint(0,len(string)-k)
+    return string[i:i+k]
+
 def randomized_motif_search(k,t,dna,eps=1):
     '''
     BA2F Implement RandomizedMotifSearch
@@ -186,34 +225,6 @@ def randomized_motif_search(k,t,dna,eps=1):
         dna
         eps
     '''
-    def score(k,motifs):
-        total = 0
-        for j in range(k):
-            counts = np.zeros(len(bases),dtype=np.int32)
-            for motif in motifs:
-                i = bases.find(motif[j])
-                counts[i] += 1
-            max_count = -1
-            ii = -1
-            for i in range(len(bases)):
-                if max_count < counts[i]:
-                    ii = i
-                    max_count = counts[ii]
-            for i in range(len(bases)):
-                if i != ii:
-                    total += counts[i]
-        return total
-
-    def counts(motifs):
-        matrix = np.ones((len(bases),k),dtype=int)
-        for i in range(len(bases)):
-            for j in range(k):
-                matrix[i,j] *= eps
-        for kmer in motifs:
-            for j in range(k):
-                i = bases.find(kmer[j])
-                matrix[i,j] += 1
-        return matrix
 
     def Motifs(profile,dna):
         def get_k(Profile):
@@ -237,21 +248,18 @@ def randomized_motif_search(k,t,dna,eps=1):
         return motifs
 
     def Profile(motifs):
-        matrix = counts(motifs)
+        matrix = counts(k,eps,motifs)
         probabilities = np.zeros((len(bases),k),dtype=float)
         for i in range(len(bases)):
             for j in range(k):
                 probabilities[i,j] = matrix[i,j]/float(len(motifs))
         return probabilities
 
-    def random_kmer(string):
-        i = randint(0,len(string)-k)
-        return string[i:i+k]
 
     motifs = []
 
     for i in range(t):
-        motifs.append(random_kmer(dna[i]))
+        motifs.append(random_kmer(dna[i],k))
     bestMotifs = motifs
     while True:
         profile = Profile(motifs)
@@ -289,44 +297,14 @@ def gibbs(k,t,dna,
      Return: The strings BestMotifs resulting from running
      GibbsSampler(Dna, k, t, N) with 20 random starts.
     '''
-    def score(k,motifs):
-        total = 0
-        for j in range(k):
-            counts = np.zeros(len(bases),dtype=np.int32)
-            for motif in motifs:
-                counts[bases.find(motif[j])] += 1
-            max_count =- 1
-            for i in range(len(bases)):
-                if max_count < counts[i]:
-                    ii = i
-                    max_count = counts[ii]
-            # index_max_count = np.argmax(counts)
-            # total += sum([counts[i] for i in range(len(bases)) if i != index_max_count])
-            for i in range(len(bases)):
-                if i != ii:
-                    total += counts[i]
-        return total
 
-    def random_kmer(string):
-        i = randint(0,len(string)-k)
-        return string[i:i+k]
+
 
     def dropOneMotif(motifs,i):
         return [motifs[j] for j in range(len(motifs)) if j!=i]
 
-    def counts(motifs):
-        matrix = np.ones((len(bases),k),dtype=int)
-        for i in range(len(bases)):
-            for j in range(k):
-                matrix[i,j] *= eps
-        for kmer in motifs:
-            for j in range(k):
-                i = bases.find(kmer[j])
-                matrix[i,j] += 1
-        return matrix
-
     def Profile(motifs):
-        matrix = counts(motifs)
+        matrix = counts(k, eps, motifs)
         probabilities = np.zeros((len(bases),k),dtype=float)
         for i in range(len(bases)):
             for j in range(k):
@@ -359,7 +337,7 @@ def gibbs(k,t,dna,
     motifs = []
 
     for i in range(t):
-        motifs.append(random_kmer(dna[i]))
+        motifs.append(random_kmer(dna[i],k))
     bestMotifs = motifs
 
     trace = []
@@ -533,18 +511,18 @@ if __name__=='__main__':
 
             NB: this test fails sometimes (randomness!)
             '''
-            (c,x) = randomized_motif_search_driver(8, 5,[
+            (c,motifs) = randomized_motif_search_driver(8, 5,[
                 'CGCCCCTCTCGGGGGTGTTCAGTAAACGGCCA',
                 'GGGCGAGGTATGTGTAAGTGCCAAGGTGCCAG',
                 'TAGTACCGAGACCGAAAGAAGTATACAGGCGT',
                 'TAGATCAAGTTTCAGGTGCACGTCGGTGAACC',
                 'AATCCACCAGCTCCACGTGCAATGTTGGCCTA'],1000)
 
-            self.assertIn('TCTCGGGG',x)
-            self.assertIn('CCAAGGTG',x)
-            self.assertIn('TACAGGCG',x)
-            self.assertIn('TTCAGGTG',x)
-            self.assertIn('TCCACGTG',x)
+            self.assertIn('TCTCGGGG', motifs)
+            self.assertIn('CCAAGGTG', motifs)
+            self.assertIn('TACAGGCG', motifs)
+            self.assertIn('TTCAGGTG', motifs)
+            self.assertIn('TCCACGTG', motifs)
 
         def test_ba2g(self):
             '''
@@ -564,7 +542,7 @@ if __name__=='__main__':
                                                n = 20
                                                )
                 if score < s0:
-                    s0=score
+                    s0 = score
                     bestMotifs = motifs
                     print (score,bestMotifs)
             self.assertEqual(5,len(bestMotifs))
