@@ -136,24 +136,13 @@ def get_profile_most_probable_kmer(text,k,profile):
     all_kmers_in_text = [text[i:i+k] for i in range(len(text)-k+1)]
     return all_kmers_in_text[np.argmax( [log_prob(s) for s in all_kmers_in_text])]
 
-def count_occurrences_of_bases(k,motifs,pseudo_counts=False):
-    '''
-    Create an array containing the count of occurrences of
-    each base at each position, summed over all motifs
-    '''
-    counts = np.full((len(bases),k),
-                     1 if pseudo_counts else 0,
-                     dtype=int)
-    for kmer in motifs:
-        for j in range(k):
-            counts[bases.find(kmer[j]),j] += 1
-    return counts
+
 
 def get_score(k,motifs,pseudo_counts=False):
     '''
     Count number of unpopular symbols in motif matrix
     '''
-    counts = count_occurrences_of_bases(k,motifs,pseudo_counts=pseudo_counts)
+    counts = get_counts(k,1 if pseudo_counts else 0,motifs)
     return sum([(len(bases) - counts[:,j].max()) for j in range(k)])
 
 def greedyMotifSearch(k,t,Dna,
@@ -177,7 +166,7 @@ def greedyMotifSearch(k,t,Dna,
         '''
         Determine frequency of symbols
         '''
-        return count_occurrences_of_bases(k,motifs,pseudo_counts=pseudo_counts)/float(len(motifs))
+        return get_counts(k,1 if pseudo_counts else 0,motifs)/float(len(motifs))
 
 
     bestMotifs = [genome[0:k] for genome in Dna]
@@ -189,7 +178,8 @@ def greedyMotifSearch(k,t,Dna,
             bestMotifs = motifs
     return bestMotifs
 
-def counts(k,eps,motifs):
+
+def get_counts(k,eps,motifs):
     '''
     Used by BA2F Implement RandomizedMotifSearch and  BA2G Implement GibbsSampler
     to count number of each base in columns of motifs.
@@ -214,9 +204,6 @@ def random_kmer(string,k):
     i = randint(0,len(string)-k)
     return string[i:i+k]
 
-def Profile(k,eps,motifs):
-    matrix = counts(k,eps,motifs)
-    return matrix/len(motifs)
 
 def randomized_motif_search(k,t,Dna,eps=1):
     '''
@@ -254,7 +241,7 @@ def randomized_motif_search(k,t,Dna,eps=1):
 
     bestMotifs = motifs
     while True:
-        profile = Profile(k,eps,motifs)
+        profile =  get_counts(k,eps,motifs)/len(motifs)
         motifs = Motifs(profile, Dna)
         if get_score(k,motifs) < get_score(k,bestMotifs):
             bestMotifs = motifs
@@ -320,13 +307,13 @@ def gibbs(k,t,Dna,
 
     for j in range(n):
         row_to_replace = randint(0,t-1)
-        profile = Profile(k,eps,np.delete(motifs,row_to_replace))
+        profile =  get_counts(k,eps,np.delete(motifs,row_to_replace))/(len(motifs)-1)
         motif_index = generate([get_probability(Dna[row_to_replace][ll:ll+k],profile)
                               for ll in range(len(Dna[row_to_replace])-k)])
         motifs[row_to_replace] = Dna[row_to_replace][motif_index:motif_index+k]
-        sc = get_score(k,motifs)
-        if  sc < best_score:
-            best_score = sc
+        score = get_score(k,motifs)
+        if  score < best_score:
+            best_score = score
             bestMotifs = motifs
 
     return (get_score(k,bestMotifs),bestMotifs)
