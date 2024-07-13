@@ -136,50 +136,7 @@ def get_profile_most_probable_kmer(text,k,profile):
     all_kmers_in_text = [text[i:i+k] for i in range(len(text)-k+1)]
     return all_kmers_in_text[np.argmax( [log_prob(s) for s in all_kmers_in_text])]
 
-
-
-def get_score(k,motifs,pseudo_counts=False):
-    '''
-    Count number of unpopular symbols in motif matrix
-    '''
-    counts = get_counts(k,1 if pseudo_counts else 0,motifs)
-    return sum([(len(bases) - counts[:,j].max()) for j in range(k)])
-
-def greedyMotifSearch(k,t,Dna,
-                      pseudo_counts=False):
-    '''
-    BA2D 	Implement GreedyMotifSearch
-    BA2E 	Implement GreedyMotifSearch with Pseudocounts
-
-    Parameters:
-        k
-        t
-        Dna
-        pseudo_counts    Specifies whether pseudo counts are to be used
-
-    Return: A collection of strings BestMotifs resulting from running
-            GreedyMotifSearch(Dna, k, t). If at any step you find more than one
-            Profile-most probable k-mer in a given string, use the one occurring first.
-    '''
-
-    def profile(k,motifs):
-        '''
-        Determine frequency of symbols
-        '''
-        return get_counts(k,1 if pseudo_counts else 0,motifs)/float(len(motifs))
-
-
-    bestMotifs = [genome[0:k] for genome in Dna]
-    for motif in [Dna[0][i:i+k] for i in range(len(Dna[0])-k+1)]:
-        motifs = [motif]
-        for i in range(1,t):
-            motifs.append(get_profile_most_probable_kmer(Dna[i],k,profile(k,motifs)))
-        if get_score(k,motifs,pseudo_counts=pseudo_counts) < get_score(k,bestMotifs,pseudo_counts=pseudo_counts):
-            bestMotifs = motifs
-    return bestMotifs
-
-
-def get_counts(k,eps,motifs):
+def get_counts(k,motifs,eps=0):
     '''
     Used by BA2F Implement RandomizedMotifSearch and  BA2G Implement GibbsSampler
     to count number of each base in columns of motifs.
@@ -195,6 +152,40 @@ def get_counts(k,eps,motifs):
             i = bases.find(kmer[j])
             matrix[i,j] += 1
     return matrix
+
+
+def get_score(k,motifs,eps=0):
+    '''
+    Count number of unpopular symbols in motif matrix
+    '''
+    counts = get_counts(k,motifs,eps)
+    return sum([(len(bases) - counts[:,j].max()) for j in range(k)])
+
+def greedyMotifSearch(k,t,Dna, eps=0):
+    '''
+    BA2D 	Implement GreedyMotifSearch
+    BA2E 	Implement GreedyMotifSearch with Pseudocounts
+
+    Parameters:
+        k
+        t
+        Dna
+        eps     Specifies whether pseudo counts are to be used
+
+    Return: A collection of strings BestMotifs resulting from running
+            GreedyMotifSearch(Dna, k, t). If at any step you find more than one
+            Profile-most probable k-mer in a given string, use the one occurring first.
+    '''
+    bestMotifs = [genome[0:k] for genome in Dna]
+    for motif in [Dna[0][i:i+k] for i in range(len(Dna[0])-k+1)]:
+        motifs = [motif]
+        for i in range(1,t):
+            motifs.append(get_profile_most_probable_kmer(Dna[i],k,get_counts(k,motifs,eps)/float(len(motifs))))
+        if get_score(k,motifs,eps=eps) < get_score(k,bestMotifs,eps=eps):
+            bestMotifs = motifs
+    return bestMotifs
+
+
 
 def random_kmer(string,k):
     '''
@@ -241,7 +232,7 @@ def randomized_motif_search(k,t,Dna,eps=1):
 
     bestMotifs = motifs
     while True:
-        profile =  get_counts(k,eps,motifs)/len(motifs)
+        profile =  get_counts(k,motifs,eps)/len(motifs)
         motifs = Motifs(profile, Dna)
         if get_score(k,motifs) < get_score(k,bestMotifs):
             bestMotifs = motifs
@@ -279,13 +270,19 @@ def gibbs(k,t,Dna,
      GibbsSampler(Dna, k, t, N) with n random starts.
     '''
     def get_probability(kmer,profile):
+        '''
+        Compute probability of a kmer given a profile
+        '''
         probability = 1.0
         for j in range(len(kmer)):
             i = bases.find(kmer[j])
             probability *= profile[i][j]
         return probability
 
-    def accumulate(probabilities):
+    def get_cumulative_probabilities(probabilities):
+        '''
+        Compute the cumulative probabilities, given the proababilty density
+        '''
         total = 0
         cumulative = []
         for p in probabilities:
@@ -293,13 +290,16 @@ def gibbs(k,t,Dna,
             cumulative.append(total)
         return cumulative
 
-    def generate(probabilities):
-        accumulated = accumulate(probabilities)
-        rr = accumulated[len(accumulated)-1]*random()
-        i = 0
-        while accumulated[i] <= rr:
-            i += 1
-        return i
+    def get_motif_index(probabilities):
+        '''
+        Used to select replacement for a row by tower sampling
+        '''
+        cumulative_probabilities = get_cumulative_probabilities(probabilities)
+        target_proabability = cumulative_probabilities[len(cumulative_probabilities)-1] * random()
+        motif_index = 0
+        while cumulative_probabilities[motif_index] <= target_proabability:
+            motif_index += 1
+        return motif_index
 
     motifs = [random_kmer(Dna[i],k) for i in range(t)]
     bestMotifs = motifs
@@ -307,9 +307,9 @@ def gibbs(k,t,Dna,
 
     for j in range(n):
         row_to_replace = randint(0,t-1)
-        profile =  get_counts(k,eps,np.delete(motifs,row_to_replace))/(len(motifs)-1)
-        motif_index = generate([get_probability(Dna[row_to_replace][ll:ll+k],profile)
-                              for ll in range(len(Dna[row_to_replace])-k)])
+        profile = get_counts(k, np.delete(motifs,row_to_replace), eps)/(len(motifs)-1)
+        motif_index = get_motif_index([get_probability(Dna[row_to_replace][pos:pos+k],profile)
+                              for pos in range(len(Dna[row_to_replace])-k)])
         motifs[row_to_replace] = Dna[row_to_replace][motif_index:motif_index+k]
         score = get_score(k,motifs)
         if  score < best_score:
@@ -458,7 +458,7 @@ if __name__=='__main__':
                                         'CACGTCAATCAC',
                                         'CAATAATATTCG'
                                         ],
-                                       pseudo_counts=True)
+                                       eps=1)
             self.assertEqual(['ATC','ATC','TTC','TTC','TTC'],sorted(motifs))
 
         def test_ba2f(self):
