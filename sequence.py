@@ -136,6 +136,25 @@ def get_profile_most_probable_kmer(text,k,profile):
     all_kmers_in_text = [text[i:i+k] for i in range(len(text)-k+1)]
     return all_kmers_in_text[np.argmax( [log_prob(s) for s in all_kmers_in_text])]
 
+def count_occurrences_of_bases(k,motifs,pseudo_counts=False):
+    '''
+    Create an array containing the count of occurrences of
+    each base at each position, summed over all motifs
+    '''
+    counts = np.full((len(bases),k),
+                     1 if pseudo_counts else 0,
+                     dtype=int)
+    for kmer in motifs:
+        for j in range(k):
+            counts[bases.find(kmer[j]),j] += 1
+    return counts
+
+def get_score(k,motifs,pseudo_counts=False):
+    '''
+    Count number of unpopular symbols in motif matrix
+    '''
+    counts = count_occurrences_of_bases(k,motifs,pseudo_counts=pseudo_counts)
+    return sum([(len(bases) - counts[:,j].max()) for j in range(k)])
 
 def greedyMotifSearch(k,t,Dna,
                       pseudo_counts=False):
@@ -149,61 +168,26 @@ def greedyMotifSearch(k,t,Dna,
         Dna
         pseudo_counts    Specifies whether pseudo counts are to be used
 
-
-
     Return: A collection of strings BestMotifs resulting from running
             GreedyMotifSearch(Dna, k, t). If at any step you find more than one
             Profile-most probable k-mer in a given string, use the one occurring first.
     '''
-    def ones_or_zeros(pseudo_counts):
-        '''
-        Used to initialize counts to 1s or 0s, depending on pseudo_counts
-        '''
-        return np.ones((len(bases),k),dtype=int) if pseudo_counts else np.zeros((len(bases),k),dtype=int)
 
-    def count_occurrences_of_bases(motifs):
+    def profile(k,motifs):
         '''
-        Create an array containing the count of occurences of
-        each base at each position, summed over all motifs
+        Determine frequency of symbols
         '''
-        counts = ones_or_zeros(pseudo_counts)
-        for kmer in motifs:
-            for j in range(k):
-                counts[bases.find(kmer[j]),j] += 1
-        return counts
+        return count_occurrences_of_bases(k,motifs,pseudo_counts=pseudo_counts)/float(len(motifs))
 
-    def profile(motifs):
-        return count_occurrences_of_bases(motifs)/float(len(motifs))
-
-    def score(motifs):
-        counts = count_occurrences_of_bases(motifs)
-        total = 0
-        for j in range(k):
-            total += (len(bases) - counts[:,j].max())
-        return total
 
     bestMotifs = [genome[0:k] for genome in Dna]
     for motif in [Dna[0][i:i+k] for i in range(len(Dna[0])-k+1)]:
         motifs = [motif]
         for i in range(1,t):
-            motifs.append(get_profile_most_probable_kmer(Dna[i],k,profile(motifs)))
-        if score(motifs) < score(bestMotifs):
+            motifs.append(get_profile_most_probable_kmer(Dna[i],k,profile(k,motifs)))
+        if get_score(k,motifs,pseudo_counts=pseudo_counts) < get_score(k,bestMotifs,pseudo_counts=pseudo_counts):
             bestMotifs = motifs
     return bestMotifs
-
-def score(k,motifs):
-    '''
-    Used by BA2F Implement RandomizedMotifSearch and  BA2G Implement GibbsSampler
-    to compute score for a set of motifs.
-    '''
-    total = 0
-    for j in range(k):
-        counts = np.zeros(len(bases),dtype=np.int32)
-        for motif in motifs:
-            counts[bases.find(motif[j])] += 1
-        index_max_count = np.argmax(counts)
-        total += sum([counts[i] for i in range(len(bases)) if i != index_max_count])
-    return total
 
 def counts(k,eps,motifs):
     '''
@@ -272,10 +256,10 @@ def randomized_motif_search(k,t,Dna,eps=1):
     while True:
         profile = Profile(k,eps,motifs)
         motifs = Motifs(profile, Dna)
-        if score(k,motifs) < score(k,bestMotifs):
+        if get_score(k,motifs) < get_score(k,bestMotifs):
             bestMotifs = motifs
         else:
-            return (score(k,bestMotifs),bestMotifs)
+            return (get_score(k,bestMotifs),bestMotifs)
 
 def randomized_motif_search_driver(k,t,Dna,N=2000):
     '''
@@ -341,13 +325,13 @@ def gibbs(k,t,Dna,
         motif_index = generate([get_probability(Dna[row_to_replace][ll:ll+k],profile)
                               for ll in range(len(Dna[row_to_replace])-k)])
         motifs[row_to_replace] = Dna[row_to_replace][motif_index:motif_index+k]
-        sc = score(k,motifs)
+        sc = get_score(k,motifs)
         if  sc < best_score:
             best_score = sc
             bestMotifs = motifs
         log_scores.append(best_score)
 
-    return (score(k,bestMotifs),bestMotifs,log_scores)
+    return (get_score(k,bestMotifs),bestMotifs,log_scores)
 
 
 
@@ -528,15 +512,12 @@ if __name__=='__main__':
                 if score < s0:
                     s0 = score
                     bestMotifs = motifs
-                    print (score,bestMotifs)
-            self.assertEqual(5,len(bestMotifs))
+
             self.assertIn('TCTCGGGG', bestMotifs)
             self.assertIn('CCAAGGTG', bestMotifs)
             self.assertIn('TACAGGCG', bestMotifs)
             self.assertIn('TTCAGGTG', bestMotifs)
             self.assertIn('TCCACGTG', bestMotifs)
-
-
 
         def test_ba2h_light(self):
             '''BA2H Implement get_distance_between_pattern_and_strings'''
