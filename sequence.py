@@ -15,7 +15,7 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-'''Chapter 2: Which DNA Patterns play the role of molecular clocks'''
+'''Chapter 3: Which DNA Patterns play the role of molecular clocks'''
 
 from random import randint, random
 from sys import float_info
@@ -317,7 +317,6 @@ def gibbs(k,t,Dna,
     motifs = [random_kmer(Dna[i],k) for i in range(t)]
     bestMotifs = motifs
     best_score = float_info.max
-    log_scores = []
 
     for j in range(n):
         row_to_replace = randint(0,t-1)
@@ -329,15 +328,17 @@ def gibbs(k,t,Dna,
         if  sc < best_score:
             best_score = sc
             bestMotifs = motifs
-        log_scores.append(best_score)
 
-    return (get_score(k,bestMotifs),bestMotifs,log_scores)
-
-
-
+    return (get_score(k,bestMotifs),bestMotifs)
 
 if __name__=='__main__':
     class Test_2_Sequence(TestCase):
+
+        '''
+        Tests for Chapter 3: Which DNA Patterns play the role of molecular clocks
+
+        Use command lane option '-k light' to restrict execution to light-weight tests
+        '''
 
         def test_ba2a_light(self):
             '''
@@ -500,15 +501,15 @@ if __name__=='__main__':
             '''
             s0 = float_info.max
             for i in range(1000):
-                score,motifs,trace = gibbs(8, 5,
-                                               [
-                                                'CGCCCCTCTCGGGGGTGTTCAGTAAACGGCCA',
-                                                'GGGCGAGGTATGTGTAAGTGCCAAGGTGCCAG',
-                                                'TAGTACCGAGACCGAAAGAAGTATACAGGCGT',
-                                                'TAGATCAAGTTTCAGGTGCACGTCGGTGAACC',
-                                                'AATCCACCAGCTCCACGTGCAATGTTGGCCTA'],
-                                               n = 20
-                                               )
+                score,motifs = gibbs(8, 5,
+                                     [
+                                         'CGCCCCTCTCGGGGGTGTTCAGTAAACGGCCA',
+                                         'GGGCGAGGTATGTGTAAGTGCCAAGGTGCCAG',
+                                         'TAGTACCGAGACCGAAAGAAGTATACAGGCGT',
+                                         'TAGATCAAGTTTCAGGTGCACGTCGGTGAACC',
+                                         'AATCCACCAGCTCCACGTGCAATGTTGGCCTA'],
+                                     n = 20
+                                     )
                 if score < s0:
                     s0 = score
                     bestMotifs = motifs
