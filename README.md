@@ -4,7 +4,7 @@ by [Rosalind](http://rosalind.info).
 
 NB: functions generally use zero based indexing; [Rosalind](http://rosalind.info) uses 1-based.
 
-I have written this code in Python 3, generally with the most recent release at the time each module was written-- Python 3.11.1 (tags/v3.11.1:a7a450f, Dec  6 2022, 19:58:39) at the time this file was updated. I have used newly added features whenever they might make me more productive. I've been writing code since 1968, during which time computer have got faster, but my brain hasn't. You are welcome to use this code if it is useful to you, subject to the terms of the Licence, but it may need to be adapted if you use an earlier version of Python.
+I have written this code in Python 3, usually with the most recent release at the time each module was written-- 3.12.0 (tags/v3.12.0:0fb18b0, Oct  2 2023, 13:03:39) at the time this file was last updated. I have used newly added features whenever they might make me more productive. I've been writing code since 1968, during which time computer have got faster, but my brain hasn't. You are welcome to use this code if it is useful to you, subject to the terms of the Licence, but it may need to be adapted if you use an earlier version of Python.
 
 ## Bioinformatics Algorithms TextBook Track
 
