@@ -22,8 +22,9 @@ from sys import float_info
 from unittest import TestCase, main, skip, skipIf
 from deprecated import deprecated
 import numpy as np
+from numpy.testing import assert_array_equal
 from reference_tables import createSimpleDNASubst,  BLOSUM62, PAM250
-from rosalind import RosalindException
+from rosalind import RosalindException, FastaContent, hamm
 
 def get_number_of_coins(money,Coins):
     '''
@@ -1326,6 +1327,33 @@ def ctea(s,t,
 
     return  count_paths(Adj,invert(Adj),start=ground) % mod
 
+def distance_matrix(fasta):
+    '''
+    PDST 	Creating a Distance Matrix
+
+    Input: A collection of n of equal
+    length (at most 1 kbp). Strings are given in FASTA format.
+
+    Return: The matrix DD corresponding to the p-distance dpdp on the given
+    strings. As always, note that your answer is allowed an absolute error of 0.001.
+    '''
+    def get_string(i):
+        _,string=fasta[i]
+        return string
+
+    def get_p_distance(s,t):
+        '''
+        For two strings s and t of equal length, the p-distance between them
+        is the proportion of corresponding symbols that differ between s and t.
+        '''
+        return hamm(s,t)/len(s)
+    # def row(i):
+        # return [get_p_distance(get_string(i),get_string(j)) for j in range(len(fasta))]
+    # return [row(i) for i in range(len(fasta))]
+    return np.array([[get_p_distance(get_string(i),get_string(j)) for j in range(len(fasta))] for i in range(len(fasta))])
+
+
+
 if __name__=='__main__':
 
     class Test_5_Alignment(TestCase):
@@ -1827,5 +1855,22 @@ if __name__=='__main__':
             score,sum = osym('ATAGATA','ACAGGTA')
             # self.assertEqual(3,score)
             self.assertEqual(-139,sum)
+
+        def test_pdst(self):
+            ''' PDST 	Creating a Distance Matrix'''
+            string='''>Rosalind_9499
+            TTTCCATTTA
+            >Rosalind_0942
+            GATTCATTTC
+            >Rosalind_6568
+            TTTCCATTTT
+            >Rosalind_1833
+            GTTCCATTTA'''
+            fasta=FastaContent(string.split('\n'))
+            assert_array_equal(np.array([[0.00000, 0.40000, 0.10000, 0.10000],
+                              [0.40000, 0.00000, 0.40000, 0.30000],
+                              [0.10000, 0.40000, 0.00000, 0.20000],
+                              [0.10000, 0.30000, 0.20000, 0.00000]]),
+                             distance_matrix(fasta))
 
     main()

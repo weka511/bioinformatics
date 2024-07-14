@@ -120,7 +120,7 @@ I have written this code in Python 3, usually with the most recent release at th
 |mult|mult.py align.py|[Multiple Alignment](http://rosalind.info/problems/mult/)|
 |oap|oap.py|[Overlap Alignment](http://rosalind.info/problems/oap/) |
 |osym|osym.py align.py|[Isolating Symbols in Alignments](http://rosalind.info/problems/osym/) [WIP](https://github.com/weka511/bioinformatics/issues/97)|
-|pdst|rosalind.py|[Creating a Distance Matrix ](http://rosalind.info/problems/pdst/) |
+|pdst|align.py|[Creating a Distance Matrix ](http://rosalind.info/problems/pdst/) |
 |sims|sims.py align.py|[Finding Mutated Motifs](http://rosalind.info/problems/sims/)|
 |smgb|smgb.py |[Semiglobal Alignment](http://rosalind.info/problems/smgb/) |
 |tran|rosalind.py|[Transitions and Transversions](http://rosalind.info/problems/tran/) |

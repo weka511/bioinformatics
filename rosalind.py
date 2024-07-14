@@ -1102,31 +1102,6 @@ def tran(fasta):
     return n_transitions/n_transversions
 
 
-
-def distance_matrix(fasta):
-    '''
-    PDST 	Creating a Distance Matrix
-
-    Input: A collection of n of equal
-    length (at most 1 kbp). Strings are given in FASTA format.
-
-    Return: The matrix DD corresponding to the p-distance dpdp on the given
-    strings. As always, note that your answer is allowed an absolute error of 0.001.
-    '''
-    def get_string(i):
-        _,string=fasta[i]
-        return string
-
-    def get_p_distance(s,t):
-        '''
-        For two strings s and t of equal length, the p-distance between them
-        is the proportion of corresponding symbols that differ between s and t.
-        '''
-        return hamm(s,t)/len(s)
-    def row(i):
-        return [get_p_distance(get_string(i),get_string(j)) for j in range(len(fasta))]
-    return [row(i) for i in range(len(fasta))]
-
 def aspc(n,m):
     '''ASPC 	Introduction to Alternative Splicing'''
     return sum (comb(n,k) for k in range(m,n+1))%1000000
@@ -1458,22 +1433,7 @@ if __name__=='__main__':
             fasta=FastaContent(string.split('\n'))
             self.assertAlmostEqual(1.21428571429,tran(fasta),places=5)
 
-        def test_pdst(self):
-            ''' PDST 	Creating a Distance Matrix'''
-            string='''>Rosalind_9499
-            TTTCCATTTA
-            >Rosalind_0942
-            GATTCATTTC
-            >Rosalind_6568
-            TTTCCATTTT
-            >Rosalind_1833
-            GTTCCATTTA'''
-            fasta=FastaContent(string.split('\n'))
-            self.assertEqual([[0.00000, 0.40000, 0.10000, 0.10000],
-                              [0.40000, 0.00000, 0.40000, 0.30000],
-                              [0.10000, 0.40000, 0.00000, 0.20000],
-                              [0.10000, 0.30000, 0.20000, 0.00000]],
-                             distance_matrix(fasta))
+
 
         def test_aspc(self):
             '''ASPC 	Introduction to Alternative Splicing'''
