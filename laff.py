@@ -22,6 +22,7 @@ import argparse
 import os
 import time
 import sys
+from helpers import read_fasta
 
 def create_blosum62() :
 
@@ -145,20 +146,7 @@ def laff(s,t,
 
     return unwind_moves(max_score,imax,jmax)
 
-def read_fasta(name):
-    Data   = []
-    Record = []
-    with open(name,'r') as input:
-        for line in input:
-            text = line.strip()
-            if text[0]=='>':
-                if len(Record)>0:
-                    Data.append(''.join(Record))
-                Record = []
-            else:
-                Record.append(text)
-    Data.append(''.join(Record))
-    return Data
+
 
 if __name__=='__main__':
     start = time.time()

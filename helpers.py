@@ -20,17 +20,15 @@ Helper functions for Rosalind to facilitate testing with data from rosalind.info
 '''
 
 from os.path import basename, join, expanduser
-from re      import compile, match
-from sys     import argv
+from re import compile, match
+from sys import argv
 import numpy as np
-from Bio     import SeqIO
+from Bio import SeqIO
 
 def read_strings(test_data,
                  init=1      # Set to zero to handle format used in extra dataset
                  ):
     '''
-    read_strings
-
     Read an input file and return set of strings
     '''
     inputs = []
@@ -66,8 +64,6 @@ def format_list(list):
     Format a list for use as a Rosalind solution
     '''
     return ' '.join([str(l) for l in list])
-
-
 
 def create_adjacency(edges,back=True,self=True):
     '''
@@ -299,8 +295,6 @@ def create_hmm_from_strings(strings,sep=' '):
         k += 1
     return (xs,alphabet,States,Transition,Emission)
 
-
-
 def expand(s):
     '''
     expand
@@ -308,3 +302,18 @@ def expand(s):
     Convert a string of digits to an integer list
     '''
     return [int(c) for c in s]
+
+def read_fasta(name):
+    Data   = []
+    Record = []
+    with open(name,'r') as input:
+        for line in input:
+            text = line.strip()
+            if text[0]=='>':
+                if len(Record)>0:
+                    Data.append(''.join(Record))
+                Record = []
+            else:
+                Record.append(text)
+    Data.append(''.join(Record))
+    return Data

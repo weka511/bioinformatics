@@ -18,7 +18,7 @@
 import argparse
 import os
 import time
-from   laff import read_fasta
+from   helpers import read_fasta
 
 # mgap
 #

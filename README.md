@@ -118,7 +118,7 @@ I have written this code in Python 3, usually with the most recent release at th
 |loca|loca.py|[Local Alignment with Scoring Matrix ](http://rosalind.info/problems/loca/) |
 |mgap|mmgap.py|[Maximizing the Gap Symbols of an Optimal Alignment](http://rosalind.info/problems/mgap/)|
 |mult|mult.py align.py|[Multiple Alignment](http://rosalind.info/problems/mult/)|
-|oap|oap.py|[Overlap Alignment](http://rosalind.info/problems/oap/) |
+|oap|oap.py align.pys|[Overlap Alignment](http://rosalind.info/problems/oap/) |
 |osym|osym.py align.py|[Isolating Symbols in Alignments](http://rosalind.info/problems/osym/) [WIP](https://github.com/weka511/bioinformatics/issues/97)|
 |pdst|align.py|[Creating a Distance Matrix ](http://rosalind.info/problems/pdst/) |
 |sims|sims.py align.py|[Finding Mutated Motifs](http://rosalind.info/problems/sims/)|

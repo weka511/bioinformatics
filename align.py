@@ -604,9 +604,6 @@ def get_highest_scoring_local_alignment(string1,string2,
 
     return create_alignment(string1,string2,(s,predecessors),i_best,j_best)
 
-
-
-
 def get_indel_cost(sigma,delta,i,j,di,dj,moves):
     return di,dj,sigma
 
@@ -636,7 +633,7 @@ def build_matrix(s,t,matrix,replace_score=createSimpleDNASubst(),indel_cost=1,ge
                 di_left,dj_left,cost_left   = get_indel_cost(sigma,delta,i,j,0,-1,moves)
                 scores                      = [matrix[i+di_down][j+dj_down]   - cost_down,
                                                matrix[i+di_left][j+dj_left]   - cost_left,
-                                               matrix[i-1][j-1] + replace_score.get_score(s[i-1],t[j-1])]
+                                               matrix[i-1][j-1] + replace_score[s[i-1],t[j-1]]]
                 froms                       = [(i+di_down,j+dj_down,di_down,dj_down),
                                                (i+di_left,j+dj_left,di_left,dj_left),
                                                (i-1,j-1,-1,-1)]
@@ -1417,6 +1414,60 @@ def smgb(s,t,match=+1,mismatch=-1,indel=-1):
     s1,t1 = backtrack()
     return last_column[index],''.join(c for c in s1[-1::-1]),''.join(c for c in t1[-1::-1])
 
+def oap(s,t,
+        match_bonus = 1,
+        mismatch_cost = 2,
+        indel_cost = 2):
+    '''
+    Given: Two DNA strings s and t, each having length at most 10 kbp.
+
+    Return: The score of an optimal overlap alignment of s and t, followed by an alignment of a suffix  of s
+            and a prefix  of t achieving this optimal score.
+    '''
+    def score(v,w):
+        return match_bonus if v==w else -mismatch_cost
+
+    def dynamic_programming(s,t):
+
+        distances = [[0 for j in range(len(t)+1)] for i in range(len(s)+1)]
+        for i in range(1,len(s)+1):
+            for j in range(1,len(t)+1):
+                distances[i][j]  = max(
+                                        distances[i-1][j]   - indel_cost,
+                                        distances[i][j-1]   - indel_cost,
+                                        distances[i-1][j-1] + score(s[i-1],t[j-1]))
+
+        # Begin backtracking. Since we want a suffix of s, start in the last row.
+        # For some reason I need to use the last j that matches maximum score
+
+        i = len(s)
+        distance = max(distances[i])
+        for j in range(len(t),0,-1):
+            if distances[i][j] == distance: break
+
+        s1       = []
+        t1       = []
+        while j>0:                  # we want a prefix of t
+            if distances[i][j]==distances[i-1][j]   - indel_cost:
+                i1,j1 = (i-1,j)
+            elif distances[i][j]==distances[i][j-1]   - indel_cost:
+                i1,j1 = (i,j-1)
+            elif distances[i][j]==distances[i-1][j-1] + score(s[i-1],t[j-1]):
+                i1,j1 = (i-1,j-1)
+            else:
+                raise Exception(f'This cannot possible happen {i} {j}!')
+
+            s1.append(s[i1] if i1<i else '-')
+            t1.append(t[j1] if j1<j else '-')
+
+            i,j = i1,j1
+
+        return distance,s1[::-1],t1[::-1]
+
+    score,u1,s1=dynamic_programming(s,t)
+    return score,''.join(u1),''.join(s1)
+
+
 if __name__=='__main__':
 
     class Test_5_Alignment(TestCase):
@@ -1911,7 +1962,7 @@ if __name__=='__main__':
             self.assertEqual('MEIPNQCT---Y---TM------NNGERMLKM-DNKY--A--DN---------MGVRQEENK----Q----H---REDISRWDDWG--QFTTCEGFTRWF---K-L----HHLNAHQISPCLLRMPTWLQCKMTFA------Q--MDLAIDPP-TCHTFPMFTMHSHCIFDPSFYAARRCHMNKVCQFRYDHQIHCSMMQSGTTWWYMYNGCETMSWDYLVEMAVGWWVYRNRHNGMMS--YV--D--HGD----DD--CWHRGHHSSLPWKLDAYSALYCVHGFEYCSAY-FKVDAFNLTCERPDITNTQCRCEKPTEGPAYFNYTKTMSKGPEEWEYNCPCVYYEEVEGL--ANNRESSIPCSKMSNRCRMRCLGHKWFSILPEMHKYNAQSQVKTREKAGRSYNWGNQPLVKFDSLEPMWFHRQHCQSRLETWSTDPPSQDWQFFHICNTQKDAINSTWAGG-RIFWTENDSRRKVCCMENKNKNLFRR--G---WISGIDITMHYHLTSSHGQFGICDPEVHIVPCHMLGLTTFMQERNNLGQCPMVAIFEHHQLPPPCEGYVLQKVHPSWHMSMMKKNEFDRPWAPVF-ARDAEHMQPCEPMIAPHIKFWNYCHKKSGMCLGGQGGIDFHGYMYQNYHLCLFCTYKAMKFLVQDTFEDLISGEKYPMEATMTETFAWVCMTVFTTMRTFIVFWGDPY----RIHELYMFSCAA-----HGYLRTADRSCKWTNKPHLSYGCHLSKTYCSCKMIDAPMVCRCLMWIDHPFVHYP------HMVWCMNY----CC-YNTTCRMHEPTFWHLALVFCPCLYWQQNLEINEIRQGSLGHVGQSEMLQMTI-MKKYMQPCMMWDCGFHCCGTYWD-AMGETSGTEG---IVTTRTRVTPCYRWQHLKKEGH---AL-A-NTVPKMDLYQMRHHGLMGPVLDRAPKPCHAQTEV--D----LVNIVPYNWES',s)
             self.assertEqual('SEIPNQCNEFMYMNYTVRIIYHPNNGERMHEQSDNHHFTAPMDNYHGILLRQRMGVRQEENRDIDLQCIVNHSYLREDISRWDDWDRAQFTTCEGFTRWFRYPKHLSEQLHHLNADQISPCLLCMGTWLQCKMTFARFTMIWQHWMDLAI-PPYTCHTN-----HSHCIFDPSFYLAR-----KVLQF-------CSMMQSGTTW-----GQQ------LVEMAPGWWVYRNRHNGMMSLAYVLTDVDHYDQMQHDDDDCWHRGHHSSAPWKLDAYS-----HGFEYFSAYRF-VDAFNLTCERDD-TNTQCR-E----GPAYFNYT---SQN------N-PLHDFEMSKGPEIAMWQEV-IPCSKMSNRKRWRCLGNKIKSGDVGG-KT-A-S-V--------SYNWGNQPLVKFDSIE-MTFHKQHCQSRLETW------Q--Q--------KDAINSTWAGGFR-FWTECWNKNAYEHTVPWFM-LFRCLAGGHGWISGA--TMHYHLTSSHIQFGICDPEMHIKLCFMLSY-----ESNNLGQCPMVAI------PPPCEG------HPSGNMSMMKKNEFTRPWAP-FEARYAEHMQPCIPGFCQMRE---YR-K-SGMCLGGQGGIDFHGLMYQNYHLCLFCTGKFMKFLGQDTFE-------YPME--MTESFAKVSMEVFTTMRTFIVFWGDYYKLFYRITELYMFDEVDTDNNWHGYLRTAQ---KWEC--HLSYGCHLSKTYCS------PMVC-----ID-PFVHYPNGACELH-VWCMAYVHRTCCCYNTAWRMHE--F-------CPCLYWQQNLEINE-----LGH--QNEMLQMQPCMF-YEF--MGKLQ--HCCGPYGETAT-EFFGTCSTCAIVTT-TD---CYRWQHLKKEGFKPSALQAHNTVPKMDLYQMRHHGLMGPVLDRAPKPCHAQKFVIRDAVWHLVNIVPYNWES',t)
 
-        def test_glob_sampl(self):
+        def test_glob_sample(self):
             '''
             A simple test of the align function, based on https://rosalind.info/problems/glob/
             '''
@@ -1929,8 +1980,8 @@ if __name__=='__main__':
             # self.assertEqual(3,score)
             self.assertEqual(-139,sum)
 
-        def test_pdst_sampl(self):
-            ''' PDST 	Creating a Distance Matrix'''
+        def test_pdst_sample(self):
+            ''' PDST Creating a Distance Matrix'''
             string='''>Rosalind_9499
             TTTCCATTTA
             >Rosalind_0942
@@ -1939,30 +1990,37 @@ if __name__=='__main__':
             TTTCCATTTT
             >Rosalind_1833
             GTTCCATTTA'''
-            fasta=FastaContent(string.split('\n'))
+            fasta = FastaContent(string.split('\n'))
             assert_array_equal(np.array(
                                     [[0.00000, 0.40000, 0.10000, 0.10000],
                                      [0.40000, 0.00000, 0.40000, 0.30000],
                                      [0.10000, 0.40000, 0.00000, 0.20000],
                                      [0.10000, 0.30000, 0.20000, 0.00000]]),
-                               get_distance_matrix(fasta))
+                               create_distance_matrix(fasta))
 
-        def test_gaff_sampl(self):
+        def test_gaff_sample(self):
             '''Global Alignment with Scoring Matrix and Affine Gap Penalty'''
             score,s,t = gaff('PRTEINS','PRTWPSEIN')
             self.assertEqual(8,score)
             self.assertEqual('PRT---EINS',s)
             self.assertEqual('PRTWPSEIN-',t)
 
-        def test_gcon_sampl(self):
+        def test_gcon_sample(self):
             '''GCON Global Alignment with Constant Gap Penalty'''
             score,s,t = gcon('PLEASANTLY','MEANLY')
             self.assertEqual(13,score)
 
-        def test_smgb_sampl(self):
+        def test_smgb_sample(self):
             '''SMGB Semiglobal Alignment'''
             score,s,t = smgb('CAGCACTTGGATTCTCGG','CAGCGTGG')
             self.assertEqual(4,score)
             self.assertEqual('CAGCACTTGGATTCTCGG',s)
             self.assertEqual('CAGCG-T-GG--------',t)
+
+        def test_oap_sample(self):
+            '''SMGB Semiglobal Alignment'''
+            score,s,t = oap('CTAAGGGATTCCGGTAATTAGACAG','ATAGACCATATGTCAGTGACTGTGTAA')
+            self.assertEqual(1,score)
+            self.assertEqual('ATTAGAC-AG',s)
+            self.assertEqual('AT-AGACCAT',t)
     main()
