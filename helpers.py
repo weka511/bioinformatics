@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+
 # Copyright (C) 2015-2024 Simon Crase
 
 # This is free software: you can redistribute it and/or modify
@@ -11,7 +12,7 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 
-# You should have received a cnp.argmaxy of the GNU General Public License
+# You should have received a copy of the GNU General Public License
 # along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>
 
 '''
@@ -62,10 +63,7 @@ def read_list(file_name):
 
 def format_list(list):
     '''
-    format_list
-
-    Format a list of numbers for use as a Rosalind solution
-
+    Format a list for use as a Rosalind solution
     '''
     return ' '.join([str(l) for l in list])
 
@@ -256,8 +254,8 @@ def read_matrix(problem=basename(argv[0]).split('.')[0],
 
      Returns:  Paramters, followed by matrix - e.g. http://rosalind.info/problems/ba7b/
     '''
-    params=[]
-    D=[]
+    params = []
+    D = []
 
     for line in create_strings(problem=problem,path=path,ext=ext,name=name):
         if len(params)<len_params:
@@ -277,28 +275,28 @@ def create_hmm(problem=basename(argv[0]).split('.')[0],
     return create_hmm_from_strings(create_strings(problem=problem,path=path,ext=ext,name=name))
 
 def create_hmm_from_strings(strings,sep=' '):
-    xs         = strings[0]
-    alphabet   = strings[2].replace(sep,'')
-    States     = strings[4].replace(sep,'')
-    n          = len(States)
-    m          = len(alphabet)
+    xs = strings[0]
+    alphabet = strings[2].replace(sep,'')
+    States = strings[4].replace(sep,'')
+    n = len(States)
+    m = len(alphabet)
     Transition = np.zeros((n,n))
-    i          = 0
-    while i<n:
+    i = 0
+    while i < n:
         items = strings[7+i].split()
         for j in range(1,len(items)):
             Transition[i,j-1] = float(items[j])
-        i+=1
-    i+=9
+        i += 1
+    i += 9
 
-    Emission   = np.zeros((n,m))
-    k          = 0
-    while i<len(strings):
+    Emission = np.zeros((n,m))
+    k = 0
+    while i < len(strings):
         items = strings[i].split()
         for j in range(1,len(items)):
             Emission[k,j-1] = float(items[j])
-        i+=1
-        k+=1
+        i += 1
+        k += 1
     return (xs,alphabet,States,Transition,Emission)
 
 

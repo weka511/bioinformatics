@@ -541,7 +541,7 @@ def FindMiddleEdge(s,t,
     return ((np.argmax(length),   middle_column),
             (np.argmax(length)+1, middle_column+1))
 
-@deprecated
+@deprecated('Trivial function')
 def reverse(chars):
     '''
     reverse
@@ -1360,6 +1360,63 @@ def gcon(s,t):
     score,s1,t1 = san_kai([s0 for s0 in s],[t0 for t0 in t],sigma=5,epsilon=0)
     return score,''.join(s1),''.join(t1)
 
+def smgb(s,t,match=+1,mismatch=-1,indel=-1):
+    ''' SMGB Semiglobal Alignment'''
+    def score_pair(a,b):
+        return match if a==b else mismatch
+
+    def backtrack():
+        s1 = []
+        t1 = []
+        i = m
+        j = n
+
+        while i > index:
+            i -= 1
+            s1.append(s[i])
+            t1.append('-')
+
+        while i > 0 and j > 0:
+            step = np.argmax([scores[i-1][j] + indel,
+                           scores[i][j-1] + indel,
+                           scores[i-1][j-1] + score_pair(s[i-1],t[j-1])])
+            if step == 0:
+                i -= 1
+                s1.append(s[i])
+                t1.append('-')
+            elif step == 1:
+                j -= 1
+                s1.append('-')
+                t1.append(t[j])
+            else:
+                i -= 1
+                j -= 1
+                s1.append(s[i])
+                t1.append(t[j])
+
+        while i > 0:
+            i -= 1
+            s1.append(s[i])
+            t1.append('-')
+
+        return s1,t1
+
+    m = len(s)
+    n = len(t)
+    assert m>n, 't should be shorter than s'
+
+    scores = np.zeros((m+1,n+1))
+    for i in range(1,m+1):
+        for j in range(1,n+1):
+            scores[i,j] = max(scores[i-1,j]   + indel,
+                               scores[i,j-1]   + indel,
+                               scores[i-1,j-1] + score_pair(s[i-1],t[j-1]))
+
+    last_column = [row[-1] for row in scores]
+    index = np.argmax(last_column)
+    s1,t1 = backtrack()
+    return last_column[index],''.join(c for c in s1[-1::-1]),''.join(c for c in t1[-1::-1])
+
 if __name__=='__main__':
 
     class Test_5_Alignment(TestCase):
@@ -1854,7 +1911,7 @@ if __name__=='__main__':
             self.assertEqual('MEIPNQCT---Y---TM------NNGERMLKM-DNKY--A--DN---------MGVRQEENK----Q----H---REDISRWDDWG--QFTTCEGFTRWF---K-L----HHLNAHQISPCLLRMPTWLQCKMTFA------Q--MDLAIDPP-TCHTFPMFTMHSHCIFDPSFYAARRCHMNKVCQFRYDHQIHCSMMQSGTTWWYMYNGCETMSWDYLVEMAVGWWVYRNRHNGMMS--YV--D--HGD----DD--CWHRGHHSSLPWKLDAYSALYCVHGFEYCSAY-FKVDAFNLTCERPDITNTQCRCEKPTEGPAYFNYTKTMSKGPEEWEYNCPCVYYEEVEGL--ANNRESSIPCSKMSNRCRMRCLGHKWFSILPEMHKYNAQSQVKTREKAGRSYNWGNQPLVKFDSLEPMWFHRQHCQSRLETWSTDPPSQDWQFFHICNTQKDAINSTWAGG-RIFWTENDSRRKVCCMENKNKNLFRR--G---WISGIDITMHYHLTSSHGQFGICDPEVHIVPCHMLGLTTFMQERNNLGQCPMVAIFEHHQLPPPCEGYVLQKVHPSWHMSMMKKNEFDRPWAPVF-ARDAEHMQPCEPMIAPHIKFWNYCHKKSGMCLGGQGGIDFHGYMYQNYHLCLFCTYKAMKFLVQDTFEDLISGEKYPMEATMTETFAWVCMTVFTTMRTFIVFWGDPY----RIHELYMFSCAA-----HGYLRTADRSCKWTNKPHLSYGCHLSKTYCSCKMIDAPMVCRCLMWIDHPFVHYP------HMVWCMNY----CC-YNTTCRMHEPTFWHLALVFCPCLYWQQNLEINEIRQGSLGHVGQSEMLQMTI-MKKYMQPCMMWDCGFHCCGTYWD-AMGETSGTEG---IVTTRTRVTPCYRWQHLKKEGH---AL-A-NTVPKMDLYQMRHHGLMGPVLDRAPKPCHAQTEV--D----LVNIVPYNWES',s)
             self.assertEqual('SEIPNQCNEFMYMNYTVRIIYHPNNGERMHEQSDNHHFTAPMDNYHGILLRQRMGVRQEENRDIDLQCIVNHSYLREDISRWDDWDRAQFTTCEGFTRWFRYPKHLSEQLHHLNADQISPCLLCMGTWLQCKMTFARFTMIWQHWMDLAI-PPYTCHTN-----HSHCIFDPSFYLAR-----KVLQF-------CSMMQSGTTW-----GQQ------LVEMAPGWWVYRNRHNGMMSLAYVLTDVDHYDQMQHDDDDCWHRGHHSSAPWKLDAYS-----HGFEYFSAYRF-VDAFNLTCERDD-TNTQCR-E----GPAYFNYT---SQN------N-PLHDFEMSKGPEIAMWQEV-IPCSKMSNRKRWRCLGNKIKSGDVGG-KT-A-S-V--------SYNWGNQPLVKFDSIE-MTFHKQHCQSRLETW------Q--Q--------KDAINSTWAGGFR-FWTECWNKNAYEHTVPWFM-LFRCLAGGHGWISGA--TMHYHLTSSHIQFGICDPEMHIKLCFMLSY-----ESNNLGQCPMVAI------PPPCEG------HPSGNMSMMKKNEFTRPWAP-FEARYAEHMQPCIPGFCQMRE---YR-K-SGMCLGGQGGIDFHGLMYQNYHLCLFCTGKFMKFLGQDTFE-------YPME--MTESFAKVSMEVFTTMRTFIVFWGDYYKLFYRITELYMFDEVDTDNNWHGYLRTAQ---KWEC--HLSYGCHLSKTYCS------PMVC-----ID-PFVHYPNGACELH-VWCMAYVHRTCCCYNTAWRMHE--F-------CPCLYWQQNLEINE-----LGH--QNEMLQMQPCMF-YEF--MGKLQ--HCCGPYGETAT-EFFGTCSTCAIVTT-TD---CYRWQHLKKEGFKPSALQAHNTVPKMDLYQMRHHGLMGPVLDRAPKPCHAQKFVIRDAVWHLVNIVPYNWES',t)
 
-        def test_glob(self):
+        def test_glob_sampl(self):
             '''
             A simple test of the align function, based on https://rosalind.info/problems/glob/
             '''
@@ -1872,7 +1929,7 @@ if __name__=='__main__':
             # self.assertEqual(3,score)
             self.assertEqual(-139,sum)
 
-        def test_pdst(self):
+        def test_pdst_sampl(self):
             ''' PDST 	Creating a Distance Matrix'''
             string='''>Rosalind_9499
             TTTCCATTTA
@@ -1890,17 +1947,22 @@ if __name__=='__main__':
                                      [0.10000, 0.30000, 0.20000, 0.00000]]),
                                get_distance_matrix(fasta))
 
-        def test_gaff(self):
+        def test_gaff_sampl(self):
             '''Global Alignment with Scoring Matrix and Affine Gap Penalty'''
             score,s,t = gaff('PRTEINS','PRTWPSEIN')
             self.assertEqual(8,score)
             self.assertEqual('PRT---EINS',s)
             self.assertEqual('PRTWPSEIN-',t)
 
-        def test_gcon(self):
-            ''' GCON Global Alignment with Constant Gap Penalty'''
+        def test_gcon_sampl(self):
+            '''GCON Global Alignment with Constant Gap Penalty'''
             score,s,t = gcon('PLEASANTLY','MEANLY')
             self.assertEqual(13,score)
 
-
+        def test_smgb_sampl(self):
+            '''SMGB Semiglobal Alignment'''
+            score,s,t = smgb('CAGCACTTGGATTCTCGG','CAGCGTGG')
+            self.assertEqual(4,score)
+            self.assertEqual('CAGCACTTGGATTCTCGG',s)
+            self.assertEqual('CAGCG-T-GG--------',t)
     main()
