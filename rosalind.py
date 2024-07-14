@@ -1069,7 +1069,7 @@ def get_reading_frames(fasta):
     (_,dna)=fasta.pairs[0]
     return list(set(read_one_direction(dna) + read_one_direction(revc(dna))))
 
-def tran(fasta):
+def get_transition_transversion_ratio(fasta):
     '''
     TRAN Transitions and Transversions
 
@@ -1083,12 +1083,32 @@ def tran(fasta):
 
     Return: The transition/transversion ratio R(s1,s2).
     '''
+    def is_purine(x):
+        '''
+        Determine whether a base is a purine
+
+        Parameters:
+            x       A DNA base
+
+        Returns:
+            True for a purine, False for a pyrimidine
+        '''
+        return x.upper() in ['A', 'G']
+
     def is_transition(x,y):
-        return                      \
-               x=='A' and y=='G' or \
-               x=='G' and y=='A' or \
-               x=='C' and y=='T' or \
-               x=='T' and y=='C'
+        '''
+        Determine whether a mutation is a transition or a transversion
+
+        Parameters:
+            x        A DNA base
+            y        A mutated DNA base (we assume y != x)
+
+        Returns:
+            True if x and y are both purines or both pyrimidines
+
+        '''
+        return is_purine(x) == is_purine(y)
+
     (_,a) = fasta[0]
     (_,b) = fasta[1]
     n_transitions = 0
@@ -1424,14 +1444,15 @@ if __name__=='__main__':
 
 
         def test_tran(self):
+            '''TRAN Transitions and Transversions'''
             string='''>Rosalind_0209
             GCAACGCACAACGAAAACCCTTAGGGACTGGATTATTTCGTGATCGTTGTAGTTATTGGA
             AGTACGGGCATCAACCCAGTT
             >Rosalind_2200
             TTATCTGACAAAGAAAGCCGTCAACGGCTGGATAATTTCGCGATCGTGCTGGTTACTGGC
             GGTACGAGTGTTCCTTTGGGT'''
-            fasta=FastaContent(string.split('\n'))
-            self.assertAlmostEqual(1.21428571429,tran(fasta),places=5)
+            fasta = FastaContent(string.split('\n'))
+            self.assertAlmostEqual(1.21428571429,get_transition_transversion_ratio(fasta),places=5)
 
 
 
