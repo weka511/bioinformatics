@@ -17,7 +17,7 @@
 
 '''gaff.py Global Alignment with Scoring Matrix and Affine Gap Penalty'''
 
-from align import san_kai
+from align import gaff
 from helpers import create_strings
 from  Bio.Align import substitution_matrices
 

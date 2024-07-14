@@ -243,7 +243,7 @@ def get_highest_scoring_alignment(v,w,
         for j in range(1,n+1):
             choices           = [s[i,j-1]   - sigma,
                                  s[i-1,j]   - sigma,
-                                 s[i-1,j-1] + weights.get_score(v[i-1],w[j-1])]
+                                 s[i-1,j-1] + weights[v[i-1],w[j-1]]]
             if local:
                 choices.append(0)
 
@@ -503,7 +503,7 @@ def FindMiddleEdge(s,t,
         '''
         current[0] = - j * indel_cost
         for i in range(1,len(current)):
-            scores     = [previous[i-1] + replace_score.get_score(s[i-1],t[j-1]),
+            scores     = [previous[i-1] + replace_score[s[i-1],t[j-1]],
                           current[i-1]  - indel_cost,
                           previous[i]   - indel_cost]
 
@@ -779,14 +779,6 @@ def unwind_moves(moves,score,i,j):
 
 def san_kai(s,t, replace_score=BLOSUM62(),sigma=11,epsilon=1,backtrack=unwind_moves):
 
-    def match(pair,replace_score=replace_score):
-        def reverse(pair):
-            a,b=pair
-            return (b,a)
-        a,b = pair
-        return replace_score.get_score(a,b)
-        # return replace_score[pair] if pair in replace_score else replace_score[reverse(pair)]
-
     lower = np.zeros((len(s)+1,len(t)+1))
     middle = np.zeros((len(s)+1,len(t)+1))
     upper = np.zeros((len(s)+1,len(t)+1))
@@ -814,7 +806,7 @@ def san_kai(s,t, replace_score=BLOSUM62(),sigma=11,epsilon=1,backtrack=unwind_mo
                                middle[i][j-1] - sigma)
 
             choices = [lower[i][j],
-                       middle[i-1][j-1] + replace_score.get_score(s[i-1],t[j-1]),
+                       middle[i-1][j-1] + replace_score[s[i-1],t[j-1]],
                        upper[i][j]]
             index = np.argmax(choices)
             middle[i][j] = choices[index]
@@ -1354,9 +1346,7 @@ def create_distance_matrix(fasta):
         is the proportion of corresponding symbols that differ between s and t.
         '''
         return hamm(s,t)/len(s)
-    # def row(i):
-        # return [get_p_distance(get_string(i),get_string(j)) for j in range(len(fasta))]
-    # return [row(i) for i in range(len(fasta))]
+
     return np.array([[get_p_distance(get_string(i),get_string(j)) for j in range(len(fasta))] for i in range(len(fasta))])
 
 def gaff(s,t):

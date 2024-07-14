@@ -24,7 +24,7 @@ from abc import ABC
 from re import compile
 from unittest import TestCase, main
 import numpy as np
-
+from deprecated import deprecated
 bases='ACGT'     # DNA bases
 
 codon_table={ # Map RNA to amino acids, from Chapter 2
@@ -182,10 +182,18 @@ class ScoringMatrix(ABC):
         self.index = index
         self.score = score
 
+    @deprecated('Prefer: [a,b]')
     def get_score(self,a,b):
         '''
         Determine score when a is matched with b
         '''
+        return self.score[self.index.index(a), self.index.index(b)]
+
+    def __getitem__(self,p):
+        '''
+        Determine score when a is matched with b
+        '''
+        a,b = p
         return self.score[self.index.index(a), self.index.index(b)]
 
 class BLOSUM62(ScoringMatrix):
