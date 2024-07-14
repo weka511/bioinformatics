@@ -693,7 +693,17 @@ def align(s,t,
 
 
 
-def overlap_assignment(v,w,match_bonus=+1,mismatch_cost=2,indel_cost=2):
+def get_overlap_assignment(v,w,match_bonus=+1,mismatch_cost=2,indel_cost=2):
+    '''
+    BA5I Find a Highest-Scoring Overlap Alignment of Two Strings
+
+    Given: Two protein strings v and w, each of length at most 1000.
+
+    Return: The score of an optimal overlap alignment of v and w, followed by an alignment
+    of a suffix v’ of v and a prefix w’ of w achieving this maximum score.
+    Use an alignment score in which matches count +1 and both the mismatch and indel penalties are 2.
+    (If multiple overlap alignments achieving the maximum score exist, you may return any one.)
+    '''
     def dynamic_programming(v,w):
         distances = np.zeros((len(v)+1,len(w)+1))
         path      = {}
@@ -1327,7 +1337,7 @@ def ctea(s,t,
 
     return  count_paths(Adj,invert(Adj),start=ground) % mod
 
-def distance_matrix(fasta):
+def create_distance_matrix(fasta):
     '''
     PDST 	Creating a Distance Matrix
 
@@ -1687,6 +1697,13 @@ if __name__=='__main__':
             self.assertEqual('TAGGCTTA',s1) # Not same string as specified, but gives same score
             self.assertEqual('TAGA-T-A',s2) # Not same string as specified, but gives same score
 
+        def test_ba5i_sample(self):
+            '''Find a Highest-Scoring Overlap Alignment of Two Strings'''
+            score,u,v = get_overlap_assignment('PAWHEAE','HEAGAWGHEE')
+            self.assertEqual(1,score)
+            self.assertEqual('HEAE',u)
+            self.assertEqual('HEA-',v)
+
         def test_ba5k_sample(self):
             '''BA5K Find a middle edge in the alignment graph in linear space.'''
             self.assertEqual(((4, 3), (5, 4)),
@@ -1867,10 +1884,11 @@ if __name__=='__main__':
             >Rosalind_1833
             GTTCCATTTA'''
             fasta=FastaContent(string.split('\n'))
-            assert_array_equal(np.array([[0.00000, 0.40000, 0.10000, 0.10000],
-                              [0.40000, 0.00000, 0.40000, 0.30000],
-                              [0.10000, 0.40000, 0.00000, 0.20000],
-                              [0.10000, 0.30000, 0.20000, 0.00000]]),
-                             distance_matrix(fasta))
+            assert_array_equal(np.array(
+                                    [[0.00000, 0.40000, 0.10000, 0.10000],
+                                     [0.40000, 0.00000, 0.40000, 0.30000],
+                                     [0.10000, 0.40000, 0.00000, 0.20000],
+                                     [0.10000, 0.30000, 0.20000, 0.00000]]),
+                               get_distance_matrix(fasta))
 
     main()
