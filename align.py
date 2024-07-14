@@ -1350,7 +1350,13 @@ def create_distance_matrix(fasta):
     return np.array([[get_p_distance(get_string(i),get_string(j)) for j in range(len(fasta))] for i in range(len(fasta))])
 
 def gaff(s,t):
+    '''gaff.py Global Alignment with Scoring Matrix and Affine Gap Penalty'''
     score,s1,t1 = san_kai([s0 for s0 in s],[t0 for t0 in t])
+    return score,''.join(s1),''.join(t1)
+
+def gcon(s,t):
+    ''' GCON Global Alignment with Constant Gap Penalty'''
+    score,s1,t1 = san_kai([s0 for s0 in s],[t0 for t0 in t],sigma=5,epsilon=0)
     return score,''.join(s1),''.join(t1)
 
 if __name__=='__main__':
@@ -1886,5 +1892,11 @@ if __name__=='__main__':
             self.assertEqual(8,score)
             self.assertEqual('PRT---EINS',s)
             self.assertEqual('PRTWPSEIN-',t)
+
+        def test_gcon(self):
+            ''' GCON Global Alignment with Constant Gap Penalty'''
+            score,s,t = gcon('PLEASANTLY','MEANLY')
+            self.assertEqual(13,score)
+
 
     main()

@@ -1,5 +1,6 @@
 #!/usr/bin/env python
-#    Copyright (C) 2019-2020 Greenweaves Software Limited
+
+#    Copyright (C) 2019-2024 Greenweaves Software Limited
 #
 #    This is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -14,15 +15,12 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>
 
-# GCON Global Alignment with Constant Gap Penalty
+''' GCON Global Alignment with Constant Gap Penalty'''
 
 from helpers import create_strings
-from align import san_kai
+from align import gcon
 import sys
 
-def gcon(s,t):
-    score,s1,t1 = san_kai([s0 for s0 in s],[t0 for t0 in t],sigma=5,epsilon=0)
-    return score,''.join(s1),''.join(t1)
 
 if __name__=='__main__':
     score = -float('inf')
