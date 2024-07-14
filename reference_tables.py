@@ -184,7 +184,7 @@ class ScoringMatrix(ABC):
 
     def get_score(self,a,b):
         '''
-        Determins score when a is matched with b
+        Determine score when a is matched with b
         '''
         return self.score[self.index.index(a), self.index.index(b)]
 

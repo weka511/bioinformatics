@@ -783,58 +783,55 @@ def san_kai(s,t, replace_score=BLOSUM62(),sigma=11,epsilon=1,backtrack=unwind_mo
         def reverse(pair):
             a,b=pair
             return (b,a)
-        return replace_score[pair] if pair in replace_score else replace_score[reverse(pair)]
+        a,b = pair
+        return replace_score.get_score(a,b)
+        # return replace_score[pair] if pair in replace_score else replace_score[reverse(pair)]
 
-    lower        = np.zeros((len(s)+1,len(t)+1))
-    middle       = np.zeros((len(s)+1,len(t)+1))
-    upper        = np.zeros((len(s)+1,len(t)+1))
+    lower = np.zeros((len(s)+1,len(t)+1))
+    middle = np.zeros((len(s)+1,len(t)+1))
+    upper = np.zeros((len(s)+1,len(t)+1))
 
-    moves        = {}
-    lower[0][0]  = -float('inf')
+    moves = {}
+    lower[0][0] = -float('inf')
     middle[0][0] = 0
-    upper[0][0]  = -float('inf')
+    upper[0][0] = -float('inf')
 
     for i in range(1,len(s)+1):
-        lower[i][0]  = - (sigma + epsilon *(i-1))
-        middle[i][0] =  - (sigma + epsilon *(i-1)) #-float('inf')
-        upper[i][0]  =  - (sigma + epsilon *(i-1))# -float('inf')
+        lower[i][0] = - (sigma + epsilon *(i-1))
+        middle[i][0] = - (sigma + epsilon *(i-1))
+        upper[i][0] =  - (sigma + epsilon *(i-1))
     for j in range(1,len(t)+1):
-        lower[0][j]  =  - (sigma + epsilon *(j-1))#-float('inf')
-        middle[0][j] =  - (sigma + epsilon *(j-1)) #-float('inf')
-        upper[0][j]  = - (sigma + epsilon *(j-1))
+        lower[0][j] = - (sigma + epsilon *(j-1))
+        middle[0][j] = - (sigma + epsilon *(j-1))
+        upper[0][j] = - (sigma + epsilon *(j-1))
 
     for i in range(1,len(s)+1):
         for j in range(1,len(t)+1):
-            lower[i][j]  = max(lower[i-1][j] - epsilon,
-                               middle[i-1][j] - sigma)
+            lower[i][j] = max(lower[i-1][j] - epsilon,
+                              middle[i-1][j] - sigma)
 
-            upper[i][j]  =  max(upper[i][j-1] - epsilon,
+            upper[i][j] =  max(upper[i][j-1] - epsilon,
                                middle[i][j-1] - sigma)
 
-            choices      = [lower[i][j],
-                            middle[i-1][j-1] + match((s[i-1],t[j-1])),
-                            upper[i][j]]
-            index        = np.argmax(choices)
+            choices = [lower[i][j],
+                       middle[i-1][j-1] + replace_score.get_score(s[i-1],t[j-1]),
+                       upper[i][j]]
+            index = np.argmax(choices)
             middle[i][j] = choices[index]
-            moves[(i,j)] = [(i-1, j,   s[i-1], '-'),     # Comes from lower
+            moves[(i,j)] = [(i-1, j, s[i-1], '-'),     # Comes from lower
                             (i-1, j-1, s[i-1], t[j-1]),  # Comes from middle
-                            (i,   j-1, '-',    t[j-1]    # Comes from upper
+                            (i,   j-1, '-', t[j-1]    # Comes from upper
                              )][index]
 
     return backtrack(moves,middle[len(s)][len(t)],len(s),len(t))
 
 
 
-
-
-# FindHighestScoringMultipleSequenceAlignment
-#
-# BA5M Find a Highest-Scoring Multiple Sequence Alignment
-
 def FindHighestScoringMultipleSequenceAlignment (u,
                                                  v,
                                                  w,
                                                  score=lambda x,y,z: 1 if x==y and y==z and x!='-' else 0):
+    '''BA5M Find a Highest-Scoring Multiple Sequence Alignment'''
     def build_matrix():
         s = [[[0 for i in range(len(w)+1)] for j in range(len(v)+1)] for k in range(len(u)+1) ]
         path = {}
@@ -842,9 +839,9 @@ def FindHighestScoringMultipleSequenceAlignment (u,
         for i in range(1,len(u)+1):
             for j in range(1,len(v)+1):
                 for k in range(1,len(w)+1):
-                    scores     = [
+                    scores = [
                         s[i-1][j-1][k-1] + score(u[i-1], v[j-1], w[k-1]),
-                        s[i-1][j][k]     + score(u[i-1], '-',    '-'),
+                        s[i-1][j][k]  + score(u[i-1], '-',    '-'),
                         s[i][j-1][k]     + score('-',    v[j-1], '-'),
                         s[i][j][k-1]     + score('-',    '-',    w[k-1]),
                         s[i][j-1][k-1]   + score('-',    v[j-1], w[k-1]),
@@ -1362,7 +1359,9 @@ def create_distance_matrix(fasta):
     # return [row(i) for i in range(len(fasta))]
     return np.array([[get_p_distance(get_string(i),get_string(j)) for j in range(len(fasta))] for i in range(len(fasta))])
 
-
+def gaff(s,t):
+    score,s1,t1 = san_kai([s0 for s0 in s],[t0 for t0 in t])
+    return score,''.join(s1),''.join(t1)
 
 if __name__=='__main__':
 
@@ -1890,5 +1889,12 @@ if __name__=='__main__':
                                      [0.10000, 0.40000, 0.00000, 0.20000],
                                      [0.10000, 0.30000, 0.20000, 0.00000]]),
                                get_distance_matrix(fasta))
+
+        def test_gaff(self):
+            '''Global Alignment with Scoring Matrix and Affine Gap Penalty'''
+            score,s,t = gaff('PRTEINS','PRTWPSEIN')
+            self.assertEqual(8,score)
+            self.assertEqual('PRT---EINS',s)
+            self.assertEqual('PRTWPSEIN-',t)
 
     main()
