@@ -16,6 +16,9 @@
 #
 '''    GLOB Global Alignment with Scoring Matrix'''
 
+###
+### Warning: do not try to rename this fils to glob.py, as it breaks the regulat python glob library!
+###
 from  align import get_highest_scoring_alignment
 from Bio import SeqIO
 

@@ -112,7 +112,7 @@ I have written this code in Python 3, usually with the most recent release at th
 |edta|edta.py align.py|[Edit Distance Alignment](http://rosalind.info/problems/edta/)|
 |gaff|gaff.py align.py|[Global Alignment with Scoring Matrix and Affine Gap Penalty](http://rosalind.info/problems/gaff/)|
 |gcon|gcon.py  align.py|[Global Alignment with Constant Gap Penalty](http://rosalind.info/problems/gcon/)|
-|glob|glob.py align.py|[Global Alignment with Scoring Matrix](http://rosalind.info/problems/glob/)|
+|GLOB|glob.py align.py|[Global Alignment with Scoring Matrix](http://rosalind.info/problems/glob/)|
 |hamm|rosalind.py|[Counting Point Mutations](http://rosalind.info/problems/hamm/) |
 |laff|laff.py |[Local Alignment with Affine Gap Penalty](http://rosalind.info/problems/laff/)|
 |loca|loca.py|[Local Alignment with Scoring Matrix ](http://rosalind.info/problems/loca/) |

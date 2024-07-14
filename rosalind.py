@@ -19,21 +19,21 @@
 
 from re import compile
 from unittest import main, skip, TestCase
+from deprecated import deprecated
 import numpy as np
 from numpy.testing import assert_array_equal
 from scipy.special import comb
 from fasta import FastaContent
 from reference_tables import codon_table,skew_step,bases,integer_masses,amino_acids
 
-
 def iterate_markov(e,p,g):
     '''
     Step through multiple iterations of  Markov chain
 
     Parameters:
-        e
-        p
-        g
+        e         State
+        p         Transion matrix
+        g         Number of steps
     '''
     for i in range(g):
         e = np.dot(e,p)
@@ -175,6 +175,7 @@ def dbru(S,
     E = [(e[0:-1],e[1:]) for e in union(S)]
     return (create_nodes(E),E)
 
+@deprecated("I don't think this is actually being used")
 def distance(p1,p2):
     return sum([(p1[i]-p2[i])**2 for i in range(len(p1))])
 
@@ -633,11 +634,7 @@ def dna_to_rna(dna):
     Input: A DNA string t having length at most 1000 nt.
     Return: The transcribed RNA string of t.
     '''
-    return dna.translate({
-                ord('A') : 'A',
-                ord('C') : 'C',
-                ord('G') : 'G',
-                ord('T') : 'U'})
+    return dna.replace('T','U')
 
 
 def gc(fasta):
@@ -689,8 +686,6 @@ def sseq(fasta,bases=['A','C','G','T']):
     _,text=fasta[0]
     _,motif=fasta[1]
     return find_all([t for t in text],[m for m in motif])
-
-
 
 def lcsm(fasta):
     '''
@@ -899,30 +894,32 @@ def cons(fasta):
 def iev(ncopies):
     return 2*sum(n*prob for (n,prob) in zip(ncopies,[1,1,1,0.75,0.5,0]))
 
-# REVP	Locating Restriction Sites
-#
-# A DNA string is a reverse palindrome if it is equal to its reverse complement.
-# For instance, GCATGC is a reverse palindrome because its reverse complement is GCATGC.
-#
-# Input: A DNA string of length at most 1 kbp in FASTA format.
-#
-# Return: The position and length of every reverse palindrome in the string
-#         having length between 4 and 12.
-#         You may return these pairs in any order.
 
 def revp(fasta,len1=4,len2=12):
+    '''
+     REVP	Locating Restriction Sites
 
-    # Test a substring to see whether it is a palindrome
+     A DNA string is a reverse palindrome if it is equal to its reverse complement.
+     For instance, GCATGC is a reverse palindrome because its reverse complement is GCATGC.
+
+     Input: A DNA string of length at most 1 kbp in FASTA format.
+
+     Return: The position and length of every reverse palindrome in the string
+             having length between 4 and 12.
+             You may return these pairs in any order.
+    '''
+
     def is_palindrome(dna,i,half_length):
-        return len(dna[i:i+half_length])==half_length and \
-               dna[i:i+half_length]==revc(dna[i+half_length:i+2*half_length])
+        '''Test a substring to see whether it is a palindrome'''
+        return (len(dna[i:i+half_length])==half_length and
+               dna[i:i+half_length]==revc(dna[i+half_length:i+2*half_length]))
 
     def find_palindrome(dna,half_length):
-        return [(i+1,2*half_length) for i in range(0,len(dna)+1)\
+        return [(i+1,2*half_length) for i in range(0,len(dna)+1)
                 if is_palindrome(dna,i,half_length)]
 
     def extend(palindromes,half_length):
-        return [(i-1,2*half_length) for (i,_) in palindromes\
+        return [(i-1,2*half_length) for (i,_) in palindromes
                 if is_palindrome(dna,i-2,half_length)]
 
     (_,dna)     = fasta[0]
@@ -939,18 +936,19 @@ def revp(fasta,len1=4,len2=12):
     return palindromes
 
 
-# PROB 	Introduction to Random Strings
-#
-# Input: A DNA string s of length at most 100 bp and an array A containing
-#        at most 20 numbers between 0 and 1.
-#
-# Return: An array B having the same length as A in which B[k] represents the
-#         common logarithm of the probability that a random string constructed
-#         with the GC-content found in A[k] will match s exactly.
-
 def random_genome(s,a):
+    '''
+     PROB 	Introduction to Random Strings
+
+     Input: A DNA string s of length at most 100 bp and an array A containing
+            at most 20 numbers between 0 and 1.
+
+     Return: An array B having the same length as A in which B[k] represents the
+             common logarithm of the probability that a random string constructed
+             with the GC-content found in A[k] will match s exactly.
+    '''
     def log_probability(prob_gc):
-        log_prob={
+        log_prob = {
             'G' : np.log10(0.5*prob_gc),
             'C' : np.log10(0.5*prob_gc),
             'A' : np.log10(0.5*(1-prob_gc)),
