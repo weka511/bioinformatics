@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-#    Copyright (C) 2019 Greenweaves Software Limited
+#    Copyright (C) 2019-2024 Greenweaves Software Limited
 #
 #    This is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -15,15 +15,14 @@
 #    You should have received a copy of the GNU General Public License
 #    along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>
 
-# BA5I Find a Highest-Scoring Overlap Alignment of Two Strings
+'''BA5I Find a Highest-Scoring Overlap Alignment of Two Strings'''
 
-from align import create_distance_matrix,overlap_assignment
+from align import get_overlap_assignment
+from helpers import create_strings
 
 if __name__=='__main__':
-    from helpers import create_strings
-
-    strings  = create_strings('ba5i',ext=1)
-    d,s1,t1  = overlap_assignment(strings[0],strings[1])
+    strings  = create_strings('ba5i',ext=2,path='./data')
+    d,s1,t1  = get_overlap_assignment(strings[0],strings[1])
     print ('{0}'.format(d))
     print (s1)
     print (t1)
