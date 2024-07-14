@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-#    Copyright (C) 2019 Greenweaves Software Limited
+#    Copyright (C) 2019-2024 Greenweaves Software Limited
 #
 #    This is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -14,11 +14,12 @@
 #    You should have received a copy of the GNU General Public License
 #    along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>
 #
-#    GLOB Global Alignment with Scoring Matrix
+'''    GLOB Global Alignment with Scoring Matrix'''
+
+from  align import get_highest_scoring_alignment
+from Bio import SeqIO
 
 if __name__=='__main__':
-    from  align import highest_scoring_global_alignment
-    from Bio import SeqIO
     inFile = open(r'C:\Users\Simon\Downloads\rosalind_glob.txt','r')
     strings = []
     for record in SeqIO.parse(inFile,'fasta'):

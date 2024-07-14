@@ -210,8 +210,9 @@ def get_highest_scoring_alignment(v,w,
                                      sigma   = 5,
                                      local    = False):
     '''
-    BA5E 	Find a Highest-Scoring Alignment of Two Strings
-    BA5F 	Find a Highest-Scoring Local Alignment of Two Strings
+    BA5E Find a Highest-Scoring Alignment of Two Strings
+    BA5F Find a Highest-Scoring Local Alignment of Two Strings
+    GLOB Global Alignment with Scoring Matrix
     Find the highest-scoring alignment between two strings using a scoring matrix.
 
     Input: v         an amino acid string
@@ -1638,7 +1639,10 @@ if __name__=='__main__':
 
 
         def test_ba5e_sample(self):
-            ''' BA5E Find a Highest-Scoring Alignment of Two Strings'''
+            '''
+            BA5E Find a Highest-Scoring Alignment of Two Strings
+            GLOB Global Alignment with Scoring Matrix'
+            '''
             score,s1,s2 = get_highest_scoring_alignment('PLEASANTLY','MEANLY')
             self.assertEqual(8,score)
             self.assertEqual('PLEASANTLY',s1)
