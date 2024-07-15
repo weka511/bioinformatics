@@ -115,7 +115,7 @@ I have written this code in Python 3, usually with the most recent release at th
 |GLOB|glob.py align.py|[Global Alignment with Scoring Matrix](http://rosalind.info/problems/glob/)|
 |hamm|rosalind.py|[Counting Point Mutations](http://rosalind.info/problems/hamm/) |
 |laff|laff.py |[Local Alignment with Affine Gap Penalty](http://rosalind.info/problems/laff/)|
-|loca|loca.py|[Local Alignment with Scoring Matrix ](http://rosalind.info/problems/loca/) |
+|loca|loca.py align.py|[Local Alignment with Scoring Matrix ](http://rosalind.info/problems/loca/) |
 |mgap|mgap.py align.py|[Maximizing the Gap Symbols of an Optimal Alignment](http://rosalind.info/problems/mgap/)|
 |mult|mult.py align.py|[Multiple Alignment](http://rosalind.info/problems/mult/)|
 |oap|oap.py align.pys|[Overlap Alignment](http://rosalind.info/problems/oap/) |
