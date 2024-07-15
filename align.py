@@ -1467,6 +1467,66 @@ def oap(s,t,
     score,u1,s1=dynamic_programming(s,t)
     return score,''.join(u1),''.join(s1)
 
+def mgap(s,t,m0=1,d0=-1,g0=-1,Nm=2,Nd=2,Ng=2):
+    '''
+    For the computation of an alignment score generalizing the edit alignment score,
+    let m denote the score assigned to matched symbols, d denote the score assigned to mismatched non-gap symbols,
+    and g denote the score assigned a symbol matched to a gap symbol '-' (i.e., gis a linear gap penalty).
+
+    Given: Two DNA strings s and t,  each of length at most 5000 bp.
+
+    Return: The maximum number of gap symbols that can appear in any maximum score alignment of s
+    and t with score parameters satisfying m>0, d<0, and g<0.
+    '''
+    def get_N(m=1,d=-1,g=-1):
+        def dynamic_programming():
+            scores = [[0 for j in range(len(t)+1)] for i in range(len(s)+1)]
+
+            for j in range(len(t)+1):
+                scores[0][j] = g * j
+            for i in range(len(s)+1):
+                scores[i][0] = g * i
+
+            for i in range(1,len(s)+1):
+                for j in range(1,len(t)+1):
+                    scores[i][j] = max(
+                        scores[i-1][j]   + g,
+                        scores[i][j-1]   + g,
+                        scores[i-1][j-1] + (m if s[i-1]==t[j-1] else d))
+
+            return scores
+
+        def backtrack(scores):
+            gaps = 0
+            i    = len(scores) - 1
+            j    = len(scores[0]) -1
+            while i>0 or j>0:
+                if scores[i][j]==scores[i-1][j]   + g:
+                    #print (s[i-1], '-')
+                    i    -= 1
+                    gaps += 1
+                elif  scores[i][j]==scores[i][j-1]   + g:
+                    #print ('-', t[j-1])
+                    j    -= 1
+                    gaps += 1
+                elif  scores[i][j]==scores[i-1][j-1] + (m if s[i-1]==t[j-1] else d):
+                    #print (s[i-1], t[j-1])
+                    i  -= 1
+                    j  -= 1
+                else:
+                    raise Exception(f'{i} {j}')
+            return gaps
+
+        return backtrack(dynamic_programming())
+    # Nm=2,Nd=2,Ng=2
+    max_gaps = -1
+    for i in range(Nm):
+        for j in range(Nd):
+            for k in range(Ng):
+                gaps = get_N(m=m0+i, d=d0-j, g = g0-k)
+                if gaps>max_gaps:
+                    max_gaps=gaps
+    return max_gaps
 
 if __name__=='__main__':
 
@@ -2023,4 +2083,8 @@ if __name__=='__main__':
             self.assertEqual(1,score)
             self.assertEqual('ATTAGAC-AG',s)
             self.assertEqual('AT-AGACCAT',t)
+
+        def test_mgap_sample(self):
+            '''MGAP Maximizing the Gap Symbols of an Optimal Alignment'''
+            self.assertEqual(3,mgap('AACGTA','ACACCTA'))
     main()
