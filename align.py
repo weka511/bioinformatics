@@ -27,7 +27,7 @@ from unittest import TestCase, main, skip, skipIf
 from deprecated import deprecated
 import numpy as np
 from numpy.testing import assert_array_equal
-from reference_tables import createSimpleDNASubst,  BLOSUM62, PAM250, ScoringMatrix
+from reference_tables import createSimpleDNASubst,  BLOSUM62, PAM250
 from rosalind import RosalindException, FastaContent, hamm
 
 def get_number_of_coins(money,Coins):
@@ -687,6 +687,9 @@ def align(s,t,
           get_indel_cost = get_indel_cost,
           showScores     = False,
           showPath       = False):
+    '''
+    See GLOB Generalizing the Alignment Score
+    '''
     distances = np.zeros((len(s)+1,len(t)+1))
     distances,moves = build_matrix(s,t,distances,
                                    replace_score  = replace_score,
@@ -1158,35 +1161,17 @@ def osym(s,t, match=1,mismatch=-1):
        Apply the mismatch score introduced in Finding a Motif with Modifications.
     '''
 
-    class SimpleScoringMatrix(ScoringMatrix):
-        def __init__(self):
-            super().__init__(1,index=['A', 'T','C','G'])
-        def __getitem__(self,p):
-            '''
-            Determine score when a is matched with b
-            '''
-            a,b = p
-            return 1 if a==b else -1
+    def backtrack(s,t,matrix,moves,showPath=False):
+        return matrix[-1,-1],None,None
 
-    def get_align(u,v):
-        return get_highest_scoring_alignment(u,v,
-                               weights = SimpleScoringMatrix(),
-                               sigma = 1,
-                               local = False)
     m = len(s)
     n = len(t)
-    M = np.zeros((m,n))
+    M = np.empty((m,n))
     for i in range(m):
-        s0 = s[0:i]
-        s1 = s[i+1:]
-        sch = s[i]
         for j in range(n):
-            t0 = t[0:j]
-            t1 = t[j+1:]
-            tch = t[j]
-            left,_,_ = align(t0,s0)
-            right,_,_ = align(s1,t1)
-            M[i,j] =  left + (1 if tch == sch else -1) + right
+            left,_,_ = align(s[0:i],t[0:j],backtrack=backtrack)
+            right,_,_ = align(s[i+1:],t[j+1:],backtrack=backtrack)
+            M[i,j] =  left + (1 if s[i]==t[j] else -1) + right
 
     return np.max(M),np.sum(M)
 
