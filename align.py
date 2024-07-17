@@ -15,7 +15,11 @@
 #    You should have received a copy of the GNU General Public License
 #    along with the program.  If not, see <http://www.gnu.org/licenses/>
 
-'''Common code for alignment problems'''
+'''
+Common code for alignment problems
+
+This comprises Chapter 5 of the textbook, plus additional problems tagged "align" at https://rosalind.info
+'''
 
 from os import environ
 from sys import float_info
@@ -23,7 +27,7 @@ from unittest import TestCase, main, skip, skipIf
 from deprecated import deprecated
 import numpy as np
 from numpy.testing import assert_array_equal
-from reference_tables import createSimpleDNASubst,  BLOSUM62, PAM250
+from reference_tables import createSimpleDNASubst,  BLOSUM62, PAM250, ScoringMatrix
 from rosalind import RosalindException, FastaContent, hamm
 
 def get_number_of_coins(money,Coins):
@@ -95,14 +99,14 @@ def get_longest_common_subsequence(v,w):
 
      http://rosalind.info/problems/ba5a/
     '''
-    m  = len(v)
-    n  = len(w)
-    s  = np.zeros((m+1,n+1))
+    m = len(v)
+    n = len(w)
+    s = np.zeros((m+1,n+1))
     predecessors = -1 * np.ones_like(s)
     for i in range(1,m+1):
         for j in range(1,n+1):
             choices = [s[i,j-1], s[i-1,j],s[i-1,j-1]]
-            if v[i-1]==w[j-1]:
+            if v[i-1] == w[j-1]:
                 choices[-1] += 1
             index = np.argmax(choices)
             s[i,j] = choices[index]
@@ -145,7 +149,7 @@ def get_longest_path(source,sink,graph):
         '''
         Convert graph (list of tuples) to an adjacency list, ignoring weights
         '''
-        product  = {}
+        product = {}
         for a,b,_ in graph:
             if not a in product:
                 product[a] = []
@@ -189,21 +193,49 @@ def get_longest_path(source,sink,graph):
             else:
                 return s[-1],path[-1::-1]
 
-    nodes        = crop(create_topological_order(create_adjacency_list()))
-    index          = {nodes[i]:i for i in range(len(nodes))}
-    weights        = {(a,b):w for a,b,w in graph if a in nodes and b in nodes}
-    backward       = create_nodes_adjacency_list(nodes)
-    s              =  np.full((len(nodes)),-float_info.max)
-    s[0]           = 0
-    assert index[source]==0
-    predecessors   = {}
+    nodes = crop(create_topological_order(create_adjacency_list()))
+    index = {nodes[i]:i for i in range(len(nodes))}
+    weights = {(a,b):w for a,b,w in graph if a in nodes and b in nodes}
+    backward = create_nodes_adjacency_list(nodes)
+    s  =  np.full((len(nodes)),-float_info.max)
+    s[0]  = 0
+    assert index[source] == 0
+    predecessors = {}
     for i,b in enumerate(nodes):
         if b in backward:
-            candidates            = [(a,s[index[a]] + weights[(a,b)]) for a in backward[b]]
+            candidates = [(a,s[index[a]] + weights[(a,b)]) for a in backward[b]]
             predecessors[b], s[i] = candidates[np.argmax([score for _,score in candidates])]
 
     return backtrack(s,predecessors)
 
+def create_score_matrix(v,w,
+                        weights = BLOSUM62(),
+                        sigma = 5,
+                        local = False):
+    m = len(v)
+    n = len(w)
+    s = np.zeros((m+1,n+1),dtype=int)
+    s[0,0] = 0
+    predecessors = -1 * np.ones_like(s,dtype=int)
+    if not local:
+        for i in range(1,m+1):
+            s[i,0] = -i*sigma
+            predecessors[i,0] = 1
+        for j in range(1,n+1):
+            s[0,j] = -j*sigma
+            predecessors[0,j] = 0
+
+    for i in range(1,m+1):
+        for j in range(1,n+1):
+            choices = [s[i,j-1] - sigma,
+                       s[i-1,j] - sigma,
+                       s[i-1,j-1] + weights[v[i-1],w[j-1]]]
+            if local:
+                choices.append(0)
+
+            predecessors[i,j] = np.argmax(choices)
+            s[i,j] = choices[ predecessors[i,j]]
+    return s,predecessors
 
 def get_highest_scoring_alignment(v,w,
                                      weights = BLOSUM62(),
@@ -226,45 +258,25 @@ def get_highest_scoring_alignment(v,w,
             and indel penalty σ = 5. (If multiple alignments achieving the maximum
             score exist, you may return any one.)
     '''
+    s,predecessors =  create_score_matrix(v,w,
+                                          weights = weights,
+                                          sigma = sigma,
+                                          local = local)
 
-    m            = len(v)
-    n            = len(w)
-    s            = np.zeros((m+1,n+1),dtype=int)
-    s[0,0]       = 0
-    predecessors = -1 * np.ones_like(s,dtype=int)
-    if not local:
-        for i in range(1,m+1):
-            s[i,0] = -i*sigma
-            predecessors[i,0] = 1
-        for j in range(1,n+1):
-            s[0,j] = -j*sigma
-            predecessors[0,j] = 0
-
-    for i in range(1,m+1):
-        for j in range(1,n+1):
-            choices           = [s[i,j-1]   - sigma,
-                                 s[i-1,j]   - sigma,
-                                 s[i-1,j-1] + weights[v[i-1],w[j-1]]]
-            if local:
-                choices.append(0)
-
-            predecessors[i,j] = np.argmax(choices)
-            s[i,j]            = choices[ predecessors[i,j]]
-
-    i,j       = np.unravel_index(np.argmax(s), s.shape)
-    s_max     = s[i,j]
-    v1      = []
-    w1      = []
+    i,j = np.unravel_index(np.argmax(s), s.shape)
+    s_max = s[i,j]
+    v1 = []
+    w1 = []
     while True:
-        if predecessors[i,j]==0:
+        if predecessors[i,j] == 0:
             j -= 1
             v1.append('-')
             w1.append(w[j])
-        elif predecessors[i,j]==1:
+        elif predecessors[i,j] == 1:
             i -= 1
             v1.append(v[i])
             w1.append('-')
-        elif predecessors[i,j]==2:
+        elif predecessors[i,j] == 2:
             i -= 1
             j -= 1
             v1.append(v[i])
@@ -274,7 +286,7 @@ def get_highest_scoring_alignment(v,w,
 
 
 def edit(s,t,
-         indel_cost   = 1,
+         indel_cost = 1,
          replace_cost = lambda a,b: 1):
     '''
     EDIT 	Edit Distance http://rosalind.info/problems/edit/
@@ -288,17 +300,17 @@ def edit(s,t,
     Returns: the edit distance between s and t
 
     '''
-    m           = len(s)
-    n           = len(t)
-    matrix      = np.full((m+1,n+1),np.nan)
+    m = len(s)
+    n = len(t)
+    matrix = np.full((m+1,n+1),np.nan)
     matrix[0,:] = list(range(n+1))
     matrix[:,0] = list(range(m+1))
 
     for i in range(1,len(s)+1):
         for j in range(1,len(t)+1):
             matrix[i,j] = min(
-                matrix[i-1,j]   + indel_cost,
-                matrix[i,j-1]   + indel_cost,
+                matrix[i-1,j] + indel_cost,
+                matrix[i,j-1] + indel_cost,
                 matrix[i-1,j-1] + (0 if s[i-1]==t[j-1] else replace_cost(s[i-1],t[j-1])))
 
     return matrix[m,n],matrix
@@ -318,19 +330,19 @@ def edta(s,t,
     '''
     def backtrack():
         m,n = matrix.shape
-        m  -=1
-        n  -=1
+        m -=1
+        n -=1
         s1 = []
-        t1  = []
+        t1 = []
         while m>0 and n>0:
             moves  = [(m-1,n), (m,n-1), (m-1,n-1)]
-            scores = [matrix[m-1,n]+indel_cost,
-                      matrix[m,n-1]   + indel_cost,
-                      matrix[m-1,n-1] + (0 if s[m-1]==t[n-1] else replace_cost(s[m-1],t[n-1]))]
-            ss     = [s[m-1],'-',s[m-1]]
-            ts     = ['-',t[n-1],t[n-1]]
-            index  = np.argmin(scores)
-            m,n    = moves[index]
+            scores = [matrix[m-1,n] + indel_cost,
+                      matrix[m,n-1] + indel_cost,
+                      matrix[m-1,n-1] + (0 if s[m-1] == t[n-1] else replace_cost(s[m-1],t[n-1]))]
+            ss = [s[m-1],'-',s[m-1]]
+            ts = ['-',t[n-1],t[n-1]]
+            index = np.argmin(scores)
+            m,n = moves[index]
             s1.append(ss[index])
             t1.append(ts[index])
         s1.reverse()
@@ -338,7 +350,7 @@ def edta(s,t,
         return ''.join(s1),''.join(t1)
 
     dist,matrix = edit(s,t,indel_cost,replace_cost)
-    s1,t1       = backtrack()
+    s1,t1 = backtrack()
     return (dist,s1,t1)
 
 def  FindHighestScoringFittingAlignment(s,t,
@@ -358,16 +370,16 @@ def  FindHighestScoringFittingAlignment(s,t,
                     moves[(i,j)] = (0,0,0,-1)
                 elif j==0:
                     matrix[i,j] = 0
-                    moves[(i,j)]  =(0,0,-1,0)
+                    moves[(i,j)]  = (0,0,-1,0)
                 else:
-                    scores       = [matrix[i-1,j]   - indel_cost,
-                                    matrix[i,j-1]   - indel_cost,
-                                    matrix[i-1,j-1] + replace_score[(s[i-1],t[j-1])]]
-                    froms        = [(i-1, j,   -1,  0),
+                    scores = [matrix[i-1,j] - indel_cost,
+                              matrix[i,j-1] - indel_cost,
+                              matrix[i-1,j-1] + replace_score[(s[i-1],t[j-1])]]
+                    froms = [(i-1, j,   -1,  0),
                                               (i,   j-1,  0, -1),
                                               (i-1, j-1, -1, -1)]
-                    index        = np.argmax(scores)
-                    matrix[i,j]  = scores[index]
+                    index = np.argmax(scores)
+                    matrix[i,j] = scores[index]
                     moves[(i,j)] = froms[index]
 
         return matrix,moves
@@ -375,14 +387,14 @@ def  FindHighestScoringFittingAlignment(s,t,
     def backtrack(matrix,moves):
 
         score = max([matrix[i,-1] for i in range(len(s)+1)])
-        i     = -1
-        j     = len(t)
+        i = -1
+        j = len(t)
         for k in range(len(s)-1,-1,-1):
-            if matrix[k,-1]==score:
+            if matrix[k,-1] == score:
                 i = k
                 break
-        s1    = []
-        t1    = []
+        s1 = []
+        t1 = []
         while i>0 or j>0:
             i,j,di,dj = moves[(i,j)]
             if di==0:
@@ -433,17 +445,17 @@ def calculate_scores_for_alignment(s,string1, string2, weights,sigma,
             if i>0:
                 s_new = s[i-1,j]-sigma
                 if s_new>s[i,j]:
-                    s[i,j]             = s_new
+                    s[i,j] = s_new
                     predecessors[(i,j)] = (-1,0,i-1,j)
             if j>0:
                 s_new = s[i,j-1]-sigma
                 if s_new>s[i,j]:
-                    s[i,j]             = s_new
+                    s[i,j] = s_new
                     predecessors[(i,j)] = (0,-1,i,j-1)
                 if i>0:
-                    s_new = s[i-1,j-1]+ weights.get_score(string1[i-1],string2[j-1])
+                    s_new = s[i-1,j-1] + weights.get_score(string1[i-1],string2[j-1])
                     if s_new>s[i,j]:
-                        s[i,j]             = s_new
+                        s[i,j] = s_new
                         predecessors[(i,j)] = (-1,-1,i-1,j-1)
     return (s,predecessors)
 
@@ -451,20 +463,20 @@ def create_alignment(string1, string2,s_predecessors,
                      i_start = -1,
                      j_start = -1):
     s,predecessors = s_predecessors
-    result1        = []
-    result2        = []
-    i              = len(string1) if i_start==-1 else i_start
-    j              = len(string2) if j_start==-1 else j_start
+    result1 = []
+    result2 = []
+    i = len(string1) if i_start==-1 else i_start
+    j = len(string2) if j_start==-1 else j_start
     while i>0 or j>0:
-        if predecessors[(i,j)]==None: break
+        if predecessors[(i,j)] == None: break
         x,y,i,j=predecessors[(i,j)]
-        if x==-1 and y==0:
+        if x == -1 and y == 0:
             result1.append(string1[i])
             result2.append('-')
-        elif x==0 and y==-1:
+        elif x == 0 and y == -1:
             result1.append('-')
             result2.append(string2[j])
-        elif x==-1 and y==-1:
+        elif x == -1 and y == -1:
             result1.append(string1[i])
             result2.append(string2[j])
 
@@ -916,38 +928,36 @@ def FindHighestScoringMultipleSequenceAlignment (u,
 
     return s[len(u)][len(v)][len(w)],''.join(u1[::-1]),''.join(v1[::-1]),''.join(w1[::-1])
 
-# FindMultipleSequenceAlignment
-#
-#   mult Multiple Alignment
-#
-# A multiple alignment of a collection of three or more strings is formed by adding gap symbols
-# to the strings to produce a collection of augmented strings all having the same length.
-#
-# A multiple alignment score is obtained by taking the sum of an alignment score
-# over all possible pairs of augmented strings. The only difference in scoring the alignment
-# of two strings is that two gap symbols may be aligned for a given pair (requiring us to
-# specify a score for matched gap symbols).
-
-# Given: A collection of  DNA strings of length at most 10 bp in FASTA format.
-
-# Return: A multiple alignment of the strings having maximum score, where we score matched symbols 0
-#         (including matched gap symbols) and all mismatched symbols -1 (thus incorporating a linear gap penalty of 1).
-#
-#  This function is a straightforward extension of the dynamic programming algorithm of Pevzner and Compeau, with
-#  the rectangle replaced by a N-cube.
 
 def FindMultipleSequenceAlignment(
           Strings,
           score = lambda ch:sum(0 if ch[i]==ch[j] else  -1 for i in range(len(ch)) for j in range(i+1,len(ch)))):
-    # indices
-    #
-    # A generator for iterating through positions in hypercube. Iterate along last axis,
-    # then wrap around to zero an incrment next axis, etc
-    #
-    # Parameters:
-    #      ns Dimesnion of space (number of strings to be aligned)
+    '''
+    A multiple alignment of a collection of three or more strings is formed by adding gap symbols
+    to the strings to produce a collection of augmented strings all having the same length.
+
+    A multiple alignment score is obtained by taking the sum of an alignment score
+    over all possible pairs of augmented strings. The only difference in scoring the alignment
+    of two strings is that two gap symbols may be aligned for a given pair (requiring us to
+    specify a score for matched gap symbols).
+
+    Given: A collection of  DNA strings of length at most 10 bp in FASTA format.
+
+    Return: A multiple alignment of the strings having maximum score, where we score matched symbols 0
+            (including matched gap symbols) and all mismatched symbols -1 (thus incorporating a linear gap penalty of 1).
+
+     This function is a straightforward extension of the dynamic programming algorithm of Pevzner and Compeau, with
+     the rectangle replaced by a N-cube.
+    '''
 
     def indices(ns=[len(S)+1 for S in Strings]):
+        '''
+        A generator for iterating through positions in hypercube. Iterate along last axis,
+        then wrap around to zero an incrment next axis, etc
+
+        Parameters:
+             ns Dimension of space (number of strings to be aligned)
+        '''
         N  = 1
         for n in ns:
             N *= n
@@ -961,55 +971,53 @@ def FindMultipleSequenceAlignment(
                     break
             yield tuple(index_set)
 
-    # create_moves
-    #
-    # Create list of possible moves from current cells to its predecessors, for use in backtracking.
-    # Used as we update current cell to record the best past from a predecessor. It will be used later
-    # to reconstruct path for backtracking.
-    #
-    #   Parameters:
-    #       m         Number of dimensions
-    #       options   Predecssor is either one less along current axis, or the same
-    #
-    #   Returns:   List of combinations of options, except for all zeroes (which is filtered out).
-    #              Each combination is a tuple, so it can be used as an array index
-
     def create_moves(m,options=[0,-1]):
-        # create_raw_moves
-        #
-        # Create list of moves: each move is a list (not yet a tuple), and the trivial move,
-        #  all zeroes, has not yet been filtered
+        '''
+        Create list of possible moves from current cells to its predecessors, for use in backtracking.
+        Used as we update current cell to record the best past from a predecessor. It will be used later
+        to reconstruct path for backtracking.
+
+          Parameters:
+              m         Number of dimensions
+              options   Predecssor is either one less along current axis, or the same
+
+          Returns:   List of combinations of options, except for all zeroes (which is filtered out).
+                     Each combination is a tuple, so it can be used as an array index
+        '''
         def create_raw_moves(m):
+            '''
+            Create list of moves: each move is a list (not yet a tuple), and the trivial move,
+             all zeroes, has not yet been filtered
+            '''
             return [[o] for o in options] if m==1 else [[o] + c for o in options for c in create_raw_moves(m-1)]
         return [move for move in tuple(create_raw_moves(m)) if len([x for x in move if x!=0])>0]
 
-    # add
-    #
-    # Used to add a move to a tuple for backtracking
+
     def add(u,v):
+        '''
+        Used to add a move to a tuple for backtracking
+        '''
         return tuple([a + b for (a,b) in zip(list(u),list(v))])
 
-    # build_matrix
-    #
-    # Create hypercube of scores
-    #
-    # Returns: scores, and also a dict of moves for backtracking
     def build_matrix():
+        '''
+        Create hypercube of scores
 
-        # calculate_scores
-        #
-        # For each cell (other than the origin) calculate score using predecessors
-        # Allow for case of cell being on the boundary (it doesn't have as many predecessors)
+        Returns: scores, and also a dict of moves for backtracking
+        '''
+
         def calculate_scores(i):
-
-            # get_score
-            #
-            # Calculate score from a possible move
-            #
-            # Returns: score of predecssor, plus effect of move
-            #          If predecessor outside boundary, return None instead
-
+            '''
+            For each cell (other than the origin) calculate score using predecessors
+            Allow for case of cell being on the boundary (it doesn't have as many predecessors)
+            '''
             def get_score(move):
+                '''
+                Calculate score from a possible move
+
+                Returns: score of predecssor, plus effect of move
+                         If predecessor outside boundary, return None instead
+                '''
                 predecessor = add(i,move)
                 if len([p for p in predecessor if p<0]):  # check to see whther we are on boundary
                     return None
@@ -1021,9 +1029,9 @@ def FindMultipleSequenceAlignment(
             raw_scores = [(get_score(move),move) for move in available_moves]
             return [(score,move) for score,move in raw_scores if score != None] # filter out moves outside hypercube
 
-        s               = np.zeros([len(S)+1 for S in Strings],dtype=int)
-        path            = {}
-        m               = len(Strings)
+        s = np.zeros([len(S)+1 for S in Strings],dtype=int)
+        path = {}
+        m  = len(Strings)
         available_moves = create_moves(m)
 
         for index_set in indices():
@@ -1035,27 +1043,22 @@ def FindMultipleSequenceAlignment(
             path[index_set]  = moves[index_best_score]
         return s,path
 
-    # backtrack
-    #
-    # Backtrack through hypercube to isentify best path from origin
-    #
-    #    Parameters:
-    #        history      Scores and path generated by build_matrix()
-
     def backtrack(history):
-        # reverse
-        #
-        # Input:   List of characters
-        # Returns: String which is the  characters in reverse
+        '''
+        Backtrack through hypercube to identify best path from origin
 
+        Parameters:
+            history      Scores and path generated by build_matrix()
+        '''
         def reverse(S):
+            '''
+            Input:   List of characters
+            Returns: String which is the  characters in reverse
+            '''
             return ''.join([s for s in S[::-1]])
 
-        # is_not_origin
-        #
-        # Used when we backtrack - verifies that we have not reached origin
-
         def is_not_origin(position):
+            '''Used when we backtrack - verifies that we have not reached origin'''
             return len([p for p in position if p!=0]) >0
 
         s,path          = history
@@ -1154,22 +1157,37 @@ def osym(s,t, match=1,mismatch=-1):
        the sum of all elements of the matrix M corresponding to s and t that was defined above.
        Apply the mismatch score introduced in Finding a Motif with Modifications.
     '''
-    def get_score(a,b, match=1,mismatch=-1):
-        return match if a==b else mismatch
 
-    def score_string(s,t):
-        return sum(get_score(a,b) for (a,b) in zip(s,t))
+    class SimpleScoringMatrix(ScoringMatrix):
+        def __init__(self):
+            super().__init__(1,index=['A', 'T','C','G'])
+        def __getitem__(self,p):
+            '''
+            Determine score when a is matched with b
+            '''
+            a,b = p
+            return 1 if a==b else -1
 
-    def createM(m, n):
-        M = np.empty((m,n),dtype=np.int64)
-        for i in range(m):
-            for j in range(n):
-                M[i,j] = - ((m-(i+1))  + (n-(j+1)))
+    def get_align(u,v):
+        return get_highest_scoring_alignment(u,v,
+                               weights = SimpleScoringMatrix(),
+                               sigma = 1,
+                               local = False)
+    m = len(s)
+    n = len(t)
+    M = np.zeros((m,n))
+    for i in range(m):
+        s0 = s[0:i]
+        s1 = s[i+1:]
+        sch = s[i]
+        for j in range(n):
+            t0 = t[0:j]
+            t1 = t[j+1:]
+            tch = t[j]
+            left,_,_ = align(t0,s0)
+            right,_,_ = align(s1,t1)
+            M[i,j] =  left + (1 if tch == sch else -1) + right
 
-
-        return M
-
-    M = createM(len(s), len(s))
     return np.max(M),np.sum(M)
 
 
@@ -1214,8 +1232,8 @@ def itwv(s,patterns):
                              S[i,j-1] + score(s0,v0))
                 Closed.add((i,j))
 
-            S      = np.zeros((len(u)+1,len(v)+1),dtype=int)
-            N      = max(len(u),len(v))+1
+            S = np.zeros((len(u)+1,len(v)+1),dtype=int)
+            N = max(len(u),len(v))+1
             Closed = set()
             Closed.add((0,0))
             for n in range(1,N+1):
@@ -2033,12 +2051,6 @@ if __name__=='__main__':
             self.assertEqual('LEASANTLY',''.join(s1))
             self.assertEqual('MEA--N-LY',''.join(s2))
 
-        @skip('#97')
-        def test_osym(self):
-            '''OSYM Isolating Symbols in Alignments'''
-            score,sum = osym('ATAGATA','ACAGGTA')
-            # self.assertEqual(3,score)
-            self.assertEqual(-139,sum)
 
         def test_pdst_sample(self):
             ''' PDST Creating a Distance Matrix'''
@@ -2095,4 +2107,11 @@ if __name__=='__main__':
             self.assertEqual(23,score)
             # self.assertEqual('LYPRTEINSTRIN',s)
             # self.assertEqual('LYEINSTEIN',t)
+
+        def test_osym_sample(self):
+            '''OSYM Isolating Symbols in Alignments'''
+            score,total = osym('ATAGATA','ACAGGTA')
+            self.assertEqual(3,score)
+            self.assertEqual(-139,total)
+
     main()
