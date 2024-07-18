@@ -42,7 +42,7 @@ def get_number_of_coins(money,Coins):
 
     We will use Dynamic Programming, and solve the problem for each amount up to and including money
     '''
-    def get_next_number_of_coins(m):
+    def get_next_number_of_coins(m,number):
         '''
         Find a coin such that we can make change using it
         plus a previously computed value
@@ -55,8 +55,8 @@ def get_number_of_coins(money,Coins):
 
     number = np.zeros((money+1),dtype=int)
     for m in range(1,money+1):
-        number[m] = get_next_number_of_coins(m)
-    return number[money]
+        number[m] = get_next_number_of_coins(m,number)
+    return number[-1]
 
 def longest_manhattan_path(n,m,Down,Right):
     '''
@@ -102,7 +102,7 @@ def get_longest_common_subsequence(v,w):
     m = len(v)
     n = len(w)
     s = np.zeros((m+1,n+1))
-    predecessors = -1 * np.ones_like(s)
+    predecessors = np.empty_like(s)
     for i in range(1,m+1):
         for j in range(1,n+1):
             choices = [s[i,j-1], s[i-1,j],s[i-1,j-1]]
@@ -354,8 +354,8 @@ def edta(s,t,
     return (dist,s1,t1)
 
 def  FindHighestScoringFittingAlignment(s,t,
-                                        replace_score  = createSimpleDNASubst(),
-                                        indel_cost     = 1                                        ):
+                                        replace_score = createSimpleDNASubst(),
+                                        indel_cost = 1                                        ):
     '''
     BA5H Find a Highest-Scoring Fitting Alignment of Two Strings
     '''
@@ -655,28 +655,24 @@ def build_matrix(s,t,matrix,replace_score=createSimpleDNASubst(),indel_cost=1,ge
 
     return matrix,moves
 
-def backtrack(s,t,matrix,moves,showPath=False):
-    i     = len(s)
-    j     = len(t)
+def backtrack(s,t,matrix,moves):
+    i = len(s)
+    j = len(t)
     score = matrix[i][j]
-    s1    = []
-    t1    = []
-    if showPath:
-        print ('Path')
-        print (i,j)
-    while i>0 and j>0:
+    s1 = []
+    t1 = []
+    while i > 0 and j > 0:
         i,j,di,dj = moves[(i,j)]
-        if di==0:
+        if di == 0:
             s1.append('-')
             t1.append(t[j])
-        elif dj==0:
+        elif dj == 0:
             s1.append(s[i])
             t1.append('-')
         else:
             s1.append(s[i])
             t1.append(t[j])
-        if showPath:
-            print (i,j,di,dj,s1[-1],t1[-1] )
+
     return score,s1[::-1],t1[::-1]
 
 def align(s,t,
@@ -684,27 +680,17 @@ def align(s,t,
           indel_cost     = 1,
           build_matrix   = build_matrix,
           backtrack      = backtrack,
-          get_indel_cost = get_indel_cost,
-          showScores     = False,
-          showPath       = False):
+          get_indel_cost = get_indel_cost):
     '''
     See GLOB Generalizing the Alignment Score
     '''
     distances = np.zeros((len(s)+1,len(t)+1))
     distances,moves = build_matrix(s,t,distances,
-                                   replace_score  = replace_score,
-                                   indel_cost     = indel_cost,
+                                   replace_score = replace_score,
+                                   indel_cost = indel_cost,
                                    get_indel_cost = get_indel_cost)
-    if showScores:
-        for row in distances:
-            print (row)
-        for k,v in moves.items():
-            print (k,v)
-    return backtrack(s,t,distances,moves,showPath=showPath)
 
-
-
-
+    return backtrack(s,t,distances,moves)
 
 def get_overlap_assignment(v,w,match_bonus=+1,mismatch_cost=2,indel_cost=2):
     '''
@@ -1253,7 +1239,7 @@ def ctea(s,t,
     '''
     def create_adjacency_list(matrix):
         '''
-         acktrack through matrix and create DAG made from all possible paths
+         Backtrack through matrix and create DAG made from all possible paths
          Inputs: matrix from computing edit distance
          Returns:   Adjacency matrix for traversing from last posotion
                     Leaves of graph
@@ -1538,7 +1524,7 @@ if __name__=='__main__':
         Tests for Bioinformatics Chapter 5 and alignment problems
         '''
 
-        def test_ba5a(self):
+        def test_ba5a_sample(self):
             '''BA5A Find the Minimum Number of Coins Needed to Make Change'''
             self.assertEqual(2, get_number_of_coins(40,[1,5,10,20,25,50]))
             self.assertEqual(338, get_number_of_coins(8074,[24,13,12,7,5,3,1]))
@@ -1943,7 +1929,7 @@ if __name__=='__main__':
                                  9  : [ 17,20,21]
                              }))
 
-        def test_ctea(self):
+        def test_ctea_sample(self):
             '''CTEA Counting Optimal Alignments'''
             self.assertEqual(4,ctea('PLEASANTLY','MEANLY'))
 
