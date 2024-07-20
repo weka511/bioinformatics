@@ -416,25 +416,10 @@ def  FindHighestScoringFittingAlignment(s,t,
 
     return (dist,''.join(s1),''.join(t1))
 
+
+
+
 #-------------------------- Everything above this line has been refactored
-
-def alignUsingLinearSpace(v,w,
-                          replace_score = BLOSUM62,
-                          indel_cost    = 5):
-    '''
-    alignUsingLinearSpace
-
-    Align Two Strings Using Linear Space
-
-    Inputs:
-        v
-        w
-            replace_score
-            indel_cost
-    '''
-
-    pass
-
 
 def calculate_scores_for_alignment(s,string1, string2, weights,sigma,
                                    init_predecessors = None):
@@ -485,12 +470,10 @@ def create_alignment(string1, string2,s_predecessors,
             ''.join(result1[::-1]),       \
             ''.join(result2[::-1]))
 
-def FindMiddleEdge(s,t,
+def find_middle_edge(s,t,
                    replace_score = BLOSUM62(),
-                   indel_cost    = 5):
+                   indel_cost = 5):
     '''
-    FindMiddleEdge
-
     BA5K Find a Middle Edge in an Alignment Graph in Linear Space
 
     Inputs:
@@ -498,14 +481,13 @@ def FindMiddleEdge(s,t,
         t               an amino acid string
         replace_score   scoring matrix
         indel_cost      linear indel penalty
-        Returns: A middle edge in the alignment graph for s and t, in the form ((i, j) (k, l)),
-                 where (i, j) connects to (k, l).
+
+    Returns:  A middle edge in the alignment graph for s and t, in the form ((i, j) (k, l)),
+              where (i, j) connects to (k, l).
     '''
 
     def update(j,previous,current,s,t):
         '''
-        update
-
         Calculate scores in current column using values from previous column
 
         parameters:
@@ -516,43 +498,87 @@ def FindMiddleEdge(s,t,
             t           Second protein string.
         '''
         current[0] = - j * indel_cost
-        for i in range(1,len(current)):
-            scores     = [previous[i-1] + replace_score[s[i-1],t[j-1]],
-                          current[i-1]  - indel_cost,
-                          previous[i]   - indel_cost]
 
-            best       = np.argmax(scores)
-            current[i] = scores[best]
+        for i in range(1,len(current)):
+            current[i] = max([previous[i-1] + replace_score[s[i-1],t[j-1]],
+                              current[i-1] - indel_cost,
+                              previous[i] - indel_cost])
 
         return current,previous
 
 
-    def explore(s,t,limit):   # explore
+    def explore(s,t,limit):
         '''
         Find lengths of all paths from source that end at specified column
 
         Parameters:
 
            s           First protein string. This is an explicit parameter
-                       because FindMiddleEdge reverse the string during the second call
+                       because find_middle_edge reverse the string during the second call
                        to calculate lengths from sink
            t           Second protein string.
            limit       Last column to be explored
         '''
-
-        column_A = [-(i * indel_cost) for i in range(len(s)+1)]
-        column_B = [0 for i in range(len(s)+1)]
+        column_A = np.array([-(i * indel_cost) for i in range(len(s)+1)])
+        column_B = np.zeros(((len(s)+1)))
         for j in range(1,limit+1):
             scores,previous = update(j,column_A,column_B,s,t) if j%2 ==1 else update(j,column_B,column_A,s,t)
-        return scores,previous
+        return scores
 
-    middle_column = len(t)//2
-    from_source,_ = explore(s,t,middle_column)
-    to_sink,_     = explore(s[::-1],t[::-1],len(t) - middle_column)
-    length        = [a+b for (a,b) in zip(from_source,to_sink[::-1])]
+    middle_column = len(t) // 2
+    from_source = explore(s,t,middle_column)
+    to_sink = explore(s[::-1],t[::-1],len(t) - middle_column)
+    length = np.array([a+b for (a,b) in zip(from_source,to_sink[::-1])])
 
     return ((np.argmax(length),   middle_column),
             (np.argmax(length)+1, middle_column+1))
+
+def align_using_linear_space(v,w,
+                          replace_score = BLOSUM62(),
+                          indel_cost = 5):
+    '''
+    BA5L Align Two Strings Using Linear Space
+
+    Inputs:
+        v
+        w
+        replace_score
+        indel_cost
+    '''
+    RIGHT = 0
+    DOWN = 1
+    RIGHT_DOWN = 2
+
+    def middle_edge(top,bottom,left,right):
+        a,b = find_middle_edge(v[top:bottom+1],w[left:right+1],replace_score=replace_score,indel_cost=indel_cost)
+        i,j = a
+        k,l = b
+        direction = RIGHT if i == k else DOWN if j == l else RIGHT_DOWN
+        return direction,i,j,k,l
+
+    def linear_space_alignment(top,bottom,left,right):
+        Edges = []
+        if left == right:
+            return #TODO return alignment formed by bottom − top vertical edges
+        if top == bottom:
+            return  #TODO  return alignment formed by right − left horizontal edges
+        middle = (left + right) // 2
+        # mid_node = middle_node(top,bottom,left,right)
+        mid_edge,i,j,k,l = middle_edge(top,bottom,left,right)
+        Path.append((i,j,k,l))
+        mid_node = l
+        linear_space_alignment(top, mid_node, left, middle)
+        Edges.append(mid_edge) # TODO output midEdge
+        if mid_edge in [RIGHT,RIGHT_DOWN]:
+            middle += 1
+        if mid_edge in [DOWN,RIGHT_DOWN]:
+            mid_node += 1
+        linear_space_alignment(mid_node, bottom, middle, right)
+
+    Path = []
+    linear_space_alignment(0,len(v),0,len(w))
+    Path.sort()
+    return
 
 @deprecated('Trivial function')
 def reverse(chars):
@@ -1856,20 +1882,18 @@ if __name__=='__main__':
         def test_ba5k_sample(self):
             '''BA5K Find a middle edge in the alignment graph in linear space.'''
             self.assertEqual(((4, 3), (5, 4)),
-                             FindMiddleEdge('PLEASANTLY',
-                                            'MEASNLY'))
+                             find_middle_edge('PLEASANTLY','MEASNLY'))
 
         @skipIf('WINGDB_ACTIVE' in environ, 'slow tests must be run from command line')
         def test_ba5k_rosalind(self):
             '''BA5K Find a middle edge in the alignment graph in linear space.'''
             self.assertEqual(((514,519), (515,520)),
-                             FindMiddleEdge('AMEIATWSDTKMSPDTNMVYHEFDNCWALYNNTEFCKYDDKVFFRELNYHQISMWEMNHDIHEETCADDTDSNTQAIRVLCMKIGCWTEFMSSAQRYDFEPHNPESMQDFLREEYHLKWVAWCCSEECYFRQIRPLVALRCDIMYQCSRFIYYNYQNYMEFCKQQEDDIHFIKYNVYSSSLGHFQLRFPSCFFIMPCPVIVSDSVCTPDFHADSFHHPFVLYRGYYWEPFKVGTSRQQKMVGQKDDGCMPCIPCRLIIWLGMMKGWRPTLDMNAKMWHSAKTMAPWIFIADWAFHKYTKSSWMKTQEWHDCTGFAHGLCDALTEIGDHMVATSKSAPSHLITNGLFNRLPELPFTSHFRPDCCWFEKAYEMCISHFFVCTTYEKPSENGNYKNRTNRQITVSEDKHPDVMAEGVDRAYHREQDWCIGQGKQYKAISMDCVIMHWMPLGPTTNQLQPWYKFKNIAPVDFWDKHWCHKGQNSQWQPNRCSFPPPVIGHHINPACDFWESYSYYNFWNHDCYTDWSETMYTLVGETPDVWEFLYKFGIQWEKGGKEKTSSTNTFDFKDKYRMQHYDYDSPNSPTHFMREEKRYSQMDGLENHNYDDHHWKIRNRYYVHGLPWCWKADRPRYFTHSPICSMLEHVTYNNNPMGGSCQCLYETMCWAHFYRPEADFYDMQEQIHVNFWYLNMIDSYNQEHIILYGSGQNAWYCDGTWSIYKGAGAITLDNFMQSARSKQFGTTCQYMPTVRSQLIQASWWFPFASEHPSRYRDIPAECQCHPRKGDKMVWDPQHGAHIDWMNDSYYQCDHDYVALMDYSGFNNLHMFECKTCPPAIIEQIMLYIDYGDRYGDYETTPVRMGSKDMFCASSNDTKDHLRSAGYVEMVGWGTVLDVHQGCQEGWHSRGPNCIVPFDNTMPLVHWHFIHWGQQIRASMGQNFFVCIMLYDPDNPSYNFSHVDQHLVYHFGHVCEEPHGVIIIHEMLQHNSMHEIMYDMVCYYWASLDCDWVAVLGYECGGYGAEYQANKGYLEMDDNEVHDTV',
+                             find_middle_edge('AMEIATWSDTKMSPDTNMVYHEFDNCWALYNNTEFCKYDDKVFFRELNYHQISMWEMNHDIHEETCADDTDSNTQAIRVLCMKIGCWTEFMSSAQRYDFEPHNPESMQDFLREEYHLKWVAWCCSEECYFRQIRPLVALRCDIMYQCSRFIYYNYQNYMEFCKQQEDDIHFIKYNVYSSSLGHFQLRFPSCFFIMPCPVIVSDSVCTPDFHADSFHHPFVLYRGYYWEPFKVGTSRQQKMVGQKDDGCMPCIPCRLIIWLGMMKGWRPTLDMNAKMWHSAKTMAPWIFIADWAFHKYTKSSWMKTQEWHDCTGFAHGLCDALTEIGDHMVATSKSAPSHLITNGLFNRLPELPFTSHFRPDCCWFEKAYEMCISHFFVCTTYEKPSENGNYKNRTNRQITVSEDKHPDVMAEGVDRAYHREQDWCIGQGKQYKAISMDCVIMHWMPLGPTTNQLQPWYKFKNIAPVDFWDKHWCHKGQNSQWQPNRCSFPPPVIGHHINPACDFWESYSYYNFWNHDCYTDWSETMYTLVGETPDVWEFLYKFGIQWEKGGKEKTSSTNTFDFKDKYRMQHYDYDSPNSPTHFMREEKRYSQMDGLENHNYDDHHWKIRNRYYVHGLPWCWKADRPRYFTHSPICSMLEHVTYNNNPMGGSCQCLYETMCWAHFYRPEADFYDMQEQIHVNFWYLNMIDSYNQEHIILYGSGQNAWYCDGTWSIYKGAGAITLDNFMQSARSKQFGTTCQYMPTVRSQLIQASWWFPFASEHPSRYRDIPAECQCHPRKGDKMVWDPQHGAHIDWMNDSYYQCDHDYVALMDYSGFNNLHMFECKTCPPAIIEQIMLYIDYGDRYGDYETTPVRMGSKDMFCASSNDTKDHLRSAGYVEMVGWGTVLDVHQGCQEGWHSRGPNCIVPFDNTMPLVHWHFIHWGQQIRASMGQNFFVCIMLYDPDNPSYNFSHVDQHLVYHFGHVCEEPHGVIIIHEMLQHNSMHEIMYDMVCYYWASLDCDWVAVLGYECGGYGAEYQANKGYLEMDDNEVHDTV',
                                             'RCVKPFIAYGSDDLGHQDCHPEPTHDFWARFEETDHEMHAEFWTNCFDMFDPHGRNDLNCPTHSRGWLMSNPFCSDESETGFMKSHRWHGNQTMSWVKDEYRRSANCRPADGQFTRVASFIRSSQDFDYGARGPCKWTEFTFICDYKCTWVCVCTCMWSWWTCKSPEEHHEIQSKDTFFPQQKEQTHIHKSITRPALSHGIHWALCLQWFHWAEMGPCFNTTAVMNPSVYFMFTAAWQPQWNHFHKNKHVREDSHQADWETMFYRRQAVYTGCQWEIYISVWHFVEGFIMEMDRLMATSDDQNFVHDIEELRVGMNADHIQVDLRAHWMDVTVHPKGGSNFGPIPYWHSGLCGSANEESMKLADLYVKMELKDMAEVAAPGFTNDVLYLEPMCYMINYHIDHFLREQKKTERLGYMTDIVYLCMNQHHKQLIVWFVYFMGTQRNQVKNNKTNQHQRWYKFPNIADEVDFWNKHWVHKGQNSQWQTEMTRPPPVIVHHINPFWESYSYYNFWLFWPRRGRNHGCYTDWSETYMTLVGETPDVWEFLYKCKAEIAYNIQWSSTNTFDFKDKYRMQHYDYDSPNMPTHFMRCSMSRDNTNGFHCFEKPACTHHFWEFLKGVMYFGCWNLFSWEQLPGCMNEPTPVGWWFWPSNWYAHTNEHNWPIDSLPLGLNHCACHQEHYCTACKMQPGMMWHDEPKHYRVCQDRALQYAEICEPNNKYMMVPQCWQCHIVVREFNATAPNGYTGSPSRVSNFLIGWFMCAKKLMTRENACQHVHMCTQYDCENPQPFIYPRGSYTLPAHYEQRVTGIVFRVRFTVSREDCAWPYARKPMVYAGLINMYSDPEMVDPMTPDVDIHTWVENMLTQHGTLFGKHRNKMGRPKGYDFSQILSKMRNQPAACKWATGCEHCNKLMMCGRVCHLMNQGDIIAWACYVINARNLYVHDCYGYMHFGNYGCRDYRIDEMHPIFNGQKIKHWGRILDQMPFTANFVVRPLHDYREDQWKSPIRYQFPMDGMGDVDYNVAWTQDSRKIRHTCFRNIDFA'))
 
-        @skip('Issue #29')
-        def test_ba5l_sample(self):
+        def test_ba5l_wip(self):
             '''BA5L Align Two Strings Using Linear Space'''
-            score, s1,s2 = alignUsingLinearSpace('PLEASANTLY','MEANLY')
+            score, s1,s2 = align_using_linear_space('PLEASANTLY','MEANLY')
             self.assertEqual(8,score)
             self.assertEqual('PLEASANTLY',s1)
             self.assertEqual('-MEA--N-LY',s2)
