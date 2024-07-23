@@ -91,10 +91,10 @@ class AminoAcid:
     '''
 
     def __init__(self,name,short,abbrev,mon_mass,average_mass):
-        self.name         = name
-        self.short        = short
-        self.abbrev       = abbrev
-        self.mon_mass     = mon_mass
+        self.name = name
+        self.short = short
+        self.abbrev = abbrev
+        self.mon_mass = mon_mass
         self.average_mass = average_mass
 
     def __str__(self):
@@ -109,14 +109,13 @@ class AminoAcid:
                }
 
     def asInteger(self):
+        '''
+        Retrieve  Monoisotpic mass
+        '''
         return int(self.mon_mass)
 
-# amino_acids
-#
-# Lookup table for amino acids, from
-# https://en.wikipedia.org/wiki/Proteinogenic_amino_acid#Mass_spectrometry
 
-AMINO_ACIDS = {
+AMINO_ACIDS = { # Lookup table for amino acids, from https://en.wikipedia.org/wiki/Proteinogenic_amino_acid#Mass_spectrometry
     'A': AminoAcid('Alanine',        'A', 'Ala',  71.03711,  71.0788),
     'C': AminoAcid('Cysteine',       'C', 'Cys', 103.00919, 103.1388),
     'D': AminoAcid('Aspartic acid',  'D', 'Asp', 115.02694, 115.0886),
