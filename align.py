@@ -178,8 +178,8 @@ def get_longest_path(source,sink,graph):
         We want only the data between source and sink
         '''
         pos1 = 0
-        while ordered[pos1] != source: pos1+=1
-        pos2 = len(ordered)-1
+        while ordered[pos1] != source: pos1 += 1
+        pos2 = len(ordered) - 1
         while ordered[pos2] != sink: pos2 -= 1
         return ordered[pos1:pos2+1]
 
@@ -240,8 +240,8 @@ def create_score_matrix(v,w,
 
 def get_highest_scoring_alignment(v,w,
                                      weights = BLOSUM62(),
-                                     sigma   = 5,
-                                     local    = False):
+                                     sigma = 5,
+                                     local = False):
     '''
     BA5E Find a Highest-Scoring Alignment of Two Strings
     BA5F Find a Highest-Scoring Local Alignment of Two Strings
@@ -486,7 +486,7 @@ def find_middle_edge(s,t,
               where (i, j) connects to (k, l).
     '''
 
-    def update(j,previous,current,s,t):
+    def update(j,previous,current,s,t, steps):
         '''
         Calculate scores in current column using values from previous column
 
@@ -500,16 +500,21 @@ def find_middle_edge(s,t,
         current[0] = - j * indel_cost
 
         for i in range(1,len(current)):
-            current[i] = max([previous[i-1] + replace_score[s[i-1],t[j-1]],
-                              current[i-1] - indel_cost,
-                              previous[i] - indel_cost])
+            next_scores = [previous[i-1] + replace_score[s[i-1],t[j-1]],
+                            current[i-1] - indel_cost,
+                            previous[i] - indel_cost]
+            steps[i-1] = np.argmax(next_scores)
+            s0 = steps[i-1]
+            current[i] = next_scores[s0]
 
-        return current,previous
+        return current
 
 
     def explore(s,t,limit):
         '''
-        Find lengths of all paths from source that end at specified column
+        This function is called twice:psp
+        1. find lengths of all paths from source that end at middle column
+        2. find lengths of all paths from sink back to middle column
 
         Parameters:
 
@@ -520,18 +525,33 @@ def find_middle_edge(s,t,
            limit       Last column to be explored
         '''
         column_A = np.array([-(i * indel_cost) for i in range(len(s)+1)])
-        column_B = np.zeros(((len(s)+1)))
+        column_B = np.zeros((len(s )+1))
+        steps = np.zeros((len(s)), dtype=np.int64)
         for j in range(1,limit+1):
-            scores,previous = update(j,column_A,column_B,s,t) if j%2 ==1 else update(j,column_B,column_A,s,t)
-        return scores
+            if j%2 ==1:
+                scores = update(j,column_A,column_B,s,t,steps)
+            else:
+                scores = update(j,column_B,column_A,s,t,steps)
+        return scores,steps
 
     middle_column = len(t) // 2
-    from_source = explore(s,t,middle_column)
-    to_sink = explore(s[::-1],t[::-1],len(t) - middle_column)
+    from_source,steps1 = explore(s,t,middle_column)
+    to_sink,steps2 = explore(s[::-1],t[::-1],len(t) - middle_column)
     length = np.array([a+b for (a,b) in zip(from_source,to_sink[::-1])])
+    index = np.argmax(length)
+    a,b = np.argmax(length), middle_column
+    match steps1[index+1]:
+        case 0:              # diagonal
+            c = a + 1
+            d = b + 1
+        case 1:              # right
+            c = a + 1
+            d = b
+        case 2:              # down=
+            c = a
+            d = b + 1
 
-    return ((np.argmax(length),   middle_column),
-            (np.argmax(length)+1, middle_column+1))
+    return ((a,b), (c,d))
 
 def align_using_linear_space(v,w,
                           replace_score = BLOSUM62(),
@@ -545,17 +565,6 @@ def align_using_linear_space(v,w,
         replace_score
         indel_cost
     '''
-    RIGHT = 0
-    DOWN = 1
-    RIGHT_DOWN = 2
-
-    def middle_edge(top,bottom,left,right):
-        a,b = find_middle_edge(v[top:bottom+1],w[left:right+1],replace_score=replace_score,indel_cost=indel_cost)
-        i,j = a
-        k,l = b
-        direction = RIGHT if i == k else DOWN if j == l else RIGHT_DOWN
-        return direction,i,j,k,l
-
     def linear_space_alignment(top,bottom,left,right):
         Edges = []
         if left == right:
@@ -563,15 +572,20 @@ def align_using_linear_space(v,w,
         if top == bottom:
             return  #TODO  return alignment formed by right − left horizontal edges
         middle = (left + right) // 2
+        mid_node,j,k,l =  find_middle_edge(v[top:bottom+1],w[left:right+1],replace_score=replace_score,indel_cost=indel_cost)
+        assert j == middle
         # mid_node = middle_node(top,bottom,left,right)
-        mid_edge,i,j,k,l = middle_edge(top,bottom,left,right)
-        Path.append((i,j,k,l))
+        # middle_edge(top,bottom,left,right)
+        Path.append((mid_node,middle,k,l))
         mid_node = l
         linear_space_alignment(top, mid_node, left, middle)
         Edges.append(mid_edge) # TODO output midEdge
-        if mid_edge in [RIGHT,RIGHT_DOWN]:
+        if mid_edge == RIGHT:
             middle += 1
-        if mid_edge in [DOWN,RIGHT_DOWN]:
+        if mid_edge == DOWN:
+            mid_node += 1
+        if mid_edge == RIGHT_DOWN:
+            middle += 1
             mid_node += 1
         linear_space_alignment(mid_node, bottom, middle, right)
 
@@ -1884,7 +1898,12 @@ if __name__=='__main__':
             self.assertEqual(((4, 3), (5, 4)),
                              find_middle_edge('PLEASANTLY','MEASNLY'))
 
-        @skipIf('WINGDB_ACTIVE' in environ, 'slow tests must be run from command line')
+        def test_ba5k_extra(self):
+            '''BA5K Find a middle edge in the alignment graph in linear space.'''
+            self.assertEqual(((512, 510), (513, 511)),
+                             find_middle_edge('TWLNSACYGVNFRRLNPMNKTKWDCWTWVPMVMAAQYLCRIFIPVMDHWEFFGDWGLETWRLGIHDHVKIPNFRWSCELHIREHGHHFKTRFLKHNQFTQCYGLMPDPQFHRSYDVACQWEVTMSQGLMRFHRQNQIEKQRDRTSTYCMMTIGPGFTSNGYDPFVTITITPVQEPVENWFTPGGSMGFMIISRYMQMFFYLTRFSDMTYLVGVHCENYVCWNNVAKFLNGNLQGIFDQGERAYHQFVTWHSYSQYSRCSVGRYACEQAMSRVNSKMTWHWPIRDQGHEHFSEQYLSEKRNPPCNPRIGNAGQHFYEIHRIAHRVAMCNWAPQGQHPGGPTPHDVETCLWLWSLCLKGSDRGYVDRPWMFLADQLGEANLTLITMFHGCTRGCLMWFMDWEECVCSYSVVNPRCHGSEQWSVQNLGWRTCDTLISLWEPECDKHNTPPCLHWEFEDHPSQLRPVMMCDKYVQSIPTDAKWAWTYSKDFVISHWLIWTPIKLEECVFPQINRLWGTACNQGSQKIVIQNVWLRPSSFFQERSKCSDSSCILNVGGSNVNITGKETRTHVPILHMHEIDLISTASSGMRHNLILPHGMLMLHMNWHHSTRAMNPYSSLKLIPWTFQVCETDDRDQNVATHVADPCHKGEDQEIRCCKGGVDHQWKGDRMWMMCMPDMNYVKQDQAPSGTCEGACENYPADKDKCYMIFTIVFDYRRCTKKVCIWISGFPVDAFNLISIANAGFFCCWLEPTELKWRRTFYLGKGTQGWMCTFPHRNIIPVIICAGFGRWVQGEVPFRPVAQISAHSSDRRQGHHPPGTNMCHDYGDQYPIKRVGMQVEEDDGASYCDCAADWKLADMYEADHLSIGVIDFTDWIYPKNGGIWSEIIKSHFHWYHWETPQNTVGAFNTIVGINGSDMCIYHGNTQWEFGWCWKWLNHGHMRNQGPCHLGILEGRISKFAQVTSWWWQTKHDKDWSIEPYGRHWGEAGRPYTYNYCWMRWAIVYNHGNVISVELVPFMDEYPGKCNKEDVQFELFSPMQA',
+                                              'LWFKFLQCIFQYFKDQQETNCIWTFSPFSEHICQRVCQVYWNWNTPSSRTSDPRELFANSTIHNNRCGEWRYMFYHTRTLVQTAPLMKETLHSDGKHSMYCEQRHFFRSSYLIKVNYDVSHYLELYTFSEIPWKLTTHGWDGFSWFLLVNSCCTFDIDGKCGILSQCGMSRAFRTRQEDAYHFQTSLMHLHLHLHVQEGKHEKADLFAQFYNMLPMHGGTCGRNTEPSDLFDSATMNKYMAEHPASCKACPNVSKECFVYWWSHDFTKKHKLIEFSCGRDTGQTTQRTWNVDENEGGKWIWRFHYFMRAKALQIDPKFKPYWNEPRAIMRPGHVTAAPCICAQHSQNETAVCNRDQMHIHAIEFQQYHSRAFGEVQTWCDIGKENENDFIYEQHWWLVGGTEGMAGVIWKFVCARCRTQDCDFWKTCLTYSAQPMMKVYDTIFYVNSINPWEFEDHPSQCDKCVQSIPTDAKYAICGKFVISHWLYWTPQKFEECVHNNVRCAPMGNRLWGTACMVIQNVWLRPSMGSHFSCILNVGGSNINIQGKETWTHVPILHMHEIDLISTASSGMETCKPCFLSGPTIHMGFSYEIRAQPYSRDYFCMDWMQEADEVDHNRCETVQPTLPLLQQFEWKTSCMGQRWITIFCDHCQIVCFSTFFCVMPTFLPNTSILDKFYCIYLSISWTHYCNVHALGFIMRLHYSYMGWKEHKRMHAWDIGLDELWAQEGIQRAQLWCGDEFEVAKYPEWITEARTAIATRPWFHNCYIKPWWIREKHLWFGKESKLDHGHRGAMFTPVANDNTEWMHHWYMFCWAGSKNRLKRQIKEKLIFIIKFMITEFGLFLMIDYTQCYIAWMWAYTGIACYIDWEKCLKHDLTTTDLGCCVYRLFKWYEVRHRAPPQVNTRLPWSQIPMVAIQCNIVDECKEQWHFSYKASFVVEYLCPGCCTNGNRWQWYQVKETPFMYAFAASIFGFHHENLVVFITGSVTIPNGLFGCIAWTSPKPVQKTPASANTIIAYDKCILMG'))
+
         def test_ba5k_rosalind(self):
             '''BA5K Find a middle edge in the alignment graph in linear space.'''
             self.assertEqual(((514,519), (515,520)),
