@@ -22,7 +22,7 @@ from sys import float_info
 from unittest import main, TestCase, skip
 import numpy as np
 from rosalind import hamm, k_mers
-from reference_tables import bases
+from reference_tables import BASES
 
 
 def generate_motifs(k,d,Dna):
@@ -146,10 +146,10 @@ def get_counts(k,motifs,eps=0):
         eps     Used to initialize counts to allow for Cromwell's rule
         motifs
     '''
-    matrix = np.full((len(bases),k),eps,dtype=int)
+    matrix = np.full((len(BASES),k),eps,dtype=int)
     for kmer in motifs:
         for j in range(k):
-            i = bases.find(kmer[j])
+            i = BASES.find(kmer[j])
             matrix[i,j] += 1
     return matrix
 
@@ -159,7 +159,7 @@ def get_score(k,motifs,eps=0):
     Count number of unpopular symbols in motif matrix
     '''
     counts = get_counts(k,motifs,eps)
-    return sum([(len(bases) - counts[:,j].max()) for j in range(k)])
+    return sum([(len(BASES) - counts[:,j].max()) for j in range(k)])
 
 def greedyMotifSearch(k,t,Dna, eps=0):
     '''
@@ -212,7 +212,7 @@ def randomized_motif_search(k,t,Dna,eps=1):
         def prob(kmer):
             p = 1
             for j in range(k):
-                i = bases.find(kmer[j])
+                i = BASES.find(kmer[j])
                 p *= profile[i][j]
             return p
 
@@ -275,7 +275,7 @@ def gibbs(k,t,Dna,
         '''
         probability = 1.0
         for j in range(len(kmer)):
-            i = bases.find(kmer[j])
+            i = BASES.find(kmer[j])
             probability *= profile[i][j]
         return probability
 

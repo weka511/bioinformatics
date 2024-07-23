@@ -24,16 +24,16 @@ from sys import float_info
 from unittest import TestCase, main, skip
 import numpy as np
 from numpy.testing import assert_array_equal
-from reference_tables import amino_acids, integer_masses, codon_table, test_masses, create_inverse_masses
+from reference_tables import AMINO_ACIDS, INTEGER_MASSES, CODON_TABLE, TEST_MASSES, create_inverse_masses
 from bisect import bisect
 from rosalind import dna_to_rna, revc, triplets
 from fasta import FastaContent
 
-def get_mass(peptide,masses=integer_masses):
+def get_mass(peptide,masses=INTEGER_MASSES):
     '''Total mass of amino acids in peptide'''
     return sum([masses[amino_acid] for amino_acid in peptide])
 
-def invert(masses=integer_masses):
+def invert(masses=INTEGER_MASSES):
     '''
     Input: A dictionary mapping amino acids to masses
 
@@ -77,7 +77,7 @@ def SpectrumGraph(spectrum):
                     for protein in self.inverted_masses[diff]:
                         self.Nodes[value].append((self.spectrum[j],protein))
 
-    graph = Graph(spectrum,invert(integer_masses))
+    graph = Graph(spectrum,invert(INTEGER_MASSES))
     graph.accumulate()
     for i in range(len(spectrum)):
         graph.accumulate(index=i)
@@ -119,7 +119,7 @@ def DecodeIdealSpectrum(Spectrum):
 
     for path in bfs(SpectrumGraph(Spectrum)):
         peptide = ''.join(s for (_,s) in path)
-        generated_spectrum = prefixSuffixSpectrum([integer_masses[a] for a in peptide])
+        generated_spectrum = prefixSuffixSpectrum([INTEGER_MASSES[a] for a in peptide])
         if generated_spectrum[1:]==Spectrum:
             return peptide
 
@@ -130,7 +130,7 @@ def create_extended():
     Extend list of amino acids for testing
     '''
     extended_masses = {'X':4,'Z':5}
-    extended_masses.update(integer_masses)
+    extended_masses.update(INTEGER_MASSES)
     return extended_masses
 
 def CreatePeptideVector(peptide):
@@ -225,13 +225,13 @@ def conv(S,T,eps=0.001):
 
     return accumulated[np.argmax([i for i,_ in accumulated])]
 
-def create_lookup(amino_acids=amino_acids):
+def create_lookup(AMINO_ACIDS=AMINO_ACIDS):
     '''
     create_lookup
 
     Creates a lookup table for amino acid masses
     '''
-    pairs = sorted([(abbrev,value.mon_mass) for abbrev,value in amino_acids.items()],
+    pairs = sorted([(abbrev,value.mon_mass) for abbrev,value in AMINO_ACIDS.items()],
                    key =lambda x:x[1])
     pairs.append(('?',float_info.max))
     masses = [mass for (_,mass) in pairs]
@@ -295,7 +295,7 @@ def spectrum2protein(ms):
 
 def complete_spectrum(P):
     def spectrum(S):
-        return sum([amino_acids[s].mon_mass for s in S])
+        return sum([AMINO_ACIDS[s].mon_mass for s in S])
     prefixes = [P[:i] for i in range(1,len(P))] +[P]
     suffixes = [P[i:] for i in range(1,len(P))]
     ss= [spectrum(p) for p in prefixes + suffixes]
@@ -402,11 +402,11 @@ def full(L,epsilon=0.000001):
     candidates     = {}
     for i,j,l1,l2,diff in diffs:
         abbrev    = get_abbrev(diff,masses,pairs)
-        candidate = abbrev if abs(diff-amino_acids[abbrev].mon_mass)<epsilon else None
+        candidate = abbrev if abs(diff-AMINO_ACIDS[abbrev].mon_mass)<epsilon else None
         if candidate != None:
             if not i in candidates:
                 candidates[i]=[]
-            candidates[i].append((i,j,l1,l2,diff,candidate,abs(diff-amino_acids[abbrev].mon_mass)))
+            candidates[i].append((i,j,l1,l2,diff,candidate,abs(diff-AMINO_ACIDS[abbrev].mon_mass)))
 
     # Now support the data so that they are organized in ascending order by difference from nearest amino acid
     for key in candidates:
@@ -426,7 +426,7 @@ def full(L,epsilon=0.000001):
     return ''.join([candidates[l][0][5] for l in prefixes][:-1])
 
 
-def sgra(L,Alphabet=amino_acids,epsilon=0.001):
+def sgra(L,Alphabet=AMINO_ACIDS,epsilon=0.001):
     '''
      sgra
 
@@ -461,7 +461,7 @@ def sgra(L,Alphabet=amino_acids,epsilon=0.001):
             for v in L:
                 if u<v:
                     abbrev = get_abbrev(v-u,masses,pairs)
-                    if abs(v-u-amino_acids[abbrev].mon_mass)<epsilon:
+                    if abs(v-u-AMINO_ACIDS[abbrev].mon_mass)<epsilon:
                         if not u in G:
                             G[u]=[]
                         G[u].append((abbrev,v))
@@ -603,7 +603,7 @@ def Turnpike(D,check=False):
 
 
 
-def prot(rna,table=codon_table):
+def prot(rna,table=CODON_TABLE):
     '''
      BA4A	Translate an RNA String into an Amino Acid String
      PROT Translating RNA into Protein
@@ -681,7 +681,7 @@ def get_cyclo_spectrum(peptide):
     result.sort()
     return result
 
-def cycloSpectrum(peptide,mass=integer_masses):
+def cycloSpectrum(peptide,mass=INTEGER_MASSES):
     '''
     BA4C	Generate the Theoretical Spectrum of a Cyclic Peptide
 
@@ -749,7 +749,7 @@ def count_peptides_linear(total_mass):
      mass are the same
     '''
     cache=[]
-    masses=list(set(integer_masses.values()))
+    masses=list(set(INTEGER_MASSES.values()))
     for target_mass in range(total_mass+1):
         total=0
         for amino_acid_mass in masses:
@@ -769,7 +769,7 @@ def get_weight(peptide):
 
      Return:  Monoisotopic mass of peptide
     '''
-    return sum(amino_acids[amino_acid].mon_mass for amino_acid in peptide)
+    return sum(AMINO_ACIDS[amino_acid].mon_mass for amino_acid in peptide)
 
 def expand(peptides,masses):
     return [peptide+[mass] for peptide in peptides for mass in masses]
@@ -814,7 +814,7 @@ def find_cyclopeptide_sequence(spectrum):
 
     peptides = [[]]
     output   = []
-    masses   = list(set(integer_masses.values()))
+    masses   = list(set(INTEGER_MASSES.values()))
 
     while len(peptides)>0:
         next_peptides=[]
@@ -884,7 +884,7 @@ def linearSpectrum(peptide):
 
 def leaderPeptide(n,
                   spectrum,
-                  masses=list(set(integer_masses.values())),
+                  masses=list(set(INTEGER_MASSES.values())),
                   spect1=linearSpectrum,
                   spect2=linearSpectrum):
     '''BA4G 	Implement LeaderboardCyclopeptideSequencing'''
@@ -969,7 +969,7 @@ def linearSpectrumFromString(peptide):
     Return:
         The linear spectrum of Peptide.
     '''
-    return linearSpectrum([integer_masses[a] for a in peptide])
+    return linearSpectrum([INTEGER_MASSES[a] for a in peptide])
 
 def linearScore(peptide,spectrum):
     '''BA4K 	Compute the Score of a Linear Peptide'''
@@ -998,7 +998,7 @@ def trim(leaderBoard, spectrum,n,spectrum_generator=linearSpectrum):
 
 def trim_for_strings(leaderBoard, spectrum,n,
                      spectrum_generator=linearSpectrum,
-                     masses=integer_masses):
+                     masses=INTEGER_MASSES):
     '''BA4L Adapter for 'trim', so it will work with peptides as strings'''
 
     numeric_peptides=[]
@@ -1036,7 +1036,7 @@ def splc(fasta):
 
 
 
-def SequencePeptide(spectral, protein_masses = integer_masses):
+def SequencePeptide(spectral, protein_masses = INTEGER_MASSES):
     '''
     BA11E Sequence a Peptide
 
@@ -1044,7 +1044,7 @@ def SequencePeptide(spectral, protein_masses = integer_masses):
 
     Returns: A peptide with maximum score against S. For masses with more than one amino acid, any choice may be used.
     '''
-    def compute_scores(Spectrum,masses = integer_masses):
+    def compute_scores(Spectrum,masses = INTEGER_MASSES):
         '''
         Used to calculate score for each node in Figure 11-9,
         using maximum for all possible paths. Assuming this has already been done
@@ -1094,7 +1094,7 @@ def SequencePeptide(spectral, protein_masses = integer_masses):
     return ''.join(inverse_masses[i] for i in create_peptide(Scores,Choices,masses))
 
 def IdentifyPeptide(S,Proteome,
-                    protein_masses = integer_masses):
+                    protein_masses = INTEGER_MASSES):
     '''
     Find a peptide from a proteome with maximum score against a spectrum.
 
@@ -1127,7 +1127,7 @@ def IdentifyPeptide(S,Proteome,
     return ''.join(peptide[:-1])
 
 def SizeSpectralDictionary(S,threshold,max_score,
-                            protein_masses = integer_masses,
+                            protein_masses = INTEGER_MASSES,
                             get = lambda size,Spectrum,masses,t,i,k: size[t-Spectrum[i],i-masses[k]],
                             dtype = int):
     '''
@@ -2950,14 +2950,14 @@ if __name__=='__main__':
             '''BA11E Sequence a Peptide'''
             self.assertEqual('XZZXX',
                              SequencePeptide([0, 0, 0, 4, -2, -3, -1, -7, 6, 5, 3, 2, 1, 9, 3, -8, 0, 3, 1, 2, 1, 0],
-                                             protein_masses=test_masses))
+                                             protein_masses=TEST_MASSES))
 
         def test_ba11f(self):
             '''BA11E Sequence a Peptide'''
             self.assertEqual('ZXZXX',
                              IdentifyPeptide([0, 0, 0, 4, -2, -3, -1, -7, 6, 5, 3, 2, 1, 9, 3, -8, 0, 3, 1, 2, 1, 8],
                                              'XZZXZXXXZXZZXZXXZ',
-                                             protein_masses=test_masses))
+                                             protein_masses=TEST_MASSES))
 
 
 
@@ -3024,13 +3024,13 @@ if __name__=='__main__':
             '''BA11H Compute the Size of a Spectral Dictionary'''
             self.assertEqual(3,
                              SizeSpectralDictionary([4, -3, -2, 3, 3, -4, 5, -3, -1, -1, 3, 4, 1, 3],1,8,
-                                                    protein_masses = test_masses))
+                                                    protein_masses = TEST_MASSES))
 
         def test_ba11i(self):
             '''BA11I Compute the Probability of a Spectral Dictionary'''
             self.assertEqual(0.375,
                              SizeSpectralDictionary([4, -3, -2, 3, 3, -4, 5, -3, -1, -1, 3, 4, 1, 3],1,8,
-                                                    protein_masses = test_masses,
+                                                    protein_masses = TEST_MASSES,
                                                     get = lambda size,Spectrum,masses,t,i,k: (size[t-Spectrum[i],i-masses[k]]/
                                                                                               len(masses)),
                                                     dtype=float))

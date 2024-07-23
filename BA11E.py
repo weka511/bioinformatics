@@ -23,7 +23,7 @@ from time import time
 import numpy as np
 from helpers import read_strings
 from spectrum import SequencePeptide
-from reference_tables import integer_masses, test_masses
+from reference_tables import INTEGER_MASSES, TEST_MASSES
 
 if __name__=='__main__':
     start = time()
@@ -34,7 +34,7 @@ if __name__=='__main__':
     args = parser.parse_args()
     if args.sample:
         print (SequencePeptide([0, 0, 0, 4, -2, -3, -1, -7, 6, 5, 3, 2, 1, 9, 3, -8, 0, 3, 1, 2, 1, 0],
-               protein_masses=test_masses))
+               protein_masses=TEST_MASSES))
 
     if args.extra:
         Input,Expected = read_strings(f'data/SequencePeptide.txt',init=0)

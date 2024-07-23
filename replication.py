@@ -21,7 +21,7 @@ from unittest import main, skip, TestCase
 import numpy as np
 from numpy.testing import assert_array_equal
 from rosalind import subs, hamm, create_frequency_table, k_mers
-from reference_tables import bases, skew_step
+from reference_tables import BASES, SKEW_STEP
 
 
 def countOccurrences(pattern,string):
@@ -134,7 +134,7 @@ def find_minimum_skew(genome):
     pos = 0
     for nucleotide in genome:
         pos += 1
-        skew += skew_step[nucleotide]
+        skew += SKEW_STEP[nucleotide]
         if min_skew > skew:
             min_skew = skew
             positions = [pos]
@@ -220,7 +220,7 @@ def patternToNumber(kmer):
     n = 0
     for letter in kmer:
         n *= 4
-        n += bases.find(letter)
+        n += BASES.find(letter)
     return n
 
 def numberToPattern(n,k):
@@ -246,8 +246,8 @@ def generate_dNeighborhood(pattern,d):
     def neighbours(p):
         neighbours = []
         for i in range(len(p)):
-            for ch in bases:
-                neighbours.append(p[0:i] + ch + p[i+1:])
+            for base in BASES:
+                neighbours.append(p[0:i] + base + p[i+1:])
         return neighbours
     if d==0:
         return [pattern]

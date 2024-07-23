@@ -24,7 +24,7 @@ import numpy as np
 from numpy.testing import assert_array_equal
 from scipy.special import comb
 from fasta import FastaContent
-from reference_tables import codon_table,skew_step,bases,integer_masses,amino_acids
+from reference_tables import CODON_TABLE,SKEW_STEP,BASES,INTEGER_MASSES,AMINO_ACIDS
 
 def iterate_markov(e,p,g):
     '''
@@ -71,7 +71,7 @@ def triplets(dna):
     '''Extract codons (triplets of bases) from a string of DNA'''
     return [dna[i:i+3] for i in range(0,len(dna),3)]
 
-def k_mers(k, bases=['T','G','C','A']):
+def k_mers(k, bases = list(BASES)):
     '''
     Calculate all possible strings of bases of specified length
 
@@ -656,7 +656,7 @@ def gc(fasta):
 
 
 
-def sseq(fasta,bases=['A','C','G','T']):
+def sseq(fasta,bases=list(BASES)):
     '''
     SSEQ  Finding a spliced motif
     Input: Two DNA strings s and t (each of length at most 1 kbp) in FASTA format.
@@ -728,7 +728,7 @@ def lcsm(fasta):
 
 
 
-def mrna(string,modulus=1000000,table=codon_table):
+def mrna(string,modulus=1000000,table=CODON_TABLE):
     '''
     MRNA	Inferring mRNA from Protein
 
@@ -1046,7 +1046,7 @@ def get_reading_frames(fasta):
         return result
 
     def read_one_strand(rna):
-        peptide=''.join([codon_table[codon]            \
+        peptide=''.join([CODON_TABLE[codon]            \
                          for codon in triplets(rna)     \
                          if len(codon)==3])
         starts=get_start_symbols(peptide)
@@ -1282,7 +1282,7 @@ def create_skews(genome):
     skews=[]
     skew=0
     for nucleotide in genome:
-        skew+=skew_step[nucleotide]
+        skew+=SKEW_STEP[nucleotide]
         skews.append(skew)
     return skews
 

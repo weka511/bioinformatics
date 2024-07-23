@@ -25,9 +25,10 @@ from re import compile
 from unittest import TestCase, main
 import numpy as np
 from deprecated import deprecated
-bases='ACGT'     # DNA bases
 
-codon_table={ # Map RNA to amino acids, from Chapter 2
+BASES = 'ACGT'     # DNA bases
+
+CODON_TABLE = { # Map RNA to amino acids, from Chapter 2
      'UUU': 'F',      'CUU': 'L',      'AUU': 'I',      'GUU': 'V',
      'UUC': 'F',      'CUC': 'L',      'AUC': 'I',      'GUC': 'V',
      'UUA': 'L',      'CUA': 'L',      'AUA': 'I',      'GUA': 'V',
@@ -46,7 +47,7 @@ codon_table={ # Map RNA to amino acids, from Chapter 2
      'UGG': 'W',      'CGG': 'R',      'AGG': 'R',      'GGG': 'G'
  }
 
-integer_masses={ # Masses of amino acids to nearest integer, from Chapter 2
+INTEGER_MASSES={ # Masses of amino acids to nearest integer, from Chapter 2
     'G': 57,
     'A': 71,
     'S': 87,
@@ -69,7 +70,7 @@ integer_masses={ # Masses of amino acids to nearest integer, from Chapter 2
     'W': 186
 }
 
-test_masses = {  # Dummy amino acid weights, Used for some test cases in Chapter 11
+TEST_MASSES = {  # Dummy amino acid weights, Used for some test cases in Chapter 11
     'X':4,
     'Z':5
 }
@@ -115,7 +116,7 @@ class AminoAcid:
 # Lookup table for amino acids, from
 # https://en.wikipedia.org/wiki/Proteinogenic_amino_acid#Mass_spectrometry
 
-amino_acids = {
+AMINO_ACIDS = {
     'A': AminoAcid('Alanine',        'A', 'Ala',  71.03711,  71.0788),
     'C': AminoAcid('Cysteine',       'C', 'Cys', 103.00919, 103.1388),
     'D': AminoAcid('Aspartic acid',  'D', 'Asp', 115.02694, 115.0886),
@@ -140,14 +141,14 @@ amino_acids = {
     'Y': AminoAcid('Tyrosine',       'Y', 'Tyr', 163.06333, 163.1760)
 }
 
-skew_step={
+SKEW_STEP={
     'A':0,
     'C':-1,
     'G': +1,
     'T': 0
 }
 
-def createSimpleDNASubst(match=+1,subst=1,bases='ATGC'):
+def createSimpleDNASubst(match=+1,subst=1,bases=BASES):
     '''
     createSimpleDNASubst
 
@@ -225,7 +226,7 @@ class BLOSUM62(ScoringMatrix):
 
 class PAM250(ScoringMatrix):
     '''
-    BLOSUM 62 scoring matrix as presented in Rosalind
+    PAM250 scoring matrix as presented in Rosalind
     '''
     def __init__(self):
         super().__init__(
@@ -250,7 +251,7 @@ class PAM250(ScoringMatrix):
                               [-6, -8, -7, -7, 0, -7, -3, -5, -3, -2, -4, -4, -6, -5, 2, -2, -5, -6, 17, 0],
                               [-3, 0, -4, -4, 7, -5, 0, -1, -4, -1, -2, -2, -5, -4, -4, -3, -3, -2, 0, 10]]))
 
-def create_inverse_masses(protein_masses = integer_masses):
+def create_inverse_masses(protein_masses = INTEGER_MASSES):
     '''
     This function is used to map from masses back to weights
 
@@ -270,7 +271,7 @@ def create_inverse_masses(protein_masses = integer_masses):
 if __name__=='__main__':
     class Test_Amino_acids(TestCase):
         def test_match_integer(self):
-            for key in integer_masses:
-                self.assertEqual(integer_masses[key],amino_acids[key].asInteger())
+            for key in INTEGER_MASSES:
+                self.assertEqual(INTEGER_MASSES[key],AMINO_ACIDS[key].asInteger())
 
     main()

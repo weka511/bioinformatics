@@ -21,7 +21,7 @@ from argparse import ArgumentParser
 from os.path import  basename,splitext,join
 from time import time
 from helpers import read_strings
-from reference_tables import  test_masses
+from reference_tables import  TEST_MASSES
 from spectrum import  IdentifyPeptide
 
 
@@ -35,7 +35,7 @@ if __name__=='__main__':
     if args.sample:
         print (IdentifyPeptide([0, 0, 0, 4, -2, -3, -1, -7, 6, 5, 3, 2, 1, 9, 3, -8, 0, 3, 1, 2, 1, 8],
                                'XZZXZXXXZXZZXZXXZ',
-                               protein_masses=test_masses))
+                               protein_masses=TEST_MASSES))
 
     if args.extra:
         Input,Expected = read_strings(f'data/IdentifyPeptide.txt',init=0)

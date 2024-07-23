@@ -21,7 +21,7 @@ from  argparse import ArgumentParser
 from os.path import basename
 from time import time
 from helpers import read_strings
-from reference_tables import  test_masses
+from reference_tables import  TEST_MASSES
 from spectrum import SizeSpectralDictionary
 
 
@@ -34,7 +34,7 @@ if __name__=='__main__':
     args = parser.parse_args()
     if args.sample:
         print (SizeSpectralDictionary([4, -3, -2, 3, 3, -4, 5, -3, -1, -1, 3, 4, 1, 3],1,8,
-                                    protein_masses = test_masses,
+                                    protein_masses = TEST_MASSES,
                                     get = lambda size,Spectrum,masses,t,i,k: (size[t-Spectrum[i],i-masses[k]]/
                                                                               len(masses)),
                                     dtype=float))

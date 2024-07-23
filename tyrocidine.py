@@ -17,20 +17,20 @@
 #
 
 from spectrum import create_lookup,get_abbrev,convolution
-from reference_tables import amino_acids
+from reference_tables import AMINO_ACIDS
 
 def sequence(spectrum,epsilon=0.1):
 
      def matches(mass):
           abbrev = get_abbrev(mass,masses,pairs)
-          return abbrev if abs(mass-amino_acids[abbrev].mon_mass)<epsilon else None
+          return abbrev if abs(mass-AMINO_ACIDS[abbrev].mon_mass)<epsilon else None
 
      masses,pairs = create_lookup();
      conv = sorted(convolution(spectrum))
      conv1 = [(mass,count,matches(mass)) for (mass,count) in conv]
      conv2 = [(mass,count,abbrev) for (mass,count,abbrev) in conv1 if abbrev!=None]
      counts = {}
-     for a in amino_acids.keys():
+     for a in AMINO_ACIDS.keys():
           counts[a]=0
      for _,count,abbrev in conv2:
           counts[abbrev]+=count
