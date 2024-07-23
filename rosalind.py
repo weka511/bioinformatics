@@ -19,7 +19,6 @@
 
 from re import compile
 from unittest import main, skip, TestCase
-from deprecated import deprecated
 import numpy as np
 from numpy.testing import assert_array_equal
 from scipy.special import comb
@@ -174,10 +173,6 @@ def dbru(S,
 
     E = [(e[0:-1],e[1:]) for e in union(S)]
     return (create_nodes(E),E)
-
-@deprecated("I don't think this is actually being used")
-def distance(p1,p2):
-    return sum([(p1[i]-p2[i])**2 for i in range(len(p1))])
 
 
 def hamm(s,t):
@@ -829,25 +824,26 @@ def rstr(n,x,string):
     probability = np.exp(sum([np.log(prob_char(c)) for c in string]))
     return 1- (1-probability)**n
 
-# CONS	Consensus and Profile
-#
-# Say that we have a collection of DNA strings, all having the same length n.
-# Their profile matrix is a  matrix P in which P[1,j] represents the number of
-# times that 'A' occurs in the jth position of one of the strings, P[2,j] represents
-# the number of times that C occurs in the jth position, and so on.
-#
-# A consensus string c is a string of length n formed from our collection by
-# taking the most common symbol at each position; the jth symbol of c therefore
-# corresponds to the symbol having the maximum value in the j-th column of the
-# profile matrix. Of course, there may be more than one most common symbol,
-# leading to multiple possible consensus strings.
-# Input: A collection of at most 10 DNA strings of equal length (at most 1 kbp)
-# in FASTA format.
-#
-# Return: A consensus string and profile matrix for the collection.
-#        (If several possible consensus strings exist, then you may return any one of them.)
-
 def cons(fasta):
+    '''
+    CONS	Consensus and Profile
+
+    Say that we have a collection of DNA strings, all having the same length n.
+    Their profile matrix is a  matrix P in which P[1,j] represents the number of
+    times that 'A' occurs in the jth position of one of the strings, P[2,j] represents
+    the number of times that C occurs in the jth position, and so on.
+
+    A consensus string c is a string of length n formed from our collection by
+    taking the most common symbol at each position; the jth symbol of c therefore
+    corresponds to the symbol having the maximum value in the j-th column of the
+    profile matrix. Of course, there may be more than one most common symbol,
+    leading to multiple possible consensus strings.
+    Input: A collection of at most 10 DNA strings of equal length (at most 1 kbp)
+    in FASTA format.
+
+    Return: A consensus string and profile matrix for the collection.
+           (If several possible consensus strings exist, then you may return any one of them.)
+    '''
     (_,string)=fasta[0]
     n=len(string)
 
@@ -876,22 +872,25 @@ def cons(fasta):
     profile=create_profile()
     return (create_consensus(profile),profile)
 
-#IEV	Calculating Expected Offspring
-#
-# Input: six positive integers, each of which does not exceed 20,000. The
-#        integers correspond to the number of couples in a population possessing each
-#        genotype pairing for a given factor. In order, the six given integers
-#        represent the number of couples having the following genotypes:
-#    AA-Aa
-#    AA-aa
-#    Aa-Aa
-#    Aa-aa
-#
-# Return: The expected number of offspring displaying the dominant phenotype
-# in the next generation, under the assumption that every couple has exactly
-# two offspring.
+
 
 def iev(ncopies):
+    '''
+    IEV	Calculating Expected Offspring
+
+    Input: six positive integers, each of which does not exceed 20,000. The
+           integers correspond to the number of couples in a population possessing each
+           genotype pairing for a given factor. In order, the six given integers
+           represent the number of couples having the following genotypes:
+       AA-Aa
+       AA-aa
+       Aa-Aa
+       Aa-aa
+
+    Return: The expected number of offspring displaying the dominant phenotype
+    in the next generation, under the assumption that every couple has exactly
+    two offspring.
+    '''
     return 2*sum(n*prob for (n,prob) in zip(ncopies,[1,1,1,0.75,0.5,0]))
 
 
@@ -1213,9 +1212,9 @@ def eval (n,s,A):
         return np.exp(sum([np.log(prob_match(c)) for c in s]))
     return [mult*probability_of_match(a) for a in A]
 
-#PERM	Enumerating Gene Orders
 
 def perm(n):
+    '''PERM	Enumerating Gene Orders'''
     def perms(symbols):
         if len(symbols)==1:
             return [symbols]
