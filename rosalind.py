@@ -24,7 +24,7 @@ import numpy as np
 from numpy.testing import assert_array_equal
 from scipy.special import comb
 from fasta import FastaContent
-from reference_tables import CODON_TABLE,SKEW_STEP,BASES,INTEGER_MASSES,AMINO_ACIDS
+from reference_tables import CODON_TABLE, BASES, INTEGER_MASSES, AMINO_ACIDS
 
 def iterate_markov(e,p,g):
     '''
@@ -1276,15 +1276,6 @@ def lexv(alphabet,k):
                 result.append(letter+string)
     return result
 
-
-
-def create_skews(genome):
-    skews=[]
-    skew=0
-    for nucleotide in genome:
-        skew+=SKEW_STEP[nucleotide]
-        skews.append(skew)
-    return skews
 
 if __name__=='__main__':
 

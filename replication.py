@@ -21,7 +21,7 @@ from unittest import main, skip, TestCase
 import numpy as np
 from numpy.testing import assert_array_equal
 from rosalind import subs, hamm, create_frequency_table, k_mers
-from reference_tables import BASES, SKEW_STEP
+from reference_tables import BASES
 
 
 def countOccurrences(pattern,string):
@@ -123,11 +123,18 @@ def find_minimum_skew(genome):
     Define the skew of a DNA string Genome, denoted Skew(Genome), as the
     difference between the total number of occurrences of 'G' and 'C' in Genome.
 
-    Input: A DNA string Genome.
+    Parameters:
+        genome A DNA string
 
     Return: All integer(s) i minimizing Skew(Prefixi (Text)) over all values of
             i (from 0 to |Genome|).
     '''
+    SKEW_STEP={
+        'A':0,
+        'C':-1,
+        'G': +1,
+        'T': 0
+    }
     positions = []
     min_skew = 2
     skew = 0

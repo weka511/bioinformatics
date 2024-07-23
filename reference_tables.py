@@ -141,12 +141,7 @@ AMINO_ACIDS = {
     'Y': AminoAcid('Tyrosine',       'Y', 'Tyr', 163.06333, 163.1760)
 }
 
-SKEW_STEP={
-    'A':0,
-    'C':-1,
-    'G': +1,
-    'T': 0
-}
+
 
 def createSimpleDNASubst(match=+1,subst=1,bases=BASES):
     '''
@@ -168,8 +163,13 @@ def createSimpleDNASubst(match=+1,subst=1,bases=BASES):
 
 def get_re_protein(min_length=1):
     '''
-    get_re_protein
-    Produce a regular expression to recognize a straing of amino acids
+    Produce a regular expression to recognize a string of amino acids
+
+    Parameters:
+         min_length
+
+    Returns:
+        a regular expression That will match a string of amino acids of lenth min_length or greater
     '''
     return compile('[A,C-IK-WY]{'+str(min_length)+',}')
 
