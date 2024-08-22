@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+
 #    Copyright (C) 2019-2024 Greenweaves Software Limited
 #
 #    This is free software: you can redistribute it and/or modify
@@ -83,7 +84,7 @@ def bf(edges,s=1):
                 dist[v] = dist[u] + w
                 predecessor[v] = u
 
-    return (max(1 if dist[u]+w < dist[v] else -1 for u,v,w in edges[1:]), dist[1:], predecessor[1:])
+    return (max(1 if dist[u] + w < dist[v] else -1 for u,v,w in edges[1:]), dist[1:], predecessor[1:])
 
 
 def bip(graph):
@@ -139,15 +140,15 @@ def bip(graph):
 
     return 1  # assume bipartite unless we fail
 
-# cc
-#
-# Connected Components
-#
-# Input: A simple graph with fewer than 1,000 vertices in the edge list format.
-#
-# Return: The number of connected components in the graph.
 
 def cc(graph):
+    '''
+    Connected Components
+
+    Input: A simple graph with fewer than 1,000 vertices in the edge list format.
+
+    Return: The number of connected components in the graph.
+    '''
     def explore(a,adjacency,explored,component):
         explored.add(a)
         component.append(a)
@@ -190,16 +191,18 @@ def cc(graph):
 
     return count,components
 
-# CTE Shortest Cycle Through a Given Edge
-#
-# Returns: For each graph, output the length of a shortest cycle going
-#           through the first specified edge if there is a cycle and "-1" otherwise.
-
 def cte(edges):
-    # relabel
-    #
-    # Exploit Dijkstra's algorithm by relabelling nodes so that first edge starts at 1
+    '''
+    CTE Shortest Cycle Through a Given Edge
+
+    Returns: For each graph, output the length of a shortest cycle going
+           through the first specified edge if there is a cycle and "-1" otherwise.
+    '''
+
     def relabel(edges):
+        '''
+         Exploit Dijkstra's algorithm by relabelling nodes so that first edge starts at 1
+        '''
         def subst(x):
             if   x==1: return b
             elif x==b: return 1
@@ -217,23 +220,26 @@ def cte(edges):
     path_length = dij(new_edges)[a-1]
     return path_length + w if path_length>-1 else -1
 
-# dag  Testing Acyclicity
-#
-# Input: a graph
-#
-# Output: 1 if graph acyclic, otherwise -1
 
 def dag(graph):
+    '''
+    dag  Testing Acyclicity
 
-    # explore: find cyclic path
-    #
-    # Input: node
-    #        path
-    #
-    # Output: True iff there is a cyclic path starting at node, and
-    #         whole 1st elements coincide with path
+    Input: a graph
+
+    Output: 1 if graph acyclic, otherwise -1
+    '''
 
     def explore(node,path=[]):
+        '''
+        explore: find cyclic path
+
+        Input: node
+               path
+
+        Output: True iff there is a cyclic path starting at node, and
+             whole 1st elements coincide with path
+        '''
         explored.add(node)
         linked = adjacency[node]
         for succ in linked:
@@ -268,20 +274,19 @@ def ddeg(n,M,A):
         sums[b-1]+=lookup[a-1]
     return sums
 
-# deg
-#
-# Degree array
-#
-# Input: A simple graph with fewer than 1,000 vertices in the edge list format.
-#
-# Return: An array D[1..n] where D[i] is the degree of vertex i.
-
 def deg(n,m,A):
-    degrees=[0 for a in range(n)]
+    '''
+     Degree array
+
+     Input: A simple graph with fewer than 1,000 vertices in the edge list format.
+
+     Return: An array D[1..n] where D[i] is the degree of vertex i.
+    '''
+    degrees = [0 for a in range(n)]
     for (a,b) in A:
         print (a,b)
-        degrees[a-1]+=1
-        degrees[b-1]+=1
+        degrees[a-1] += 1
+        degrees[b-1] += 1
     return degrees
 
 
