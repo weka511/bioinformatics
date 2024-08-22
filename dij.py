@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+
 #    Copyright (C) 2019-2024 Greenweaves Software Limited
 #
 #    This is free software: you can redistribute it and/or modify
@@ -46,7 +47,7 @@ if __name__=='__main__':
 
     if args.rosalind:
         with open(f'{basename(__file__).split(".")[0]}.txt','w') as f:
-            Solution = ' '.join([str(i) for i in dij(create_list(path='./data'))])
+            Solution = ' '.join([str(int(i)) for i in dij(create_list(path='./data'))])
             print (Solution)
             f.writelines(f'{Solution}\n')
 

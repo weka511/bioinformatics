@@ -288,8 +288,7 @@ def deg(n,m,A):
 
 def dij(g):
     '''
-     DIJ  Dijkstra's Algorithm: compute single-source shortest distances
-    in a directed graph with positive edge weights.
+     DIJ  Dijkstra's Algorithm: compute single-source shortest distances in a directed graph with positive edge weights.
 
     I have followed the version described in Wikipedia -- https://en.wikipedia.org/wiki/Dijkstra's_algorithm
     1. Mark all nodes unvisited. Create a set of all the unvisited nodes called the unvisited set.
@@ -313,30 +312,24 @@ def dij(g):
     '''
     n,_ = g[0]                     # Number of nodes
     unvisited = list(range(n+1))
-    # open_edges = [edge for edge in g[1:]] # Edges that haven't been used-FIXME (issue #112(
     D  = np.full((n+1),float('inf'))     # Distance from 1 to each node
     D[1] = 0
-    Adj = np.full((n+1,n+1),float('inf'))
-    for i,j,k in g[1:]:
-        Adj[i,j] = k
+    Adj = np.full((n+1,n+1),float('inf'))  # Weighted adjacency matrix
+    for i,j,distance in g[1:]:
+        Adj[i,j] = distance
 
     while True:
         if len(unvisited) == 0: break
-        dd = [D[i] for i in unvisited]
-        i_current = np.argmin(dd)
-        if np.isinf(dd[i_current]): break
-        current = unvisited[i_current]
-        d_current = D[current]
-        unvisited.remove(current)
+        unvisited_distances = [D[i] for i in unvisited]
+        i_current = np.argmin(unvisited_distances)
+        if np.isinf(unvisited_distances[i_current]): break
+        current_node = unvisited[i_current]
+        d_current = D[current_node]
+        unvisited.remove(current_node)
         for j in unvisited:
-            D[j] = min(D[j],d_current + Adj[current,j])
+            D[j] = min(D[j],d_current + Adj[current_node,j])
 
-
-    # for _ in range(n):
-        # for a,b,w in open_edges:
-            # D[b] = min(D[b],D[a] + w)
-
-    return [int(d) if not isinf(d) else -1 for d in D[1:]]
+    return [d if not isinf(d) else -1 for d in D[1:]]
 
 
 def hdag(graph):
