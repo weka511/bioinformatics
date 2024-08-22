@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-#    Copyright (C) 2019-2023 Greenweaves Software Limited
+#    Copyright (C) 2019-2024 Greenweaves Software Limited
 #
 #    This is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -16,36 +16,42 @@
 
 ''' Functions to solve graphs problems from http://rosalind.info/problems/topics/graphs/'''
 
-from functools   import reduce
+from functools import reduce
 from collections import deque
-from math        import isinf
-from unittest    import TestCase, main
+from math import isinf
+from unittest import TestCase, main
+import numpy as np
+from numpy.testing import assert_array_equal
+from helpers import create_adjacency
+from align import create_topological_order
 
-from helpers     import create_adjacency
-from align       import create_topological_order
 
-
-def bf(edges,
-       s=1):    # Set to zero for nwc - see Ayaan Hossain's comment http://rosalind.info/problems/nwc/questions/
-                # For anyone having a problem solving this, observe that in the problem statement,
-                #unlike the Bellman-Ford Problem it has not been mentioned that you have to take
-                #  vertex 1 as the source node. If you do take vertex 1 or any other vertex for that matter,
-                # as the source node and if there is no out-going edge from that vertex or
-                # if the negative-weight cycle is unreachable from that vertex, then there
-                # will be no way to possibly detect the negative-weight cycle.
-                # In this case we have to come up with a strategy to ensure that our source node
-                # is a vertex from which there are out-going edges and that the negative-weight
-                # cycle is reachable from our source node. The simplest way to do this is to add
-                # a dummy "source_node" to our graph and add an edge from this "source_node"
-                # to every other vertex in the graph with cost/weight/length 0.
-                # Then if we begin our Bellman-Ford Algorithm on this "source_node", surely enough
-                # we will be able to detect any negative-weight cycle in the graph if it is present.
+def bf(edges,s=1):
     '''
-    bf
-
     Bellman-Ford Algorithm
 
-    Given: A simple directed graph with integer edge weights and fewer than 1,000 vertices in the edge list format.
+    NWC Negative Weight Cycle
+
+    Check whether a given graph contains a cycle of negative weight.
+    Given: A positive integer k, and k simple directed graphs with integer edge weights from -1000 to 1000
+    Return: For each graph, output 1 if it contains a negative weight cycle and -1 otherwise.
+
+    Parameters:
+        edges    A simple directed graph with integer edge weights and fewer than 1,000 vertices in the edge list format.
+        s        Set to zero for nwc - see Ayaan Hossain's comment http://rosalind.info/problems/nwc/questions/
+                 For anyone having a problem solving this, observe that in the problem statement,
+                 unlike the Bellman-Ford Problem it has not been mentioned that you have to take
+                  vertex 1 as the source node. If you do take vertex 1 or any other vertex for that matter,
+                 as the source node and if there is no out-going edge from that vertex or
+                 if the negative-weight cycle is unreachable from that vertex, then there
+                 will be no way to possibly detect the negative-weight cycle.
+                 In this case we have to come up with a strategy to ensure that our source node
+                 is a vertex from which there are out-going edges and that the negative-weight
+                 cycle is reachable from our source node. The simplest way to do this is to add
+                 a dummy "source_node" to our graph and add an edge from this "source_node"
+                 to every other vertex in the graph with cost/weight/length 0.
+                 Then if we begin our Bellman-Ford Algorithm on this "source_node", surely enough
+                 we will be able to detect any negative-weight cycle in the graph if it is present.
 
     Return: neg    -1 if there is a negative cycle, else +1
             dists   distances from origin to each node
@@ -57,9 +63,8 @@ def bf(edges,
         for i in range(1,n):
             edges.append([0,i,0])
 
-    dist        = [float('inf') for i in range(n+1)]
-    predecessor = [None for i in range(n+1)]
-
+    dist = np.full((n+1),float('inf'))
+    predecessor = np.full((n+1),-1,dtype=int)
     dist[s]  = 0 # distance of source from itself is zero
 
     # See https://stackoverflow.com/questions/28857918/bellman-ford-algorithm-explanation
@@ -67,20 +72,18 @@ def bf(edges,
     # There exists a path from the source to u of length dist[u] (unless dist[u] is INT_MAX).
     # After i iterations of the outer loop, for all paths from the source to u with
     # i or fewer edges, the length of that path is no less than dist[u].
-    #
+
     # After V-1 iterations, the second invariant implies that no simple path
     # from the source to u is shorter than dist[u]. The first hence implies
     # that the path that we found is shortest.
 
     for _ in range(n):
         for u,v,w in edges[1:]:
-            if dist[u] + w     < dist[v]:
-                dist[v]        = dist[u] + w
+            if dist[u] + w < dist[v]:
+                dist[v] = dist[u] + w
                 predecessor[v] = u
 
-    return (max(1 if dist[u]+w<dist[v] else -1 for u,v,w in edges[1:]),
-            dist[1:],
-            predecessor[1:])
+    return (max(1 if dist[u]+w < dist[v] else -1 for u,v,w in edges[1:]), dist[1:], predecessor[1:])
 
 
 def bip(graph):
@@ -308,27 +311,42 @@ def dij(g):
     6. Otherwise, select the unvisited node that is marked with the smallest tentative distance,
        set it as the new "current node", and go back to step 3.
     '''
-    n,_             = g[0]                     # Number of nodes
-    open_edges      = [edge for edge in g[1:]] # Edges that haven't been used-FIXME (issue #112(
-    D               = [float('inf')]*(n+1)     # Distance from 1 to each node
-    D[1]            = 0
+    n,_ = g[0]                     # Number of nodes
+    unvisited = list(range(n+1))
+    # open_edges = [edge for edge in g[1:]] # Edges that haven't been used-FIXME (issue #112(
+    D  = np.full((n+1),float('inf'))     # Distance from 1 to each node
+    D[1] = 0
+    Adj = np.full((n+1,n+1),float('inf'))
+    for i,j,k in g[1:]:
+        Adj[i,j] = k
 
-    for _ in range(n):
-        for a,b,w in open_edges:
-            if not isinf(D[a]):
-                D[b] = min(D[b],D[a] + w)
+    while True:
+        if len(unvisited) == 0: break
+        dd = [D[i] for i in unvisited]
+        i_current = np.argmin(dd)
+        if np.isinf(dd[i_current]): break
+        current = unvisited[i_current]
+        d_current = D[current]
+        unvisited.remove(current)
+        for j in unvisited:
+            D[j] = min(D[j],d_current + Adj[current,j])
 
-    return [d if not isinf(d) else -1 for d in D[1:]]
 
-# hdag
-#
-# Hamiltonian Path in DAG
-#
-# Key idea: we can always form a topological sort of a DAG. Once a graphs has been
-#           sorted topologically, the only way it can fail to be Hamiltonian is if
-#           there exists a pair of nodes in the sorted data that is not an edge.
+    # for _ in range(n):
+        # for a,b,w in open_edges:
+            # D[b] = min(D[b],D[a] + w)
+
+    return [int(d) if not isinf(d) else -1 for d in D[1:]]
+
 
 def hdag(graph):
+    '''
+    Hamiltonian Path in DAG
+
+    Key idea: we can always form a topological sort of a DAG. Once a graphs has been
+              sorted topologically, the only way it can fail to be Hamiltonian is if
+              there exists a pair of nodes in the sorted data that is not an edge.
+    '''
     def clone(adj):
         copy = {}
         for k,v in adj.items():
@@ -341,16 +359,16 @@ def hdag(graph):
             return (-1,[])
     return (1,ordered)
 
-# sq
-#
-# Square in a Graph
-#
-# Given: A positive integer k<=20 and k simple undirected graphs with n<=400 vertices in the edge list format.
-#
-# Return: For each graph, output 1 if it contains a simple cycle (that is, a cycle which doesn�t intersect
-# itself) of length 4 and -1 otherwise.
 
 def sq(g):
+    '''
+    Square in a Graph
+
+    Given: A positive integer k<=20 and k simple undirected graphs with n<=400 vertices in the edge list format.
+
+    Return: For each graph, output 1 if it contains a simple cycle (that is, a cycle which doesn�t intersect
+    itself) of length 4 and -1 otherwise.
+    '''
     def explore(node,path=[]):
         if len(path)>4: return -1
 
@@ -373,24 +391,25 @@ def sq(g):
 
     return -1
 
-# dfs
-#
-# Depth First Search
-#
-# Inputs:    adj
-#            n
-#            sequence
-#            previsit
-#            postvisit
-#            preexplore
-def dfs(adj          = None,
-        n            = None,
-        sequence     = None,
-        previsit     = lambda v:None,
-        postvisit    = lambda v:None,
-        preexplore   = lambda v:None,
-        list_visited = True):
 
+def dfs(adj = None,
+        n   = None,
+        sequence = None,
+        previsit = lambda v:None,
+        postvisit = lambda v:None,
+        preexplore = lambda v:None,
+        list_visited = True):
+    '''
+    Depth First Search
+
+    Parameters:
+        adj
+        n
+        sequence
+        previsit
+        postvisit
+        preexplore
+    '''
     def explore(v):
         visited[v] = True
         previsit(v)
@@ -423,24 +442,22 @@ def create_adj(edges,reverse=False):
     return adj
 
 
-#  scc
-#
-# Strongly Connected Component
-#
-# Input: A simple directed graph with fewer than 1000 vertices in the edge list format.
-#
-# Return: A tuple ( ccs,adj,adj_R), where
-#         nscc  The number of strongly connected components in the graph.
-#         adj   Adjacency list from forward links
-#         adj_r Adjacency list from reverse links
-
 def scc(edges):
+    '''
+    Strongly Connected Component
 
+    Input: A simple directed graph with fewer than 1000 vertices in the edge list format.
+
+    Return: A tuple ( ccs,adj,adj_R), where
+         nscc  The number of strongly connected components in the graph.
+         adj   Adjacency list from forward links
+         adj_r Adjacency list from reverse links
+    '''
     def counter():
         count = 0
         while True:
             yield count
-            count+=1
+            count += 1
 
     def decreasing(post):
         pairs = sorted(zip(post,range(1,len(post)+1)),reverse=True)
@@ -448,22 +465,22 @@ def scc(edges):
             yield b
 
     def incr_pre(v):
-        pre[v]     = next(clock)
+        pre[v] = next(clock)
 
     def incr_post(v):
-        post[v]     = next(clock)
+        post[v] = next(clock)
 
     def incr_ccnum(v):
-        ccnum[v-1]  = next(cc)
+        ccnum[v-1] = next(cc)
 
-    n,_     = edges[0]
+    n,_ = edges[0]
 
     # Find sink nodes by looking for source nodes of the reversed graph
 
-    clock      = counter()
-    pre        = [-1 for v in range(n+1)]   # Zero element won't be used, but it does simplify indexing
-    post       = [-1 for v in range(n+1)]   # Zero element won't be used, but it does simplify indexing
-    adj_R      = create_adj(edges,reverse=True)
+    clock = counter()
+    pre = [-1 for v in range(n+1)]   # Zero element won't be used, but it does simplify indexing
+    post = [-1 for v in range(n+1)]   # Zero element won't be used, but it does simplify indexing
+    adj_R  = create_adj(edges,reverse=True)
     dfs(adj_R,n,
       sequence  = range(1,n+1),
       previsit  = incr_pre,
@@ -471,31 +488,31 @@ def scc(edges):
 
     # construct components
 
-    cc       = counter()
-    ccnum    = [-1 for v in range(n+1)]   # Zero element won't be used, but it does simplify indexing
-    adj      = create_adj(edges)
+    cc = counter()
+    ccnum = [-1 for v in range(n+1)]   # Zero element won't be used, but it does simplify indexing
+    adj  = create_adj(edges)
     dfs(adj,n,
       sequence    = decreasing(post[1:]),
       preexplore  = incr_ccnum)
 
-    return len([cc+1 for cc in ccnum if cc>-1]),adj,adj_R
+    return len([cc+1 for cc in ccnum if cc >- 1]),adj,adj_R
 
-#    sc
-#
-#    Semi-Connected Graph
-#
-#    A directed graph is semi-connected if for all pairs of vertices i,j there is either a path from i to j or a path from j to i
-#
-# Input: a simple directed graphs with at most 1 thousand
-#               vertices in the edge list format.
-#
-# Return: 1 if the graph is semi-connected and -1  otherwise.
 
 def sc(edges):
-    n,_            = edges[0]
+    '''
+     Semi-Connected Graph
+
+    A directed graph is semi-connected if for all pairs of vertices i,j there is either a path from i to j or a path from j to i
+
+    Input: a simple directed graphs with at most 1 thousand
+               vertices in the edge list format.
+
+    Return: 1 if the graph is semi-connected and -1  otherwise.
+    '''
+    n,_ = edges[0]
     ccnum,adj,adjr = scc(edges)  # Graph is semi connected iff the DAG of its strongly connected components is
 
-    pairs          = {}   # Build a structure of pairs of strongly connected components
+    pairs  = {}   # Build a structure of pairs of strongly connected components
     for i in range(len(ccnum)):
         for j in range(i+1,len(ccnum)):
             pairs[(ccnum[i],ccnum[j])] = False
@@ -513,17 +530,16 @@ def sc(edges):
 
     return 1
 
-# gs
-#
-# General Sink
-#
-# Input: a simple directed graphs with at most 1,000 vertices and 2,000 edges in the edge list format.
-#
-# Return: a vertex from which all other vertices are reachable (if such a vertex exists) and -1 otherwise.
-#
-#
+
 def gs(edges):
-    n,_         = edges[0]
+    '''
+    General Sink
+
+    Input: a simple directed graph with at most 1,000 vertices and 2,000 edges in the edge list format.
+
+    Return: a vertex from which all other vertices are reachable (if such a vertex exists) and -1 otherwise.
+    '''
+    n,_ = edges[0]
     ccnum,adj,_ = scc(edges) # We need test only one vertex from each simply connected component
 
     for component in ccnum:
@@ -532,11 +548,13 @@ def gs(edges):
 
     return -1
 
-# SDAG Shortest Paths in DAG
 
 def sdag(m,adjacency,weights):
-    t    = topological_order(adjacency.copy())
-    D    = [None]*(m+1)
+    '''
+    DAG Shortest Paths in DAG
+    '''
+    t  = topological_order(adjacency.copy())
+    D = [None]*(m+1)
     D[1] = 0
     for i  in t:
         if D[i] == None: continue
@@ -549,32 +567,31 @@ def sdag(m,adjacency,weights):
                     D[j] = trial
     return D[1:]
 
-# two_sat
-#
-# 2SAT 2-Satisfiability
-#
-# Given: A positive integer k<=20 and k 2SAT formulas represented as follows.
-# The first line gives the number of variables n and the number of clauses m,
-# each of the following m lines gives a clause of length 2 by specifying two different literals.
-# Return: For each formula, output 0 if it cannot be satisfied or 1 followed by a satisfying assignment otherwise.
-#
-# See description in Wikipedia -- https://en.wikipedia.org/wiki/2-satisfiability#Strongly_connected_components
-#
-# Aspvall, Bengt; Plass, Michael F.; Tarjan, Robert E. (1979),
-# "A linear-time algorithm for testing the truth of certain quantified boolean formulas"
-#  Information Processing Letters, 8 (3): 121�123, doi:10.1016/0020-0190(79)90002-4.
 
 def two_sat(problem):
+    '''
+    2SAT 2-Satisfiability
 
-    # create_assignment
-    #
-    # Assign values to variable, given the condensation of the implication graph,
-    # a smaller graph that has one vertex for each strongly connected component,
-    # and an edge from component i to component j whenever the implication graph
-    # contains an edge uv such that u belongs to component i and v belongs to component j.
-    # The condensation is automatically a directed acyclic graph and,
-    # like the implication graph from which it was formed, it is skew-symmetric.
+    Given: A positive integer k<=20 and k 2SAT formulas represented as follows.
+    The first line gives the number of variables n and the number of clauses m,
+    each of the following m lines gives a clause of length 2 by specifying two different literals.
+    Return: For each formula, output 0 if it cannot be satisfied or 1 followed by a satisfying assignment otherwise.
+
+    See description in Wikipedia -- https://en.wikipedia.org/wiki/2-satisfiability#Strongly_connected_components
+
+    Aspvall, Bengt; Plass, Michael F.; Tarjan, Robert E. (1979),
+    "A linear-time algorithm for testing the truth of certain quantified boolean formulas"
+    Information Processing Letters, 8 (3): 121-123, doi:10.1016/0020-0190(79)90002-4.
+    '''
     def create_assignment(condensation):
+        '''
+         Assign values to variable, given the condensation of the implication graph,
+         a smaller graph that has one vertex for each strongly connected component,
+         and an edge from component i to component j whenever the implication graph
+         contains an edge uv such that u belongs to component i and v belongs to component j.
+         The condensation is automatically a directed acyclic graph and,
+         like the implication graph from which it was formed, it is skew-symmetric.
+        '''
         assignment = []
         for component in condensation:
             for v in component:
@@ -593,14 +610,10 @@ def two_sat(problem):
 
     return 1,create_assignment(scc)
 
-
-
-
-
-#  SUFF Creating a Suffix Tree
-
 def createTrie(string):
-
+    '''
+    SUFF Creating a Suffix Tree
+    '''
     class Node:
 
         seq = 0
@@ -687,10 +700,6 @@ def suff(string):
 
 
 
-#    bfs
-
-#   Perform Breadth First search
-
 def bfs(graph,                           # Graph to be searched
         start,                          # Starting node
         isGoal    = lambda v   : False, # Used to terminate search
@@ -699,6 +708,9 @@ def bfs(graph,                           # Graph to be searched
         pre_visit = lambda v,w : None,  # Action to be performed when node discovered
         selector  = 0                   # set to -1 for depth first instead of breadth first
         ):
+    '''
+     Perform Breadth First search
+    '''
     Q               = [start]
     discovered      = {start}
     while len(Q)>0:
@@ -711,12 +723,10 @@ def bfs(graph,                           # Graph to be searched
                 discovered.add(w)
                 pre_visit(v,w)
 
-# ShortestDistances
-#
-# use breadth-first search to compute single-source shortest distances in an unweighted directed graph.
-
 def ShortestDistances(graph):
-
+    '''
+    Use breadth-first search to compute single-source shortest distances in an unweighted directed graph.
+    '''
     def update_distance(v,w):
         distances[w-1] = distances[v-1]+1
 
@@ -736,23 +746,21 @@ if __name__=='__main__':
     class Test_graphs(TestCase):
 
         def test_bf(self):
-            edges = [(9, 13),
-                     (1, 2, 10),
-                     (3, 2, 1),
-                     (3, 4, 1),
-                     (4, 5, 3),
-                     (5, 6, -1),
-                     (7, 6, -1),
-                     (8, 7, 1),
-                     (1, 8, 8),
-                     (7, 2, -4),
-                     (2, 6, 2),
-                     (6, 3, -2),
-                     (9, 5 ,-10),
-                     (9, 4, 7)]
-            _,dists,_ = bf(edges)
-
-            self.assertEqual([0, 5, 5, 6, 9, 7, 9, 8],dists[:-1])
+            _,dists,_ = bf([(9, 13),
+                            (1, 2, 10),
+                            (3, 2, 1),
+                            (3, 4, 1),
+                            (4, 5, 3),
+                            (5, 6, -1),
+                            (7, 6, -1),
+                            (8, 7, 1),
+                            (1, 8, 8),
+                            (7, 2, -4),
+                            (2, 6, 2),
+                            (6, 3, -2),
+                            (9, 5 ,-10),
+                            (9, 4, 7)])
+            assert_array_equal([0, 5, 5, 6, 9, 7, 9, 8],dists[:-1])
             self.assertEqual(float('inf'),dists[-1])
 
         def test_bip(self):
