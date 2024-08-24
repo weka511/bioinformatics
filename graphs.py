@@ -258,7 +258,7 @@ def dag(graph):
 
     return 1
 
-def ddeg(n,M,A):
+def ddeg(n,m,A):
     '''
     Double Degree Array
 
@@ -267,10 +267,10 @@ def ddeg(n,M,A):
     Return: An array D[1..n] where D[i] is the sum of the degrees of i's neighbors.
     '''
     lookup = deg(n,m,A)
-    sums = [0 for a in range(n)]
+    sums = np.zeros((n)) #[0 for a in range(n)]
     for (a,b) in A:
-        sums[a-1]+=lookup[b-1]
-        sums[b-1]+=lookup[a-1]
+        sums[a-1] += lookup[b-1]
+        sums[b-1] += lookup[a-1]
     return sums
 
 def deg(n,m,A):
@@ -283,7 +283,6 @@ def deg(n,m,A):
     '''
     degrees = [0 for a in range(n)]
     for (a,b) in A:
-        print (a,b)
         degrees[a-1] += 1
         degrees[b-1] += 1
     return degrees
@@ -824,6 +823,24 @@ if __name__=='__main__':
                                     [3, 2],
                                     [2, 1]]))
 
+        def test_ddeg(self):
+            ''' Double Degree Array'''
+            assert_array_equal(np.array([3, 5, 5, 5, 0],dtype=int),
+                               ddeg(5, 4,
+                                    [[1, 2],
+                                    [2, 3],
+                                    [4, 3],
+                                    [2, 4]]))
+
+
+        @skip('TODO')
+        def test_deg(self):
+            pass
+
+        @skip('TODO')
+        def test_dfs(self):
+            pass
+
         def test_dij(self):
             self.assertEqual([0, 3, 2, 5, 6, -1],
                              dij([[6 ,10],
@@ -854,17 +871,7 @@ if __name__=='__main__':
                         s=0)
             self.assertEqual(1,n2)
 
-        @skip('TODO')
-        def test_ddeg(self):
-            pass
 
-        @skip('TODO')
-        def test_deg(self):
-            pass
-
-        @skip('TODO')
-        def test_dfs(self):
-            pass
 
         @skip('TODO')
         def test_hdag(self):
