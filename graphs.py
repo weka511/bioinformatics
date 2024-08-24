@@ -343,13 +343,9 @@ def hdag(graph):
               sorted topologically, the only way it can fail to be Hamiltonian is if
               there exists a pair of nodes in the sorted data that is not an edge.
     '''
-    def clone(adj):
-        copy = {}
-        for k,v in adj.items():
-            copy[k]=v
-        return copy
+
     _,_,adj = create_adjacency(graph,back=False,self=False)
-    ordered = get_topological_order(adj)
+    ordered = create_topological_order(adj)
     for a,b in zip(ordered[:-1],ordered[1:]):
         if not b in adj[a]:
             return (-1,[])
@@ -882,11 +878,18 @@ if __name__=='__main__':
                         s=0)
             self.assertEqual(1,n2)
 
-
-
-        @skip('TODO')
         def test_hdag(self):
-            pass
+            '''Hamiltonian Path in DAG'''
+            self.assertEqual((1,[1,2,3]),
+                             hdag([[3, 3],
+                                   [1, 2],
+                                   [2, 3],
+                                   [1, 3]]))
+            self.assertEqual((-1,[]),
+                             hdag([[4, 3],
+                                   [4, 3],
+                                   [3, 2],
+                                   [4, 1]]))
 
         @skip('TODO')
         def test_gs(self):
