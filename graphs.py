@@ -20,7 +20,7 @@
 from functools import reduce
 from collections import deque
 from math import isinf
-from unittest import TestCase, main
+from unittest import TestCase, main, skip
 import numpy as np
 from numpy.testing import assert_array_equal
 from helpers import create_adjacency
@@ -29,8 +29,7 @@ from align import create_topological_order
 
 def bf(edges,s=1):
     '''
-    Bellman-Ford Algorithm
-
+    Bellman-Ford Algorithm, and
     NWC Negative Weight Cycle
 
     Check whether a given graph contains a cycle of negative weight.
@@ -39,20 +38,7 @@ def bf(edges,s=1):
 
     Parameters:
         edges    A simple directed graph with integer edge weights and fewer than 1,000 vertices in the edge list format.
-        s        Set to zero for nwc - see Ayaan Hossain's comment http://rosalind.info/problems/nwc/questions/
-                 For anyone having a problem solving this, observe that in the problem statement,
-                 unlike the Bellman-Ford Problem it has not been mentioned that you have to take
-                  vertex 1 as the source node. If you do take vertex 1 or any other vertex for that matter,
-                 as the source node and if there is no out-going edge from that vertex or
-                 if the negative-weight cycle is unreachable from that vertex, then there
-                 will be no way to possibly detect the negative-weight cycle.
-                 In this case we have to come up with a strategy to ensure that our source node
-                 is a vertex from which there are out-going edges and that the negative-weight
-                 cycle is reachable from our source node. The simplest way to do this is to add
-                 a dummy "source_node" to our graph and add an edge from this "source_node"
-                 to every other vertex in the graph with cost/weight/length 0.
-                 Then if we begin our Bellman-Ford Algorithm on this "source_node", surely enough
-                 we will be able to detect any negative-weight cycle in the graph if it is present.
+        s        Set to zero for nwc
 
     Return: neg    -1 if there is a negative cycle, else +1
             dists   distances from origin to each node
@@ -60,7 +46,21 @@ def bf(edges,s=1):
     '''
     n,_         = edges[0]
 
-    if s==0:
+    # see Ayaan Hossain's comment http://rosalind.info/problems/nwc/questions/
+    # ..., observe that in the problem statement, unlike the Bellman-Ford Problem,
+    # it has not been mentioned that you have to take vertex 1 as the source node.
+    # If you do take vertex 1 or any other vertex for that matter,
+    # as the source node and if there is no out-going edge from that vertex or
+    # if the negative-weight cycle is unreachable from that vertex, then there
+    # will be no way to possibly detect the negative-weight cycle.
+    # In this case we have to come up with a strategy to ensure that our source node
+    # is a vertex from which there are out-going edges and that the negative-weight
+    # cycle is reachable from our source node. The simplest way to do this is to add
+    # a dummy "source_node" to our graph and add an edge from this "source_node"
+    # to every other vertex in the graph with cost/weight/length 0.
+    # Then if we begin our Bellman-Ford Algorithm on this "source_node", surely enough
+    # we will be able to detect any negative-weight cycle in the graph if it is present.
+    if s == 0:
         for i in range(1,n):
             edges.append([0,i,0])
 
@@ -761,6 +761,11 @@ if __name__=='__main__':
             assert_array_equal([0, 5, 5, 6, 9, 7, 9, 8],dists[:-1])
             self.assertEqual(float('inf'),dists[-1])
 
+        @skip('TODO')
+        def test_bfs(self):
+            bfs()
+            pass
+
         def test_bip(self):
             self.assertEqual(-1,bip([(3, 3),
                                      (1, 2),
@@ -808,13 +813,78 @@ if __name__=='__main__':
                        [4, 2, 3],
                        [2, 3, 1],
                        [3, 1, 6],
-                       [2, 1, -7]])
+                       [2, 1, -7]],
+                       s=0)
             self.assertEqual(-1,n1)
             n2,_,_ = bf([[3, 4],
                          [1, 2, -8],
                          [2, 3, 20],
                          [3, 1, -1],
-                         [3, 2, -30]])
+                         [3, 2, -30]],
+                        s=0)
             self.assertEqual(1,n2)
+
+
+        # @skip('TODO')
+        def test_cte(self):
+            self.assertEqual(-1,
+                             cte([[4, 5],
+                                  [2, 4, 2],
+                                  [3, 2, 1],
+                                  [1, 4, 3],
+                                  [2, 1, 10],
+                                  [1, 3, 4]]))
+            self.assertEqual(10,cte([[4, 5],
+                                [3, 2, 1],
+                                [2, 4, 2],
+                                [4, 1, 3],
+                                [2, 1, 10],
+                                [1, 3, 4]]))
+
+
+        @skip('TODO')
+        def test_dag(self):
+            pass
+
+        @skip('TODO')
+        def test_ddeg(self):
+            pass
+
+        @skip('TODO')
+        def test_deg(self):
+            pass
+
+        @skip('TODO')
+        def test_dfs(self):
+            pass
+
+        @skip('TODO')
+        def test_hdag(self):
+            pass
+
+        @skip('TODO')
+        def test_gs(self):
+            pass
+
+        @skip('TODO')
+        def test_sc(self):
+            pass
+
+        @skip('TODO')
+        def test_scc(self):
+            pass
+
+        @skip('TODO')
+        def test_sdag(self):
+            pass
+
+        @skip('TODO')
+        def test_suf(self):
+            pass
+
+        @skip('WIP')
+        def test_sg(self):
+            pass
+
 
     main()

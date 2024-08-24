@@ -69,19 +69,20 @@ if __name__=='__main__':
     parser.add_argument('--rosalind', default=False, action='store_true', help='process Rosalind dataset')
     args = parser.parse_args()
     if args.sample:
-        print ([n for n,_,_ in [bf(edges) for edges in extract_graphs( [2,
-                                                                        [4, 5],
-                                                                        [1, 4, 4],
-                                                                        [4, 2, 3],
-                                                                        [2, 3, 1],
-                                                                        [3, 1, 6],
-                                                                        [2, 1, -7],
+        print ([n for n,_,_ in [bf(edges) for edges in
+                                extract_graphs( [2,
+                                                 [4, 5],
+                                                 [1, 4, 4],
+                                                 [4, 2, 3],
+                                                 [2, 3, 1],
+                                                 [3, 1, 6],
+                                                 [2, 1, -7],
 
-                                                                        [3, 4],
-                                                                        [1, 2, -8],
-                                                                        [2, 3, 20],
-                                                                        [3, 1, -1],
-                                                                        [3, 2, -30]])]])
+                                                 [3, 4],
+                                                 [1, 2, -8],
+                                                 [2, 3, 20],
+                                                 [3, 1, -1],
+                                                 [3, 2, -30]])]])
 
     if args.rosalind:
         Input = read_strings(f'data/rosalind_{basename(__file__).split(".")[0]}.txt')

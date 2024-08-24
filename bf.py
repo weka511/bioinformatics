@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Copyright (C) 2020-2023 Greenweaves Software Limited
+# Copyright (C) 2020-2024 Greenweaves Software Limited
 
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -15,12 +15,7 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-#  BF Bellman-Ford Algorithm
-#
-# Given: A simple directed graph with integer edge weights from -1000 to + 1000
-#
-# Return An array D[1..n] where D[i] is the length of a shortest path from the
-#        vertex 1 to the vertex i (D[1]=0).
+'''BF Bellman-Ford Algorithm'''
 
 from argparse import ArgumentParser
 from os.path  import basename
@@ -34,7 +29,7 @@ def Format(dists ):
 
 if __name__=='__main__':
     start = time()
-    parser = ArgumentParser('BF Bellman-Ford Algorithm')
+    parser = ArgumentParser(__doc__)
     parser.add_argument('--sample',   default=False, action='store_true', help='process sample dataset')
     parser.add_argument('--rosalind', default=False, action='store_true', help='process Rosalind dataset')
     args = parser.parse_args()
@@ -64,7 +59,7 @@ if __name__=='__main__':
         with open(f'{basename(__file__).split(".")[0]}.txt','w') as f:
             f.write(f'{Format(dists)}\n')
 
-    elapsed = time()-start
+    elapsed = time() - start
     minutes = int(elapsed/60)
-    seconds = elapsed-60*minutes
+    seconds = elapsed - 60*minutes
     print (f'Elapsed Time {minutes} m {seconds:.2f} s')
