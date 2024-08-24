@@ -267,7 +267,7 @@ def ddeg(n,m,A):
     Return: An array D[1..n] where D[i] is the sum of the degrees of i's neighbors.
     '''
     lookup = deg(n,m,A)
-    sums = np.zeros((n)) #[0 for a in range(n)]
+    sums = np.zeros((n),dtype=int)
     for (a,b) in A:
         sums[a-1] += lookup[b-1]
         sums[b-1] += lookup[a-1]
@@ -281,7 +281,7 @@ def deg(n,m,A):
 
      Return: An array D[1..n] where D[i] is the degree of vertex i.
     '''
-    degrees = [0 for a in range(n)]
+    degrees = np.zeros((n), dtype=int)
     for (a,b) in A:
         degrees[a-1] += 1
         degrees[b-1] += 1
@@ -825,17 +825,28 @@ if __name__=='__main__':
 
         def test_ddeg(self):
             ''' Double Degree Array'''
-            assert_array_equal(np.array([3, 5, 5, 5, 0],dtype=int),
-                               ddeg(5, 4,
-                                    [[1, 2],
-                                    [2, 3],
-                                    [4, 3],
-                                    [2, 4]]))
+            assert_array_equal(
+                np.array([3, 5, 5, 5, 0],dtype=int),
+                ddeg(5, 4,
+                     [[1, 2],
+                     [2, 3],
+                     [4, 3],
+                     [2, 4]]))
 
 
-        @skip('TODO')
         def test_deg(self):
-            pass
+            '''Degree array'''
+            assert_array_equal(
+                np.array([2, 4, 2, 2, 2, 2],dtype=int),
+                deg(6, 7,
+                    [[1, 2],
+                     [2, 3],
+                     [6, 3],
+                     [5, 6],
+                     [2, 5],
+                     [2, 4],
+                     [4, 1]]))
+
 
         @skip('TODO')
         def test_dfs(self):
