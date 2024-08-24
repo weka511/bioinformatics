@@ -258,17 +258,16 @@ def dag(graph):
 
     return 1
 
-# ddeg
-#
-# Double Degree Array
-#
-# Input : A simple graph with fewer than 1,000 vertices in the edge list format.
-
-# Return: An array D[1..n] where D[i] is the sum of the degrees of i's neighbors.
-
 def ddeg(n,M,A):
-    lookup=deg(n,m,A)
-    sums=[0 for a in range(n)]
+    '''
+    Double Degree Array
+
+    Input : A simple graph with fewer than 1,000 vertices in the edge list format.
+
+    Return: An array D[1..n] where D[i] is the sum of the degrees of i's neighbors.
+    '''
+    lookup = deg(n,m,A)
+    sums = [0 for a in range(n)]
     for (a,b) in A:
         sums[a-1]+=lookup[b-1]
         sums[b-1]+=lookup[a-1]
@@ -794,6 +793,37 @@ if __name__=='__main__':
                           (8, 12)])
             self.assertEqual(3,count)
 
+        def test_cte(self):
+            ''' CTE Shortest Cycle Through a Given Edge'''
+            self.assertEqual(-1,
+                             cte([[4, 5],
+                                  [2, 4, 2],
+                                  [3, 2, 1],
+                                  [1, 4, 3],
+                                  [2, 1, 10],
+                                  [1, 3, 4]]))
+            self.assertEqual(10,cte([[4, 5],
+                                [3, 2, 1],
+                                [2, 4, 2],
+                                [4, 1, 3],
+                                [2, 1, 10],
+                                [1, 3, 4]]))
+
+
+        def test_dag(self):
+            '''dag  Testing Acyclicity'''
+            self.assertEqual(1,dag([[2, 1],
+                                    [1, 2]]))
+            self.assertEqual(-1,dag([[4, 4],
+                                     [4, 1],
+                                     [1, 2],
+                                     [2, 3],
+                                     [3, 1]]))
+            self.assertEqual(1,dag([[4, 3],
+                                    [4, 3],
+                                    [3, 2],
+                                    [2, 1]]))
+
         def test_dij(self):
             self.assertEqual([0, 3, 2, 5, 6, -1],
                              dij([[6 ,10],
@@ -823,28 +853,6 @@ if __name__=='__main__':
                          [3, 2, -30]],
                         s=0)
             self.assertEqual(1,n2)
-
-
-        # @skip('TODO')
-        def test_cte(self):
-            self.assertEqual(-1,
-                             cte([[4, 5],
-                                  [2, 4, 2],
-                                  [3, 2, 1],
-                                  [1, 4, 3],
-                                  [2, 1, 10],
-                                  [1, 3, 4]]))
-            self.assertEqual(10,cte([[4, 5],
-                                [3, 2, 1],
-                                [2, 4, 2],
-                                [4, 1, 3],
-                                [2, 1, 10],
-                                [1, 3, 4]]))
-
-
-        @skip('TODO')
-        def test_dag(self):
-            pass
 
         @skip('TODO')
         def test_ddeg(self):
