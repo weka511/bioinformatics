@@ -723,16 +723,13 @@ def ShortestDistances(graph):
         distances[w-1] = distances[v-1]+1
 
     def start(v):
-        if v>1: return
+        if v > 1: return
         distances[0] = 0
 
-    max_node,graph    = graph
-    distances        = [-1]*max_node
+    max_node,graph = graph
+    distances = [-1]*max_node
     bfs(graph,1,visit=start,pre_visit=update_distance)
     return distances
-
-
-
 
 if __name__=='__main__':
     class Test_graphs(TestCase):
@@ -755,10 +752,25 @@ if __name__=='__main__':
             assert_array_equal([0, 5, 5, 6, 9, 7, 9, 8],dists[:-1])
             self.assertEqual(float('inf'),dists[-1])
 
-        @skip('TODO')
+
         def test_bfs(self):
-            bfs()
-            pass
+            ''' use breadth-first search to compute single-source shortest distances in an unweighted directed graph.'''
+            def create_tree(links):
+                max_node,_ = links[0]
+                Product = {a:[] for a in range(1,max_node+1)}
+                for (a,b) in links[1:]:
+                    Product[a].append(b)
+                return (max_node,Product)
+
+            self.assertEqual([0, -1, 2, 1, 3, 2],
+                             ShortestDistances(
+                                 create_tree([(6, 6),
+                                              (4, 6),
+                                              (6, 5),
+                                              (4, 3),
+                                              (3, 5),
+                                              (2, 1),
+                                              (1, 4)])))
 
         def test_bip(self):
             self.assertEqual(-1,bip([(3, 3),
@@ -897,9 +909,6 @@ if __name__=='__main__':
             self.assertEqual(1,n2)
 
 
-
-
-
         @skip('TODO')
         def test_sc(self):
             pass
@@ -915,9 +924,6 @@ if __name__=='__main__':
                                   [5, 3],
                                   [3, 5]])
             self.assertEqual(3,nscc)
-
-
-
 
         def test_sdag(self):
 
@@ -949,11 +955,6 @@ if __name__=='__main__':
             ])
             self.assertEqual([0, None, -4, -2, -3],sdag(m,adjacency,weights))
 
-
-        @skip('TODO')
-        def test_suff(self):
-            pass
-
         def test_sq(self):
             ''' Square in a Graph'''
             self.assertEqual(1,sq([(4, 5),
@@ -968,5 +969,8 @@ if __name__=='__main__':
                                      (2, 4),
                                      (4, 1)]))
 
+        @skip('TODO')
+        def test_suff(self):
+            pass
 
     main()
