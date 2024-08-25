@@ -731,23 +731,7 @@ def ShortestDistances(graph):
     bfs(graph,1,visit=start,pre_visit=update_distance)
     return distances
 
-def create_adjacency(edges):
-    m,n       = edges[0]
 
-    product = {}
-    weights = {}
-
-    for a in range(1,m+1):
-        product[a]   = []
-
-    for a,b,w in edges[1:]:
-        product[a].append(b)
-        weights[(a,b)] = w
-
-    for a in product.keys():
-        product[a]=sorted(list(set(product[a])))
-
-    return m,n,product,weights
 
 
 if __name__=='__main__':
@@ -932,29 +916,57 @@ if __name__=='__main__':
                                   [3, 5]])
             self.assertEqual(3,nscc)
 
+
+
+
         def test_sdag(self):
-            '''
-            DAG Shortest Paths in DAG
-            '''
+
+            def create_adjacency(edges):
+                m,n       = edges[0]
+
+                product = {}
+                weights = {}
+
+                for a in range(1,m+1):
+                    product[a]   = []
+
+                for a,b,w in edges[1:]:
+                    product[a].append(b)
+                    weights[(a,b)] = w
+
+                for a in product.keys():
+                    product[a]=sorted(list(set(product[a])))
+
+                return m,n,product,weights
+
             m,_,adjacency,weights = create_adjacency([[5, 6],
-                                                      [2, 3, 4],
-                                                      [4, 3, -2],
-                                                      [1, 4, 1],
-                                                      [1, 5, -3],
-                                                      [2, 4, -2],
-                                                      [5, 4, 1]
-                                                      ])
-            self.assertEqual([0, None, -4, -2, -3],
-                             sdag(m,adjacency,weights))
+                [2, 3, 4],
+                [4, 3, -2],
+                [1, 4, 1],
+                [1, 5, -3],
+                [2, 4, -2],
+                [5, 4, 1]
+            ])
+            self.assertEqual([0, None, -4, -2, -3],sdag(m,adjacency,weights))
 
 
         @skip('TODO')
         def test_suff(self):
             pass
 
-        @skip('WIP')
-        def test_sg(self):
-            pass
+        def test_sq(self):
+            ''' Square in a Graph'''
+            self.assertEqual(1,sq([(4, 5),
+                                   (3, 4),
+                                   (4, 2),
+                                   (3, 2),
+                                   (3, 1),
+                                   (1, 2)]))
+            self.assertEqual(-1,sq( [(4, 4),
+                                     (1, 2),
+                                     (3, 4),
+                                     (2, 4),
+                                     (4, 1)]))
 
 
     main()
