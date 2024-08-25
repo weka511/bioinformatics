@@ -421,7 +421,7 @@ def dfs(adj = None,
     return [i for i in range(1,len(visited)) if visited[i]==list_visited]
 
 def create_adj(edges,reverse=False):
-    n,_=edges[0]
+    n,_= edges[0]
     adj = {}
     for i in range(1,n+1):
         adj[i]=[]
@@ -734,7 +734,12 @@ def ShortestDistances(graph):
 if __name__=='__main__':
     class Test_graphs(TestCase):
 
+        @skip('TODO')
+        def test_2sat(self):
+            pass
+
         def test_bf(self):
+            '''Bellman-Ford Algorithm,'''
             _,dists,_ = bf([(9, 13),
                             (1, 2, 10),
                             (3, 2, 1),
@@ -856,10 +861,6 @@ if __name__=='__main__':
                      [4, 1]]))
 
 
-        @skip('TODO')
-        def test_dfs(self):
-            pass
-
         def test_dij(self):
             self.assertEqual([0, 3, 2, 5, 6, -1],
                              dij([[6 ,10],
@@ -972,5 +973,12 @@ if __name__=='__main__':
         @skip('TODO')
         def test_suff(self):
             pass
+
+
+        @skip('TODO')
+        def test_ts(self):
+            pass
+
+
 
     main()

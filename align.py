@@ -541,9 +541,9 @@ def find_middle_edge(s,t,
     path_lengths = np.add(lengths_from_source,np.flip(lengths_to_sink))
     start_row_no = np.argmax(path_lengths)
 
-    if directions_source[start_row_no + 1] == 2:
+    if directions_source[start_row_no + 1] == 2:    # right
         return ((start_row_no,middle_column), (start_row_no,middle_column  + 1))
-    else:
+    else:                  # diagonal move
         return ((start_row_no,middle_column), (start_row_no + 1,middle_column + 1))
 
 def align_using_linear_space(v,w,
@@ -558,32 +558,23 @@ def align_using_linear_space(v,w,
         replace_score
         indel_cost
     '''
-    def linear_space_alignment(top,bottom,left,right):
-        Edges = []
+    def linear_space_alignment(top,bottom,left,right,Path=[]):
+        print (top,bottom,left,right, v[top:bottom], w[left:right])
+        if bottom - top < 2 or right - left < 2: return Path # FIXME
         if left == right:
-            return #TODO return alignment formed by bottom − top vertical edges
+            return Path #TODO return alignment formed by bottom − top vertical edges
         if top == bottom:
-            return  #TODO  return alignment formed by right − left horizontal edges
-        middle = (left + right) // 2
-        mid_node,j,k,l =  find_middle_edge(v[top:bottom+1],w[left:right+1],replace_score=replace_score,indel_cost=indel_cost)
-        assert j == middle
-        # mid_node = middle_node(top,bottom,left,right)
-        # middle_edge(top,bottom,left,right)
-        Path.append((mid_node,middle,k,l))
-        mid_node = l
-        linear_space_alignment(top, mid_node, left, middle)
-        Edges.append(mid_edge) # TODO output midEdge
-        if mid_edge == RIGHT:
-            middle += 1
-        if mid_edge == DOWN:
-            mid_node += 1
-        if mid_edge == RIGHT_DOWN:
-            middle += 1
-            mid_node += 1
-        linear_space_alignment(mid_node, bottom, middle, right)
+            return  Path #TODO  return alignment formed by right − left horizontal edges
+        # middle = (left + right) // 2
+        (mid_node_row,mid_node_column),(next_node_row,next_node_column) =  find_middle_edge(v[top:bottom+1],w[left:right+1],
+                                                                                            replace_score=replace_score,
+                                                                                            indel_cost=indel_cost)
+        Path.append((mid_node_row,mid_node_column,next_node_row,next_node_column))
+        # mid_node = next_node_column
+        linear_space_alignment(top, mid_node_row, left, mid_node_column,Path)
+        linear_space_alignment(next_node_row, bottom, next_node_column, right,Path)
 
-    Path = []
-    linear_space_alignment(0,len(v),0,len(w))
+    linear_space_alignment(0,len(v)+1,0,len(w)+1)
     Path.sort()
     return
 

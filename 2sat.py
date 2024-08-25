@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Copyright (C) 2020 Greenweaves Software Limited
+# Copyright (C) 2020-2024 Greenweaves Software Limited
 
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -37,18 +37,18 @@ def to_int(s):
     else:
         return [int(p) for p in parts]
 
-# create_sets
-#
-# Create sets of data for 2SAT problem. Each set is in the form given in problem statement, e.g.
-# n,m              i.e. number of variables, number of clauses
-# clause 1
-# clause 2
-# ...
-# clause m
-#
-# Output: list of form [(n,m, (...), (...) ...],,,]  where each inner tuple is a clause, each out tuple a set
 
 def create_sets(data):
+    '''
+    Create sets of data for 2SAT problem. Each set is in the form given in problem statement, e.g.
+    n,m              i.e. number of variables, number of clauses
+    clause 1
+    clause 2
+    ...
+    clause m
+
+    Output: list of form [(n,m, (...), (...) ...],,,]  where each inner tuple is a clause, each out tuple a set
+    '''
     product = []
     i       = 1
     while i<len(data):
@@ -58,11 +58,9 @@ def create_sets(data):
     assert len(product)==data[0]
     return product
 
-# Format
-#
-# Format Solution for display as a single line of numbers
 
 def Format(status,Solution):
+    '''Format Solution for display as a single line of numbers'''
     return f'{status} {" ".join(str(sol) for sol in Solution)}'
 
 if __name__=='__main__':
