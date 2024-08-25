@@ -861,6 +861,24 @@ if __name__=='__main__':
                                   [2, 4, 2],
                                   [2, 5, 3]]))
 
+        @skip('TODO')
+        def test_gs(self):
+            self.assertEqual(3,gs([[3,2],[3, 2],[2, 1]]))
+            pass
+
+        def test_hdag(self):
+            '''Hamiltonian Path in DAG'''
+            self.assertEqual((1,[1,2,3]),
+                             hdag([[3, 3],
+                                   [1, 2],
+                                   [2, 3],
+                                   [1, 3]]))
+            self.assertEqual((-1,[]),
+                             hdag([[4, 3],
+                                   [4, 3],
+                                   [3, 2],
+                                   [4, 1]]))
+
         def test_nwc(self):
             n1,_,_ =bf([[4, 5],
                        [1, 4, 4],
@@ -878,30 +896,27 @@ if __name__=='__main__':
                         s=0)
             self.assertEqual(1,n2)
 
-        def test_hdag(self):
-            '''Hamiltonian Path in DAG'''
-            self.assertEqual((1,[1,2,3]),
-                             hdag([[3, 3],
-                                   [1, 2],
-                                   [2, 3],
-                                   [1, 3]]))
-            self.assertEqual((-1,[]),
-                             hdag([[4, 3],
-                                   [4, 3],
-                                   [3, 2],
-                                   [4, 1]]))
 
-        @skip('TODO')
-        def test_gs(self):
-            pass
+
+
 
         @skip('TODO')
         def test_sc(self):
             pass
 
-        @skip('TODO')
         def test_scc(self):
-            pass
+            '''Strongly Connected Component '''
+            nscc,adj,adj_r = scc([[6, 7],
+                                  [4, 1],
+                                  [1, 2],
+                                  [2, 4],
+                                  [5, 6],
+                                  [3, 2],
+                                  [5, 3],
+                                  [3, 5]])
+            self.assertEqual(3,nscc)
+
+
 
         @skip('TODO')
         def test_sdag(self):
