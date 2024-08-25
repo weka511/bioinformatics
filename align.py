@@ -761,6 +761,7 @@ def get_overlap_assignment(v,w,match_bonus=+1,mismatch_cost=2,indel_cost=2):
 def create_topological_order(graph):
     '''
     BA5N   Find a Topological Ordering of a DAG
+    TS     Topological Sorting
 
     Input: The adjacency list of a graph (with nodes represented by integers).
 
@@ -772,8 +773,8 @@ def create_topological_order(graph):
         '''
         return sum([node in out for out in mygraph.values()])
 
-    mygraph    = graph.copy() # To avoid destroying original graph - issue #105
-    product    = []
+    mygraph = graph.copy() # To avoid destroying original graph - issue #105
+    product = []
     candidates = [node for node in mygraph.keys() if get_number_incoming(node)==0]
 
     while len(candidates) > 0:
@@ -783,10 +784,10 @@ def create_topological_order(graph):
             bs = [b for b in mygraph[a]]
             del mygraph[a]
             for b in bs:
-                if get_number_incoming(b)==0:
+                if get_number_incoming(b) == 0:
                     candidates.append(b)
 
-    if len(mygraph)>0:
+    if len(mygraph) > 0:
         raise RosalindException('Input graph is not a DAG')
 
     return product

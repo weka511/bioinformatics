@@ -975,9 +975,20 @@ if __name__=='__main__':
             pass
 
 
-        @skip('TODO')
         def test_ts(self):
-            pass
+            '''Topological Sorting'''
+            _,_,adj = create_adjacency( [[4, 5],
+                                         [1, 2],
+                                         [3, 1],
+                                         [3, 2],
+                                         [4, 3],
+                                         [4, 2]],
+                                        back=False)
+            for k,v in adj.items():
+                if k in v:
+                    v.remove(k)
+
+            self.assertEqual([4, 3, 1, 2],create_topological_order(adj))
 
 
 
