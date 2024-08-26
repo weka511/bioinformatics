@@ -25,7 +25,7 @@ import numpy as np
 from numpy.testing import assert_array_equal
 from helpers import create_adjacency
 from align import create_topological_order
-
+from tarjan import tarjan
 
 def bf(edges,s=1):
     '''
@@ -385,7 +385,7 @@ def sq(g):
 
 
 def dfs(adj = None,
-        n   = None,
+        n = None,
         sequence = None,
         previsit = lambda v:None,
         postvisit = lambda v:None,
@@ -395,14 +395,17 @@ def dfs(adj = None,
     Depth First Search
 
     Parameters:
-        adj
-        n
-        sequence
-        previsit
-        postvisit
-        preexplore
+        adj        Adjacency list for graph
+        n          Number of nodes in graph
+        sequence   Optional parameter to force some nodes to be visited first
+        previsit   Function to be executed before visiting each node
+        postvisit  Function to be executed after visiting each node
+        preexplore Function to be executed before visiting each node if sequence specified
     '''
     def explore(v):
+        '''
+        Perform depth-first search recursively
+        '''
         visited[v] = True
         previsit(v)
 
@@ -412,26 +415,38 @@ def dfs(adj = None,
 
         postvisit(v)
 
-    visited = [False for v in range(n+1)]  # Zero element won't be used, but it does simplify indexing
+    visited = np.full((n+1),False,dtype=bool)  # Keep track of which nodes have been visited
+                                               # Zero element won't be used, but it does simplify indexing
 
+    # Visit any nodes that need to be given priority
     for v in sequence:
         if not visited[v]:
             preexplore(v)
             explore(v)
-    return [i for i in range(1,len(visited)) if visited[i]==list_visited]
+
+    # Visit any nodes that have been left over
+    return [i for i in range(1,len(visited)) if visited[i] == list_visited]
 
 def create_adj(edges,reverse=False):
+    '''
+    Create adjacency list for graph
+
+    Parameters:
+        edges      Graph in edge list format
+        reverse    Used to reverse all edges
+
+    Returns:
+       Dict containting adjacency list: a->[b,c,d...] where edges are (a,b), (a,c), (a,d),...
+    '''
     n,_= edges[0]
-    adj = {}
-    for i in range(1,n+1):
-        adj[i]=[]
+    Product = {i:[] for i in range(1,n+1)}
     for (a,b) in edges[1:]:
         if reverse:
-            (a,b)=(b,a)
-        if not a in adj:
-            adj[a] = []
-        adj[a].append(b)
-    return adj
+            (a,b) = (b,a)
+        if not a in Product:
+            Product[a] = []
+        Product[a].append(b)
+    return Product
 
 
 def scc(edges):
@@ -441,11 +456,14 @@ def scc(edges):
     Input: A simple directed graph with fewer than 1000 vertices in the edge list format.
 
     Return: A tuple ( ccs,adj,adj_R), where
-         nscc  The number of strongly connected components in the graph.
-         adj   Adjacency list from forward links
-         adj_r Adjacency list from reverse links
+        nscc  The number of strongly connected components in the graph.
+        adj   Adjacency list from forward links
+        adj_r Adjacency list from reverse links
     '''
-    def counter():
+    def VisitCounter():
+        '''
+        Generator used to keep track of the times when nodes are visited or departed from
+        '''
         count = 0
         while True:
             yield count
@@ -457,37 +475,53 @@ def scc(edges):
             yield b
 
     def incr_pre(v):
+        '''
+        Used during depth-first traversal of reversed adjacency list
+        to record time when node visited
+        '''
         pre[v] = next(clock)
 
     def incr_post(v):
+        '''
+        Used during depth-first traversal of reversed adjacency list
+        to record time when node departed from
+        '''
         post[v] = next(clock)
 
     def incr_ccnum(v):
-        ccnum[v-1] = next(cc)
+        '''
+        Used during depth-first traversal of adjacency list
+        to record time when node visited
+        '''
+        ccnum[v-1] = next(clock)
 
     n,_ = edges[0]
 
     # Find sink nodes by looking for source nodes of the reversed graph
 
-    clock = counter()
-    pre = [-1 for v in range(n+1)]   # Zero element won't be used, but it does simplify indexing
-    post = [-1 for v in range(n+1)]   # Zero element won't be used, but it does simplify indexing
+    clock = VisitCounter()
+    pre = np.full((n+1),-1)   # Used to keep track of time of first visit to each node
+                              # see https://rosalind.info/glossary/algo-depth-first-search/
+                              # Zero element won't be used, but it does simplify indexing
+    post = np.full((n+1),-1)  # Used to keep track of time of last departure from each node
+                              # see https://rosalind.info/glossary/algo-depth-first-search/
+                              # Zero element won't be used, but it does simplify indexing
     adj_R  = create_adj(edges,reverse=True)
     dfs(adj_R,n,
-      sequence  = range(1,n+1),
-      previsit  = incr_pre,
+      sequence = range(1,n+1),
+      previsit = incr_pre,
       postvisit = incr_post)
 
-    # construct components
+    # Run the undirected connected components algorithm on G, and during the depth-first search,
+    # process the vertices in decreasing order of their post numbers from step 1.
 
-    cc = counter()
-    ccnum = [-1 for v in range(n+1)]   # Zero element won't be used, but it does simplify indexing
-    adj  = create_adj(edges)
+    ccnum = np.full(n,-1)   # Used to record one node from each connected component
+    adj = create_adj(edges)
     dfs(adj,n,
-      sequence    = decreasing(post[1:]),
-      preexplore  = incr_ccnum)
+      sequence = decreasing(post[1:]),
+      preexplore = incr_ccnum)
 
-    return len([cc+1 for cc in ccnum if cc >- 1]),adj,adj_R
+    return (ccnum > -1).sum(),adj,adj_R
 
 
 def sc(edges):
@@ -592,8 +626,8 @@ def two_sat(problem):
         return sorted(assignment,key=lambda x: abs(x))
 
     n,m,clauses = problem
-    edges       = [(-a,b) for a,b in clauses] + [(-b,a) for a,b in clauses]
-    scc         = tarjan(create_adj([[n,len(edges)]] + edges))
+    edges = [(-a,b) for a,b in clauses] + [(-b,a) for a,b in clauses]
+    scc = tarjan(create_adj([[n,len(edges)]] + edges))
     for component in scc:
         for i in range(len(component)):
             for j in range(i+1,len(component)):
@@ -735,9 +769,14 @@ def ShortestDistances(graph):
 if __name__=='__main__':
     class Test_graphs(TestCase):
 
-        @skip('TODO')
         def test_2sat(self):
-            pass
+            '''2-Satisfiability'''
+            status,Solution = two_sat((2, 4, [(1, 2), (-1, 2), (1, -2), (-1, -2)]) )
+            self.assertEqual(0,status)
+            status,Solution = two_sat((3, 4, [(1, 2), (2, 3), (-1, -2), (-2, -3)]))
+            self.assertEqual(1,status)
+            self.assertEqual([1, -2, 3],Solution)
+
 
         def test_bf(self):
             '''Bellman-Ford Algorithm,'''
@@ -875,7 +914,7 @@ if __name__=='__main__':
                                   [2, 4, 2],
                                   [2, 5, 3]]))
 
-        @skip('TODO')
+        @skip('TODO #158')
         def test_gs(self):
             self.assertEqual(3,gs([[3,2],[3, 2],[2, 1]]))
             pass
@@ -911,7 +950,7 @@ if __name__=='__main__':
             self.assertEqual(1,n2)
 
 
-        @skip('TODO')
+        @skip('TODO #159')
         def test_sc(self):
             pass
 

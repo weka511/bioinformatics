@@ -15,22 +15,20 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-# 2SAT 2-Satisfiability
+'''2SAT 2-Satisfiability'''
 
-import argparse
-import os
-import time
-from   helpers import read_strings,create_list,parse_graphs
-from   graphs import two_sat
-
-# to_int
-#
-# Used to parse a line of input
-#
-# Convert a line of text representing a single number to an int
-# and a line of text representing a list to a list of ints
+from argparse import ArgumentParser
+from os.path import basename
+from time import time
+from helpers import read_strings,create_list,parse_graphs
+from graphs import two_sat
 
 def to_int(s):
+    '''
+    Used to parse a line of input
+    Convert a line of text representing a single number to an int
+    and a line of text representing a list to a list of ints
+    '''
     parts=s.split()
     if len(parts)==1:
         return int(s)
@@ -64,8 +62,8 @@ def Format(status,Solution):
     return f'{status} {" ".join(str(sol) for sol in Solution)}'
 
 if __name__=='__main__':
-    start = time.time()
-    parser = argparse.ArgumentParser('2SAT')
+    start = time()
+    parser = ArgumentParser(__doc__)
     parser.add_argument('--sample',   default=False, action='store_true', help='process sample dataset')
     parser.add_argument('--rosalind', default=False, action='store_true', help='process Rosalind dataset')
     args = parser.parse_args()
@@ -88,18 +86,16 @@ if __name__=='__main__':
             status,Solution = two_sat(problem )
             print (Format(status,Solution))
 
-
-
     if args.rosalind:
-        with open(f'{os.path.basename(__file__).split(".")[0]}.txt','w') as f:
-            Input  = read_strings(f'data/rosalind_{os.path.basename(__file__).split(".")[0]}.txt')
+        with open(f'{basename(__file__).split(".")[0]}.txt','w') as f:
+            Input  = read_strings(f'data/rosalind_{basename(__file__).split(".")[0]}.txt')
             Sets   = create_sets([to_int(s) for s in Input if len(s)>0])
             for problem in Sets:
                 status,Solution = two_sat(problem )
                 print (Format(status,Solution))
                 f.write (f'{Format(status,Solution)}\n')
 
-    elapsed = time.time() - start
+    elapsed = time() - start
     minutes = int(elapsed/60)
     seconds = elapsed - 60*minutes
     print (f'Elapsed Time {minutes} m {seconds:.2f} s')
