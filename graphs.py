@@ -389,8 +389,7 @@ def dfs(adj = None,
         sequence = None,
         previsit = lambda v:None,
         postvisit = lambda v:None,
-        preexplore = lambda v:None,
-        list_visited = True):
+        preexplore = lambda v:None):
     '''
     Depth First Search
 
@@ -425,7 +424,7 @@ def dfs(adj = None,
             explore(v)
 
     # Visit any nodes that have been left over
-    return [i for i in range(1,len(visited)) if visited[i] == list_visited]
+    return [i for i in range(1,len(visited)) if visited[i]]
 
 def create_adj(edges,reverse=False):
     '''
