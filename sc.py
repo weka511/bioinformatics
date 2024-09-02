@@ -20,7 +20,25 @@ from argparse import ArgumentParser
 import os
 from time import time
 from graphs import sc
-from helpers import create_strings
+from helpers import create_list
+
+def generate_graphs():
+   state = 0
+   for entry in create_list(path='./data'):
+      match(state):
+         case 0:
+            print (f'There are {entry[0]} graphs')
+            state = 1
+         case 1:
+            edges = [entry]
+            state = 2
+            _,n = entry
+         case 2:
+            edges.append(entry)
+            n -= 1
+            if n == 0:
+               state = 1
+               yield edges
 
 if __name__=='__main__':
 
@@ -35,33 +53,13 @@ if __name__=='__main__':
            (2, 1)]))
 
    if args.rosalind:
-      graphs = [
-         2,
-          [(3, 2),
-           (3 ,2),
-           (2, 1)],
+      for graph in generate_graphs():
+         print (sc(graph))
 
-          [(3, 2),
-           (3, 2),
-           (1, 2)]
-      ]
 
-   graphs = []
-   edges = []
-   for s in create_strings(ext=1):
-      if len(s)==0:
-         if len(edges)>0:
-            graphs.append(edges)
-            edges=[]
-      else:
-         values = [int(x) for x in s.split(" ")]
-         if len(values)>1:
-            edges.append(values)
-   if len(edges)>0:
-      graphs.append(edges)
+      # print (' '.join([str(sc(g)) for g in graphs]))
 
-   print (' '.join([str(sc(g)) for g in graphs]))
-   elapsed = time()-start
+   elapsed = time() - start
    minutes = int(elapsed/60)
-   seconds = elapsed-60*minutes
+   seconds = elapsed - 60*minutes
    print (f'Elapsed Time {minutes} m {seconds:.2f} s')
