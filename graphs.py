@@ -386,7 +386,7 @@ def sq(g):
 
 def dfs(adj = None,
         n = None,
-        sequence = None,
+        sequence = [],
         previsit = lambda v:None,
         postvisit = lambda v:None,
         preexplore = lambda v:None):
@@ -535,24 +535,15 @@ def sc(edges):
     Return: 1 if the graph is semi-connected and -1  otherwise.
     '''
     n,_ = edges[0]
-    ccnum,adj,adjr = scc(edges)  # Graph is semi connected iff the DAG of its strongly connected components is
-
-    pairs  = {}   # Build a structure of pairs of strongly connected components
-    for i in range(len(ccnum)):
-        for j in range(i+1,len(ccnum)):
-            pairs[(ccnum[i],ccnum[j])] = False
-
-    for component in ccnum:
-        for node in dfs(adj,n,sequence=(i for i in [component])):  # find links in one direction
-            a,b = min(node,component),max(node,component),
-            pairs[(a,b)]=True
-        for node in dfs(adjr,n,sequence=(i for i in [component])): # now check t'other
-            a,b = min(node,component),max(node,component),
-            pairs[(a,b)]=True
-
-    for k,v in pairs.items():  # Is any pair unlinked?
-        if not v: return -1
-
+    A = np.eye(n, dtype=np.int64)
+    for i,j in edges[1:]:
+        A[i-1,j-1] = 1
+    T = np.eye(n, dtype=np.int64)
+    for _ in range(n):
+        np.matmul(A,T,out=T)
+    for i in range(n):
+        for j in range(n):
+            if T[i,j] == 0 and T[j,i] == 0: return -1
     return 1
 
 
@@ -949,9 +940,11 @@ if __name__=='__main__':
             self.assertEqual(1,n2)
 
 
-        @skip('TODO #159')
         def test_sc(self):
-            pass
+            '''Semi-Connected Graph'''
+            self.assertEqual(1,sc( [(3, 2), (3 ,2), (2, 1)]))
+            self.assertEqual(-1,sc( [(3, 2), (3 ,2), (1, 2)]))
+
 
         def test_scc(self):
             '''Strongly Connected Component '''
