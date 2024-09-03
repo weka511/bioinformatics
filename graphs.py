@@ -527,7 +527,8 @@ def sc(edges):
     '''
      Semi-Connected Graph
 
-    A directed graph is semi-connected if for all pairs of vertices i,j there is either a path from i to j or a path from j to i
+    A directed graph is semi-connected if for all pairs of vertices i,j there is either a path from i to j or a path from j to i.
+    We shall use the observation that graph is semi-connected iff graph of connected components is semi-connected
 
     Input: a simple directed graphs with at most 1 thousand
                vertices in the edge list format.
@@ -535,15 +536,31 @@ def sc(edges):
     Return: 1 if the graph is semi-connected and -1  otherwise.
     '''
     n,_ = edges[0]
-    A = np.eye(n, dtype=np.int64)
+    adj = create_adj(edges)
+    # Create connected components
+    cc = tarjan(adj)
+    # Map each node onto the correspodning component
+    cc_index = np.zeros((n+1), dtype=np.int64)
+    for i in range(len(cc)):
+        for j in cc[i]:
+            cc_index[j] = i + 1
+
+    # Now create an adjacency matrix for components
+
+    m = len(cc)
+    A = np.eye(m, dtype=np.int64)
     for i,j in edges[1:]:
-        A[i-1,j-1] = 1
-    T = np.eye(n, dtype=np.int64)
-    for _ in range(n):
+        A[cc_index[i]-1,cc_index[j]-1] = 1
+
+    # Iterate adjacency maytrix to workour which components are accessible
+
+    T = np.eye(m, dtype=np.int64)
+    for _ in range(m):
         np.matmul(A,T,out=T)
-    for i in range(n):
-        for j in range(n):
+    for i in range(m):
+        for j in range(m):
             if T[i,j] == 0 and T[j,i] == 0: return -1
+
     return 1
 
 

@@ -17,23 +17,24 @@
 '''  sc 	Semi-Connected Graph'''
 
 from argparse import ArgumentParser
-import os
 from time import time
 from graphs import sc
 from helpers import create_list
 
-def generate_graphs():
+def generate_graphs(path='./data'):
+   '''
+   Parse input file
+   '''
    state = 0
-   for entry in create_list(path='./data'):
+   for entry in create_list(path=path):
       match(state):
-         case 0:
-            print (f'There are {entry[0]} graphs')
+         case 0:               # Start of file: number of graphs
             state = 1
-         case 1:
+         case 1:                # Start of fraph: number of nodes and adges
             edges = [entry]
             state = 2
             _,n = entry
-         case 2:
+         case 2:                 # An edge
             edges.append(entry)
             n -= 1
             if n == 0:
@@ -49,15 +50,11 @@ if __name__=='__main__':
    args = parser.parse_args()
    if args.sample:
       print (sc( [(3, 2),
-           (3 ,2),
-           (2, 1)]))
+                  (3 ,2),
+                  (2, 1)]))
 
    if args.rosalind:
-      for graph in generate_graphs():
-         print (sc(graph))
-
-
-      # print (' '.join([str(sc(g)) for g in graphs]))
+      print (' '.join([str(sc(g)) for g in generate_graphs()]))
 
    elapsed = time() - start
    minutes = int(elapsed/60)
