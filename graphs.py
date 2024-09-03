@@ -522,6 +522,27 @@ def scc(edges):
 
     return (ccnum > -1).sum(),adj,adj_R
 
+def create_node2component(m,n,cc):
+    '''Map each node onto the corresponding component'''
+    Product = np.zeros((n+1), dtype=np.int64)
+    for i in range(m):
+        for j in cc[i]:
+            Product[j] = i + 1
+    return Product
+
+def create_adj_for_cc(m,edges,cc_index):
+    '''create an adjacency matrix for components'''
+    A = np.eye(m, dtype=np.int64)
+    for i,j in edges[1:]:
+        A[cc_index[i]-1,cc_index[j]-1] = 1
+    return A
+
+def iterate_adj(m,A):
+    '''Iterate adjacency matrix to workout which components are accessible'''
+    T = np.eye(m, dtype=np.int64)
+    for _ in range(m):
+        np.matmul(A,T,out=T)
+    return T
 
 def sc(edges):
     '''
@@ -539,24 +560,12 @@ def sc(edges):
     adj = create_adj(edges)
     # Create connected components
     cc = tarjan(adj)
-    # Map each node onto the correspodning component
-    cc_index = np.zeros((n+1), dtype=np.int64)
-    for i in range(len(cc)):
-        for j in cc[i]:
-            cc_index[j] = i + 1
-
-    # Now create an adjacency matrix for components
-
     m = len(cc)
-    A = np.eye(m, dtype=np.int64)
-    for i,j in edges[1:]:
-        A[cc_index[i]-1,cc_index[j]-1] = 1
+    cc_index = create_node2component(m,n,cc)
 
-    # Iterate adjacency maytrix to workour which components are accessible
+    A = create_adj_for_cc(m,edges,cc_index)
+    T =  iterate_adj(m,A)
 
-    T = np.eye(m, dtype=np.int64)
-    for _ in range(m):
-        np.matmul(A,T,out=T)
     for i in range(m):
         for j in range(m):
             if T[i,j] == 0 and T[j,i] == 0: return -1
@@ -573,13 +582,16 @@ def gs(edges):
     Return: a vertex from which all other vertices are reachable (if such a vertex exists) and -1 otherwise.
     '''
     n,_ = edges[0]
-    ccnum,adj,_ = scc(edges) # We need test only one vertex from each simply connected component
-
-    for component in ccnum:
-        if len(dfs(adj,n,sequence=(i for i in [component])))==n:
-            return component
-
-    return -1
+    adj = create_adj(edges)
+    cc = tarjan(adj)
+    m = len(cc)
+    cc_index = create_node2component(m,n,cc)
+    A = create_adj_for_cc(m,edges,cc_index)
+    T =  iterate_adj(m,A)
+    T1 = np.clip(T,a_min=0,a_max=1)
+    T2 = np.sum(T1,axis=1)
+    ii = np.argwhere(T2==m)
+    return -1 if len(ii)==0 else ii[0] + 1
 
 
 def sdag(m,adjacency,weights):
@@ -921,10 +933,9 @@ if __name__=='__main__':
                                   [2, 4, 2],
                                   [2, 5, 3]]))
 
-        @skip('TODO #158')
+        # @skip('TODO #158')
         def test_gs(self):
             self.assertEqual(3,gs([[3,2],[3, 2],[2, 1]]))
-            pass
 
         def test_hdag(self):
             '''Hamiltonian Path in DAG'''
