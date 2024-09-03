@@ -21,21 +21,41 @@ from argparse import ArgumentParser
 from time import time
 from helpers import create_list
 from graphs import gs
-from sc import generate_graphs
+from helpers import create_list
 
-if __name__=='__main__':
-       start = time()
-       parser = ArgumentParser(__doc__)
-       parser.add_argument('--sample',   default=False, action='store_true', help='process sample dataset')
-       parser.add_argument('--rosalind', default=False, action='store_true', help='process Rosalind dataset')
-       args = parser.parse_args()
-       if args.sample:
-              print (gs([[3,2],[3, 2],[2, 1]]))
+def generate_graphs(path='./data'):
+    '''
+    Parse input file
+    '''
+    state = 0
+    for entry in create_list(path=path):
+        match(state):
+            case 0:               # Start of file: number of graphs
+                state = 1
+            case 1:                # Start of graph: number of nodes and adges
+                edges = [entry]
+                state = 2
+                _,n = entry
+            case 2:                 # An edge
+                edges.append(entry)
+                n -= 1
+                if n == 0:
+                    state = 1
+                    yield edges
 
-       if args.rosalind:
-              print (' '.join([str(gs(g)) for g in generate_graphs()]))
+if __name__ == '__main__':
+    start = time()
+    parser = ArgumentParser(__doc__)
+    parser.add_argument('--sample', default=False, action='store_true', help='process sample dataset')
+    parser.add_argument('--rosalind', default=False, action='store_true', help='process Rosalind dataset')
+    args = parser.parse_args()
+    if args.sample:
+        print(gs([[3, 2], [3, 2], [2, 1]]))
 
-       elapsed = time() - start
-       minutes = int(elapsed/60)
-       seconds = elapsed - 60*minutes
-       print (f'Elapsed Time {minutes} m {seconds:.2f} s')
+    if args.rosalind:
+        print(' '.join([str(gs(g)) for g in generate_graphs()]))
+
+    elapsed = time() - start
+    minutes = int(elapsed / 60)
+    seconds = elapsed - 60 * minutes
+    print(f'Elapsed Time {minutes} m {seconds:.2f} s')

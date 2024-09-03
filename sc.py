@@ -30,7 +30,7 @@ def generate_graphs(path='./data'):
       match(state):
          case 0:               # Start of file: number of graphs
             state = 1
-         case 1:                # Start of fraph: number of nodes and adges
+         case 1:                # Start of graph: number of nodes and adges
             edges = [entry]
             state = 2
             _,n = entry
