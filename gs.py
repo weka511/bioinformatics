@@ -1,5 +1,6 @@
 #!/usr/bin/env python
-#    Copyright (C) 2019 Greenweaves Software Limited
+
+#    Copyright (C) 2019-2024 Greenweaves Software Limited
 #
 #    This is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -13,37 +14,28 @@
 #
 #    You should have received a copy of the GNU General Public License
 #    along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>
-#
-#    gs 	General Sink
 
+''' gs 	General Sink'''
+
+from argparse import ArgumentParser
+from time import time
+from helpers import create_list
 from graphs import gs
+from sc import generate_graphs
 
 if __name__=='__main__':
+       start = time()
+       parser = ArgumentParser(__doc__)
+       parser.add_argument('--sample',   default=False, action='store_true', help='process sample dataset')
+       parser.add_argument('--rosalind', default=False, action='store_true', help='process Rosalind dataset')
+       args = parser.parse_args()
+       if args.sample:
+              print (gs([[3,2],[3, 2],[2, 1]]))
 
-       from helpers import create_strings
+       if args.rosalind:
+              print (' '.join([str(gs(g)) for g in generate_graphs()]))
 
-       #graphs = [
-           #[(3, 2),
-            #(3 ,2),
-            #(2, 1)],
-
-           #[(3, 2),
-            #(3, 2),
-            #(1, 2)]
-       #]
-
-       graphs = []
-       edges = []
-       for s in create_strings(ext=2):
-              if len(s)==0:
-                     if len(edges)>0:
-                            graphs.append(edges)
-                            edges=[]
-              else:
-                     values = [int(x) for x in s.split(" ")]
-                     if len(values)>1:
-                            edges.append(values)
-       if len(edges)>0:
-              graphs.append(edges)
-
-       print (' '.join([str(gs(edges)) for edges in graphs]))
+       elapsed = time() - start
+       minutes = int(elapsed/60)
+       seconds = elapsed - 60*minutes
+       print (f'Elapsed Time {minutes} m {seconds:.2f} s')
