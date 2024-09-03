@@ -19,29 +19,9 @@
 
 from argparse import ArgumentParser
 from time import time
-from helpers import create_list
+from helpers import generate_graphs
 from graphs import gs
-from helpers import create_list
 
-def generate_graphs(path='./data'):
-    '''
-    Parse input file
-    '''
-    state = 0
-    for entry in create_list(path=path):
-        match(state):
-            case 0:               # Start of file: number of graphs
-                state = 1
-            case 1:                # Start of graph: number of nodes and adges
-                edges = [entry]
-                state = 2
-                _,n = entry
-            case 2:                 # An edge
-                edges.append(entry)
-                n -= 1
-                if n == 0:
-                    state = 1
-                    yield edges
 
 if __name__ == '__main__':
     start = time()

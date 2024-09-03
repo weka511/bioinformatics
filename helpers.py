@@ -317,3 +317,24 @@ def read_fasta(name):
                 Record.append(text)
     Data.append(''.join(Record))
     return Data
+
+
+def generate_graphs(path='./data'):
+    '''
+    Iterate through a file containing multiple graphs in edge-list format
+    '''
+    state = 0
+    for entry in create_list(path=path):
+        match(state):
+            case 0:               # Start of file: number of graphs
+                state = 1
+            case 1:                # Start of graph: number of nodes and adges
+                edges = [entry]
+                state = 2
+                _,n = entry
+            case 2:                 # An edge
+                edges.append(entry)
+                n -= 1
+                if n == 0:
+                    state = 1
+                    yield edges
