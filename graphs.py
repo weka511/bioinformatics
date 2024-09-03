@@ -523,7 +523,7 @@ def scc(edges):
     return (ccnum > -1).sum(),adj,adj_R
 
 def create_node2component(m,n,cc):
-    '''Map each node onto the corresponding component'''
+    '''Used with connect components to map each node onto the corresponding component'''
     Product = np.zeros((n+1), dtype=np.int64)
     for i in range(m):
         for j in cc[i]:
@@ -531,14 +531,17 @@ def create_node2component(m,n,cc):
     return Product
 
 def create_adj_for_cc(m,edges,cc_index):
-    '''create an adjacency matrix for components'''
-    A = np.eye(m, dtype=np.int64)
+    '''Used with connect components to create an adjacency matrix for components'''
+    Product = np.eye(m, dtype=np.int64)
     for i,j in edges[1:]:
-        A[cc_index[i]-1,cc_index[j]-1] = 1
-    return A
+        Product[cc_index[i]-1,cc_index[j]-1] = 1
+    return Product
 
 def iterate_adj(m,A):
-    '''Iterate adjacency matrix to workout which components are accessible'''
+    '''
+    Used with connect components to to iterate adjacency matrix
+    to work out which components are accessible
+    '''
     T = np.eye(m, dtype=np.int64)
     for _ in range(m):
         np.matmul(A,T,out=T)
@@ -561,14 +564,13 @@ def sc(edges):
     # Create connected components
     cc = tarjan(adj)
     m = len(cc)
-    cc_index = create_node2component(m,n,cc)
-
-    A = create_adj_for_cc(m,edges,cc_index)
-    T =  iterate_adj(m,A)
+    T =  iterate_adj(m,
+                     create_adj_for_cc(m,edges,
+                                       create_node2component(m,n,cc)))
 
     for i in range(m):
         for j in range(m):
-            if T[i,j] == 0 and T[j,i] == 0: return -1
+            if T[i,j] == 0 and T[j,i] == 0: return -1 # No path between i and j
 
     return 1
 
@@ -579,19 +581,19 @@ def gs(edges):
 
     Input: a simple directed graph with at most 1,000 vertices and 2,000 edges in the edge list format.
 
-    Return: a vertex from which all other vertices are reachable (if such a vertex exists) and -1 otherwise.
+    Return: a vertex from which all other vertices can be reached (if such a vertex exists) and -1 otherwise.
     '''
     n,_ = edges[0]
     adj = create_adj(edges)
     cc = tarjan(adj)
     m = len(cc)
-    cc_index = create_node2component(m,n,cc)
-    A = create_adj_for_cc(m,edges,cc_index)
-    T =  iterate_adj(m,A)
+    T =  iterate_adj(m,
+                     create_adj_for_cc(m,edges,
+                                       create_node2component(m,n,cc)))
     T1 = np.clip(T,a_min=0,a_max=1)
     T2 = np.sum(T1,axis=1)
-    ii = np.argwhere(T2==m)
-    return -1 if len(ii)==0 else ii[0] + 1
+    index_gs = np.argwhere(T2 == m)  # Can reach any node from here
+    return -1 if len(index_gs)==0 else index_gs[0] + 1
 
 
 def sdag(m,adjacency,weights):
@@ -933,9 +935,12 @@ if __name__=='__main__':
                                   [2, 4, 2],
                                   [2, 5, 3]]))
 
-        # @skip('TODO #158')
         def test_gs(self):
-            self.assertEqual(3,gs([[3,2],[3, 2],[2, 1]]))
+                ''' General Sink'''
+                self.assertEqual(3,
+                                 gs([[3,2],[3, 2],[2, 1]]))
+                self.assertEqual(-1,
+                                 gs([[3,2],[3, 2],[1, 2]]))
 
         def test_hdag(self):
             '''Hamiltonian Path in DAG'''
