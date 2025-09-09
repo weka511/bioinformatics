@@ -20,13 +20,17 @@
 #include <sstream>
 
 #include "factory.hpp"
+#include "dna.hpp"
+#include "rna.hpp"
 
 using namespace std;
 
 shared_ptr<Problem> ProblemFactory::create(string problem_name) {
 	if (problem_name == "DNA") 
 		return make_shared<DNA>();
-	 else {
+	else  if (problem_name == "RNA") 
+		return make_shared<RNA>();
+	else {
 		stringstream message;
 		message<<__FILE__ <<" " <<__LINE__<<" Error: Unable to create problem " << problem_name<<endl; 
 		throw logic_error(message.str().c_str()); 

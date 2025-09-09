@@ -15,15 +15,15 @@
  * along with this software.  If not, see <http://www.gnu.org/licenses/>
  */
  
-#ifndef _DNA_HPP
-#define _DNA_HPP
+#ifndef _RNA_HPP
+#define _RNA_HPP
 
 #include "problem.hpp"
 
 using namespace std;
 
-class DNA : public Problem {
+class RNA : public Problem {
 	void solve();
 };
 
-#endif // _DNA_HPP
+#endif // _RNA_HPP

@@ -26,7 +26,8 @@ CXX       = g++
 RM        = rm -f
 MKDIR     = mkdir -p
 SRCS      = dna.cpp     \
-			factory.cpp
+			factory.cpp	\
+			rna.cpp
 
 TESTS     = test_dna.cpp
 

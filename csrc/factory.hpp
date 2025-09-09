@@ -19,7 +19,7 @@
 #define _PROBLEM_FACTORY_HPP
 
 #include <memory>
-#include "dna.hpp"
+#include "problem.hpp"
 
 using namespace std;
 
