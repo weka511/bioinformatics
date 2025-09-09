@@ -17,15 +17,15 @@
 # https://stackoverflow.com/questions/2481269/how-to-make-a-simple-c-makefile
 
 
-CPP_BASIC_FLAGS = -g -O3  -I/sw/include/root  -std=c++23
+CPP_BASIC_FLAGS = -g -O3  -I/sw/include/root -Wall -std=c++23
 CPPFLAGS  =  $(CPP_BASIC_FLAGS) 
 LDFLAGS   = -g -O3
-LDLIBS    = -lcurl
+LDLIBS    = 
 CC        = gcc
 CXX       = g++
 RM        = rm -f
 MKDIR     = mkdir -p
-SRCS      = util.cpp    
+SRCS      =  
 
 TESTS     = 
 
@@ -35,7 +35,7 @@ OBJS = $(patsubst %.cpp,$(OBJDIR)/%.o,$(SRCS))
 TEST_OBJS = $(patsubst %.cpp,$(OBJDIR)/%.o,$(TESTS))
 
 
-MAIN      = main.exe
+MAIN      = rosalind.exe
 TARGETS   = $(MAIN) 
 TEST_MAIN = tests.exe
 
@@ -60,7 +60,7 @@ install: rebuild
 	mkdir -p ../logs
 	mkdir -p ../config
 	
-.depend: $(SRCS) $(TESTS)  main.cpp Makefile
+.depend: $(SRCS) $(TESTS)  rosalind.cpp Makefile
 	$(RM) ./.depend
 	$(CXX) $(CPP_BASIC_FLAGS) -MM $^>>./.depend;
 	sed -i -e 's/^.*:.*/$(OBJDIR)\/&/' .depend;
@@ -71,8 +71,8 @@ $(OBJDIR):
 $(OBJDIR)/%.o: %.cpp | $(OBJDIR)
 	$(CXX) $(CPPFLAGS) -c $< -o $@
 		
-$(MAIN): $(OBJS) $(OBJDIR)/main.o 
-	${CXX} $(LDFLAGS) -o $(MAIN) $(OBJDIR)/main.o ${OBJS} ${LDLIBS}
+$(MAIN): $(OBJS) $(OBJDIR)/rosalind.o 
+	${CXX} $(LDFLAGS) -o $(MAIN) $(OBJDIR)/rosalind.o ${OBJS} ${LDLIBS}
 	
 $(TEST_MAIN): $(OBJS) $(OBJDIR)/tests.o $(TEST_OBJS)
 	${CXX} $(LDFLAGS) -o $(TEST_MAIN) $(OBJDIR)/tests.o ${OBJS} $(TEST_OBJS) ${LDLIBS}
