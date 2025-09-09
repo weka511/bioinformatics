@@ -28,7 +28,7 @@ MKDIR     = mkdir -p
 SRCS      = dna.cpp     \
 			factory.cpp
 
-TESTS     = 
+TESTS     = test_dna.cpp
 
 OBJDIR = obj
 		

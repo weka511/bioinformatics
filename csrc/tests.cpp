@@ -15,16 +15,5 @@
  * along with this software.  If not, see <http://www.gnu.org/licenses/>
  */
  
-#ifndef _PROBLEM_HPP
-#define _PROBLEM_HPP
-
-#include <memory>
-
-using namespace std;
-
-class Problem{
-  public:
-    virtual void solve()=0;
-};
-
-#endif //_PROBLEM_HPP
+#define CATCH_CONFIG_MAIN  // This tells Catch to provide a main() - only do this in one cpp file
+#include "catch.hpp"
