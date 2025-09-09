@@ -25,7 +25,8 @@ CC        = gcc
 CXX       = g++
 RM        = rm -f
 MKDIR     = mkdir -p
-SRCS      =  
+SRCS      = dna.cpp     \
+			factory.cpp
 
 TESTS     = 
 
@@ -43,7 +44,7 @@ all : $(MAIN) $(TEST_OBJS)
 
 run : all 
 	${RM} configs/foo*.csv
-	./$(MAIN)
+	./$(MAIN) -p DNA
 	
 tests : $(TEST_MAIN) all
 	./$(TEST_MAIN)
