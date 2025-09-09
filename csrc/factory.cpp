@@ -18,6 +18,8 @@
 #include <iostream>
 #include <stdexcept>
 #include <sstream>
+#include <algorithm>
+#include <cctype>
 
 #include "factory.hpp"
 #include "dna.hpp"
@@ -25,14 +27,21 @@
 
 using namespace std;
 
+ProblemFactory::ProblemFactory(){
+	problem_map["DNA"] = &createProblem<DNA>;
+	problem_map["RNA"] = &createProblem<RNA>;
+}
+
 shared_ptr<Problem> ProblemFactory::create(string problem_name) {
-	if (problem_name == "DNA") 
-		return make_shared<DNA>();
-	else  if (problem_name == "RNA") 
-		return make_shared<RNA>();
-	else {
+	transform(problem_name.begin(), problem_name.end(), problem_name.begin(),
+             [](unsigned char c) { return toupper(c); });
+	if (problem_map.find(problem_name) == problem_map.end()) {
 		stringstream message;
-		message<<__FILE__ <<" " <<__LINE__<<" Error: Unable to create problem " << problem_name<<endl; 
+		message<<__FILE__ <<" " <<__LINE__<<" Error: Unable to create handler for problem " << problem_name<<endl; 
 		throw logic_error(message.str().c_str()); 
+	} else {
+		shared_ptr<Problem> my_ptr(problem_map[problem_name]());
+		return my_ptr;
 	}
+	
 } 

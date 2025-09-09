@@ -14,13 +14,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this software.  If not, see <http://www.gnu.org/licenses/>
  */
- 
-#include <iostream>
 
 #include "dna.hpp"
 
 using namespace std;
 
 void DNA::solve() {
-	cout<<"solved"<<endl;
+	cout<<"solved DNA"<<endl;
 }

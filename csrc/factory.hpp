@@ -19,12 +19,17 @@
 #define _PROBLEM_FACTORY_HPP
 
 #include <memory>
+#include <map>
+
 #include "problem.hpp"
 
 using namespace std;
 
 class ProblemFactory {
+	 map<string,Problem*(*)()> problem_map;
   public:
+    ProblemFactory();
+	
 	shared_ptr<Problem> create(string problem_name); 
 };
 

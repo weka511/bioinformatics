@@ -29,7 +29,8 @@ SRCS      = dna.cpp     \
 			factory.cpp	\
 			rna.cpp
 
-TESTS     = test_dna.cpp
+TESTS     = test_dna.cpp	\
+			test_rna.cpp
 
 OBJDIR = obj
 		

@@ -11,13 +11,14 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should   received a copy of the GNU General Public License
  * along with this software.  If not, see <http://www.gnu.org/licenses/>
  */
  
 #ifndef _PROBLEM_HPP
 #define _PROBLEM_HPP
 
+#include <iostream>
 #include <memory>
 
 using namespace std;
@@ -25,6 +26,11 @@ using namespace std;
 class Problem{
   public:
     virtual void solve()=0;
+	virtual ~Problem(){cout << "cleaning up" << endl;};
 };
+
+template <class T>
+Problem* createProblem() {return new T;};
+
 
 #endif //_PROBLEM_HPP
