@@ -17,13 +17,17 @@
  
  #include "catch.hpp"
  #include "rna.hpp"
- // AGCTTTTCATTCTGACTGCAACGGGCAATATGTCTCTGTGTGGATTAAAAAAAGAGTGTCTGATAGCAG
- // 20 12 17 21
- TEST_CASE( "Serialization Tests", "[serialization]" ) {
+ 
+ TEST_CASE( "RNA Tests", "[rna]" ) {
 	 
-	 SECTION("Parse float") { 
+	 SECTION("Substitute bases") {
+		RNA rna;		 
 		Datasource datasource;
-		RNA rna;
-	 	REQUIRE(0 == 0);
+		datasource.push_back("GATGGAACTTGACTACGTAAATT");
+		rna.attach(&datasource);
+		Output output;
+		rna.attach(&output);
+		rna.solve();
+		REQUIRE(rna.get(0) == "GAUGGAACUUGACUACGUAAAUU");
 	 }
  }

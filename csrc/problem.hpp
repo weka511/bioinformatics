@@ -32,6 +32,7 @@ class Datasource : public vector<string>{
 
 class Output : public vector<string>{
    public:
+	void append(string text) {push_back(text);};
 	void append(vector<int> counts);
 	string get(int i) {return (*this)[i];};
 };
@@ -41,17 +42,23 @@ class Output : public vector<string>{
  */
 class Problem{
   private:
-    Datasource*  _datasource;
-	Output*  _output;
+    Datasource* _datasource;
+	Output* _output;
 	string _name;
 	
   protected:
     Problem(string name) : _name(name) {};
+	
 	string get_input(int i) { 
 		return(*_datasource)[i];
 	}
+	
 	void append(vector<int> counts){
 		_output->append(counts);
+	}
+	
+	void append(string text){
+		_output->append(text);
 	}
   public:
 	/**

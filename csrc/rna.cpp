@@ -15,10 +15,13 @@
  * along with this software.  If not, see <http://www.gnu.org/licenses/>
  */
 
+#include <algorithm>
 #include "rna.hpp"
 
 using namespace std;
 
 void RNA::solve() {
-	cout<<"solved RNA"<<endl;
+	auto dna_string= get_input(0);
+	replace( dna_string.begin(), dna_string.end(), 'T', 'U');
+	append(dna_string);
 }

@@ -21,7 +21,7 @@
  
  TEST_CASE( "DNA Tests", "[dna]" ) {
 	 
-	 SECTION("Parse float") { 
+	 SECTION("Count bases") { 
 		DNA dna;
 		Datasource datasource;
 		datasource.push_back("AGCTTTTCATTCTGACTGCAACGGGCAATATGTCTCTGTGTGGATTAAAAAAAGAGTGTCTGATAGCAGC");
