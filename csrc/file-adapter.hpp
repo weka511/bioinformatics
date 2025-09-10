@@ -28,8 +28,33 @@ using namespace std;
 
 
 
-class FileOutput : public OutputAdapter{
+class FileNameFactory {
+  private:
+	string path="C:\\Users\\Weka\\Downloads\\";
+	
+  public:
+	enum Format{SUBMIT,TEST};
+		
+	string create(string problem_name,Format format,int seq);
+};
+
+class FileDatasource : public Datasource{
+	private: 
+	
    public:
+	FileDatasource(string file_name);
+	string get_input(int i) { 
+		return "";
+	}
+};
+
+class FileOutput : public OutputAdapter{
+  private:
+ 
+	
+  public:
+	FileOutput(string file_name);
+   
 	void append(string text);
 	void append(vector<int> counts);
 };

@@ -19,15 +19,14 @@
 #define _PROBLEM_HPP
 
 #include <iostream>
-#include <memory>
 #include <string>
 #include <vector>
 
 using namespace std;
 
-class Datasource : public vector<string>{
+class Datasource {
    public:
-	
+	virtual string get_input(int i)=0;
 };
 
 class OutputAdapter  {
@@ -49,7 +48,7 @@ class Problem{
     Problem(string name) : _name(name) {};
 	
 	string get_input(int i) { 
-		return(*_datasource)[i];
+		return _datasource->get_input(i);
 	}
 	
 	void append(vector<int> counts){
@@ -63,7 +62,7 @@ class Problem{
 	/**
 	 * Solve a problem
      */
-    virtual void solve()=0;
+    virtual void solve() = 0;
 	
 	void attach(Datasource* datasource) { _datasource = datasource;}
 	

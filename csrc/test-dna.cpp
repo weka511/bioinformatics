@@ -24,7 +24,7 @@
 	 
 	 SECTION("Count bases") { 
 		DNA dna;
-		Datasource datasource;
+		TestDatasource datasource;
 		datasource.push_back("AGCTTTTCATTCTGACTGCAACGGGCAATATGTCTCTGTGTGGATTAAAAAAAGAGTGTCTGATAGCAGC");
 		dna.attach(&datasource);
 		TestOutput output;

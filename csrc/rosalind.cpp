@@ -17,31 +17,25 @@
 
 #include <iostream>
 #include <getopt.h>
+#include <stdexcept>
+#include <sstream>
 
+#include "rosalind.hpp"
 #include "factory.hpp"
+#include "file-adapter.hpp"
 
 using namespace std;
 
-struct option long_options[] ={ 
-	{"problem", required_argument, NULL, 'p'},
-	{NULL, 0, NULL, 0}
-};
 
 int main(int argc, char **argv) {
-	ProblemFactory factory;
-	char ch;
-	string problem_name = "????";
-	while ((ch = getopt_long(argc, argv, "p:", long_options, NULL)) != -1)
-	  switch (ch)    {
-		 case 'p':
-			 problem_name = optarg; 
-			 break;
-		default:
-			cerr << ch << endl;
-			exit(EXIT_FAILURE);
-		}
 	try {
-		shared_ptr<Problem>  problem = factory.create(problem_name);
+		Parameters parameters(argc,argv);
+		ProblemFactory factory;
+		shared_ptr<Problem>  problem = factory.create(parameters.get_problem_name());
+		FileDatasource datasource("C:\\Users\\Weka\\Downloads\\rosalind_dna_1_dataset.txt");
+		FileOutput output("foo.txt");
+		problem->attach(&datasource);
+		problem->attach(&output);
 		problem->solve();
 		return EXIT_SUCCESS;
 	}  catch (const exception& e) {
@@ -50,4 +44,26 @@ int main(int argc, char **argv) {
 		return EXIT_FAILURE;
     }
 }
+
+struct option long_options[] ={ 
+	{"problem", required_argument, NULL, 'p'},
+	{NULL, 0, NULL, 0}
+};
+
+
+Parameters::Parameters(int argc, char **argv){
+	char ch;
+	while ((ch = getopt_long(argc, argv, "p:", long_options, NULL)) != -1)
+		switch (ch)    {
+		 case 'p':
+			 _problem_name = optarg; 
+			 break;
+		default:
+			cerr << ch << endl;
+			stringstream message;
+			message<<__FILE__ <<" " <<__LINE__<<" Error: unrecognized parameter " << ch; 
+			throw logic_error(message.str().c_str()); 
+	}
+}
+
 

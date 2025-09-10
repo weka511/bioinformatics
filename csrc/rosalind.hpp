@@ -15,33 +15,21 @@
  * along with this software.  If not, see <http://www.gnu.org/licenses/>
  */
  
-#ifndef _TEST_ADAPTER_HPP
-#define _TEST_ADAPTER_HPP
+#ifndef _ROSALIND_HPP
+#define _ROSALIND_HPP
 
-#include <iostream>
-#include <memory>
 #include <string>
-#include <vector>
-#include "problem.hpp"
+
 
 using namespace std;
 
-
-class TestDatasource : public Datasource, public vector<string>{
-   public:
-	string get_input(int i) { 
-		return(*this)[i];
-	}
+class Parameters{
+	string _problem_name = "????";
+	
+  public:
+	Parameters(int argc, char **argv);
+	
+	string get_problem_name() {return _problem_name;}
 };
 
-class TestOutput : public OutputAdapter, public vector<string>{
-   public:
-	void append(string text);
-	void append(vector<int> counts);
-	string get(int i);
-};
-
-
-
-
-#endif //_TEST_ADAPTER_HPP
+#endif // _ROSALIND_HPP

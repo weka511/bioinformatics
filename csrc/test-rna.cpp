@@ -23,7 +23,7 @@
 	 
 	 SECTION("Substitute bases") {
 		RNA rna;		 
-		Datasource datasource;
+		TestDatasource datasource;
 		datasource.push_back("GATGGAACTTGACTACGTAAATT");
 		rna.attach(&datasource);
 		TestOutput output;

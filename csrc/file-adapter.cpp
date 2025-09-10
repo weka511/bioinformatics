@@ -15,10 +15,41 @@
  * along with this software.  If not, see <http://www.gnu.org/licenses/>
  */
  
- #include <sstream>
- #include "file-adapter.hpp"
+ // rosalind_ba11f
+ // rosalind_dna_1_dataset
+ 
+#include <fstream>
+#include <stdexcept>
+#include <sstream>
+#include "file-adapter.hpp"
  
  using namespace std;
+ 
+ string FileNameFactory::create(string problem_name,Format format,int seq=0) {
+		switch (format) {
+		case SUBMIT:
+			break;
+		case TEST:
+			break;
+		}  
+		return "";
+};
+	
+ FileDatasource::FileDatasource(string file_name){
+	 ifstream file(file_name);
+	 if (file.is_open()) {
+		 string line;
+		while (getline(file, line))
+			std::cout << line << std::endl;
+	} else {
+        stringstream message;
+		message<<__FILE__ <<" " <<__LINE__<<" Error: Unable to copen file  " << file_name<<endl; 
+		throw logic_error(message.str().c_str()); 
+    }
+ }
+ 
+ FileOutput::FileOutput(string file_name){
+ }
  
  void FileOutput::append(string text) {
 	
