@@ -22,7 +22,7 @@
 
 #include "rosalind.hpp"
 #include "factory.hpp"
-#include "file-adapter.hpp"
+
 
 using namespace std;
 
@@ -32,7 +32,9 @@ int main(int argc, char **argv) {
 		Parameters parameters(argc,argv);
 		ProblemFactory factory;
 		shared_ptr<Problem>  problem = factory.create(parameters.get_problem_name());
-		FileDatasource datasource("C:\\Users\\Weka\\Downloads\\rosalind_dna_1_dataset.txt");
+		FileNameFactory fnf;
+		string file_name = fnf.create(parameters.get_problem_name(),parameters.get_format());
+		FileDatasource datasource(file_name);
 		FileOutput output("foo.txt");
 		problem->attach(&datasource);
 		problem->attach(&output);
@@ -47,17 +49,21 @@ int main(int argc, char **argv) {
 
 struct option long_options[] ={ 
 	{"problem", required_argument, NULL, 'p'},
+	{"test", required_argument, NULL, 't'},
 	{NULL, 0, NULL, 0}
 };
 
 
 Parameters::Parameters(int argc, char **argv){
 	char ch;
-	while ((ch = getopt_long(argc, argv, "p:", long_options, NULL)) != -1)
+	while ((ch = getopt_long(argc, argv, "p:t", long_options, NULL)) != -1)
 		switch (ch)    {
 		 case 'p':
 			 _problem_name = optarg; 
 			 break;
+		  case 't':
+			_format = FileNameFactory::Format::TEST;
+			break;
 		default:
 			cerr << ch << endl;
 			stringstream message;

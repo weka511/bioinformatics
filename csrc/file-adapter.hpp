@@ -30,12 +30,15 @@ using namespace std;
 
 class FileNameFactory {
   private:
-	string path="C:\\Users\\Weka\\Downloads\\";
+	string _path="C:\\Users\\Weka\\Downloads\\";
 	
   public:
-	enum Format{SUBMIT,TEST};
+	enum Format{
+		SUBMIT, 	// rosalind_ba11f
+		TEST 		// rosalind_dna_1_dataset
+	};
 		
-	string create(string problem_name,Format format,int seq);
+	string create(string problem_name,Format format,int seq=1);
 };
 
 class FileDatasource : public Datasource{

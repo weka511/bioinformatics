@@ -19,17 +19,20 @@
 #define _ROSALIND_HPP
 
 #include <string>
-
+#include "file-adapter.hpp"
 
 using namespace std;
 
 class Parameters{
 	string _problem_name = "????";
+	FileNameFactory::Format _format = FileNameFactory::Format::SUBMIT;
 	
   public:
 	Parameters(int argc, char **argv);
 	
 	string get_problem_name() {return _problem_name;}
+	
+	FileNameFactory::Format get_format() {return _format;}
 };
 
 #endif // _ROSALIND_HPP

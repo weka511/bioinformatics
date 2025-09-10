@@ -15,9 +15,9 @@
  * along with this software.  If not, see <http://www.gnu.org/licenses/>
  */
  
- // rosalind_ba11f
- // rosalind_dna_1_dataset
  
+ 
+#include <algorithm>
 #include <fstream>
 #include <stdexcept>
 #include <sstream>
@@ -25,14 +25,20 @@
  
  using namespace std;
  
- string FileNameFactory::create(string problem_name,Format format,int seq=0) {
-		switch (format) {
-		case SUBMIT:
-			break;
+ string FileNameFactory::create(string problem_name,Format format,int seq) {
+	transform(problem_name.begin(), problem_name.end(), problem_name.begin(),
+             [](unsigned char c) { return tolower(c); });
+	stringstream path;
+	path << _path << "\\" << "rosalind_" << problem_name;
+	switch (format) {
+		case SUBMIT:		
+			break ;
 		case TEST:
+			path << "_" << seq << "_dataset";
 			break;
-		}  
-		return "";
+	}  
+	path << ".txt";
+	return path.str();
 };
 	
  FileDatasource::FileDatasource(string file_name){
