@@ -25,19 +25,17 @@ CC        = gcc
 CXX       = g++
 RM        = rm -f
 MKDIR     = mkdir -p
-SRCS      = dna.cpp     \
-			factory.cpp	\
-			problem.cpp \
-			rna.cpp
+PROBLEMS  = dna.cpp     \
+		    rna.cpp
 
-TESTS     = test_dna.cpp	\
-			test_rna.cpp
+SRCS      = $(PROBLEMS) factory.cpp	problem.cpp \
+	
+TESTS     = $(patsubst %.cpp,test_%.cpp,$(PROBLEMS))
 
 OBJDIR = obj
 		
 OBJS = $(patsubst %.cpp,$(OBJDIR)/%.o,$(SRCS))
 TEST_OBJS = $(patsubst %.cpp,$(OBJDIR)/%.o,$(TESTS))
-
 
 MAIN      = rosalind.exe
 TARGETS   = $(MAIN) 
