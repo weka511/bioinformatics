@@ -30,11 +30,10 @@ class Datasource : public vector<string>{
 	
 };
 
-class Output : public vector<string>{
+class OutputAdapter  {
    public:
-	void append(string text) {push_back(text);};
-	void append(vector<int> counts);
-	string get(int i) {return (*this)[i];};
+	virtual void append(string text)=0;
+	virtual void append(vector<int> counts)=0;
 };
 
 /**
@@ -43,7 +42,7 @@ class Output : public vector<string>{
 class Problem{
   private:
     Datasource* _datasource;
-	Output* _output;
+	OutputAdapter* _output;
 	string _name;
 	
   protected:
@@ -68,9 +67,8 @@ class Problem{
 	
 	void attach(Datasource* datasource) { _datasource = datasource;}
 	
-	void attach(Output* output) { _output = output;}
+	void attach(OutputAdapter* output) { _output = output;}
 	
-	string get(int i) {return _output->get(i);};
 };
 
 /**

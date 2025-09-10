@@ -16,11 +16,15 @@
  */
  
  #include <sstream>
- #include "problem.hpp"
+ #include "test-adapter.hpp"
  
  using namespace std;
  
- void Output::append(vector<int> counts){
+ void TestOutput::append(string text) {
+	 push_back(text);
+}
+	
+ void TestOutput::append(vector<int> counts){
 	stringstream buffer;
 	auto appending = false;
 	for (auto count:counts) {
@@ -32,4 +36,8 @@
 	}
 
 	push_back(buffer.str());
+}
+
+string TestOutput::get(int i) {
+	return (*this)[i];
 }

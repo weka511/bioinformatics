@@ -11,25 +11,31 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should   received a copy of the GNU General Public License
  * along with this software.  If not, see <http://www.gnu.org/licenses/>
  */
  
- #include <memory>
- #include "catch.hpp"
- #include "dna.hpp"
- #include "test-adapter.hpp"
- 
- TEST_CASE( "DNA Tests", "[dna]" ) {
-	 
-	 SECTION("Count bases") { 
-		DNA dna;
-		Datasource datasource;
-		datasource.push_back("AGCTTTTCATTCTGACTGCAACGGGCAATATGTCTCTGTGTGGATTAAAAAAAGAGTGTCTGATAGCAGC");
-		dna.attach(&datasource);
-		TestOutput output;
-		dna.attach(&output);
-		dna.solve();
-		REQUIRE(output.get(0) == "20 12 17 21");
-	 }
- }
+#ifndef _TEST_ADAPTER_HPP
+#define _TEST_ADAPTER_HPP
+
+#include <iostream>
+#include <memory>
+#include <string>
+#include <vector>
+#include "problem.hpp"
+
+using namespace std;
+
+
+
+class TestOutput : public OutputAdapter, public vector<string>{
+   public:
+	void append(string text);
+	void append(vector<int> counts);
+	string get(int i);
+};
+
+
+
+
+#endif //_TEST_ADAPTER_HPP

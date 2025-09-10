@@ -17,6 +17,7 @@
  
  #include "catch.hpp"
  #include "rna.hpp"
+ #include "test-adapter.hpp"
  
  TEST_CASE( "RNA Tests", "[rna]" ) {
 	 
@@ -25,9 +26,9 @@
 		Datasource datasource;
 		datasource.push_back("GATGGAACTTGACTACGTAAATT");
 		rna.attach(&datasource);
-		Output output;
+		TestOutput output;
 		rna.attach(&output);
 		rna.solve();
-		REQUIRE(rna.get(0) == "GAUGGAACUUGACUACGUAAAUU");
+		REQUIRE(output.get(0) == "GAUGGAACUUGACUACGUAAAUU");
 	 }
  }

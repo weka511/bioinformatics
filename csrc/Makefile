@@ -28,9 +28,9 @@ MKDIR     = mkdir -p
 PROBLEMS  = dna.cpp     \
 		    rna.cpp
 
-SRCS      = $(PROBLEMS) factory.cpp	problem.cpp \
+SRCS      = $(PROBLEMS) factory.cpp
 	
-TESTS     = $(patsubst %.cpp,test_%.cpp,$(PROBLEMS))
+TESTS     = $(patsubst %.cpp,test_%.cpp,$(PROBLEMS)) test-adapter.cpp
 
 OBJDIR = obj
 		
