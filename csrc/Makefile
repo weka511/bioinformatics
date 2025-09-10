@@ -30,7 +30,7 @@ PROBLEMS  = dna.cpp     \
 
 SRCS      = $(PROBLEMS) factory.cpp
 	
-TESTS     = $(patsubst %.cpp,test_%.cpp,$(PROBLEMS)) test-adapter.cpp
+TESTS     = $(patsubst %.cpp,test-%.cpp,$(PROBLEMS)) test-adapter.cpp
 
 OBJDIR = obj
 		
