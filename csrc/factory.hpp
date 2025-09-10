@@ -25,11 +25,24 @@
 
 using namespace std;
 
+/**
+ * This class instantiates problems 
+ */
 class ProblemFactory {
+	/**
+	 *  Lookup table, used to convert the name of a problem to the problem class.
+	 */
 	 map<string,Problem*(*)()> problem_map;
+	 
   public:
+	/**
+	 * Build lookup table
+	 */
     ProblemFactory();
 	
+	/**
+	 *  Convert the name of a problem to the problem class.
+	 */
 	shared_ptr<Problem> create(string problem_name); 
 };
 

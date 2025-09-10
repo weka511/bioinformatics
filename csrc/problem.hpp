@@ -20,17 +20,59 @@
 
 #include <iostream>
 #include <memory>
+#include <string>
+#include <vector>
 
 using namespace std;
 
-class Problem{
-  public:
-    virtual void solve()=0;
-	virtual ~Problem(){cout << "cleaning up" << endl;};
+class Datasource : public vector<string>{
+   public:
+	
 };
 
+class Output : public vector<string>{
+   public:
+	void append(vector<int> counts);
+	string get(int i) {return (*this)[i];};
+};
+
+/**
+ * Abstract class that serves as parent for solutions to problems.
+ */
+class Problem{
+  private:
+    Datasource*  _datasource;
+	Output*  _output;
+	string _name;
+	
+  protected:
+    Problem(string name) : _name(name) {};
+	string get_input(int i) { 
+		return(*_datasource)[i];
+	}
+	void append(vector<int> counts){
+		_output->append(counts);
+	}
+  public:
+	/**
+	 * Solve a problem
+     */
+    virtual void solve()=0;
+	
+	void attach(Datasource* datasource) { _datasource = datasource;}
+	
+	void attach(Output* output) { _output = output;}
+	
+	string get(int i) {return _output->get(i);};
+};
+
+/**
+ * Used by factory to instantiate problems
+ */
 template <class T>
-Problem* createProblem() {return new T;};
+Problem* createProblem() {
+	return new T;
+};
 
 
 #endif //_PROBLEM_HPP

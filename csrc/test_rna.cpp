@@ -15,17 +15,15 @@
  * along with this software.  If not, see <http://www.gnu.org/licenses/>
  */
  
-#ifndef _DNA_HPP
-#define _DNA_HPP
-
-#include "problem.hpp"
-
-using namespace std;
-
-class DNA : public Problem {
-  public:
-	DNA() : Problem("DNA") {};
-	void solve();
-};
-
-#endif // _DNA_HPP
+ #include "catch.hpp"
+ #include "rna.hpp"
+ // AGCTTTTCATTCTGACTGCAACGGGCAATATGTCTCTGTGTGGATTAAAAAAAGAGTGTCTGATAGCAG
+ // 20 12 17 21
+ TEST_CASE( "Serialization Tests", "[serialization]" ) {
+	 
+	 SECTION("Parse float") { 
+		Datasource datasource;
+		RNA rna;
+	 	REQUIRE(0 == 0);
+	 }
+ }

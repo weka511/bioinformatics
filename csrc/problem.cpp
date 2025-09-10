@@ -11,21 +11,25 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should   received a copy of the GNU General Public License
  * along with this software.  If not, see <http://www.gnu.org/licenses/>
  */
  
-#ifndef _DNA_HPP
-#define _DNA_HPP
+ #include <sstream>
+ #include "problem.hpp"
+ 
+ using namespace std;
+ 
+ void Output::append(vector<int> counts){
+	stringstream buffer;
+	auto appending = false;
+	for (auto count:counts) {
+		if (appending)
+			buffer << " ";
+		else
+			appending = true;
+		buffer << count;
+	}
 
-#include "problem.hpp"
-
-using namespace std;
-
-class DNA : public Problem {
-  public:
-	DNA() : Problem("DNA") {};
-	void solve();
-};
-
-#endif // _DNA_HPP
+	push_back(buffer.str());
+}

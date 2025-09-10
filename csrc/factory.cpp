@@ -27,11 +27,17 @@
 
 using namespace std;
 
+/**
+ * Build lookup table
+ */
 ProblemFactory::ProblemFactory(){
 	problem_map["DNA"] = &createProblem<DNA>;
 	problem_map["RNA"] = &createProblem<RNA>;
 }
 
+/**
+ *  Convert the name of a problem to the problem class.
+ */
 shared_ptr<Problem> ProblemFactory::create(string problem_name) {
 	transform(problem_name.begin(), problem_name.end(), problem_name.begin(),
              [](unsigned char c) { return toupper(c); });
@@ -43,5 +49,4 @@ shared_ptr<Problem> ProblemFactory::create(string problem_name) {
 		shared_ptr<Problem> my_ptr(problem_map[problem_name]());
 		return my_ptr;
 	}
-	
 } 

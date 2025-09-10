@@ -27,6 +27,7 @@ RM        = rm -f
 MKDIR     = mkdir -p
 SRCS      = dna.cpp     \
 			factory.cpp	\
+			problem.cpp \
 			rna.cpp
 
 TESTS     = test_dna.cpp	\

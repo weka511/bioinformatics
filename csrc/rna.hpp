@@ -23,6 +23,8 @@
 using namespace std;
 
 class RNA : public Problem {
+  public:
+	RNA() : Problem("RNA") {};
 	void solve();
 };
 
