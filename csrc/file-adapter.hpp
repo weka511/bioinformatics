@@ -36,7 +36,7 @@ class FileNameFactory {
 		TEST 		// rosalind_dna_1_dataset
 	};
 		
-	string create(string problem_name,Format format,int seq=1);
+	string create(string problem_name,Format format,int seq=0);
 };
 
 class FileDatasource : public Datasource{

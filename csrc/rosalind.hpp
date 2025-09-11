@@ -24,9 +24,10 @@
 using namespace std;
 
 class Parameters{
-	string _problem_name = "????";
+	string _problem_name = "";
 	FileNameFactory::Format _format = FileNameFactory::Format::SUBMIT;
 	string _output = "rosalind.txt";
+	int _sequence = 0;
 	
   public:
 	Parameters(int argc, char **argv);
@@ -36,6 +37,8 @@ class Parameters{
 	string get_output_name() {return _output;}
 	
 	FileNameFactory::Format get_format() {return _format;}
+	
+	int get_sequence() {return _sequence;}
 };
 
 #endif // _ROSALIND_HPP

@@ -33,7 +33,9 @@
 	stringstream path;
 	path << _path << "\\" << "rosalind_" << problem_name;
 	switch (format) {
-		case SUBMIT:		
+		case SUBMIT:
+			if (seq>0)
+				path << "(" << seq <<")";
 			break ;
 		case TEST:
 			path << "_" << seq << "_dataset";
