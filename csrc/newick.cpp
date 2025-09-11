@@ -15,11 +15,29 @@
  * along with this software.  If not, see <http://www.gnu.org/licenses/>
  */
  
+ #include <iostream>
+#include <string> 
+#include <cstddef>  
  #include "newick.hpp"
  
  using namespace std;
  
  vector<string> Tokenizer::tokenize(string str) {
+	 cout << str << endl;
 	 vector<string> tokens;
+	 long unsigned int start = 0; // Avoid warning when I compare with `found`
+	 auto found = str.find_first_of(_separators);
+	 if (found > start)
+		 tokens.push_back(str.substr(start,found-start));
+	 
+	 // `found` points to a token
+	 while (found != string::npos) {
+		 tokens.push_back(str.substr(found,1));
+		 start = found + 1;
+		 found = str.find_first_of(_separators,start);
+		 if (found > start)
+			tokens.push_back(str.substr(start,found-start));
+	 }
+
 	 return tokens;
  }

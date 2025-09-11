@@ -24,35 +24,11 @@
 
 using namespace std;
 
-class Newick {
-  public:
-	class Node{
-	  private:
-		vector<Node> nodes;
-	};
-	 
-	void parse(string s){};
-};
-
-vector<string> ctokenize(const string& input_string) {
-    vector<string> tokens;
-    stringstream ss(input_string); 
-    string token;
-//	auto pos = 0;
-	size_t found = input_string.find_first_of("(),; ");
-	cout << found << endl;
-    while (ss >> token)
-        tokens.push_back(token);
-
-    return tokens;
-}
 
 void QRTD::solve() {
 	auto taxa= get_input(0);
 	auto tree1= get_input(1);
 	auto tree2= get_input(2);
-	auto tokens = ctokenize(taxa);
-	auto tokens1 = ctokenize(tree1);
 	
 	// TO DO
 	append("0");
