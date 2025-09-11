@@ -37,7 +37,6 @@ class TestDatasource : public Datasource, public vector<string>{
 class TestOutput : public OutputAdapter, public vector<string>{
    public:
 	void append(string text);
-	void append(vector<int> counts);
 	string get(int i);
 };
 

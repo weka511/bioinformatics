@@ -18,8 +18,6 @@
 #ifndef _FILE_ADAPTER_HPP
 #define _FILE_ADAPTER_HPP
 
-#include <iostream>
-#include <memory>
 #include <string>
 #include <vector>
 #include "problem.hpp"
@@ -42,27 +40,26 @@ class FileNameFactory {
 };
 
 class FileDatasource : public Datasource{
-	private: 
-	
-   public:
+  private: 
+	vector<string> _lines;
+		
+  public:
 	FileDatasource(string file_name);
-	string get_input(int i) { 
-		return "";
-	}
+	
+	string get_input(int i);
 };
 
 class FileOutput : public OutputAdapter{
   private:
- 
-	
+	vector<string> _lines;
+	string _file_name;
   public:
 	FileOutput(string file_name);
    
 	void append(string text);
-	void append(vector<int> counts);
+
+	void flush();
+
 };
-
-
-
 
 #endif //_FILE_ADAPTER_HPP

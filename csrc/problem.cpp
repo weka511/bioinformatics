@@ -16,16 +16,20 @@
  */
  
  #include <sstream>
- #include "test-adapter.hpp"
+ #include "problem.hpp"
  
  using namespace std;
  
- void TestOutput::append(string text) {
-	 push_back(text);
-}
-	
+ void OutputAdapter::append(vector<int> counts){
+	stringstream buffer;
+	auto appending = false;
+	for (auto count:counts) {
+		if (appending)
+			buffer << " ";
+		else
+			appending = true;
+		buffer << count;
+	}
 
-
-string TestOutput::get(int i) {
-	return (*this)[i];
+	append(buffer.str());
 }

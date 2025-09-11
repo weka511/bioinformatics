@@ -28,7 +28,10 @@ MKDIR     = mkdir -p
 PROBLEMS  = dna.cpp     \
 		    rna.cpp
 
-SRCS      = $(PROBLEMS) factory.cpp file-adapter.cpp
+SRCS      = $(PROBLEMS)			\
+			factory.cpp 		\
+			file-adapter.cpp 	\
+			problem.cpp
 	
 TESTS     = $(patsubst %.cpp,test-%.cpp,$(PROBLEMS)) test-adapter.cpp
 

@@ -32,7 +32,10 @@ class Datasource {
 class OutputAdapter  {
    public:
 	virtual void append(string text)=0;
-	virtual void append(vector<int> counts)=0;
+	
+	void append(vector<int> counts);
+	
+	virtual void flush() {;};
 };
 
 /**

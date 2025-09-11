@@ -21,6 +21,8 @@
 #include <fstream>
 #include <stdexcept>
 #include <sstream>
+#include <iostream>
+
 #include "file-adapter.hpp"
  
  using namespace std;
@@ -44,23 +46,36 @@
  FileDatasource::FileDatasource(string file_name){
 	 ifstream file(file_name);
 	 if (file.is_open()) {
-		 string line;
+		string line;
 		while (getline(file, line))
-			std::cout << line << std::endl;
+			_lines.push_back(line);
 	} else {
         stringstream message;
-		message<<__FILE__ <<" " <<__LINE__<<" Error: Unable to copen file  " << file_name<<endl; 
+		message<<__FILE__ <<" " <<__LINE__<<" Error: Unable to open file  " << file_name<<endl; 
 		throw logic_error(message.str().c_str()); 
     }
  }
  
+ string FileDatasource::get_input(int i) { 
+	return _lines[i];
+}
+	
  FileOutput::FileOutput(string file_name){
+	 _file_name = file_name;
  }
  
  void FileOutput::append(string text) {
-	
+	_lines.push_back(text);
 }
 	
- void FileOutput::append(vector<int> counts){
-
+void FileOutput::flush(){
+	ofstream file(_file_name);
+	if (file.is_open()) {
+		for (auto line : _lines)
+			file << line << endl;
+	} else {
+        stringstream message;
+		message<<__FILE__ <<" " <<__LINE__<<" Error: Unable to open file  " << _file_name<<endl; 
+		throw logic_error(message.str().c_str()); 
+    }
 }
