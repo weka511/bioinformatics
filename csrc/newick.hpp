@@ -34,12 +34,25 @@ class Newick {
 	void parse(string s){};
 };
 
+/**
+ *  This class converts a string to a vector of tokens
+ */
 class Tokenizer {
 	string _separators;
   public:
 	Tokenizer(string separators="(,); ") : _separators(separators){};
   
+	/**
+	 *  Convert a string to a vector of tokens
+	 */
 	vector<string> tokenize(string str);
+	
+  private:
+	/**
+	 * Replace consecutve white spaces with a single space
+	 */
+    vector<string> _cull_consecutive_spaces(vector<string> tokens);
+	
 };
 
 #endif // _NEWICK_HPP

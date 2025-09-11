@@ -44,7 +44,7 @@
 	 
 	SECTION("Test tokenizer nodes") {
 		Tokenizer tokenizer;
-		auto tokens = tokenizer.tokenize("A B C D E");
+		auto tokens = tokenizer.tokenize("A B  C      D E");
 		REQUIRE(tokens[0] == "A");
 		REQUIRE(tokens[1] == " ");
 		REQUIRE(tokens[2] == "B");
