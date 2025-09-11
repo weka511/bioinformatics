@@ -11,16 +11,16 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should   received a copy of the GNU General Public License
  * along with this software.  If not, see <http://www.gnu.org/licenses/>
  */
+ 
+#ifndef _NEWICK_HPP
+#define _NEWICK_HPP
 
-#include <vector>
-#include "qrtd.hpp"
-#include <string>
 #include <iostream>
-#include <cstddef> 
-#include <sstream>
+#include <string>
+#include <vector>
 
 using namespace std;
 
@@ -34,26 +34,12 @@ class Newick {
 	void parse(string s){};
 };
 
-vector<string> ctokenize(const string& input_string) {
-    vector<string> tokens;
-    stringstream ss(input_string); 
-    string token;
-//	auto pos = 0;
-	size_t found = input_string.find_first_of("(),; ");
-	cout << found << endl;
-    while (ss >> token)
-        tokens.push_back(token);
+class Tokenizer {
+	string _separators;
+  public:
+	Tokenizer(string separators="(,); ") : _separators(separators){};
+  
+	vector<string> tokenize(string str);
+};
 
-    return tokens;
-}
-
-void QRTD::solve() {
-	auto taxa= get_input(0);
-	auto tree1= get_input(1);
-	auto tree2= get_input(2);
-	auto tokens = ctokenize(taxa);
-	auto tokens1 = ctokenize(tree1);
-	
-	// TO DO
-	append("0");
-}
+#endif // _NEWICK_HPP

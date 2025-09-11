@@ -32,9 +32,12 @@ PROBLEMS  = dna.cpp     \
 SRCS      = $(PROBLEMS)			\
 			factory.cpp 		\
 			file-adapter.cpp 	\
+			newick.cpp			\
 			problem.cpp
-	
-TESTS     = $(patsubst %.cpp,test-%.cpp,$(PROBLEMS)) test-adapter.cpp
+
+SEPARATE_TESTS = test-adapter.cpp	test-newick.cpp
+
+TESTS     = $(patsubst %.cpp,test-%.cpp,$(PROBLEMS)) $(SEPARATE_TESTS)
 
 OBJDIR = obj
 		

@@ -11,25 +11,17 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * You should   received a copy of the GNU General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this software.  If not, see <http://www.gnu.org/licenses/>
  */
  
- #include <sstream>
- #include "problem.hpp"
- 
- using namespace std;
- 
- void OutputAdapter::append(vector<int> counts){
-	stringstream buffer;
-	auto appending = false;
-	for (auto count:counts) {
-		if (appending)
-			buffer << " ";
-		else
-			appending = true;
-		buffer << count;
-	}
+ #include "catch.hpp"
+ #include "newick.hpp"
+  
+ TEST_CASE( "Newick Tests", "[newick]" ) {
+	 
+	 SECTION("Test tokenizer") {
+		Tokenizer tokenizer;;
 
-	append(buffer.str());
-}
+	 }
+ }

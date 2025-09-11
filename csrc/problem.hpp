@@ -71,6 +71,8 @@ class Problem{
 	
 	void attach(OutputAdapter* output) { _output = output;}
 	
+	vector<string> tokenize(const string& input_string);
+	
 };
 
 /**

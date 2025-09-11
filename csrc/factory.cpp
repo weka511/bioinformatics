@@ -24,6 +24,7 @@
 #include "factory.hpp"
 #include "dna.hpp"
 #include "rna.hpp"
+#include "qrtd.hpp"
 
 using namespace std;
 
@@ -33,6 +34,7 @@ using namespace std;
 ProblemFactory::ProblemFactory(){
 	problem_map["DNA"] = &createProblem<DNA>;
 	problem_map["RNA"] = &createProblem<RNA>;
+	problem_map["QRTD"] = &createProblem<QRTD>;
 }
 
 /**

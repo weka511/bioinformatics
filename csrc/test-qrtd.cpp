@@ -21,7 +21,7 @@
  
  TEST_CASE( "QRTD Tests", "[qrtd]" ) {
 	 
-	 SECTION("quarted distance") {
+	 SECTION("quartet distance") {
 		QRTD qrtd;
 		TestDatasource datasource;
 		datasource.push_back("A B C D E");

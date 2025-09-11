@@ -15,21 +15,11 @@
  * along with this software.  If not, see <http://www.gnu.org/licenses/>
  */
  
- #include <sstream>
- #include "problem.hpp"
+ #include "newick.hpp"
  
  using namespace std;
  
- void OutputAdapter::append(vector<int> counts){
-	stringstream buffer;
-	auto appending = false;
-	for (auto count:counts) {
-		if (appending)
-			buffer << " ";
-		else
-			appending = true;
-		buffer << count;
-	}
-
-	append(buffer.str());
-}
+ vector<string> Tokenizer::tokenize(string str) {
+	 vector<string> tokens;
+	 return tokens;
+ }
