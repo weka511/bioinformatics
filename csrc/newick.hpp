@@ -49,7 +49,7 @@ class Tokenizer {
 	
   private:
 	/**
-	 * Replace consecutve white spaces with a single space
+	 * Replace consecutive white spaces with a single space
 	 */
     vector<string> _cull_consecutive_spaces(vector<string> tokens);
 	
