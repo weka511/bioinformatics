@@ -26,7 +26,8 @@ CXX       = g++
 RM        = rm -f
 MKDIR     = mkdir -p
 PROBLEMS  = dna.cpp     \
-		    rna.cpp
+		    rna.cpp		\
+			qrtd.cpp
 
 SRCS      = $(PROBLEMS)			\
 			factory.cpp 		\
