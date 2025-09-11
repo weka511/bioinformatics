@@ -20,12 +20,9 @@
   
  TEST_CASE( "Newick Tests", "[newick]" ) {
 	 
-	 SECTION("Test tokenizer") {
+	 SECTION("Test tokenizer newick") {
 		Tokenizer tokenizer;
 		auto tokens = tokenizer.tokenize("(C,(B,D),(A,E));");
-		for (auto t : tokens)
-			cout << t << endl;
-		// REQUIRE(tokens.size() == 16);
 		REQUIRE(tokens[0] == "(");
 		REQUIRE(tokens[1] == "C");
 		REQUIRE(tokens[2] == ",");
@@ -41,7 +38,22 @@
 		REQUIRE(tokens[12] == "E");
 		REQUIRE(tokens[13] == ")");
 		REQUIRE(tokens[14] == ")");
-		REQUIRE(tokens[15] == ";");		
-		tokenizer.tokenize("A B C D E");
+		REQUIRE(tokens[15] == ";");
+		REQUIRE(tokens.size() == 16);		
+	 }
+	 
+	SECTION("Test tokenizer nodes") {
+		Tokenizer tokenizer;
+		auto tokens = tokenizer.tokenize("A B C D E");
+		REQUIRE(tokens[0] == "A");
+		REQUIRE(tokens[1] == " ");
+		REQUIRE(tokens[2] == "B");
+		REQUIRE(tokens[3] == " ");
+		REQUIRE(tokens[4] == "C");
+		REQUIRE(tokens[5] == " ");
+		REQUIRE(tokens[6] == "D");
+		REQUIRE(tokens[7] == " ");
+		REQUIRE(tokens[8] == "E");
+		REQUIRE(tokens.size() == 9);
 	 }
  }
