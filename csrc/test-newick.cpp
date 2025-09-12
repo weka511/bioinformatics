@@ -24,21 +24,37 @@
 		Tokenizer tokenizer;
 		auto tokens = tokenizer.tokenize("(C,(B,D),(A,E));");
 		REQUIRE(tokens[0].get_text() == "(");
+		REQUIRE(tokens[0].is_separator());
 		REQUIRE(tokens[1].get_text() == "C");
+		REQUIRE(!tokens[1].is_separator());
 		REQUIRE(tokens[2].get_text() == ",");
+		REQUIRE(tokens[2].is_separator());
 		REQUIRE(tokens[3].get_text() == "(");
+		REQUIRE(tokens[3].is_separator());
 		REQUIRE(tokens[4].get_text() == "B");
+		REQUIRE(!tokens[4].is_separator());
 		REQUIRE(tokens[5].get_text() == ",");
+		REQUIRE(tokens[5].is_separator());
 		REQUIRE(tokens[6].get_text() == "D");
+		REQUIRE(!tokens[6].is_separator());
 		REQUIRE(tokens[7].get_text() == ")");
+		REQUIRE(tokens[7].is_separator());
 		REQUIRE(tokens[8].get_text() == ",");
+		REQUIRE(tokens[8].is_separator());
 		REQUIRE(tokens[9].get_text() == "(");
+		REQUIRE(tokens[9].is_separator());
 		REQUIRE(tokens[10].get_text() == "A");
+		REQUIRE(!tokens[10].is_separator());
 		REQUIRE(tokens[11].get_text() == ",");
+		REQUIRE(tokens[11].is_separator());
 		REQUIRE(tokens[12].get_text() == "E");
+		REQUIRE(!tokens[12].is_separator());
 		REQUIRE(tokens[13].get_text() == ")");
+		REQUIRE(tokens[13].is_separator());
 		REQUIRE(tokens[14].get_text() == ")");
+		REQUIRE(tokens[14].is_separator());
 		REQUIRE(tokens[15].get_text() == ";");
+		REQUIRE(tokens[15].is_separator());
 		REQUIRE(tokens.size() == 16);		
 	}
 	 

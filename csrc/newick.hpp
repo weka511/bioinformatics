@@ -36,15 +36,16 @@ class Newick {
 
 class Token {
 	const string _text;
+	const bool _is_separator;
 	
   public:
-	Token(string text) : _text(text) {};
+	Token(string text,bool is_separator) : _text(text),_is_separator(is_separator) {};
 	
 	string get_text() {return _text;};
 	
-	int get_length() {return _text.length();};
-	
 	bool is_space() {return _text == " ";};
+	
+	bool is_separator() {return _is_separator;}
 };
 
 /**

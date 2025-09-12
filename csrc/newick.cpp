@@ -36,15 +36,15 @@
 	long unsigned int start = 0; // Avoid warning when I compare with `found`
 	auto found = str.find_first_of(_separators);
 	if (found > start)
-		 product.push_back(Token(str.substr(start,found-start)));
+		 product.push_back(Token(str.substr(start,found-start),true));
 	 
 	// `found` points to a token
 	while (found != string::npos) {
-		 product.push_back(Token(str.substr(found,1)));
+		 product.push_back(Token(str.substr(found,1),true));
 		 start = found + 1;
 		 found = str.find_first_of(_separators,start);
 		 if (found > start && start < right)
-			product.push_back(Token(str.substr(start,found-start)));
+			product.push_back(Token(str.substr(start,found-start),false));
 	}
 
 	return _cull_consecutive_spaces(product);
@@ -56,15 +56,14 @@
  vector<Token> Tokenizer::_cull_consecutive_spaces(vector<Token> tokens){
 	vector<Token> product;
 	auto last_token_was_space = true;
-	for (auto token : tokens)
-		if (!token.is_space()){
+	for (auto token : tokens){
+		if (!token.is_space())
 			product.push_back(token);
-			last_token_was_space = false;
-		} else {
+		else 
 			if (!last_token_was_space)
 				product.push_back(token);
-			last_token_was_space = token.is_space();
-		}
+		last_token_was_space = token.is_space();
+	}
 
 	return product;
  }
