@@ -22,24 +22,29 @@
  
  using namespace std;
  
+ void Newick::parse(string s){
+	Tokenizer tokenizer;
+	auto tokens = tokenizer.tokenize(s);
+ }
+ 
  /**
   *  Convert a string to a vector of tokens
   */
- vector<string> Tokenizer::tokenize(string str) {
-	vector<string> product;
+ vector<Token> Tokenizer::tokenize(string str) {
+	vector<Token> product;
 	long unsigned int right = str.length();
 	long unsigned int start = 0; // Avoid warning when I compare with `found`
 	auto found = str.find_first_of(_separators);
 	if (found > start)
-		 product.push_back(str.substr(start,found-start));
+		 product.push_back(Token(str.substr(start,found-start)));
 	 
 	// `found` points to a token
 	while (found != string::npos) {
-		 product.push_back(str.substr(found,1));
+		 product.push_back(Token(str.substr(found,1)));
 		 start = found + 1;
 		 found = str.find_first_of(_separators,start);
 		 if (found > start && start < right)
-			product.push_back(str.substr(start,found-start));
+			product.push_back(Token(str.substr(start,found-start)));
 	}
 
 	return _cull_consecutive_spaces(product);
@@ -48,17 +53,17 @@
  /**
   * Replace consecutive white spaces with a single space
   */
- vector<string> Tokenizer::_cull_consecutive_spaces(vector<string> tokens){
-	vector<string> product;
+ vector<Token> Tokenizer::_cull_consecutive_spaces(vector<Token> tokens){
+	vector<Token> product;
 	auto last_token_was_space = true;
 	for (auto token : tokens)
-		if (token.length() > 1){
+		if (!token.is_space()){
 			product.push_back(token);
 			last_token_was_space = false;
 		} else {
-			if (!last_token_was_space || token != " ")
+			if (!last_token_was_space)
 				product.push_back(token);
-			last_token_was_space = (token == " ");
+			last_token_was_space = token.is_space();
 		}
 
 	return product;

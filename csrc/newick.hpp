@@ -31,7 +31,20 @@ class Newick {
 		vector<Node> nodes;
 	};
 	 
-	void parse(string s){};
+	void parse(string s);
+};
+
+class Token {
+	const string _text;
+	
+  public:
+	Token(string text) : _text(text) {};
+	
+	string get_text() {return _text;};
+	
+	int get_length() {return _text.length();};
+	
+	bool is_space() {return _text == " ";};
 };
 
 /**
@@ -39,19 +52,20 @@ class Newick {
  */
 class Tokenizer {
 	string _separators;
+	
   public:
 	Tokenizer(string separators="(,); ") : _separators(separators){};
   
 	/**
 	 *  Convert a string to a vector of tokens
 	 */
-	vector<string> tokenize(string str);
+	vector<Token> tokenize(string str);
 	
   private:
 	/**
 	 * Replace consecutive white spaces with a single space
 	 */
-    vector<string> _cull_consecutive_spaces(vector<string> tokens);
+    vector<Token> _cull_consecutive_spaces(vector<Token> tokens);
 	
 };
 

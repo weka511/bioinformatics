@@ -23,37 +23,42 @@
 	 SECTION("Test tokenizer newick") {
 		Tokenizer tokenizer;
 		auto tokens = tokenizer.tokenize("(C,(B,D),(A,E));");
-		REQUIRE(tokens[0] == "(");
-		REQUIRE(tokens[1] == "C");
-		REQUIRE(tokens[2] == ",");
-		REQUIRE(tokens[3] == "(");
-		REQUIRE(tokens[4] == "B");
-		REQUIRE(tokens[5] == ",");
-		REQUIRE(tokens[6] == "D");
-		REQUIRE(tokens[7] == ")");
-		REQUIRE(tokens[8] == ",");
-		REQUIRE(tokens[9] == "(");
-		REQUIRE(tokens[10] == "A");
-		REQUIRE(tokens[11] == ",");
-		REQUIRE(tokens[12] == "E");
-		REQUIRE(tokens[13] == ")");
-		REQUIRE(tokens[14] == ")");
-		REQUIRE(tokens[15] == ";");
+		REQUIRE(tokens[0].get_text() == "(");
+		REQUIRE(tokens[1].get_text() == "C");
+		REQUIRE(tokens[2].get_text() == ",");
+		REQUIRE(tokens[3].get_text() == "(");
+		REQUIRE(tokens[4].get_text() == "B");
+		REQUIRE(tokens[5].get_text() == ",");
+		REQUIRE(tokens[6].get_text() == "D");
+		REQUIRE(tokens[7].get_text() == ")");
+		REQUIRE(tokens[8].get_text() == ",");
+		REQUIRE(tokens[9].get_text() == "(");
+		REQUIRE(tokens[10].get_text() == "A");
+		REQUIRE(tokens[11].get_text() == ",");
+		REQUIRE(tokens[12].get_text() == "E");
+		REQUIRE(tokens[13].get_text() == ")");
+		REQUIRE(tokens[14].get_text() == ")");
+		REQUIRE(tokens[15].get_text() == ";");
 		REQUIRE(tokens.size() == 16);		
-	 }
+	}
 	 
 	SECTION("Test tokenizer nodes") {
 		Tokenizer tokenizer;
 		auto tokens = tokenizer.tokenize("A B  C      D E");
-		REQUIRE(tokens[0] == "A");
-		REQUIRE(tokens[1] == " ");
-		REQUIRE(tokens[2] == "B");
-		REQUIRE(tokens[3] == " ");
-		REQUIRE(tokens[4] == "C");
-		REQUIRE(tokens[5] == " ");
-		REQUIRE(tokens[6] == "D");
-		REQUIRE(tokens[7] == " ");
-		REQUIRE(tokens[8] == "E");
+		REQUIRE(tokens[0].get_text() == "A");
+		REQUIRE(tokens[1].get_text() == " ");
+		REQUIRE(tokens[2].get_text() == "B");
+		REQUIRE(tokens[3].get_text() == " ");
+		REQUIRE(tokens[4].get_text() == "C");
+		REQUIRE(tokens[5].get_text() == " ");
+		REQUIRE(tokens[6].get_text() == "D");
+		REQUIRE(tokens[7].get_text() == " ");
+		REQUIRE(tokens[8].get_text() == "E");
 		REQUIRE(tokens.size() == 9);
-	 }
+	}
+	
+	SECTION("Test parser") {
+		Newick newick;
+		newick.parse("(C,(B,D),(A,E));");
+	}
  }
