@@ -21,6 +21,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <limits>
 
 using namespace std;
 
@@ -34,40 +35,6 @@ class Newick {
 	void parse(string s);
 };
 
-class Token {
-	const string _text;
-	const bool _is_separator;
-	
-  public:
-	Token(string text,bool is_separator) : _text(text),_is_separator(is_separator) {};
-	
-	string get_text() {return _text;};
-	
-	bool is_space() {return _text == " ";};
-	
-	bool is_separator() {return _is_separator;}
-};
 
-/**
- *  This class converts a string to a vector of tokens
- */
-class Tokenizer {
-	string _separators;
-	
-  public:
-	Tokenizer(string separators="(,); ") : _separators(separators){};
-  
-	/**
-	 *  Convert a string to a vector of tokens
-	 */
-	vector<Token> tokenize(string str);
-	
-  private:
-	/**
-	 * Replace consecutive white spaces with a single space
-	 */
-    vector<Token> _cull_consecutive_spaces(vector<Token> tokens);
-	
-};
 
 #endif // _NEWICK_HPP

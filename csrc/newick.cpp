@@ -15,55 +15,23 @@
  * along with this software.  If not, see <http://www.gnu.org/licenses/>
  */
  
- #include <iostream>
+#include <iostream>
 #include <string> 
 #include <cstddef>  
- #include "newick.hpp"
+#include <stack>
+#include "newick.hpp"
+#include "tokenizer.hpp"
+
  
  using namespace std;
  
  void Newick::parse(string s){
 	Tokenizer tokenizer;
 	auto tokens = tokenizer.tokenize(s);
- }
- 
- /**
-  *  Convert a string to a vector of tokens
-  */
- vector<Token> Tokenizer::tokenize(string str) {
-	vector<Token> product;
-	long unsigned int right = str.length();
-	long unsigned int start = 0; // Avoid warning when I compare with `found`
-	auto found = str.find_first_of(_separators);
-	if (found > start)
-		 product.push_back(Token(str.substr(start,found-start),true));
-	 
-	// `found` points to a token
-	while (found != string::npos) {
-		 product.push_back(Token(str.substr(found,1),true));
-		 start = found + 1;
-		 found = str.find_first_of(_separators,start);
-		 if (found > start && start < right)
-			product.push_back(Token(str.substr(start,found-start),false));
-	}
-
-	return _cull_consecutive_spaces(product);
- }
- 
- /**
-  * Replace consecutive white spaces with a single space
-  */
- vector<Token> Tokenizer::_cull_consecutive_spaces(vector<Token> tokens){
-	vector<Token> product;
-	auto last_token_was_space = true;
+	stack<Node> nodes;
 	for (auto token : tokens){
-		if (!token.is_space())
-			product.push_back(token);
-		else 
-			if (!last_token_was_space)
-				product.push_back(token);
-		last_token_was_space = token.is_space();
+		if (token.is_separator()){}
 	}
-
-	return product;
  }
+ 
+ 

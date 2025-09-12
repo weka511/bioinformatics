@@ -29,13 +29,16 @@ PROBLEMS  = dna.cpp     \
 		    rna.cpp		\
 			qrtd.cpp
 
-SRCS      = $(PROBLEMS)			\
-			factory.cpp 		\
+SRCS      = factory.cpp 		\
 			file-adapter.cpp 	\
 			newick.cpp			\
-			problem.cpp
+			problem.cpp			\
+			tokenizer.cpp		\
+			$(PROBLEMS)
 
-SEPARATE_TESTS = test-adapter.cpp	test-newick.cpp
+SEPARATE_TESTS = test-adapter.cpp	\
+				test-newick.cpp 	\
+				test-tokenizer.cpp
 
 TESTS     = $(patsubst %.cpp,test-%.cpp,$(PROBLEMS)) $(SEPARATE_TESTS)
 
