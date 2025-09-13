@@ -18,21 +18,31 @@
 #ifndef _NEWICK_HPP
 #define _NEWICK_HPP
 
-#include <iostream>
+#include <memory>
+#include <stdexcept>
 #include <string>
+#include <tuple>
 #include <vector>
-#include <limits>
+
+#include "tokenizer.hpp"
 
 using namespace std;
 
+class Node{
+  private:
+	vector<shared_ptr<Node>> nodes;
+};
+	
 class Newick {
   public:
-	class Node{
-	  private:
-		vector<Node> nodes;
-	};
+
 	 
 	void parse(string s);
+	
+	tuple<shared_ptr<Node>,vector<tuple<int,int>>> explore(vector<Token> tokens, const int from, const int to);
+	
+  private:
+	logic_error _create_error(const Token token, const int depth);
 };
 
 
