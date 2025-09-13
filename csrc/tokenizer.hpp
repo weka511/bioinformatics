@@ -29,6 +29,9 @@ using namespace std;
 
 class Token {
   public:
+  	/**
+	 * Parser needs to know what type of token this is.
+	 */
   	enum class Type{
 		Undefined,
 		L,
@@ -42,27 +45,60 @@ class Token {
 	};
 	
   private:
+	/**
+	 * Actual text of token.
+	 */
 	const string _text;
+	
+	/**
+	 *  Whether token matches one of the separators.
+	 */
 	const bool _is_separator;
+	
+	/**
+	 * Parser needs to know what type of token this is.
+	 */
 	Type _type;
+	
+	/**
+	 *   Record position of toklen in source line
+	 */
+	const int _position;
 	
   public:
 
-	Token(string text,bool is_separator);
+	Token(const string text,const bool is_separator, const int position);
 	
+	/**
+	 * Parser needs to know what type of token this is.
+	 */
 	Type get_type() {return _type;}
 	
+	/**
+	 * Actual text of token.
+	 */
 	string get_text() {return _text;};
 	
+	/**
+	 *  Whether token is a space
+	 */
 	bool is_space() {return _text == " ";};
 	
+	/**
+	 *  Whether token matches one of the separators.
+	 */
 	bool is_separator() {return _is_separator;}
 	
 	bool is_numeric() {
 		return _type == Type::Number;
 	};	
 	
-	double get_numeric();	
+	double get_numeric();
+
+	/**
+	 *   Position of toklen in source line: for reporting errors
+	 */
+	int get_position() {return _position;};
 };
 
 /**

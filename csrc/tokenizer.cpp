@@ -23,8 +23,8 @@
  
  using namespace std;
  
- 
- Token::Token(string text,bool is_separator) : _text(text),_is_separator(is_separator) {
+ Token::Token(const string text,const bool is_separator,const int position) 
+	: _text(text),_is_separator(is_separator),_position(position) {
 	if (_is_separator) {
 		if (_text == "(" )      _type = Type::L;
 		else if (_text == "," ) _type = Type::Comma;
@@ -33,14 +33,13 @@
 		else if (_text == " " ) _type = Type::Space;
 		else if (_text == ":" ) _type = Type::Colon;
 		else                    _type = Type::Undefined;
-	} else {
+	} else      // not a separator
 		try{
 			stod(_text);
 			_type = Type::Number;
 		} catch (const invalid_argument& e) {
 			_type = Type::Identifier;
 		}
-	}
 }
 
 double Token::get_numeric() {
@@ -57,18 +56,17 @@ double Token::get_numeric() {
  vector<Token> Tokenizer::tokenize(string str) {
 	vector<Token> product;
 	long unsigned int right = str.length();
-	long unsigned int start = 0; // Avoid warning when I compare with `found`
-	auto found = str.find_first_of(_separators);
-	if (found > start)
-		 product.push_back(Token(str.substr(start,found-start),true));
+	long unsigned int start = 0; // Avoid warning when I compare with `next_token`
+	auto next_token = str.find_first_of(_separators);
+	if (next_token > start)
+		 product.push_back(Token(str.substr(start,next_token-start),true,start));
 	 
-	// `found` points to a token
-	while (found != string::npos) {
-		 product.push_back(Token(str.substr(found,1),true));
-		 start = found + 1;
-		 found = str.find_first_of(_separators,start);
-		 if (found > start && start < right)
-			product.push_back(Token(str.substr(start,found-start),false));
+	while (next_token != string::npos) {
+		 product.push_back(Token(str.substr(next_token,1),true,next_token));
+		 start = next_token + 1;
+		 next_token = str.find_first_of(_separators,start);
+		 if (next_token > start && start < right)
+			product.push_back(Token(str.substr(start,next_token-start),false,start));
 	}
 
 	return _cull_consecutive_spaces(product);
