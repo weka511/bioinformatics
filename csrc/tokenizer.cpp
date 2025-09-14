@@ -19,36 +19,39 @@
 #include <string> 
 #include <cstddef>  
 #include <stack>
+
 #include "tokenizer.hpp"
  
  using namespace std;
  
- Token::Token(const string text,const bool is_separator,const int position) 
+ /**
+  *   Create a toekn from a string of text.
+  *
+  *   Parameters:
+  *      text           The text that is used to build the token
+  *      is_separator   Indicates whether token is a separator or an ordinry string
+  *      position       POsition of token in input
+  */
+ Token::Token(const string text,const bool is_separator,const int position,map<string,Token::Type> type_map)
 	: _text(text),_is_separator(is_separator),_position(position) {
-	if (_is_separator) {
-		if (_text == "(" )      _type = Type::L;
-		else if (_text == "," ) _type = Type::Comma;
-		else if (_text == ")" ) _type = Type::R;
-		else if (_text == ";" ) _type = Type::Semi;
-		else if (_text == " " ) _type = Type::Space;
-		else if (_text == ":" ) _type = Type::Colon;
-		else                    _type = Type::Undefined;
-	} else      // not a separator
-		try{
-			stod(_text);
-			_type = Type::Number;
-		} catch (const invalid_argument& e) {
-			_type = Type::Identifier;
-		}
+	if (_is_separator)
+		_type = type_map[_text];
+	else try{
+		stod(_text);
+		_type = Type::Number;
+	} catch (const invalid_argument& e) {
+		_type = Type::Identifier;
+	}
 }
 
 double Token::get_numeric() {
-	try{
-		return stod(_text);
-	} catch (const invalid_argument& e) {
-		return -numeric_limits<double>::infinity();
-	}
+	return stod(_text);
 }	
+
+ostream& operator<<(ostream& os, const Token& token){
+      os << token._text << " at " << token._position;
+      return os;
+}
 	
  /**
   *  Convert a string to a vector of tokens
@@ -59,14 +62,14 @@ double Token::get_numeric() {
 	long unsigned int start = 0; // Avoid warning when I compare with `next_token`
 	auto next_token = str.find_first_of(_separators);
 	if (next_token > start)
-		 product.push_back(Token(str.substr(start,next_token-start),true,start));
+		 product.push_back(Token(str.substr(start,next_token-start),true,start,_type_map));
 	 
 	while (next_token != string::npos) {
-		 product.push_back(Token(str.substr(next_token,1),true,next_token));
+		 product.push_back(Token(str.substr(next_token,1),true,next_token,_type_map));
 		 start = next_token + 1;
 		 next_token = str.find_first_of(_separators,start);
 		 if (next_token > start && start < right)
-			product.push_back(Token(str.substr(start,next_token-start),false,start));
+			product.push_back(Token(str.substr(start,next_token-start),false,start,_type_map));
 	}
 
 	return _cull_consecutive_spaces(product);

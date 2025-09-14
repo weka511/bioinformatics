@@ -22,10 +22,9 @@
 #include <string>
 #include <vector>
 #include <limits>
+#include <map>
 
 using namespace std;
-
-
 
 class Token {
   public:
@@ -33,7 +32,6 @@ class Token {
 	 * Parser needs to know what type of token this is.
 	 */
   	enum class Type{
-		Undefined,
 		L,
 		Comma,
 		R,
@@ -43,6 +41,11 @@ class Token {
 		Identifier,
 		Number
 	};
+
+	/**
+	 * Parser needs to know what type of token this is.
+	 */
+	Type _type;
 	
   private:
 	/**
@@ -55,10 +58,7 @@ class Token {
 	 */
 	const bool _is_separator;
 	
-	/**
-	 * Parser needs to know what type of token this is.
-	 */
-	Type _type;
+
 	
 	/**
 	 *   Record position of toklen in source line
@@ -66,28 +66,42 @@ class Token {
 	const int _position;
 	
   public:
-
-	Token(const string text,const bool is_separator, const int position);
-	
 	/**
+	  *   Create a toekn from a string of text.
+	  *
+	  *   Parameters:
+	  *      text           The text that is used to build the token
+	  *      is_separator   Indicates whether token is a separator or an ordinry string
+	  *      position       Position of token in input
+	  */
+	Token(const string text,const bool is_separator, const int position,map<string,Token::Type> type_map);
+	/*
 	 * Parser needs to know what type of token this is.
 	 */
-	Type get_type() {return _type;}
+	Type get_type() {
+		return _type;
+	}
 	
 	/**
 	 * Actual text of token.
 	 */
-	string get_text() {return _text;};
+	string get_text() {
+		return _text;
+	};
 	
 	/**
 	 *  Whether token is a space
 	 */
-	bool is_space() {return _text == " ";};
+	bool is_space() {
+		return _text == " ";
+	};
 	
 	/**
 	 *  Whether token matches one of the separators.
 	 */
-	bool is_separator() {return _is_separator;}
+	bool is_separator() {
+		return _is_separator;
+	}
 	
 	bool is_numeric() {
 		return _type == Type::Number;
@@ -95,19 +109,41 @@ class Token {
 	
 	double get_numeric();
 
-	/**
-	 *   Position of toklen in source line: for reporting errors
+	/**.: for reporting errors
 	 */
-	int get_position() {return _position;};
+	int get_position() {
+		return _position;
+	};
+	
+	friend ostream& operator<<(ostream& os, const Token& token);
 };
 
 /**
  *  This class converts a string to a vector of tokens
  */
 class Tokenizer {
-	string _separators;
+	/**
+	 * A token is either a separator (from following string) or a 
+	 * string of characters not containing a separator.
+	 */
+	const string _separators;
+	
+	/**
+	 *  Convert a separator to a type FIXME - _separators is redundant
+	 */
+	map<string,Token::Type> _type_map={
+			{"(", Token::Type::L},
+			{",", Token::Type::Comma},
+			{")", Token::Type::R},
+			{";", Token::Type::Semi},
+			{" ", Token::Type::Space},
+			{":", Token::Type::Colon},
+	};	
 	
   public:
+	/**
+	 * Create Tokenizer, and initialize list of separators.
+	 */
 	Tokenizer(string separators="(,); :") : _separators(separators){};
   
 	/**
@@ -120,7 +156,7 @@ class Tokenizer {
 	 * Replace consecutive white spaces with a single space
 	 */
     vector<Token> _cull_consecutive_spaces(vector<Token> tokens);
-	
+
 };
 
 #endif // _TOKENIZER_HPP
