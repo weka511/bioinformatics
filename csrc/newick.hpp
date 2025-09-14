@@ -28,19 +28,55 @@
 
 using namespace std;
 
+/**
+ *  This class represents one node in a tree
+ */
 class Node{
+	
   private:
-	vector<shared_ptr<Node>> nodes;
+	/**
+	 * The children of this Node
+	 */
+	vector<shared_ptr<Node>> _children;
+	
+	/**
+	 * The identifier is unique within a tree
+	 */
+	const int _id;
+	
+	/**
+	 *  Name will be filled in from string representation
+	 */
+	string _name ="";
+	
+	/**
+	 *   Depth of node in tree. This will be set when tree is built.
+	 */
+	const int _depth;
+	
+  public:
+	static int count;
+	
+	Node(const int depth);
+	
+	void append(shared_ptr<Node> node) {_children.push_back(node);}; 
+	
+	friend ostream& operator<<(ostream& os, const Node & node);
+	
+	int get_depth() {return _depth;}; 
 };
 	
 class Newick {
   public:
 
-	 
 	void parse(string s);
 	
-	tuple<shared_ptr<Node>,vector<tuple<int,int>>> explore(vector<Token> tokens, const int from, const int to);
-	
+	tuple<shared_ptr<Node>,vector<tuple<int,int>>> explore(vector<Token> tokens, const int from, const int to, const int depth);
+
+	shared_ptr<Node> create_node(vector<Token> tokens,
+									const int from,
+									const int to,
+									const int depth	);
   private:
 	logic_error _create_error(const Token token, const int depth);
 };

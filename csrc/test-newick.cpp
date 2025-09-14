@@ -29,8 +29,13 @@
   
  
 TEST_CASE( "Newick Tests", "[newick]" ) {	
-	SECTION("Test parser") {
+	// SECTION("Test parser with no labels") {
+		// Newick newick;
+		// newick.parse("(,,(,));");
+	// }
+	
+	SECTION("Test parser with labels") {
 		Newick newick;
-		newick.parse("(,,(,));");
+		newick.parse("(A,B,(C,D));");
 	}
  }
