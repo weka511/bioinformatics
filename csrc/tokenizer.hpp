@@ -35,7 +35,7 @@ class Token {
 		L,
 		Comma,
 		R,
-		Semi,
+		Semicolon,
 		Space,
 		Colon,
 		Identifier,
@@ -131,11 +131,11 @@ class Tokenizer {
 	/**
 	 *  Convert a separator to a type FIXME - _separators is redundant
 	 */
-	map<string,Token::Type> _type_map={
+	const map<string,Token::Type> _type_map={
 			{"(", Token::Type::L},
 			{",", Token::Type::Comma},
 			{")", Token::Type::R},
-			{";", Token::Type::Semi},
+			{";", Token::Type::Semicolon},
 			{" ", Token::Type::Space},
 			{":", Token::Type::Colon},
 	};	

@@ -88,7 +88,7 @@
 				}
 				working_depth--;
 				break;
-			case Token::Type::Semi:
+			case Token::Type::Semicolon:
 				if (working_depth > 0) _create_error(tokens[i],depth);
 				if (i < to) _create_error(tokens[i],depth);
 				break;
@@ -109,17 +109,4 @@ logic_error Newick::_create_error(Token token, const int depth){
 	message<<__FILE__ <<" " <<__LINE__ << ": "<<" Unexpected token " << token<<endl; 
 	return logic_error(message.str().c_str()); 
 } 
- /**
- switch(tokens[i].get_type()) {
-			case Token::Type::Undefined:
-			case Token::Type::L:
-			case Token::Type::Comma:
-			case Token::Type::R:
-			case Token::Type::Semi:
-			case Token::Type::Space:
-			case Token::Type::Colon:
-			case Token::Type::Identifier:
-			case Token::Type::Number:
-			break;
-		};
- */
+ 
