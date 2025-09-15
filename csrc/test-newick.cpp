@@ -28,14 +28,38 @@
  #include "newick.hpp"
   
  
-TEST_CASE( "Newick Tests", "[newick]" ) {	
+TEST_CASE( "Newick Tests", "[newick]" ) {
+	Newick newick;
+	Node::count = 0;
+	Tokenizer tokenizer;
+	
+	SECTION("Test parser with label and top level distance") {
+		auto tokens = tokenizer.tokenize("(A:0.1,B:0.2,(C:0.3,D:0.4)E:0.5)F:6.7;");	
+		shared_ptr<Node> node;
+		vector<tuple<int,int>> bounds;
+		tie(node,bounds) = newick.explore(tokens, 0, tokens.size(), 0);
+		REQUIRE(node->get_depth() == 0);
+		REQUIRE(node->get_distance() == 6.7);
+		REQUIRE(node->get_name() == "F");
+	}
+	
+	SECTION("Test parser with label without top level distance") {
+		auto tokens = tokenizer.tokenize("(A:0.1,B:0.2,(C:0.3,D:0.4)E:0.5)F;");	
+		shared_ptr<Node> node;
+		vector<tuple<int,int>> bounds;
+		tie(node,bounds) = newick.explore(tokens, 0, tokens.size(), 0);
+		REQUIRE(node->get_depth() == 0);
+		REQUIRE(node->get_distance() == 1.0);
+		REQUIRE(node->get_name() == "F");
+	}
+	
 	// SECTION("Test parser with no labels") {
 		// Newick newick;
 		// newick.parse("(,,(,));");
 	// }
 	
-	SECTION("Test parser with labels") {
-		Newick newick;
-		newick.parse("(A,B,(C,D));");
-	}
+	// SECTION("Test parser with labels") {
+		// Newick newick;
+		// newick.parse("(A,B,(C,D));");
+	// }
  }

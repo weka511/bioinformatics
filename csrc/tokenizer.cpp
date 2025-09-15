@@ -25,7 +25,7 @@
  using namespace std;
  
  /**
-  *   Create a toekn from a string of text.
+  *   Create a Token from a string of text.
   *
   *   Parameters:
   *      text           The text that is used to build the token
@@ -49,7 +49,7 @@ double Token::get_numeric() {
 }	
 
 ostream& operator<<(ostream& os, const Token& token){
-      os << token._text << " at " << token._position;
+      os << "'" << token._text <<"'"<< " at " << token._position;
       return os;
 }
 	

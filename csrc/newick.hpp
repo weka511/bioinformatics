@@ -54,16 +54,22 @@ class Node{
 	 */
 	const int _depth;
 	
+	const double _distance;
+	
   public:
 	static int count;
 	
-	Node(const int depth);
+	Node(const int depth, const string name, const double distance);
 	
 	void append(shared_ptr<Node> node) {_children.push_back(node);}; 
 	
 	friend ostream& operator<<(ostream& os, const Node & node);
 	
 	int get_depth() {return _depth;}; 
+	
+	double get_distance() {return _distance;}; 
+	
+	string get_name() {return _name;}; 
 };
 	
 class Newick {
@@ -78,7 +84,7 @@ class Newick {
 									const int to,
 									const int depth	);
   private:
-	logic_error _create_error(const Token token, const int depth);
+	logic_error _create_error(const Token token, const int depth,const string file,const int line);
 };
 
 

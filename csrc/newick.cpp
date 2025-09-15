@@ -17,7 +17,6 @@
  
 #include <iostream>
 #include <string> 
-
 #include <sstream>
 
 #include "newick.hpp"
@@ -26,21 +25,24 @@
  
  int Node::count = 0;
  
- Node::Node(const int depth) :  _id(count++),_depth(depth) {}
+ Node::Node(const int depth, const string name, const double distance) :  _id(count++),_name(name),_depth(depth),_distance(distance) {}
  
  ostream& operator<<(ostream& os, const Node& node){
-      os  << "Node: " << node._id << ",depth = " << node._depth;
+	os  << "Node " << node._id 	<< " ["<<node._name << "]: "
+		<< " depth = " << node._depth
+		<< ", distance =  " << node._distance;
       return os;
 }
 
  void Newick::parse(string s){
-	 Node::count = 0;
-	 cout <<__FILE__ <<" " <<__LINE__ << ": "<< s << endl;
+	Node::count = 0;
+	cout <<__FILE__ <<" " <<__LINE__ << ": "<< s << endl;
 	Tokenizer tokenizer;
 	auto tokens = tokenizer.tokenize(s);
 	create_node(tokens,0,tokens.size(),0);
  }
  
+
  shared_ptr<Node> Newick::create_node(vector<Token> tokens,
 									const int from,
 									const int to,
@@ -48,13 +50,14 @@
 	shared_ptr<Node> node;
 	vector<tuple<int,int>> bounds_list;
 	tie (node,bounds_list) =  explore(tokens,from,to,depth); 
-	for (auto bounds : bounds_list){
-		int a,b;
-		tie(a,b) = bounds;
-		cout <<__FILE__ <<" " <<__LINE__ << ": "<<" [" << tokens[a]<<"] "  << "["<<tokens[b]<< "]"<<endl;
-		auto  child =create_node(tokens,a,b,depth+1);
-		node->append(child);
-	}
+
+	// for (auto bounds : bounds_list){
+		// int a,b;
+		// tie(a,b) = bounds;
+		// cout << __FILE__ <<" " <<__LINE__ << ": "<< tokens[a]<<", "  <<tokens[b]<<endl;
+		// auto  child =create_node(tokens,a,b,depth+1);
+		// node->append(child);
+	// }
 
 	return node;
  }
@@ -65,48 +68,74 @@
 																const int depth){
 	cout <<__FILE__ <<" " <<__LINE__ << " from="<< from <<", to=" << to << ", depth =" << depth << endl;												
 	int working_depth = depth;
-	shared_ptr<Node> node = make_shared<Node>(depth);
+
 	vector<tuple<int,int>> bounds;
-	auto start = 0;
+	string name = "";
+	auto distance = 1.0;
+	auto expect_distance = false;
 	for (auto i = from;i < to; i++)
 		 switch(tokens[i].get_type()) {
 			case Token::Type::L:
 				working_depth++;
-				start = i + 1;
-	
 				break;
+				
 			case Token::Type::Comma:
-				if (working_depth == depth + 1) {
-					bounds.push_back(make_tuple(start,i));
-					start = i + 1;
-				}
 				break;
 			case Token::Type::R:
-				if (working_depth == depth + 1){
-					bounds.push_back(make_tuple(start,i));
-					start = i + 1;
-				}
 				working_depth--;
 				break;
 			case Token::Type::Semicolon:
-				if (working_depth > 0) _create_error(tokens[i],depth);
-				if (i < to) _create_error(tokens[i],depth);
+				// cout << i << " " << to <<endl;
+				if (working_depth != 0 || to - i != 1)
+					throw _create_error(tokens[i],working_depth,__FILE__,__LINE__);
 				break;
 			case Token::Type::Space:
 				break;
 			case Token::Type::Colon:
+				if (working_depth > depth) break;
+				expect_distance = true;
 				break;
 			case Token::Type::Identifier:
+				if (working_depth > depth) break;
+				name = tokens[i].get_text();
 				break;
 			case Token::Type::Number:
+				if (working_depth > depth) break;
+				if (expect_distance)
+					distance = tokens[i].get_numeric();
+				else
+					throw _create_error(tokens[i],working_depth,__FILE__,__LINE__);
 				break;
-		};
+	};
+	const shared_ptr<Node> node = make_shared<Node>(depth,name,distance);
+	cout << *node << endl;
 	return make_tuple(node,bounds);
  }
 
-logic_error Newick::_create_error(Token token, const int depth){
+logic_error Newick::_create_error(Token token, const int depth,const string file,const int line){
 	stringstream message;
-	message<<__FILE__ <<" " <<__LINE__ << ": "<<" Unexpected token " << token<<endl; 
+	message<<file <<" " <<line << ": "<<" Unexpected token " << token<<endl; 
 	return logic_error(message.str().c_str()); 
 } 
  
+ // switch(tokens[i].get_type()) {
+			// case Token::Type::L:
+				// working_depth++;
+				// break;
+				
+			// case Token::Type::Comma:
+				// break;
+			// case Token::Type::R:
+				// working_depth--;
+				// break;
+			// case Token::Type::Semicolon:
+				// break;
+			// case Token::Type::Space:
+				// break;
+			// case Token::Type::Colon:
+				// break;
+			// case Token::Type::Identifier:
+				// break;
+			// case Token::Type::Number:
+				// break;
+	// };
