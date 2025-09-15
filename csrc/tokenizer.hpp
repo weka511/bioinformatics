@@ -32,14 +32,14 @@ class Token {
 	 * Parser needs to know what type of token this is.
 	 */
   	enum class Type{
-		L,
-		Comma,
-		R,
-		Semicolon,
-		Space,
-		Colon,
-		Identifier,
-		Number
+		L = 0, 
+		Comma = 1,
+		R = 2,
+		Semicolon = 3,
+		Space = 4,
+		Colon = 5,
+		Identifier = 6,
+		Number = 7
 	};
 
 	/**

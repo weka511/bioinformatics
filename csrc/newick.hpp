@@ -30,6 +30,15 @@ using namespace std;
 
 /**
  *  This class represents one node in a tree
+ *
+ * Tree -> Subtree ";"
+ * Subtree -> Leaf | Internal
+ * Leaf -> Name
+ * Internal -> "(" BranchSet ")" Name
+ * BranchSet -> Branch | Branch "," BranchSet
+ * Branch -> Subtree Length
+ * Name -> empty | string
+ * Length -> empty | ":" number
  */
 class Node{
 	

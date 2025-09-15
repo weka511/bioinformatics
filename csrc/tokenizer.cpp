@@ -49,7 +49,7 @@ double Token::get_numeric() {
 }	
 
 ostream& operator<<(ostream& os, const Token& token){
-      os << "'" << token._text <<"'"<< " at " << token._position;
+      os << (int)token._type << " '" << token._text <<"'"<< " at " << token._position;
       return os;
 }
 	
@@ -62,7 +62,7 @@ ostream& operator<<(ostream& os, const Token& token){
 	long unsigned int start = 0; // Avoid warning when I compare with `next_token`
 	auto next_token = str.find_first_of(_separators);
 	if (next_token > start)
-		 product.push_back(Token(str.substr(start,next_token-start),true,start,_type_map));
+		 product.push_back(Token(str.substr(start,next_token-start),false,start,_type_map));
 	 
 	while (next_token != string::npos) {
 		 product.push_back(Token(str.substr(next_token,1),true,next_token,_type_map));

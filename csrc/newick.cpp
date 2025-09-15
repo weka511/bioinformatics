@@ -64,30 +64,39 @@
  
  tuple<shared_ptr<Node>,vector<tuple<int,int>>> Newick::explore(vector<Token> tokens,
 																const int from,
-																const int to,
+																const int to, 
 																const int depth){
 	cout <<__FILE__ <<" " <<__LINE__ << " from="<< from <<", to=" << to << ", depth =" << depth << endl;												
 	int working_depth = depth;
-
+	int open = tokens.size();
+	int close = -1;
 	vector<tuple<int,int>> bounds;
 	string name = "";
 	auto distance = 1.0;
 	auto expect_distance = false;
+	auto terminated = false;
+	vector <int> splitting_points;
 	for (auto i = from;i < to; i++)
 		 switch(tokens[i].get_type()) {
 			case Token::Type::L:
+				if (depth ==working_depth)
+					open = i;
 				working_depth++;
 				break;
 				
 			case Token::Type::Comma:
+				if (working_depth == depth + 1)
+					splitting_points.push_back(i);
 				break;
 			case Token::Type::R:
 				working_depth--;
+				if (depth ==working_depth)
+					close = i;
 				break;
 			case Token::Type::Semicolon:
-				// cout << i << " " << to <<endl;
 				if (working_depth != 0 || to - i != 1)
 					throw _create_error(tokens[i],working_depth,__FILE__,__LINE__);
+				terminated = true;
 				break;
 			case Token::Type::Space:
 				break;
@@ -107,8 +116,26 @@
 					throw _create_error(tokens[i],working_depth,__FILE__,__LINE__);
 				break;
 	};
+	if (!terminated)
+		throw _create_error(tokens.back(),working_depth,__FILE__,__LINE__);
 	const shared_ptr<Node> node = make_shared<Node>(depth,name,distance);
-	cout << *node << endl;
+	
+	cout <<__FILE__ <<" " <<__LINE__ <<":" << *node << endl;
+	splitting_points.push_back(close);
+	int n = splitting_points.size();
+	cout <<__FILE__ <<" " <<__LINE__ <<":" << n << endl;
+	for (auto j=0;j<n;j++){
+		cout <<__FILE__ <<" " <<__LINE__ <<":" << splitting_points[j] << endl;
+		if (j==0)
+			bounds.push_back(make_tuple(open,splitting_points[j]));
+		else
+			bounds.push_back(make_tuple(splitting_points[j-1],splitting_points[j]));
+	}
+
+	for ( auto i : splitting_points){
+		cout <<__FILE__ <<" " <<__LINE__ <<":" << i << endl;
+	}
+		
 	return make_tuple(node,bounds);
  }
 
