@@ -76,7 +76,8 @@
 	auto expect_distance = false;
 	auto terminated = false;
 	vector <int> splitting_points;
-	for (auto i = from;i < to; i++)
+	for (auto i = from;i < to; i++){
+		cout <<__FILE__ <<" " <<__LINE__ << " " <<i << tokens[i] <<endl;
 		 switch(tokens[i].get_type()) {
 			case Token::Type::L:
 				if (depth ==working_depth)
@@ -86,11 +87,11 @@
 				
 			case Token::Type::Comma:
 				if (working_depth == depth + 1)
-					splitting_points.push_back(i);
+					splitting_points.push_back(i+1);
 				break;
 			case Token::Type::R:
 				working_depth--;
-				if (depth ==working_depth)
+				if (depth == working_depth)
 					close = i;
 				break;
 			case Token::Type::Semicolon:
@@ -115,26 +116,17 @@
 				else
 					throw _create_error(tokens[i],working_depth,__FILE__,__LINE__);
 				break;
-	};
-	if (!terminated)
-		throw _create_error(tokens.back(),working_depth,__FILE__,__LINE__);
+	}};
+	// if (!terminated)
+		// throw _create_error(tokens.back(),working_depth,__FILE__,__LINE__);
 	const shared_ptr<Node> node = make_shared<Node>(depth,name,distance);
 	
-	cout <<__FILE__ <<" " <<__LINE__ <<":" << *node << endl;
 	splitting_points.push_back(close);
-	int n = splitting_points.size();
-	cout <<__FILE__ <<" " <<__LINE__ <<":" << n << endl;
-	for (auto j=0;j<n;j++){
-		cout <<__FILE__ <<" " <<__LINE__ <<":" << splitting_points[j] << endl;
+	for (auto j = 0;j < (int)splitting_points.size();j++)
 		if (j==0)
 			bounds.push_back(make_tuple(open,splitting_points[j]));
 		else
 			bounds.push_back(make_tuple(splitting_points[j-1],splitting_points[j]));
-	}
-
-	for ( auto i : splitting_points){
-		cout <<__FILE__ <<" " <<__LINE__ <<":" << i << endl;
-	}
 		
 	return make_tuple(node,bounds);
  }

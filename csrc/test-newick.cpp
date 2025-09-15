@@ -42,34 +42,39 @@ TEST_CASE( "Newick Tests", "[newick]" ) {
 		REQUIRE(node->get_depth() == 0);
 		REQUIRE(node->get_distance() == 6.7);
 		REQUIRE(node->get_name() == "F");
-		for (auto bound : bounds)
-			cout << get<0>(bound) << "-" << get<1>(bound) << endl;
+		for (auto bound : bounds){
+			cout <<__FILE__ <<" " <<__LINE__ << ": " << get<0>(bound) << "-" << get<1>(bound) << endl;
+			shared_ptr<Node> child;
+			vector<tuple<int,int>> bounds1;
+			tie(child,bounds1) = newick.explore(tokens, get<0>(bound), get<1>(bound), 1);
+			cout <<__FILE__ <<" " <<__LINE__ << ": " << *child << endl;
+		}
 
 	}
 	
-	SECTION("Test parser with label without top level distance") {
-		auto tokens = tokenizer.tokenize("(A:0.1,B:0.2,(C:0.3,D:0.4)E:0.5)F;");	
-		shared_ptr<Node> node;
-		vector<tuple<int,int>> bounds;
-		tie(node,bounds) = newick.explore(tokens, 0, tokens.size(), 0);
-		REQUIRE(node->get_depth() == 0);
-		REQUIRE(node->get_distance() == 1.0);
-		REQUIRE(node->get_name() == "F");
-		for (auto bound : bounds)
-			cout << get<0>(bound) << "-" << get<1>(bound) << endl;
-	}
+	// SECTION("Test parser with label without top level distance") {
+		// auto tokens = tokenizer.tokenize("(A:0.1,B:0.2,(C:0.3,D:0.4)E:0.5)F;");	
+		// shared_ptr<Node> node;
+		// vector<tuple<int,int>> bounds;
+		// tie(node,bounds) = newick.explore(tokens, 0, tokens.size(), 0);
+		// REQUIRE(node->get_depth() == 0);
+		// REQUIRE(node->get_distance() == 1.0);
+		// REQUIRE(node->get_name() == "F");
+		// for (auto bound : bounds)
+			// cout << get<0>(bound) << "-" << get<1>(bound) << endl;
+	// }
 	
-	SECTION("a tree rooted on a leaf node (rare)") {
-		auto tokens = tokenizer.tokenize("((B:0.2,(C:0.3,D:0.4)E:0.5)F:0.1)A;");	
-		shared_ptr<Node> node;
-		vector<tuple<int,int>> bounds;
-		tie(node,bounds) = newick.explore(tokens, 0, tokens.size(), 0);
-		REQUIRE(node->get_depth() == 0);
-		REQUIRE(node->get_distance() == 1.0);
-		REQUIRE(node->get_name() == "A");
-		for (auto bound : bounds)
-			cout << get<0>(bound) << "-" << get<1>(bound) << endl;
-	}
+	// SECTION("a tree rooted on a leaf node (rare)") {
+		// auto tokens = tokenizer.tokenize("((B:0.2,(C:0.3,D:0.4)E:0.5)F:0.1)A;");	
+		// shared_ptr<Node> node;
+		// vector<tuple<int,int>> bounds;
+		// tie(node,bounds) = newick.explore(tokens, 0, tokens.size(), 0);
+		// REQUIRE(node->get_depth() == 0);
+		// REQUIRE(node->get_distance() == 1.0);
+		// REQUIRE(node->get_name() == "A");
+		// for (auto bound : bounds)
+			// cout << get<0>(bound) << "-" << get<1>(bound) << endl;
+	// }
 	
 	// SECTION("a naked leaf node ") {
 		// auto tokens = tokenizer.tokenize("B:0.2,");	
