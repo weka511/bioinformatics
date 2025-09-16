@@ -22,54 +22,15 @@
 #include <span>
 #include <stdexcept>
 #include <string>
-#include <tuple>
 #include <vector>
 
 #include "token.hpp"
+#include "node.hpp"
 
 using namespace std;
 
 
 
-class Node{
-	
-  private:
-	/**
-	 * The children of this Node
-	 */
-	vector<shared_ptr<Node>> _children;
-	
-	/**
-	 * The identifier is unique within a tree
-	 */
-	const int _id;
-	
-	/**
-	 *  Name will be filled in from string representation
-	 */
-	string _name ="";
-	
-	const double _distance;
-	
-  public:
-	class Visitor {
-	  public:
-		virtual void accept(Node& node,int depth)=0;
-	};
-	static int count;
-	
-	Node(const string name, const double distance=0.0);
-	
-	void append(shared_ptr<Node> node) {_children.push_back(node);}; 
-	
-	friend ostream& operator<<(ostream& os, const Node & node);
-	
-	double get_distance() {return _distance;}; 
-	
-	string get_name() {return _name;}; 
-	
-	void visit(Visitor & visitor,int depth=0);
-};
 
 
 /**

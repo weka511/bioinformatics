@@ -24,21 +24,6 @@
 
  using namespace std;
  
- int Node::count = 0;
- 
- Node::Node( const string name, const double distance) : 
-	_id(count++),_name(name),_distance(distance) {}
- 
- void Node::visit(Visitor & visitor,int depth){
-	 visitor.accept(*this,depth);
-	 for (auto child : _children)
-		 child->visit(visitor,depth+1);
- }
- ostream& operator<<(ostream& os, const Node& node){
-	os  << "Node " << node._id 	<< " ["<<node._name << "]: "
-		<< ", distance =  " << node._distance;
-      return os;
-}
 
 shared_ptr<Node> Parser::parse(string source){
 	Tokenizer tokenizer;

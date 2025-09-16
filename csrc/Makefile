@@ -32,6 +32,7 @@ PROBLEMS  = dna.cpp     \
 SRCS      = factory.cpp 		\
 			file-adapter.cpp 	\
 			newick.cpp			\
+			node.cpp			\
 			problem.cpp			\
 			token.cpp			\
 			tokenizer.cpp		\
