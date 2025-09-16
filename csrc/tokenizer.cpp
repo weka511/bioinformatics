@@ -44,10 +44,16 @@
 	}
 }
 
+/**
+ *  Find numeric value if token is a floating point number
+ */
 double Token::get_numeric() {
 	return stod(_text);
 }	
 
+/**
+ *  Used to output token
+ */
 ostream& operator<<(ostream& os, const Token& token){
       os << (int)token._type << " '" << token._text <<"'"<< " at " << token._position;
       return os;

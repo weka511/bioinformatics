@@ -58,16 +58,15 @@ class Token {
 	 */
 	const bool _is_separator;
 	
-
-	
 	/**
 	 *   Record position of toklen in source line
 	 */
 	const int _position;
 	
   public:
+  
 	/**
-	  *   Create a toekn from a string of text.
+	  *   Create a token from a string of text.
 	  *
 	  *   Parameters:
 	  *      text           The text that is used to build the token
@@ -75,6 +74,7 @@ class Token {
 	  *      position       Position of token in input
 	  */
 	Token(const string text,const bool is_separator, const int position,map<string,Token::Type> type_map);
+	
 	/*
 	 * Parser needs to know what type of token this is.
 	 */
@@ -103,18 +103,21 @@ class Token {
 		return _is_separator;
 	}
 	
-	bool is_numeric() {
-		return _type == Type::Number;
-	};	
-	
+	/**
+	 *  Find numeric value if token is a floating point number
+	 */
 	double get_numeric();
 
-	/**.: for reporting errors
+	/**
+	 * Position in original string, for reporting errors
 	 */
 	int get_position() {
 		return _position;
 	};
 	
+	/**
+	 *  Used to output token
+	 */
 	friend ostream& operator<<(ostream& os, const Token& token);
 };
 
