@@ -18,7 +18,10 @@
 #ifndef _TOKEN_HPP
 #define _TOKEN_HPP
 
-#include <string>
+#include <iostream>
+#include <string> 
+#include <map>
+
 using namespace std;
 
 class Token {

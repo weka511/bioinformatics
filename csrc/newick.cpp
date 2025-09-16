@@ -20,6 +20,7 @@
 #include <sstream>
 
 #include "newick.hpp"
+#include "tokenizer.hpp"
 
  using namespace std;
  
@@ -37,6 +38,12 @@
 	os  << "Node " << node._id 	<< " ["<<node._name << "]: "
 		<< ", distance =  " << node._distance;
       return os;
+}
+
+shared_ptr<Node> Parser::parse(string source){
+	Tokenizer tokenizer;
+	auto tokens = tokenizer.tokenize(source);	
+	return parse_tree(tokens);
 }
 
 /**

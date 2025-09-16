@@ -25,7 +25,7 @@
 #include <tuple>
 #include <vector>
 
-#include "tokenizer.hpp"
+#include "token.hpp"
 
 using namespace std;
 
@@ -73,7 +73,7 @@ class Node{
 
 
 /**
- *  This class represents one node in a tree
+ *  This class parses a string to a Newick tree
  *
  * Tree -> Subtree ";"
  * Subtree -> Leaf | Internal
@@ -86,6 +86,9 @@ class Node{
  */
 class Parser{
   public:
+  
+	shared_ptr<Node> parse(string source);
+	
 	/**
 	 * Tree -> Subtree ";"
 	 */
