@@ -30,6 +30,7 @@
 using namespace std;
 
 
+
 class Node{
 	
   private:
@@ -51,6 +52,10 @@ class Node{
 	const double _distance;
 	
   public:
+	class Visitor {
+	  public:
+		virtual void accept(Node& node,int depth)=0;
+	};
 	static int count;
 	
 	Node(const string name, const double distance=0.0);
@@ -62,6 +67,8 @@ class Node{
 	double get_distance() {return _distance;}; 
 	
 	string get_name() {return _name;}; 
+	
+	void visit(Visitor & visitor,int depth=0);
 };
 
 
@@ -117,7 +124,7 @@ class Parser{
 	/**
 	 * Length -> empty | ":" number  
 	 */
-	shared_ptr<Node> parse_length(span<Token> tokens);
+	double parse_length(span<Token> tokens);
 	
 	int get_first_comma_at_top_level(span<Token> tokens);
 	

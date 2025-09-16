@@ -28,6 +28,11 @@
  Node::Node( const string name, const double distance) : 
 	_id(count++),_name(name),_distance(distance) {}
  
+ void Node::visit(Visitor & visitor,int depth){
+	 visitor.accept(*this,depth);
+	 for (auto child : _children)
+		 child->visit(visitor,depth+1);
+ }
  ostream& operator<<(ostream& os, const Node& node){
 	os  << "Node " << node._id 	<< " ["<<node._name << "]: "
 		<< ", distance =  " << node._distance;
@@ -38,9 +43,9 @@
  * Tree -> Subtree ";"
  */
 shared_ptr<Node> Parser::parse_tree(span<Token> tokens) {
-	cout << __FILE__ << " " << __LINE__  << " parse_tree"<<endl;
-	for (auto t : tokens)
-		cout << t << endl;
+	// cout << __FILE__ << " " << __LINE__  << " parse_tree"<<endl;
+	// for (auto t : tokens)
+		// cout << t << endl;
 	span<Token> all_but_last(tokens.begin(), tokens.end() -1); 
 	Token token = tokens.back();
 	if (token.get_type() == Token::Type::Semicolon)
@@ -53,30 +58,29 @@ shared_ptr<Node> Parser::parse_tree(span<Token> tokens) {
  * Subtree -> Leaf | Internal
  */
 shared_ptr<Node> Parser::parse_subtree(span<Token> tokens){
-	cout << __FILE__ << " " << __LINE__  << " parse_subtree"<< endl;
-	for (auto t : tokens)
-		cout << t << endl;
+	// cout << __FILE__ << " " << __LINE__  << " parse_subtree"<< endl;
+	// for (auto t : tokens)
+		// cout << t << endl;
 	try {
 		return parse_leaf(tokens);
-	} catch (const logic_error& e) {
+	} catch (const logic_error& e){
 		try {
 			return parse_internal(tokens);
 		} catch (const logic_error& e1) {
-				throw e1;
+			throw e1;
 		}
-	} 
+	}		
 }
 
 /**
  * Leaf -> Name
  */
 shared_ptr<Node> Parser::parse_leaf(span<Token> tokens){
-	cout << __FILE__ << " " << __LINE__  << " parse_leaf "<< tokens.size() <<endl;
-	for (auto t : tokens)
-		cout << t << endl;
-	if (tokens.size() == 1)
+	// cout << __FILE__ << " " << __LINE__  << " parse_leaf "<< tokens.size() <<endl;
+	// for (auto t : tokens)
+		// cout << t << endl;
+	if (tokens.size() == 1 || tokens.size() == 3)
 		return parse_name(tokens);
-		// return make_shared<Node>(tokens[0].get_text(),0.0);
 	else
 		throw  _create_error(tokens[0], __FILE__, __LINE__); 
 }
@@ -85,9 +89,9 @@ shared_ptr<Node> Parser::parse_leaf(span<Token> tokens){
   * Internal -> "(" BranchSet ")" Name
   */	
 shared_ptr<Node> Parser::parse_internal(span<Token> tokens){
-	cout << __FILE__ << " " << __LINE__  << " parse_internal"<< endl;
-	for (auto t : tokens)
-		cout << t << endl;
+	// cout << __FILE__ << " " << __LINE__  << " parse_internal"<< endl;
+	// for (auto t : tokens)
+		// cout << t << endl;
 	if ((int)tokens.size() > 2 &&
 		tokens[0].get_type() == Token::Type::L &&
 		tokens.back().get_type() == Token::Type::R){
@@ -102,14 +106,14 @@ shared_ptr<Node> Parser::parse_internal(span<Token> tokens){
  * BranchSet -> Branch | Branch "," BranchSet
  */
 shared_ptr<Node> Parser::parse_branchset(span<Token> tokens){
-	cout << __FILE__ << " " << __LINE__ << " parse_branchset" << endl;
-	for (auto t : tokens)
-		cout << t << endl;
+	// cout << __FILE__ << " " << __LINE__ << " parse_branchset" << endl;
+	// for (auto t : tokens)
+		// cout << t << endl;
 	const auto first_comma_at_top_level = get_first_comma_at_top_level(tokens);
 	if (first_comma_at_top_level < 0)
 		return parse_branch(tokens);
 	else {
-		cout << __FILE__ << " " << __LINE__ <<  ",=" << first_comma_at_top_level <<endl;
+		// cout << __FILE__ << " " << __LINE__ <<  ",=" << first_comma_at_top_level <<endl;
 		span<Token> head(tokens.begin(), tokens.begin() + first_comma_at_top_level); 
 		parse_branch(head);
 		span<Token> tail(tokens.begin() + first_comma_at_top_level +1, tokens.end()); 
@@ -123,9 +127,9 @@ shared_ptr<Node> Parser::parse_branchset(span<Token> tokens){
  * Branch -> Subtree Length
  */
 shared_ptr<Node> Parser::parse_branch(span<Token> tokens){
-	cout << __FILE__ << " " << __LINE__  << " parse_branch"<< endl;
-	for (auto t : tokens)
-		cout << t << endl;
+	// cout << __FILE__ << " " << __LINE__  << " parse_branch"<< endl;
+	// for (auto t : tokens)
+		// cout << t << endl;
 	parse_subtree(tokens);  // TODO Length
 	const shared_ptr<Node> node =make_shared<Node>("",0);
 	return node;
@@ -135,22 +139,32 @@ shared_ptr<Node> Parser::parse_branch(span<Token> tokens){
  * Name -> empty | string
  */
 shared_ptr<Node> Parser::parse_name(span<Token> tokens){
-	cout << __FILE__ << " " << __LINE__  << " parse_name"<< endl;
-		for (auto t : tokens)
-		cout << t << endl;
-	const shared_ptr<Node> node =make_shared<Node>(tokens[0].get_text());
-	cout << __FILE__ << " " << __LINE__ << " " << *node << endl;
-	return node;
+	cerr << __FILE__ << " " << __LINE__  << " parse_name"<< endl;
+	for (auto t : tokens)
+		cerr << t << endl;
+	if (tokens.size() == 1){
+		const shared_ptr<Node> node =make_shared<Node>(tokens[0].get_text());
+		cout << __FILE__ << " " << __LINE__ << " " << *node << endl;
+		return node;
+	} else {
+		span<Token> tail(tokens.begin() + 1, tokens.end()); 
+		auto distance = parse_length(tail);
+		const shared_ptr<Node> node =make_shared<Node>(tokens[0].get_text(),distance);
+		cout << __FILE__ << " " << __LINE__ << " " << *node << endl;
+		return node;
+	}
 }
 
 /**
  * Length -> empty | ":" number  
  */
-shared_ptr<Node> Parser::parse_length(span<Token> tokens){
-	cout << __FILE__ << " " << __LINE__  << " parse_length"<< endl;
-	const shared_ptr<Node> node =make_shared<Node>(tokens[0].get_text(),0);  //FIXME
-	;
-	return node;
+double Parser::parse_length(span<Token> tokens){
+	// cout << __FILE__ << " " << __LINE__  << " parse_length"<< endl;
+	if (tokens[0].get_type() ==Token::Type::Colon)
+		return tokens[1].get_numeric();
+	else
+		throw _create_error(tokens[0],__FILE__,__LINE__);
+
 }
 
 logic_error Parser::_create_error(Token token, const string file,const int line){

@@ -27,11 +27,17 @@
  #include "catch.hpp"
  #include "newick.hpp"
   
+ class Displayer: public Node::Visitor {
+	 void accept(Node& node,int depth){
+		 cout << node << " " << depth << endl;
+	 }
+ };
  
 TEST_CASE( "Newick Tests", "[newick]" ) {
 	Parser parser;
 	Node::count = 0;
 	Tokenizer tokenizer;
+	Displayer displayer;
 	
 	SECTION("get_first_comma_at_top_level") {
 		auto tokens = tokenizer.tokenize("A:0.1,B:0.2,(C:0.3,D:0.4)E:0.5");	
@@ -52,8 +58,16 @@ TEST_CASE( "Newick Tests", "[newick]" ) {
 	
 	
 	SECTION("Test parser with labels") {
-		auto tokens = tokenizer.tokenize("(A,B);");
+		auto tokens = tokenizer.tokenize("(A,B,(C,D));");
 		shared_ptr<Node> node = parser.parse_tree(tokens);
+		node->visit(displayer);
+	}
+	
+	SECTION("Test parser with labels and lengths") {
+		cerr << __FILE__ << " " << __LINE__  << endl;
+		auto tokens = tokenizer.tokenize("(A:2.1,B,(C,D));");
+		shared_ptr<Node> node = parser.parse_tree(tokens);
+		node->visit(displayer);
 	}
 	
  }
