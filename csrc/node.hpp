@@ -26,9 +26,17 @@
 
 using namespace std;
 
+/**
+ *  This class represents a node in a tree
+ */
 class Node{
 	
   private:
+    /**
+	 * Used to assign a unique id to each node
+	 */
+  	static int count;
+	
 	/**
 	 * The children of this Node
 	 */
@@ -44,25 +52,57 @@ class Node{
 	 */
 	string _name ="";
 	
+	/**
+	 *  Distance of this node from parent
+	 */
 	const double _distance;
-	
+
   public:
+    /**
+	 *  This class is used to traverse a tree
+	 */
 	class Visitor {
 	  public:
+	   /**
+		*  When Node::visit() is called, it executes `accept' for each node.
+		*/
 		virtual void accept(Node& node,int depth)=0;
 	};
-	static int count;
+
+	/**
+	 * Used in testing to reset Node::count to zero
+	 */
+	static void reset();
 	
+	/**
+	 *  Create and intialize a node
+	 */
 	Node(const string name, const double distance=0.0);
 	
+	/**
+	 *   Add a child node
+	 */
 	void append(shared_ptr<Node> node) {_children.push_back(node);}; 
 	
+	/**
+	 * Allows us to output node
+	 */
 	friend ostream& operator<<(ostream& os, const Node & node);
 	
+	/**
+	 *  Distance of this node from parent
+	 */
 	double get_distance() {return _distance;}; 
 	
+	/**
+	 *  Name will be filled in from string representation
+	 */
 	string get_name() {return _name;}; 
 	
+	/**
+	 *  This method is used to traverse a tree,
+	 *  invoking the Visitor's `accept` method for each node
+	 */
 	void visit(Visitor & visitor,int depth=0);
 };
 

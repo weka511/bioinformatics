@@ -15,23 +15,38 @@
  * along with this software.  If not, see <http://www.gnu.org/licenses/>
  */
  
-
-
 #include "node.hpp"
-
 
  using namespace std;
  
  int Node::count = 0;
  
+ /**
+  * Used in testing to reset Node::count to zero
+  */
+ void Node::reset(){
+	 Node::count = 0;
+ }
+ 
+ /**
+  *  Create and intialize a node
+  */
  Node::Node( const string name, const double distance) : 
 	_id(count++),_name(name),_distance(distance) {}
  
+ /**
+  *  This method is used to traverse a tree,
+  *  invoking the Visitor for each node
+  */
  void Node::visit(Visitor & visitor,int depth){
 	 visitor.accept(*this,depth);
 	 for (auto child : _children)
 		 child->visit(visitor,depth+1);
  }
+ 
+/**
+ * Allows us to output node
+ */
  ostream& operator<<(ostream& os, const Node& node){
 	os  << "Node " << node._id 	<< " ["<<node._name << "]: "
 		<< ", distance =  " << node._distance;

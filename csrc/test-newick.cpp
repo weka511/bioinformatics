@@ -30,13 +30,13 @@
  
  class Displayer: public Node::Visitor {
 	 void accept(Node& node,int depth){
-		 cout << node << " " << depth << endl;
+		 cout << __FILE__ << " " << __LINE__  <<node << " " << depth << endl;
 	 }
  };
  
 TEST_CASE( "Newick Tests", "[newick]" ) {
 	Parser parser;
-	Node::count = 0;
+	Node::reset();
 	Tokenizer tokenizer;
 	Displayer displayer;
 	
@@ -65,14 +65,12 @@ TEST_CASE( "Newick Tests", "[newick]" ) {
 	}
 	
 	SECTION("Test parser with labels and lengths") {
-		cerr << __FILE__ << " " << __LINE__  << endl;
 		auto tokens = tokenizer.tokenize("(A:2.1,B,(C,D));");
 		shared_ptr<Node> node = parser.parse_tree(tokens);
 		node->visit(displayer);
 	}
 	
 	SECTION("Test parser with labels and lengths(1)") {
-		cerr << __FILE__ << " " << __LINE__  << endl;
 		shared_ptr<Node> node = parser.parse("(A:2.1,B:1.2,(C:3.0,D:0.2));");
 		node->visit(displayer);
 	}

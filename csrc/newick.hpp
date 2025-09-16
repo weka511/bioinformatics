@@ -29,10 +29,6 @@
 
 using namespace std;
 
-
-
-
-
 /**
  *  This class parses a string to a Newick tree
  *
@@ -90,9 +86,24 @@ class Parser{
 	 */
 	double parse_length(span<Token> tokens);
 	
+	/**
+	 *   Used by parse_branchset() to locate the first comma that is relevant to
+	 *   the parse.
+	 *
+	 *   Returns:
+	 *       index of comma, or UNDEFINED
+	 */
 	int get_first_comma_at_top_level(span<Token> tokens);
 	
+	/**
+	 * Used by get_first_comma_at_top_level to indicate that it failed to find comma
+	 */
+	const int UNDEFINED = -1;
+	
   private:
+	/**
+	 * Indicates that parser encountered an error
+	 */
 	logic_error _create_error(Token token, const string file,const int line);
 
 };

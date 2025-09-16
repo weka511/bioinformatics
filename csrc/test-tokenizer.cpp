@@ -82,18 +82,5 @@
 		REQUIRE(tokens.size() == 9);
 	}
 	
-	// SECTION("Test tokenizer nodes") {
-		// Tokenizer tokenizer;
-		// auto tokens = tokenizer.tokenize("((B:0.2,(C:0.3,D:0.4)E:0.5)F:0.1)A;");
-		// for (auto t : tokens)
-			// if (t.is_numeric())
-				// cout << t.get_text() << " "<<t.get_numeric() << endl;
-			// else
-				// cout << t.get_text() <<  endl; 
-	// }
-	
-	// SECTION("Test parser") {
-		// Newick newick;
-		// newick.parse("(,,(,));");
-	// }
+
  }
