@@ -33,6 +33,7 @@ SRCS      = factory.cpp 		\
 			file-adapter.cpp 	\
 			newick.cpp			\
 			problem.cpp			\
+			token.cpp			\
 			tokenizer.cpp		\
 			$(PROBLEMS)
 
