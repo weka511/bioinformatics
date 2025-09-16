@@ -1,23 +1,24 @@
-#C++
+# C++
 
 | # | Location | Header |Description |
 | ---- | --------------- |  ---------------  |------------------------------------------------|
+|Makefile||
 ||catch.hpp|
 DNA|dna.cpp|dna.hpp|
 -|factory.cpp|factory.hpp|
---|file-adapter.cpp||
--|newick.cpp||
--|node.cpp||
--|problem.cpp||
-QRTD|qrtd.cpp||
-RNA|rna.cpp||
--|rosalind.cpp||
--|test-adapter.cpp||
-DNA|test-dna.cpp||
--|test-newick.cpp||
-QRTD|test-qrtd.cpp||
-RNA|test-rna.cpp||
--|test-tokenizer.cpp||
--|tests.cpp||
--|token.cpp||
--|tokenizer.cpp||
+-|file-adapter.cpp|.hpp|
+-|newick.cpp|.hpp|
+-|node.cpp|.hpp|
+-|problem.cpp|.hpp|
+QRTD|qrtd.cpp|.hpp|
+RNA|rna.cpp|.hpp|
+-|rosalind.cpp|.hpp|
+-|test-adapter.cpp|.hpp|
+DNA|test-dna.cpp|.hpp|
+-|test-newick.cpp|.hpp|
+QRTD|test-qrtd.cpp|.hpp|
+RNA|test-rna.cpp|.hpp|
+-|test-tokenizer.cpp|.hpp|
+-|tests.cpp|.hpp|
+-|token.cpp|.hpp|
+-|tokenizer.cpp|.hpp|
