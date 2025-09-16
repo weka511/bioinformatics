@@ -19,6 +19,7 @@
 #define _NEWICK_HPP
 
 #include <memory>
+#include <span>
 #include <stdexcept>
 #include <string>
 #include <tuple>
@@ -28,18 +29,7 @@
 
 using namespace std;
 
-/**
- *  This class represents one node in a tree
- *
- * Tree -> Subtree ";"
- * Subtree -> Leaf | Internal
- * Leaf -> Name
- * Internal -> "(" BranchSet ")" Name
- * BranchSet -> Branch | Branch "," BranchSet
- * Branch -> Subtree Length
- * Name -> empty | string
- * Length -> empty | ":" number
- */
+
 class Node{
 	
   private:
@@ -58,43 +48,84 @@ class Node{
 	 */
 	string _name ="";
 	
-	/**
-	 *   Depth of node in tree. This will be set when tree is built.
-	 */
-	const int _depth;
-	
 	const double _distance;
 	
   public:
 	static int count;
 	
-	Node(const int depth, const string name, const double distance);
+	Node(const string name, const double distance=0.0);
 	
 	void append(shared_ptr<Node> node) {_children.push_back(node);}; 
 	
 	friend ostream& operator<<(ostream& os, const Node & node);
 	
-	int get_depth() {return _depth;}; 
-	
 	double get_distance() {return _distance;}; 
 	
 	string get_name() {return _name;}; 
 };
-	
-class Newick {
+
+
+/**
+ *  This class represents one node in a tree
+ *
+ * Tree -> Subtree ";"
+ * Subtree -> Leaf | Internal
+ * Leaf -> Name
+ * Internal -> "(" BranchSet ")" Name
+ * BranchSet -> Branch | Branch "," BranchSet
+ * Branch -> Subtree Length
+ * Name -> empty | string
+ * Length -> empty | ":" number 
+ */
+class Parser{
   public:
-
-	void parse(string s);
+	/**
+	 * Tree -> Subtree ";"
+	 */
+	shared_ptr<Node> parse_tree(span<Token> tokens);
 	
-	tuple<shared_ptr<Node>,vector<tuple<int,int>>> explore(vector<Token> tokens, const int from, const int to, const int depth);
+	/**
+	 * Subtree -> Leaf | Internal
+	 */
+	shared_ptr<Node> parse_subtree(span<Token> tokens);
 
-	shared_ptr<Node> create_node(vector<Token> tokens,
-									const int from,
-									const int to,
-									const int depth	);
+	/**
+	 * Leaf -> Name
+	 */		
+	shared_ptr<Node> parse_leaf(span<Token> tokens);
+	
+	/**
+	 * Internal -> "(" BranchSet ")" Name
+	 */	
+	shared_ptr<Node> parse_internal(span<Token> tokens);
+	
+	/**
+	 * BranchSet -> Branch | Branch "," BranchSet
+	 */
+	shared_ptr<Node> parse_branchset(span<Token> tokens);
+	
+	/**
+	 * Branch -> Subtree Length
+	 */
+	shared_ptr<Node> parse_branch(span<Token> tokens);
+	
+	/**
+	 * Name -> empty | string
+	 */
+	shared_ptr<Node> parse_name(span<Token> tokens);
+	
+	/**
+	 * Length -> empty | ":" number  
+	 */
+	shared_ptr<Node> parse_length(span<Token> tokens);
+	
+	int get_first_comma_at_top_level(span<Token> tokens);
+	
   private:
-	logic_error _create_error(const Token token, const int depth,const string file,const int line);
+	logic_error _create_error(Token token, const string file,const int line);
+
 };
+
 
 
 

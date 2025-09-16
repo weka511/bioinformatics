@@ -25,136 +25,164 @@
  
  int Node::count = 0;
  
- Node::Node(const int depth, const string name, const double distance) :  _id(count++),_name(name),_depth(depth),_distance(distance) {}
+ Node::Node( const string name, const double distance) : 
+	_id(count++),_name(name),_distance(distance) {}
  
  ostream& operator<<(ostream& os, const Node& node){
 	os  << "Node " << node._id 	<< " ["<<node._name << "]: "
-		<< " depth = " << node._depth
 		<< ", distance =  " << node._distance;
       return os;
 }
 
- void Newick::parse(string s){
-	Node::count = 0;
-	cout <<__FILE__ <<" " <<__LINE__ << ": "<< s << endl;
-	Tokenizer tokenizer;
-	auto tokens = tokenizer.tokenize(s);
-	create_node(tokens,0,tokens.size(),0);
- }
- 
+/**
+ * Tree -> Subtree ";"
+ */
+shared_ptr<Node> Parser::parse_tree(span<Token> tokens) {
+	cout << __FILE__ << " " << __LINE__  << " parse_tree"<<endl;
+	for (auto t : tokens)
+		cout << t << endl;
+	span<Token> all_but_last(tokens.begin(), tokens.end() -1); 
+	Token token = tokens.back();
+	if (token.get_type() == Token::Type::Semicolon)
+		return parse_subtree(all_but_last);
+	else
+		throw _create_error(token, __FILE__, __LINE__);
+}
 
- shared_ptr<Node> Newick::create_node(vector<Token> tokens,
-									const int from,
-									const int to,
-									const int depth){
-	shared_ptr<Node> node;
-	vector<tuple<int,int>> bounds_list;
-	tie (node,bounds_list) =  explore(tokens,from,to,depth); 
+/**
+ * Subtree -> Leaf | Internal
+ */
+shared_ptr<Node> Parser::parse_subtree(span<Token> tokens){
+	cout << __FILE__ << " " << __LINE__  << " parse_subtree"<< endl;
+	for (auto t : tokens)
+		cout << t << endl;
+	try {
+		return parse_leaf(tokens);
+	} catch (const logic_error& e) {
+		try {
+			return parse_internal(tokens);
+		} catch (const logic_error& e1) {
+				throw e1;
+		}
+	} 
+}
 
-	// for (auto bounds : bounds_list){
-		// int a,b;
-		// tie(a,b) = bounds;
-		// cout << __FILE__ <<" " <<__LINE__ << ": "<< tokens[a]<<", "  <<tokens[b]<<endl;
-		// auto  child =create_node(tokens,a,b,depth+1);
-		// node->append(child);
-	// }
+/**
+ * Leaf -> Name
+ */
+shared_ptr<Node> Parser::parse_leaf(span<Token> tokens){
+	cout << __FILE__ << " " << __LINE__  << " parse_leaf "<< tokens.size() <<endl;
+	for (auto t : tokens)
+		cout << t << endl;
+	if (tokens.size() == 1)
+		return parse_name(tokens);
+		// return make_shared<Node>(tokens[0].get_text(),0.0);
+	else
+		throw  _create_error(tokens[0], __FILE__, __LINE__); 
+}
 
+/**
+  * Internal -> "(" BranchSet ")" Name
+  */	
+shared_ptr<Node> Parser::parse_internal(span<Token> tokens){
+	cout << __FILE__ << " " << __LINE__  << " parse_internal"<< endl;
+	for (auto t : tokens)
+		cout << t << endl;
+	if ((int)tokens.size() > 2 &&
+		tokens[0].get_type() == Token::Type::L &&
+		tokens.back().get_type() == Token::Type::R){
+		span<Token> candidate_branchset(tokens.begin()+1, tokens.end() -1); 
+		return parse_branchset(candidate_branchset);
+	} else
+		throw  _create_error(tokens[0], __FILE__, __LINE__);  
+}
+
+
+/**
+ * BranchSet -> Branch | Branch "," BranchSet
+ */
+shared_ptr<Node> Parser::parse_branchset(span<Token> tokens){
+	cout << __FILE__ << " " << __LINE__ << " parse_branchset" << endl;
+	for (auto t : tokens)
+		cout << t << endl;
+	const auto first_comma_at_top_level = get_first_comma_at_top_level(tokens);
+	if (first_comma_at_top_level < 0)
+		return parse_branch(tokens);
+	else {
+		cout << __FILE__ << " " << __LINE__ <<  ",=" << first_comma_at_top_level <<endl;
+		span<Token> head(tokens.begin(), tokens.begin() + first_comma_at_top_level); 
+		parse_branch(head);
+		span<Token> tail(tokens.begin() + first_comma_at_top_level +1, tokens.end()); 
+		parse_branchset(tail);
+	}
+	const shared_ptr<Node> node =make_shared<Node>("",0);
 	return node;
- }
- 
- tuple<shared_ptr<Node>,vector<tuple<int,int>>> Newick::explore(vector<Token> tokens,
-																const int from,
-																const int to, 
-																const int depth){
-	cout <<__FILE__ <<" " <<__LINE__ << " from="<< from <<", to=" << to << ", depth =" << depth << endl;												
-	int working_depth = depth;
-	int open = tokens.size();
-	int close = -1;
-	vector<tuple<int,int>> bounds;
-	string name = "";
-	auto distance = 1.0;
-	auto expect_distance = false;
-	auto terminated = false;
-	vector <int> splitting_points;
-	for (auto i = from;i < to; i++){
-		cout <<__FILE__ <<" " <<__LINE__ << " " <<i << tokens[i] <<endl;
-		 switch(tokens[i].get_type()) {
-			case Token::Type::L:
-				if (depth ==working_depth)
-					open = i;
-				working_depth++;
-				break;
-				
-			case Token::Type::Comma:
-				if (working_depth == depth + 1)
-					splitting_points.push_back(i+1);
-				break;
-			case Token::Type::R:
-				working_depth--;
-				if (depth == working_depth)
-					close = i;
-				break;
-			case Token::Type::Semicolon:
-				if (working_depth != 0 || to - i != 1)
-					throw _create_error(tokens[i],working_depth,__FILE__,__LINE__);
-				terminated = true;
-				break;
-			case Token::Type::Space:
-				break;
-			case Token::Type::Colon:
-				if (working_depth > depth) break;
-				expect_distance = true;
-				break;
-			case Token::Type::Identifier:
-				if (working_depth > depth) break;
-				name = tokens[i].get_text();
-				break;
-			case Token::Type::Number:
-				if (working_depth > depth) break;
-				if (expect_distance)
-					distance = tokens[i].get_numeric();
-				else
-					throw _create_error(tokens[i],working_depth,__FILE__,__LINE__);
-				break;
-	}};
-	// if (!terminated)
-		// throw _create_error(tokens.back(),working_depth,__FILE__,__LINE__);
-	const shared_ptr<Node> node = make_shared<Node>(depth,name,distance);
-	
-	splitting_points.push_back(close);
-	for (auto j = 0;j < (int)splitting_points.size();j++)
-		if (j==0)
-			bounds.push_back(make_tuple(open,splitting_points[j]));
-		else
-			bounds.push_back(make_tuple(splitting_points[j-1],splitting_points[j]));
-		
-	return make_tuple(node,bounds);
- }
+}
 
-logic_error Newick::_create_error(Token token, const int depth,const string file,const int line){
+/**
+ * Branch -> Subtree Length
+ */
+shared_ptr<Node> Parser::parse_branch(span<Token> tokens){
+	cout << __FILE__ << " " << __LINE__  << " parse_branch"<< endl;
+	for (auto t : tokens)
+		cout << t << endl;
+	parse_subtree(tokens);  // TODO Length
+	const shared_ptr<Node> node =make_shared<Node>("",0);
+	return node;
+}
+
+/**
+ * Name -> empty | string
+ */
+shared_ptr<Node> Parser::parse_name(span<Token> tokens){
+	cout << __FILE__ << " " << __LINE__  << " parse_name"<< endl;
+		for (auto t : tokens)
+		cout << t << endl;
+	const shared_ptr<Node> node =make_shared<Node>(tokens[0].get_text());
+	cout << __FILE__ << " " << __LINE__ << " " << *node << endl;
+	return node;
+}
+
+/**
+ * Length -> empty | ":" number  
+ */
+shared_ptr<Node> Parser::parse_length(span<Token> tokens){
+	cout << __FILE__ << " " << __LINE__  << " parse_length"<< endl;
+	const shared_ptr<Node> node =make_shared<Node>(tokens[0].get_text(),0);  //FIXME
+	;
+	return node;
+}
+
+logic_error Parser::_create_error(Token token, const string file,const int line){
 	stringstream message;
 	message<<file <<" " <<line << ": "<<" Unexpected token " << token<<endl; 
 	return logic_error(message.str().c_str()); 
 } 
- 
- // switch(tokens[i].get_type()) {
-			// case Token::Type::L:
-				// working_depth++;
-				// break;
-				
-			// case Token::Type::Comma:
-				// break;
-			// case Token::Type::R:
-				// working_depth--;
-				// break;
-			// case Token::Type::Semicolon:
-				// break;
-			// case Token::Type::Space:
-				// break;
-			// case Token::Type::Colon:
-				// break;
-			// case Token::Type::Identifier:
-				// break;
-			// case Token::Type::Number:
-				// break;
-	// };
+	
+int Parser::get_first_comma_at_top_level(span<Token> tokens){
+	auto depth = 0;
+	for (int i=0; i<(int)tokens.size();i++)
+		switch(tokens[i].get_type()) {
+			case Token::Type::L:
+				depth++;
+				break;
+			case Token::Type::Comma:
+				if (depth == 0)
+					return i;
+				break;
+			case Token::Type::R:
+				depth--;
+				break;
+			case Token::Type::Semicolon:
+				break;
+			case Token::Type::Space:
+				break;
+			case Token::Type::Colon:
+				break;
+			case Token::Type::Identifier:
+				break;
+			case Token::Type::Number:
+				break;
+	};
+	return -1;
+}

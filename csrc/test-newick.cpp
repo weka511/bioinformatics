@@ -29,70 +29,31 @@
   
  
 TEST_CASE( "Newick Tests", "[newick]" ) {
-	Newick newick;
+	Parser parser;
 	Node::count = 0;
 	Tokenizer tokenizer;
 	
-	SECTION("Test parser with label and top level distance") {
-		auto tokens = tokenizer.tokenize("(A:0.1,B:0.2,(C:0.3,D:0.4)E:0.5)F:6.7;");	
-		REQUIRE(tokens.size() == 26);
-		shared_ptr<Node> node;
-		vector<tuple<int,int>> bounds;
-		tie(node,bounds) = newick.explore(tokens, 0, tokens.size(), 0);
-		REQUIRE(node->get_depth() == 0);
-		REQUIRE(node->get_distance() == 6.7);
-		REQUIRE(node->get_name() == "F");
-		for (auto bound : bounds){
-			cout <<__FILE__ <<" " <<__LINE__ << ": " << get<0>(bound) << "-" << get<1>(bound) << endl;
-			shared_ptr<Node> child;
-			vector<tuple<int,int>> bounds1;
-			tie(child,bounds1) = newick.explore(tokens, get<0>(bound), get<1>(bound), 1);
-			cout <<__FILE__ <<" " <<__LINE__ << ": " << *child << endl;
-		}
-
+	SECTION("get_first_comma_at_top_level") {
+		auto tokens = tokenizer.tokenize("A:0.1,B:0.2,(C:0.3,D:0.4)E:0.5");	
+		REQUIRE(parser.get_first_comma_at_top_level(tokens) == 3);
 	}
 	
-	// SECTION("Test parser with label without top level distance") {
-		// auto tokens = tokenizer.tokenize("(A:0.1,B:0.2,(C:0.3,D:0.4)E:0.5)F;");	
-		// shared_ptr<Node> node;
-		// vector<tuple<int,int>> bounds;
-		// tie(node,bounds) = newick.explore(tokens, 0, tokens.size(), 0);
-		// REQUIRE(node->get_depth() == 0);
-		// REQUIRE(node->get_distance() == 1.0);
-		// REQUIRE(node->get_name() == "F");
-		// for (auto bound : bounds)
-			// cout << get<0>(bound) << "-" << get<1>(bound) << endl;
-	// }
+	SECTION("get_first_comma_at_top_level(1)") {
+		auto tokens = tokenizer.tokenize("(C:0.3,D:0.4)E:0.5,A:0.1,B:0.2");	
+		REQUIRE(parser.get_first_comma_at_top_level(tokens) == 12);
+	}
+
 	
-	// SECTION("a tree rooted on a leaf node (rare)") {
-		// auto tokens = tokenizer.tokenize("((B:0.2,(C:0.3,D:0.4)E:0.5)F:0.1)A;");	
-		// shared_ptr<Node> node;
-		// vector<tuple<int,int>> bounds;
-		// tie(node,bounds) = newick.explore(tokens, 0, tokens.size(), 0);
-		// REQUIRE(node->get_depth() == 0);
-		// REQUIRE(node->get_distance() == 1.0);
-		// REQUIRE(node->get_name() == "A");
-		// for (auto bound : bounds)
-			// cout << get<0>(bound) << "-" << get<1>(bound) << endl;
-	// }
+	SECTION("a naked leaf node ") {
+		auto tokens = tokenizer.tokenize("SomeLeaf;");	
+		shared_ptr<Node> node = parser.parse_tree(tokens);
+		REQUIRE(node->get_name() == "SomeLeaf");
+	}
 	
-	// SECTION("a naked leaf node ") {
-		// auto tokens = tokenizer.tokenize("B:0.2,");	
-		// shared_ptr<Node> node;
-		// vector<tuple<int,int>> bounds;
-		// tie(node,bounds) = newick.explore(tokens, 0, tokens.size(), 1);
-		// REQUIRE(node->get_depth() == 0);
-		// REQUIRE(node->get_distance() == 0.2);
-		// REQUIRE(node->get_name() == "B");
-	// }
 	
-	// SECTION("Test parser with no labels") {
-		// Newick newick;
-		// newick.parse("(,,(,));");
-	// }
+	SECTION("Test parser with labels") {
+		auto tokens = tokenizer.tokenize("(A,B);");
+		shared_ptr<Node> node = parser.parse_tree(tokens);
+	}
 	
-	// SECTION("Test parser with labels") {
-		// Newick newick;
-		// newick.parse("(A,B,(C,D));");
-	// }
  }
