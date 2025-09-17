@@ -1,8 +1,8 @@
 # C++
 
 | # | Location | Header |Description |
-| ---- | --------------- |  ---------------  |------------------------------------------------|
-|Makefile||
+ ---- | -------------------- |  ---------------------  |------------------------------------|
+-|Makefile||
 DNA|dna.cpp|dna.hpp|[Counting DNA Nucleotides](http://rosalind.info/problems/dna/) |
 -|factory.cpp|factory.hpp|This class instantiates the solver for a Rosalind problem 
 -|file-adapter.cpp|file-adapter.hpp|
