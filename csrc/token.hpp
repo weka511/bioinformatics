@@ -24,6 +24,10 @@
 
 using namespace std;
 
+/**
+ * This class is used when parsing a string (e.g. by Newick). 
+ * Each Token represents one lexical elemant from string
+ */
 class Token {
   public:
   	/**

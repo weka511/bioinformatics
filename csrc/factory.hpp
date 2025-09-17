@@ -26,7 +26,7 @@
 using namespace std;
 
 /**
- * This class instantiates problems 
+ * This class instantiates the solver for a Rosalind problem 
  */
 class ProblemFactory {
 	/**

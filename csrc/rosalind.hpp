@@ -23,6 +23,9 @@
 
 using namespace std;
 
+/**
+ * This class represents the command line parameters that were used by the resalind program
+ */
 class Parameters{
 	string _problem_name = "";
 	FileNameFactory::Format _format = FileNameFactory::Format::SUBMIT;
