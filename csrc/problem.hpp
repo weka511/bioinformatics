@@ -13,6 +13,9 @@
  *
  * You should   received a copy of the GNU General Public License
  * along with this software.  If not, see <http://www.gnu.org/licenses/>
+ *
+ * Abstract classes that serve as parents for a Rosalind problem, 
+ * and also support input/output
  */
  
 #ifndef _PROBLEM_HPP

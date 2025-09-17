@@ -13,6 +13,8 @@
  *
  * You should   received a copy of the GNU General Public License
  * along with this software.  If not, see <http://www.gnu.org/licenses/>
+ *
+ * Classes that allow Roslind problems to interact with files.
  */
  
 #ifndef _FILE_ADAPTER_HPP

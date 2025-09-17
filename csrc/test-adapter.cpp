@@ -13,6 +13,8 @@
  *
  * You should   received a copy of the GNU General Public License
  * along with this software.  If not, see <http://www.gnu.org/licenses/>
+ *
+ * Classes that allow Rosalind problems to be accessed from unit tests
  */
  
  #include <sstream>

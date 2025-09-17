@@ -26,7 +26,9 @@
 
 using namespace std;
 
-
+/**
+ *  A program written to solve rasalind problems.
+ */
 int main(int argc, char **argv) {
 	try {
 		Parameters parameters(argc,argv);
