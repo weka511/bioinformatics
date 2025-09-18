@@ -43,6 +43,8 @@ using namespace std;
  */
 class Parser {
   public:
+	class Visitor;
+	
   	class NewickNode {
 	  private:
 		vector<shared_ptr<Parser::NewickNode>> _children;
@@ -56,6 +58,11 @@ class Parser {
 		
 		virtual double get_length() {return 1.0;}
 		
+		void descend(shared_ptr<Visitor> visitor);
+		
+		friend ostream& operator<<(ostream& os, const NewickNode& node);
+		
+		virtual string get_str() const =0;
 	  protected:
 	    logic_error create_error(Token token, const string file,const int line);
 		
@@ -73,6 +80,7 @@ class Parser {
 	class Tree : public NewickNode {
 	  public:
 		void parse(span<Token> tokens);
+		string get_str() const  {return "Tree";}
 	};
 	
 	/**
@@ -81,6 +89,7 @@ class Parser {
 	class SubTree : public NewickNode {
 	  public:
 		void parse(span<Token> tokens);
+		string get_str() const  {return "SubTree";}
 	};
 	
 	/**
@@ -89,6 +98,7 @@ class Parser {
 	class Leaf : public NewickNode {
 	  public:
 		void parse(span<Token> tokens);
+		string get_str() const  {return "Leaf";}
 	};
 	
 	/**
@@ -97,6 +107,7 @@ class Parser {
 	class Internal : public NewickNode {
 	  public:
 		void parse(span<Token> tokens);
+		string get_str() const  {return "Internal";}
 	};
 	
 	/**
@@ -105,6 +116,8 @@ class Parser {
 	class BranchSet : public NewickNode {
 	  public:
 		void parse(span<Token> tokens);
+		
+		string get_str() const  {return "BranchSet";}
 		
 		int get_first_comma_at_top_level(span<Token> tokens);
 	};
@@ -115,6 +128,7 @@ class Parser {
 	class Branch : public NewickNode {
 	  public:
 		void parse(span<Token> tokens);
+		string get_str() const  {return "Branch";}
 	};
 	
 	/**
@@ -125,7 +139,7 @@ class Parser {
 		string _value;
 	  public:
 		void parse(span<Token> tokens);
-		
+		string get_str() const  {return _value;}
 		string get_name() {return _value;};
 	};
 	
@@ -137,11 +151,16 @@ class Parser {
 		double _value = 1.0;
 	  public:
 		void parse(span<Token> tokens);
-		
+		string get_str() const  {return to_string(_value);}
 		double get_length() {return _value;}
 	};
 	
 	shared_ptr<Tree> parse(string source);
+	
+	class Visitor {
+	  public:
+		virtual void accept(NewickNode * node) = 0;
+	};
 };
 
 

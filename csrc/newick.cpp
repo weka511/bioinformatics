@@ -37,6 +37,20 @@ void Parser::NewickNode::attach(shared_ptr<Parser::NewickNode> node){
 	_children.push_back(node);
 }
 
+void Parser::NewickNode::descend(shared_ptr<Visitor> visitor){
+	visitor->accept(this);
+	for (auto child : _children)
+		child->descend(visitor);
+}
+
+/**
+ * Allows us to output node
+ */
+ ostream& operator<<(ostream& os, const Parser::NewickNode& node){
+	os  << node.get_str() ;
+    return os;
+}
+
 /**
  * Tree -> Subtree ";"
  */  

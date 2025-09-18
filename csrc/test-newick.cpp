@@ -28,9 +28,9 @@
  #include "newick.hpp"
  #include "tokenizer.hpp"
  
- class Displayer: public Node::Visitor {
-	 void accept(Node& node,int depth){
-		 cout << __FILE__ << " " << __LINE__  <<node << " " << depth << endl;
+ class Displayer: public Parser::Visitor {
+	 void accept(Parser::NewickNode* node){
+		 cout << __FILE__ << " " << __LINE__  << ": " <<*node  << endl;
 	 }
  };
  
@@ -77,6 +77,8 @@ TEST_CASE( "Newick Tests", "[newick]" ) {
 	SECTION("Test parser with labels") {
 		// auto tokens = tokenizer.tokenize("(A,B,(C,D));");	
 		shared_ptr<Parser::Tree> tree = parser.parse("(A,B,(C,D));");
+		shared_ptr<Parser::Visitor> displayer = make_shared<Displayer>();
+		tree->descend(displayer);
 		// node->visit(displayer);
 	}
 	
