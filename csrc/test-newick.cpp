@@ -42,21 +42,37 @@ TEST_CASE( "Newick Tests", "[newick]" ) {
 	
 	SECTION("get_first_comma_at_top_level") {
 		auto tokens = tokenizer.tokenize("A:0.1,B:0.2,(C:0.3,D:0.4)E:0.5");	
-		REQUIRE(parser.get_first_comma_at_top_level(tokens) == 3);
+		Parser::BranchSet branch_set;
+		REQUIRE(branch_set.get_first_comma_at_top_level(tokens) == 3);
 	}
 	
 	SECTION("get_first_comma_at_top_level(1)") {
 		auto tokens = tokenizer.tokenize("(C:0.3,D:0.4)E:0.5,A:0.1,B:0.2");	
-		REQUIRE(parser.get_first_comma_at_top_level(tokens) == 12);
+		Parser::BranchSet branch_set;
+		REQUIRE(branch_set.get_first_comma_at_top_level(tokens) == 12);
 	}
 
-	
 	SECTION("a naked leaf node ") {
 		auto tokens = tokenizer.tokenize("SomeLeaf;");	
-		shared_ptr<Node> node = parser.parse_tree(tokens);
-		REQUIRE(node->get_name() == "SomeLeaf");
+		Parser::Tree tree;
+		tree.parse(tokens);
+		shared_ptr<Parser::NewickNode> subtree = tree.get_child(0);
+		shared_ptr<Parser::NewickNode> leaf = subtree->get_child(0);
+		shared_ptr<Parser::NewickNode> name = leaf->get_child(0);
+		REQUIRE(name->get_name() == "SomeLeaf");
 	}
 	
+	SECTION("a naked leaf node with length") {
+		auto tokens = tokenizer.tokenize("SomeLeaf:3.1415;");	
+		Parser::Tree tree;
+		tree.parse(tokens);
+		shared_ptr<Parser::NewickNode> subtree = tree.get_child(0);
+		shared_ptr<Parser::NewickNode> leaf = subtree->get_child(0);
+		shared_ptr<Parser::NewickNode> name = leaf->get_child(0);
+		REQUIRE(name->get_name() == "SomeLeaf");
+		shared_ptr<Parser::NewickNode> length = name->get_child(0);
+		REQUIRE(length->get_length() == 3.1415);
+	}
 	
 	SECTION("Test parser with labels") {
 		auto tokens = tokenizer.tokenize("(A,B,(C,D));");

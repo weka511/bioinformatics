@@ -41,22 +41,26 @@ using namespace std;
  * Name -> empty | string
  * Length -> empty | ":" number 
  */
-class Parser{
+class Parser {
   public:
-  
-	class NewickNode {
+  	class NewickNode {
 	  private:
 		vector<shared_ptr<Parser::NewickNode>> _children;
+		
 	  public:
 		virtual void parse(span<Token> tokens) = 0;
+		
+		shared_ptr<Parser::NewickNode> get_child(int index) {return _children[index];}
+		
+		virtual string get_name() {return "";}
+		
+		virtual double get_length() {return 1.0;}
 		
 	  protected:
 	    logic_error create_error(Token token, const string file,const int line);
 		
 		void attach(shared_ptr<Parser::NewickNode> node);
 		
-		int get_first_comma_at_top_level(span<Token> tokens);
-
 	  	/**
 		 * Used by get_first_comma_at_top_level to indicate that it failed to find comma
 		 */
@@ -86,6 +90,8 @@ class Parser{
 	class BranchSet : public NewickNode {
 	  public:
 		void parse(span<Token> tokens);
+		
+		int get_first_comma_at_top_level(span<Token> tokens);
 	};
 	
 	class Branch : public NewickNode {
@@ -98,6 +104,8 @@ class Parser{
 		string _value;
 	  public:
 		void parse(span<Token> tokens);
+		
+		string get_name() {return _value;};
 	};
 	
 	class Length : public NewickNode {
@@ -105,6 +113,8 @@ class Parser{
 		double _value = 1.0;
 	  public:
 		void parse(span<Token> tokens);
+		
+		double get_length() {return _value;}
 	};
 	
 	shared_ptr<Node> parse(string source);

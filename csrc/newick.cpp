@@ -24,24 +24,7 @@
 
  using namespace std;
 
-int Parser::NewickNode::get_first_comma_at_top_level(span<Token> tokens){
-	auto depth = 0;
-	for (int i=0; i<(int)tokens.size();i++)
-		switch(tokens[i].get_type()) {
-			case Token::Type::L:
-				depth++;
-				break;
-			case Token::Type::Comma:
-				if (depth == 0)
-					return i;
-				break;
-			case Token::Type::R:
-				depth--;
-				break;
-			default: ;
-	};
-	return UNDEFINED;
-}
+
 
 /**
  * Indicates that parser encountered an error
@@ -101,6 +84,7 @@ void Parser::Internal::parse(span<Token> tokens){
 	} else
 		throw  create_error(tokens[0], __FILE__, __LINE__); 
 }
+
 void Parser::BranchSet::parse(span<Token> tokens){
 	const auto first_comma_at_top_level = get_first_comma_at_top_level(tokens);
 	shared_ptr<Parser::Branch> branch = make_shared<Parser::Branch>();
@@ -116,6 +100,25 @@ void Parser::BranchSet::parse(span<Token> tokens){
 		branch_set->parse(tail);
 		attach(branch_set);
 	}
+}
+
+int Parser::BranchSet::get_first_comma_at_top_level(span<Token> tokens){
+	auto depth = 0;
+	for (int i=0; i<(int)tokens.size();i++)
+		switch(tokens[i].get_type()) {
+			case Token::Type::L:
+				depth++;
+				break;
+			case Token::Type::Comma:
+				if (depth == 0)
+					return i;
+				break;
+			case Token::Type::R:
+				depth--;
+				break;
+			default: ;
+	};
+	return UNDEFINED;
 }
 
 void Parser::Branch::parse(span<Token> tokens){//TODO length
