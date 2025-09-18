@@ -67,26 +67,41 @@ class Parser {
 		const int UNDEFINED = -1;
 	};
 	
+	/**
+	 * Tree -> Subtree ";"
+	 */
 	class Tree : public NewickNode {
 	  public:
 		void parse(span<Token> tokens);
 	};
 	
+	/**
+	 * Subtree -> Leaf | Internal
+	 */
 	class SubTree : public NewickNode {
 	  public:
 		void parse(span<Token> tokens);
 	};
 	
+	/**
+	 * Leaf -> Name
+	 */	
 	class Leaf : public NewickNode {
 	  public:
 		void parse(span<Token> tokens);
 	};
 	
+	/**
+	 * Internal -> "(" BranchSet ")" Name
+	 */	
 	class Internal : public NewickNode {
 	  public:
 		void parse(span<Token> tokens);
 	};
 	
+	/**
+	 * BranchSet -> Branch | Branch "," BranchSet
+	 */
 	class BranchSet : public NewickNode {
 	  public:
 		void parse(span<Token> tokens);
@@ -94,11 +109,17 @@ class Parser {
 		int get_first_comma_at_top_level(span<Token> tokens);
 	};
 	
+	/**
+	 * Branch -> Subtree Length
+	 */
 	class Branch : public NewickNode {
 	  public:
 		void parse(span<Token> tokens);
 	};
 	
+	/**
+	 * Name -> empty | string
+	 */
 	class Name : public NewickNode {
 	  private:
 		string _value;
@@ -108,6 +129,9 @@ class Parser {
 		string get_name() {return _value;};
 	};
 	
+	/**
+	 * Length -> empty | ":" number  
+	 */
 	class Length : public NewickNode {
 	  private:
 		double _value = 1.0;
@@ -117,68 +141,7 @@ class Parser {
 		double get_length() {return _value;}
 	};
 	
-	shared_ptr<Node> parse(string source);
-	
-	/**
-	 * Tree -> Subtree ";"
-	 */
-	shared_ptr<Node> parse_tree(span<Token> tokens);
-	
-	/**
-	 * Subtree -> Leaf | Internal
-	 */
-	shared_ptr<Node> parse_subtree(span<Token> tokens);
-
-	/**
-	 * Leaf -> Name
-	 */		
-	shared_ptr<Node> parse_leaf(span<Token> tokens);
-	
-	/**
-	 * Internal -> "(" BranchSet ")" Name
-	 */	
-	shared_ptr<Node> parse_internal(span<Token> tokens);
-	
-	/**
-	 * BranchSet -> Branch | Branch "," BranchSet
-	 */
-	shared_ptr<Node> parse_branchset(span<Token> tokens);
-	
-	/**
-	 * Branch -> Subtree Length
-	 */
-	shared_ptr<Node> parse_branch(span<Token> tokens);
-	
-	/**
-	 * Name -> empty | string
-	 */
-	shared_ptr<Node> parse_name(span<Token> tokens);
-	
-	/**
-	 * Length -> empty | ":" number  
-	 */
-	double parse_length(span<Token> tokens);
-	
-	/**
-	 *   Used by parse_branchset() to locate the first comma that is relevant to
-	 *   the parse.
-	 *
-	 *   Returns:
-	 *       index of comma, or UNDEFINED
-	 */
-	int get_first_comma_at_top_level(span<Token> tokens);
-	
-	/**
-	 * Used by get_first_comma_at_top_level to indicate that it failed to find comma
-	 */
-	const int UNDEFINED = -1;
-	
-  private:
-	/**
-	 * Indicates that parser encountered an error
-	 */
-	logic_error _create_error(Token token, const string file,const int line);
-
+	shared_ptr<Tree> parse(string source);
 };
 
 
