@@ -44,6 +44,69 @@ using namespace std;
 class Parser{
   public:
   
+	class NewickNode {
+	  private:
+		vector<shared_ptr<Parser::NewickNode>> _children;
+	  public:
+		virtual void parse(span<Token> tokens) = 0;
+		
+	  protected:
+	    logic_error create_error(Token token, const string file,const int line);
+		
+		void attach(shared_ptr<Parser::NewickNode> node);
+		
+		int get_first_comma_at_top_level(span<Token> tokens);
+
+	  	/**
+		 * Used by get_first_comma_at_top_level to indicate that it failed to find comma
+		 */
+		const int UNDEFINED = -1;
+	};
+	
+	class Tree : public NewickNode {
+	  public:
+		void parse(span<Token> tokens);
+	};
+	
+	class SubTree : public NewickNode {
+	  public:
+		void parse(span<Token> tokens);
+	};
+	
+	class Leaf : public NewickNode {
+	  public:
+		void parse(span<Token> tokens);
+	};
+	
+	class Internal : public NewickNode {
+	  public:
+		void parse(span<Token> tokens);
+	};
+	
+	class BranchSet : public NewickNode {
+	  public:
+		void parse(span<Token> tokens);
+	};
+	
+	class Branch : public NewickNode {
+	  public:
+		void parse(span<Token> tokens);
+	};
+	
+	class Name : public NewickNode {
+	  private:
+		string _value;
+	  public:
+		void parse(span<Token> tokens);
+	};
+	
+	class Length : public NewickNode {
+	  private:
+		double _value = 1.0;
+	  public:
+		void parse(span<Token> tokens);
+	};
+	
 	shared_ptr<Node> parse(string source);
 	
 	/**
@@ -107,7 +170,6 @@ class Parser{
 	logic_error _create_error(Token token, const string file,const int line);
 
 };
-
 
 
 
