@@ -32,41 +32,53 @@ using namespace std;
 /**
  *  This class parses a string to a Newick tree
  *
- * Tree -> Subtree ";"
- * Subtree -> Leaf | Internal
- * Leaf -> Name
- * Internal -> "(" BranchSet ")" Name
- * BranchSet -> Branch | Branch "," BranchSet
- * Branch -> Subtree Length
- * Name -> empty | string
- * Length -> empty | ":" number 
  */
 class Parser {
   public:
 	class Visitor;
 	
+	/*
+	 * This class is used to parse Newick format test. It is the parent
+	 * for classes that represent the various elements in the definition
+	 * of Newick syntax.	 
+	 * Tree -> Subtree ";"
+	 * Subtree -> Leaf | Internal
+	 * Leaf -> Name
+	 * Internal -> "(" BranchSet ")" Name
+	 * BranchSet -> Branch | Branch "," BranchSet
+	 * Branch -> Subtree Length
+	 * Name -> empty | string
+	 * Length -> empty | ":" number 
+	 */
   	class NewickNode {
 	  private:
 		vector<shared_ptr<Parser::NewickNode>> _children;
+		
+		string _type;
 		
 	  public:
 		virtual void parse(span<Token> tokens) = 0;
 		
 		shared_ptr<Parser::NewickNode> get_child(int index) {return _children[index];}
 		
-		virtual string get_name() {return "";}
+		virtual string get_name() const {return "-";}
 		
-		virtual double get_length() {return 1.0;}
+		virtual double get_length() const {return 1.0;}
 		
-		void descend(shared_ptr<Visitor> visitor);
+		void descend(shared_ptr<Visitor> visitor, const int depth=0);
 		
 		friend ostream& operator<<(ostream& os, const NewickNode& node);
 		
-		virtual string get_str() const =0;
+		virtual string get_str() const {return _type;}
+		
 	  protected:
-	    logic_error create_error(Token token, const string file,const int line);
+		NewickNode(string type) : _type(type) {};
+		
+	    logic_error create_error(Token token, const string file,const int line) const;
 		
 		void attach(shared_ptr<Parser::NewickNode> node);
+		
+		string get_type() const {return _type;}
 		
 	  	/**
 		 * Used by get_first_comma_at_top_level to indicate that it failed to find comma
@@ -79,17 +91,21 @@ class Parser {
 	 */
 	class Tree : public NewickNode {
 	  public:
+		Tree() : NewickNode("Tree") {};
+		
 		void parse(span<Token> tokens);
-		string get_str() const  {return "Tree";}
 	};
 	
 	/**
 	 * Subtree -> Leaf | Internal
 	 */
 	class SubTree : public NewickNode {
+		
 	  public:
+		SubTree() : NewickNode("SubTree") {};
+		
 		void parse(span<Token> tokens);
-		string get_str() const  {return "SubTree";}
+
 	};
 	
 	/**
@@ -97,8 +113,10 @@ class Parser {
 	 */	
 	class Leaf : public NewickNode {
 	  public:
+	  
+		Leaf() : NewickNode("Leaf") {};
 		void parse(span<Token> tokens);
-		string get_str() const  {return "Leaf";}
+
 	};
 	
 	/**
@@ -106,8 +124,9 @@ class Parser {
 	 */	
 	class Internal : public NewickNode {
 	  public:
+		Internal() : NewickNode("Internal") {};
 		void parse(span<Token> tokens);
-		string get_str() const  {return "Internal";}
+
 	};
 	
 	/**
@@ -115,9 +134,8 @@ class Parser {
 	 */
 	class BranchSet : public NewickNode {
 	  public:
+		BranchSet() : NewickNode("BranchSet") {};
 		void parse(span<Token> tokens);
-		
-		string get_str() const  {return "BranchSet";}
 		
 		int get_first_comma_at_top_level(span<Token> tokens);
 	};
@@ -127,8 +145,9 @@ class Parser {
 	 */
 	class Branch : public NewickNode {
 	  public:
+		Branch() : NewickNode("Branch") {};
 		void parse(span<Token> tokens);
-		string get_str() const  {return "Branch";}
+
 	};
 	
 	/**
@@ -137,10 +156,15 @@ class Parser {
 	class Name : public NewickNode {
 	  private:
 		string _value;
+		
 	  public:
+		Name() : NewickNode("Name") {};
+		
 		void parse(span<Token> tokens);
-		string get_str() const  {return _value;}
-		string get_name() {return _value;};
+		
+		string get_str() const;
+		
+		string get_name() const{return _value;};
 	};
 	
 	/**
@@ -150,16 +174,20 @@ class Parser {
 	  private:
 		double _value = 1.0;
 	  public:
+		Length() : NewickNode("Length") {};
+		
 		void parse(span<Token> tokens);
-		string get_str() const  {return to_string(_value);}
-		double get_length() {return _value;}
+		
+		string get_str() const;
+		
+		double get_length() const {return _value;}
 	};
 	
 	shared_ptr<Tree> parse(string source);
 	
 	class Visitor {
 	  public:
-		virtual void accept(NewickNode * node) = 0;
+		virtual void accept(NewickNode * node, const int depth) = 0;
 	};
 };
 

@@ -27,7 +27,7 @@
 /**
  * Indicates that parser encountered an error
  */
-logic_error Parser::NewickNode::create_error(Token token, const string file,const int line){
+logic_error Parser::NewickNode::create_error(Token token, const string file,const int line) const {
 	stringstream message;
 	message<<file <<" " <<line << ": "<<" Unexpected token " << token<<endl; 
 	return logic_error(message.str().c_str()); 
@@ -37,10 +37,10 @@ void Parser::NewickNode::attach(shared_ptr<Parser::NewickNode> node){
 	_children.push_back(node);
 }
 
-void Parser::NewickNode::descend(shared_ptr<Visitor> visitor){
-	visitor->accept(this);
+void Parser::NewickNode::descend(shared_ptr<Visitor> visitor, const int depth){
+	visitor->accept(this,depth);
 	for (auto child : _children)
-		child->descend(visitor);
+		child->descend(visitor,depth+1);
 }
 
 /**
@@ -173,7 +173,13 @@ void Parser::Name::parse(span<Token> tokens){
 	attach(length);
 }
 
-/**
+string Parser::Name::get_str() const {
+	stringstream str;
+	str << get_type() << " " << get_name();
+	return str.str();
+}
+								
+/** 
  * Length -> empty | ":" number  
  */
 void Parser::Length::parse(span<Token> tokens){
@@ -181,7 +187,15 @@ void Parser::Length::parse(span<Token> tokens){
 		_value = tokens[1].get_numeric();
 	else
 		throw create_error(tokens[0],__FILE__,__LINE__);
+}
 
+string Parser::Length::get_str() const  {
+	string repr = to_string(get_length());
+	while (repr.length() > 3 && repr[repr.length()-1] == '0' && repr[repr.length()-2] == '0')
+		repr.pop_back();
+	stringstream str;
+	str << get_type() << " " << repr;
+	return str.str();
 }
 	
 shared_ptr<Parser::Tree> Parser::parse(string source){

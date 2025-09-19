@@ -24,13 +24,17 @@
  * ((B:0.2,(C:0.3,D:0.4)E:0.5)F:0.1)A;    a tree rooted on a leaf node (rare)
  */
  
+ #include <sstream>
  #include "catch.hpp"
  #include "newick.hpp"
  #include "tokenizer.hpp"
  
  class Displayer: public Parser::Visitor {
-	 void accept(Parser::NewickNode* node){
-		 cout << __FILE__ << " " << __LINE__  << ": " <<*node  << endl;
+	 void accept(Parser::NewickNode* node,const int depth){
+		 stringstream leader;
+		 for (auto i=0;i<depth;i++)
+			 leader << "-";
+		 cout << __FILE__ << " " << __LINE__  << ": " <<leader.str() <<*node  << endl;
 	 }
  };
  
@@ -53,10 +57,10 @@ TEST_CASE( "Newick Tests", "[newick]" ) {
 	}
 
 	SECTION("a naked leaf node ") {
-		auto tokens = tokenizer.tokenize("SomeLeaf;");	
-		Parser::Tree tree;
-		tree.parse(tokens);
-		shared_ptr<Parser::NewickNode> subtree = tree.get_child(0);
+		shared_ptr<Parser::Tree> tree = parser.parse("SomeLeaf;");
+		shared_ptr<Parser::Visitor> displayer = make_shared<Displayer>();
+		tree->descend(displayer);
+		shared_ptr<Parser::NewickNode> subtree = tree->get_child(0);
 		shared_ptr<Parser::NewickNode> leaf = subtree->get_child(0);
 		shared_ptr<Parser::NewickNode> name = leaf->get_child(0);
 		REQUIRE(name->get_name() == "SomeLeaf");
@@ -75,22 +79,15 @@ TEST_CASE( "Newick Tests", "[newick]" ) {
 	}
 	
 	SECTION("Test parser with labels") {
-		// auto tokens = tokenizer.tokenize("(A,B,(C,D));");	
 		shared_ptr<Parser::Tree> tree = parser.parse("(A,B,(C,D));");
 		shared_ptr<Parser::Visitor> displayer = make_shared<Displayer>();
 		tree->descend(displayer);
-		// node->visit(displayer);
 	}
 	
-	// SECTION("Test parser with labels and lengths") {
-		// auto tokens = tokenizer.tokenize("(A:2.1,B,(C,D));");
-		// shared_ptr<Node> node = parser.parse_tree(tokens);
-		// node->visit(displayer);
-	// }
-	
-	// SECTION("Test parser with labels and lengths(1)") {
-		// shared_ptr<Node> node = parser.parse("(A:2.1,B:1.2,(C:3.0,D:0.2));");
-		// node->visit(displayer);
-	// }
+	SECTION("Test parser with labels and lengths(1)") {
+		shared_ptr<Parser::Tree> tree = parser.parse("(A:2.1,B:1.2,(C:3.0,D:0.2));");
+		shared_ptr<Parser::Visitor> displayer = make_shared<Displayer>();
+		tree->descend(displayer);
+	}
 	
  }
