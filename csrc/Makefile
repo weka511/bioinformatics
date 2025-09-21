@@ -36,10 +36,12 @@ SRCS      = factory.cpp 		\
 			problem.cpp			\
 			token.cpp			\
 			tokenizer.cpp		\
+			tree-builder.cpp	\
 			$(PROBLEMS)
 
-SEPARATE_TESTS = test-adapter.cpp	\
-				test-newick.cpp 	\
+SEPARATE_TESTS = test-adapter.cpp		\
+				test-newick.cpp 		\
+				test-tree-builder.cpp	\
 				test-tokenizer.cpp
 
 TESTS     = $(patsubst %.cpp,test-%.cpp,$(PROBLEMS)) $(SEPARATE_TESTS)
