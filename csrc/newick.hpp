@@ -104,12 +104,25 @@ class Parser {
 		}
 		
 	  protected:
+		/**
+		 * Used by descendent types to initialize type variable.
+		 */
 		NewickNode(string type) : _type(type) {};
 		
+		/**
+		 *  Factory method to create exceptions
+		 */
+		 
 	    logic_error create_error(Token token, const string file,const int line) const;
 		
+		/**
+		 * Used to make a node a child of this one.
+		 */
 		void attach(shared_ptr<Parser::NewickNode> node);
 		
+		/**
+		 * Used to determine type of node
+		 */
 		string get_type() const {return _type;}
 		
 	  	/**
@@ -125,6 +138,11 @@ class Parser {
 	  public:
 		Tree() : NewickNode("Tree") {};
 		
+		/**
+		 * Try to perform production:
+		 *
+		 * Tree -> Subtree ";"
+		 */
 		void parse(span<Token> tokens);
 	};
 	
@@ -136,6 +154,11 @@ class Parser {
 	  public:
 		SubTree() : NewickNode("SubTree") {};
 		
+		/**
+		 * Try to perform production:
+		 *
+		 * Subtree -> Leaf | Internal
+		 */
 		void parse(span<Token> tokens);
 
 	};
@@ -147,6 +170,12 @@ class Parser {
 	  public:
 	  
 		Leaf() : NewickNode("Leaf") {};
+		
+		/**
+		 * Try to perform production:
+		 *
+		 * Leaf -> Name
+		 */
 		void parse(span<Token> tokens);
 
 	};
@@ -157,6 +186,12 @@ class Parser {
 	class Internal : public NewickNode {
 	  public:
 		Internal() : NewickNode("Internal") {};
+		
+		/**
+		 * Try to perform production:
+		 *
+		 * Internal -> "(" BranchSet ")" Name
+		 */
 		void parse(span<Token> tokens);
 
 	};
@@ -167,8 +202,17 @@ class Parser {
 	class BranchSet : public NewickNode {
 	  public:
 		BranchSet() : NewickNode("BranchSet") {};
+		
+		/**
+		 * Try to perform production:
+		 *
+		 * BranchSet -> Branch | Branch "," BranchSet
+		 */
 		void parse(span<Token> tokens);
 		
+		/**
+		 * Used to separate Branch from rest of BranchSet
+		 */		 
 		int get_first_comma_at_top_level(span<Token> tokens);
 	};
 	
@@ -178,6 +222,12 @@ class Parser {
 	class Branch : public NewickNode {
 	  public:
 		Branch() : NewickNode("Branch") {};
+		
+		/**
+		 * Try to perform production:
+		 *
+		 * Branch -> Subtree Length
+		 */
 		void parse(span<Token> tokens);
 
 	};
@@ -192,6 +242,11 @@ class Parser {
 	  public:
 		Name() : NewickNode("Name") {};
 		
+		/**
+		 * Try to perform production:
+		 *
+		 * Name -> empty | string
+		 */
 		void parse(span<Token> tokens);
 		
 		string get_str() const;
@@ -208,6 +263,11 @@ class Parser {
 	  public:
 		Length() : NewickNode("Length") {};
 		
+		/**
+		 * Try to perform production:
+		 *
+		 * Length -> empty | ":" number  
+		 */
 		void parse(span<Token> tokens);
 		
 		string get_str() const;
@@ -215,6 +275,10 @@ class Parser {
 		double get_length() const {return _value;}
 	};
 	
+	/**
+	 *  Convert a string to a vector of tokens,
+	 *  then attempt to parse to a Tree.
+	 */
 	shared_ptr<Tree> parse(string source);
 	
 	/**

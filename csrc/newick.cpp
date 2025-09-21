@@ -33,10 +33,17 @@ logic_error Parser::NewickNode::create_error(Token token, const string file,cons
 	return logic_error(message.str().c_str()); 
 } 
 
+/**
+ * Used to make a node a child of this one.
+ */
 void Parser::NewickNode::attach(shared_ptr<Parser::NewickNode> node){
 	_children.push_back(node);
 }
 
+/**
+ *  Used in conjunction with Visitor to perform an operation on every node.
+ *  Traversal is by recurseive descent.
+ */
 void Parser::NewickNode::descend(shared_ptr<Visitor> visitor, const int depth){
 	visitor->accept(this,depth);
 	for (auto child : _children)
@@ -132,6 +139,9 @@ void Parser::BranchSet::parse(span<Token> tokens){
 	}
 }
 
+/**
+ * Used to separate Branch from rest of BranchSet
+ */		
 int Parser::BranchSet::get_first_comma_at_top_level(span<Token> tokens){
 	auto depth = 0;
 	for (int i=0; i<(int)tokens.size();i++)
@@ -198,6 +208,10 @@ string Parser::Length::get_str() const  {
 	return str.str();
 }
 	
+/**
+ *  Convert a string to a vector of tokens,
+ *  then attempt to parse to a Tree.
+ */
 shared_ptr<Parser::Tree> Parser::parse(string source){
 	Tokenizer tokenizer;
 	shared_ptr<Parser::Tree> tree = make_shared<Parser::Tree>();
