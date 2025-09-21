@@ -48,6 +48,7 @@ void Parser::NewickNode::descend(shared_ptr<Visitor> visitor, const int depth){
 	visitor->accept(this,depth);
 	for (auto child : _children)
 		child->descend(visitor,depth+1);
+	visitor->farewell(this,depth);
 }
 
 /**
@@ -189,7 +190,7 @@ void Parser::Name::parse(span<Token> tokens){
 }
 
 /**
- * Return name used to label node
+ * Name and type are  used to label node
  */
 string Parser::Name::get_str() const {
 	stringstream str;

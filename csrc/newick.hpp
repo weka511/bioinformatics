@@ -337,6 +337,11 @@ class Parser {
 		 * This function is invoked for each node by NewickNode::descend()
 		 */
 		virtual void accept(NewickNode * node, const int depth) = 0;
+		
+		/**
+		 * This function is called after all children have been visited
+		 */
+		virtual void farewell(NewickNode * node, const int depth){;}
 	};
 };
 
