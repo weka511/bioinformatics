@@ -63,7 +63,7 @@ void Parser::NewickNode::descend(shared_ptr<Visitor> visitor, const int depth){
  */  
 void Parser::Tree::parse(span<Token> tokens){
 	span<Token> all_but_last(tokens.begin(), tokens.end() - 1); 
-	Token token = tokens.back();
+	auto token = tokens.back();
 	if (token.get_type() == Token::Type::Semicolon){
 		shared_ptr<Parser::SubTree> sub_tree = make_shared<Parser::SubTree>();
 		sub_tree->parse(all_but_last);
@@ -78,12 +78,12 @@ void Parser::Tree::parse(span<Token> tokens){
 
 void Parser::SubTree::parse(span<Token> tokens){
 	try {
-		shared_ptr<Parser::Leaf> leaf = make_shared<Parser::Leaf>();
+		auto leaf = make_shared<Parser::Leaf>();
 		leaf->parse(tokens);
 		attach(leaf);
 	} catch (const logic_error& e){
 		try {
-			shared_ptr<Parser::Internal> internal = make_shared<Parser::Internal>();
+			auto internal = make_shared<Parser::Internal>();
 			internal->parse(tokens);
 			attach(internal);
 		} catch (const logic_error& e1) {
@@ -112,7 +112,7 @@ void Parser::Leaf::parse(span<Token> tokens){
 void Parser::Internal::parse(span<Token> tokens){
 	if ((int)tokens.size() > 2 && tokens[0].get_type() == Token::Type::L && tokens.back().get_type() == Token::Type::R){
 		span<Token> candidate_branchset(tokens.begin()+1, tokens.end() -1); 
-		shared_ptr<Parser::BranchSet> branch_set = make_shared<Parser::BranchSet>();
+		auto branch_set = make_shared<Parser::BranchSet>();
 		branch_set->parse(candidate_branchset);
 		attach(branch_set);
 	} else
@@ -124,7 +124,7 @@ void Parser::Internal::parse(span<Token> tokens){
  */
 void Parser::BranchSet::parse(span<Token> tokens){
 	const auto first_comma_at_top_level = get_first_comma_at_top_level(tokens);
-	shared_ptr<Parser::Branch> branch = make_shared<Parser::Branch>();
+	auto branch = make_shared<Parser::Branch>();
 	if (first_comma_at_top_level == UNDEFINED){
 		branch->parse(tokens);
 		attach(branch);
@@ -133,7 +133,7 @@ void Parser::BranchSet::parse(span<Token> tokens){
 		branch->parse(head);
 		attach(branch);
 		span<Token> tail(tokens.begin() + first_comma_at_top_level +1, tokens.end()); 
-		shared_ptr<Parser::BranchSet> branch_set = make_shared<Parser::BranchSet>();
+		auto branch_set = make_shared<Parser::BranchSet>();
 		branch_set->parse(tail);
 		attach(branch_set);
 	}
@@ -141,10 +141,15 @@ void Parser::BranchSet::parse(span<Token> tokens){
 
 /**
  * Used to separate Branch from rest of BranchSet
+ * Look for first comma at the current level, skipping
+ * over any that are embedded in parentheses.
  */		
 int Parser::BranchSet::get_first_comma_at_top_level(span<Token> tokens){
+	/**
+	 * Keep track of whther we are between parentses.
+	 */
 	auto depth = 0;
-	for (int i=0; i<(int)tokens.size();i++)
+	for (auto  i=0; i<(int)tokens.size();i++)
 		switch(tokens[i].get_type()) {
 			case Token::Type::L:
 				depth++;
@@ -157,7 +162,7 @@ int Parser::BranchSet::get_first_comma_at_top_level(span<Token> tokens){
 				depth--;
 				break;
 			default: ;
-	};
+		}
 	return UNDEFINED;
 }
 
@@ -165,7 +170,7 @@ int Parser::BranchSet::get_first_comma_at_top_level(span<Token> tokens){
  * Branch -> Subtree Length
  */
 void Parser::Branch::parse(span<Token> tokens){//TODO length
-	shared_ptr<Parser::SubTree> sub_tree = make_shared<Parser::SubTree>();
+	auto sub_tree = make_shared<Parser::SubTree>();
 	sub_tree->parse(tokens);
 	attach(sub_tree);
 }
@@ -178,11 +183,14 @@ void Parser::Name::parse(span<Token> tokens){
 	_value = tokens[0].get_text();
 	if (tokens.size() == 1) return;
 	span<Token> tail(tokens.begin() + 1, tokens.end());
-	shared_ptr<Parser::Length> length = make_shared<Parser::Length>() ;
+	auto length = make_shared<Parser::Length>() ;
 	length->parse(tail);
 	attach(length);
 }
 
+/**
+ * Return name used to label node
+ */
 string Parser::Name::get_str() const {
 	stringstream str;
 	str << get_type() << " " << get_name();
@@ -199,8 +207,11 @@ void Parser::Length::parse(span<Token> tokens){
 		throw create_error(tokens[0],__FILE__,__LINE__);
 }
 
+/**
+ *  Remove trailing zeroes for display
+ */
 string Parser::Length::get_str() const  {
-	string repr = to_string(get_length());
+	auto repr = to_string(get_length());
 	while (repr.length() > 3 && repr[repr.length()-1] == '0' && repr[repr.length()-2] == '0')
 		repr.pop_back();
 	stringstream str;
@@ -214,7 +225,7 @@ string Parser::Length::get_str() const  {
  */
 shared_ptr<Parser::Tree> Parser::parse(string source){
 	Tokenizer tokenizer;
-	shared_ptr<Parser::Tree> tree = make_shared<Parser::Tree>();
+	auto tree = make_shared<Parser::Tree>();
 	auto tokens = tokenizer.tokenize(source);
 	tree->parse(tokens);	
 	return tree;

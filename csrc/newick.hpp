@@ -87,7 +87,7 @@ class Parser {
 		
 		/**
 		 *  Used in conjunction with Visitor to perform an operation on every node.
-		 *  Traversal is by recurseive descent.
+		 *  Traversal is by recursive descent.
 		 */
 		void descend(shared_ptr<Visitor> visitor, const int depth=0);
 		
@@ -136,6 +136,9 @@ class Parser {
 	 */
 	class Tree : public NewickNode {
 	  public:
+		/**
+		 * Construct Tree node and assign type for display
+		 */
 		Tree() : NewickNode("Tree") {};
 		
 		/**
@@ -152,6 +155,9 @@ class Parser {
 	class SubTree : public NewickNode {
 		
 	  public:
+		/**
+		 * Construct SubTree node and assign type for display
+		 */
 		SubTree() : NewickNode("SubTree") {};
 		
 		/**
@@ -168,7 +174,9 @@ class Parser {
 	 */	
 	class Leaf : public NewickNode {
 	  public:
-	  
+		/**
+		 * Construct Leaf node and assign type for display
+		 */
 		Leaf() : NewickNode("Leaf") {};
 		
 		/**
@@ -185,6 +193,9 @@ class Parser {
 	 */	
 	class Internal : public NewickNode {
 	  public:
+		/**
+		 * Construct Internal node and assign type for display
+		 */
 		Internal() : NewickNode("Internal") {};
 		
 		/**
@@ -201,6 +212,9 @@ class Parser {
 	 */
 	class BranchSet : public NewickNode {
 	  public:
+		/**
+		 * Construct BranchSet node and assign type for display
+		 */
 		BranchSet() : NewickNode("BranchSet") {};
 		
 		/**
@@ -221,6 +235,9 @@ class Parser {
 	 */
 	class Branch : public NewickNode {
 	  public:
+		/**
+		 * Construct Branch node and assign type for display
+		 */
 		Branch() : NewickNode("Branch") {};
 		
 		/**
@@ -237,9 +254,15 @@ class Parser {
 	 */
 	class Name : public NewickNode {
 	  private:
+		/**
+		 * Record name of node
+		 */
 		string _value;
 		
 	  public:
+		/**
+		 * Construct Name node and assign type for display
+		 */
 		Name() : NewickNode("Name") {};
 		
 		/**
@@ -249,9 +272,17 @@ class Parser {
 		 */
 		void parse(span<Token> tokens);
 		
+		/**
+		 * Name and type are  used to label node
+		 */
 		string get_str() const;
 		
-		string get_name() const{return _value;};
+		/**
+		 * Return name of node
+		 */
+		string get_name() const{
+			return _value;
+		};
 	};
 	
 	/**
@@ -259,8 +290,15 @@ class Parser {
 	 */
 	class Length : public NewickNode {
 	  private:
+		/**
+		 * Length defaults to one
+		 */
 		double _value = 1.0;
+		
 	  public:
+		/**
+		 * Construct Tree node and assign type for display
+		 */
 		Length() : NewickNode("Length") {};
 		
 		/**
@@ -270,9 +308,17 @@ class Parser {
 		 */
 		void parse(span<Token> tokens);
 		
+		/**
+		 *  Remove trailing zeroes for display
+		 */
 		string get_str() const;
 		
-		double get_length() const {return _value;}
+		/**
+		 *  Return lenght as a number
+		 */
+		double get_length() const {
+			return _value;
+		}
 	};
 	
 	/**
@@ -283,7 +329,7 @@ class Parser {
 	
 	/**
 	 *  Used in conjunction with NewickNode::descend() to perform an operation on every node.
-	 *  Traversal is by recurseive descent.
+	 *  Traversal is by recursive descent.
 	 */
 	class Visitor {
 	  public:
