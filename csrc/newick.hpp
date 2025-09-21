@@ -25,7 +25,6 @@
 #include <vector>
 
 #include "token.hpp"
-#include "node.hpp"
 
 using namespace std;
 
@@ -52,24 +51,57 @@ class Parser {
 	 */
   	class NewickNode {
 	  private:
+		/**
+	     * Nodes that are directly attached to this one.
+		 */
 		vector<shared_ptr<Parser::NewickNode>> _children;
 		
+		/**
+		 * Identifies role of node in syntac tree
+		 */
 		string _type;
 		
 	  public:
+	   /**
+	    * Used to convert a tree, specified in Newick format, to an actual
+		* tree structure.
+	    */
 		virtual void parse(span<Token> tokens) = 0;
 		
-		shared_ptr<Parser::NewickNode> get_child(int index) {return _children[index];}
+		/**
+		 * Used to retrieve a particular child of this node
+		 */
+		shared_ptr<Parser::NewickNode> get_child(int index) {
+			return _children[index];
+		}
 		
+		/**
+		 * Name (if any) from Newick string
+		 */
 		virtual string get_name() const {return "-";}
 		
+		/**
+		 * Distance (if any) from Newick string
+		 */
 		virtual double get_length() const {return 1.0;}
 		
+		/**
+		 *  Used in conjunction with Visitor to perform an operation on every node.
+		 *  Traversal is by recurseive descent.
+		 */
 		void descend(shared_ptr<Visitor> visitor, const int depth=0);
 		
+		/**
+		 *   Used to output Node
+		 */
 		friend ostream& operator<<(ostream& os, const NewickNode& node);
 		
-		virtual string get_str() const {return _type;}
+		/**
+		 *   Used to output Node
+		 */
+		virtual string get_str() const {
+			return _type;
+		}
 		
 	  protected:
 		NewickNode(string type) : _type(type) {};
@@ -185,8 +217,15 @@ class Parser {
 	
 	shared_ptr<Tree> parse(string source);
 	
+	/**
+	 *  Used in conjunction with NewickNode::descend() to perform an operation on every node.
+	 *  Traversal is by recurseive descent.
+	 */
 	class Visitor {
 	  public:
+	    /**
+		 * This function is invoked for each node by NewickNode::descend()
+		 */
 		virtual void accept(NewickNode * node, const int depth) = 0;
 	};
 };
