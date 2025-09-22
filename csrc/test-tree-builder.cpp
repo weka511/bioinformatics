@@ -35,5 +35,6 @@
 			shared_ptr<Parser::Tree> tree = parser.parse("(A,B,(C,D));");
 			shared_ptr<TreeBuilder> displayer = make_shared<TreeBuilder>();
 			tree->descend(displayer);
+			cout<<displayer->get_result()<<endl;
 	 }
 }

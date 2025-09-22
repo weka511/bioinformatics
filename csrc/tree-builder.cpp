@@ -23,8 +23,60 @@
  using namespace std;
  
 void TreeBuilder::accept(Parser::NewickNode* node,const int depth){
+	switch (node->get_type()){
+		// case Parser::Type::Tree: 
+			// return;
+		// case Parser::Type::SubTree: 
+			// return;
+		case Parser::Type::Leaf: 
+			if (_needs_comma.back())
+				_result << ",";
+			else
+				_needs_comma.back() = true;
+			return;
+		case Parser::Type::Internal:
+			_result << "(" ;
+			_needs_comma.push_back(false);
+			return;
+		case Parser::Type::BranchSet: 
+			return;
+		// case Parser::Type::Branch: 
+			// return;
+		case Parser::Type::Name: 
+			_result << node->get_name();
+			return;
+		// case Parser::Type::Length: 
+			// return;
+		default:
+			return;
+	}
 }
 
 void TreeBuilder::farewell(Parser::NewickNode * node, const int depth){
-	
+		switch (node->get_type()){
+		// case Parser::Type::Tree: 
+			// return;
+		// case Parser::Type::SubTree: 
+			// return;
+		// case Parser::Type::Leaf: 
+			// return;
+		case Parser::Type::Internal:
+			_needs_comma.pop_back();
+			_result << ")";
+			return;
+		// case Parser::Type::BranchSet: 
+			// return;
+		// case Parser::Type::Branch: 
+			// return;
+		// case Parser::Type::Name: 
+			// return;
+		// case Parser::Type::Length: 
+			// return;
+		default:
+			return;
+	}
+}
+
+string TreeBuilder::get_result(){
+	return _result.str();
 }

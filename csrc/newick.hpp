@@ -23,6 +23,7 @@
 #include <stdexcept>
 #include <string>
 #include <vector>
+#include <map>
 
 #include "token.hpp"
 
@@ -34,7 +35,20 @@ using namespace std;
  */
 class Parser {
   public:
+   	enum class Type{
+		Tree = 0, 
+		SubTree = 1,
+		Leaf = 2,
+		Internal = 3,
+		BranchSet = 4,
+		Branch = 5,
+		Name = 6,
+		Length = 7
+	};
+	
 	class Visitor;
+	
+	static map<Type,string> type_names;
 	
 	/*
 	 * This class is used to parse Newick format test. It is the parent
@@ -57,10 +71,10 @@ class Parser {
 		vector<shared_ptr<Parser::NewickNode>> _children;
 		
 		/**
-		 * Identifies role of node in syntac tree
+		 * Identifies role of node in syntax tree
 		 */
-		string _type;
-		
+		const Type _type;
+	
 	  public:
 	   /**
 	    * Used to convert a tree, specified in Newick format, to an actual
@@ -100,6 +114,10 @@ class Parser {
 		 *   Used to output Node
 		 */
 		virtual string get_str() const {
+			return get_type_name();
+		}
+		 
+		Type get_type() const {
 			return _type;
 		}
 		
@@ -107,7 +125,7 @@ class Parser {
 		/**
 		 * Used by descendent types to initialize type variable.
 		 */
-		NewickNode(string type) : _type(type) {};
+		NewickNode(const Type type) : _type(type) {};
 		
 		/**
 		 *  Factory method to create exceptions
@@ -123,7 +141,7 @@ class Parser {
 		/**
 		 * Used to determine type of node
 		 */
-		string get_type() const {return _type;}
+		string get_type_name() const;
 		
 	  	/**
 		 * Used by get_first_comma_at_top_level to indicate that it failed to find comma
@@ -139,7 +157,7 @@ class Parser {
 		/**
 		 * Construct Tree node and assign type for display
 		 */
-		Tree() : NewickNode("Tree") {};
+		Tree() : NewickNode(Type::Tree) {};
 		
 		/**
 		 * Try to perform production:
@@ -158,7 +176,7 @@ class Parser {
 		/**
 		 * Construct SubTree node and assign type for display
 		 */
-		SubTree() : NewickNode("SubTree") {};
+		SubTree() : NewickNode(Type::SubTree) {};
 		
 		/**
 		 * Try to perform production:
@@ -177,7 +195,7 @@ class Parser {
 		/**
 		 * Construct Leaf node and assign type for display
 		 */
-		Leaf() : NewickNode("Leaf") {};
+		Leaf() : NewickNode(Type::Leaf) {};
 		
 		/**
 		 * Try to perform production:
@@ -196,7 +214,7 @@ class Parser {
 		/**
 		 * Construct Internal node and assign type for display
 		 */
-		Internal() : NewickNode("Internal") {};
+		Internal() : NewickNode(Type::Internal) {};
 		
 		/**
 		 * Try to perform production:
@@ -215,7 +233,7 @@ class Parser {
 		/**
 		 * Construct BranchSet node and assign type for display
 		 */
-		BranchSet() : NewickNode("BranchSet") {};
+		BranchSet() : NewickNode(Type::BranchSet) {};
 		
 		/**
 		 * Try to perform production:
@@ -238,7 +256,7 @@ class Parser {
 		/**
 		 * Construct Branch node and assign type for display
 		 */
-		Branch() : NewickNode("Branch") {};
+		Branch() : NewickNode(Type::Branch) {};
 		
 		/**
 		 * Try to perform production:
@@ -263,7 +281,7 @@ class Parser {
 		/**
 		 * Construct Name node and assign type for display
 		 */
-		Name() : NewickNode("Name") {};
+		Name() : NewickNode(Type::Name) {};
 		
 		/**
 		 * Try to perform production:
@@ -299,7 +317,7 @@ class Parser {
 		/**
 		 * Construct Tree node and assign type for display
 		 */
-		Length() : NewickNode("Length") {};
+		Length() : NewickNode(Type::Length) {};
 		
 		/**
 		 * Try to perform production:

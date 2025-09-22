@@ -18,15 +18,27 @@
 #ifndef _TREE_BUILDER_HPP
 #define _TREE_BUILDER_HPP
 
+#include <vector>
+#include <sstream>
+#include <string>
+
 #include "node.hpp"
 #include "newick.hpp"
 
 using namespace std;
 
-class TreeBuilder : public Parser::Visitor {
+class TreeBuilder : public Parser::Visitor { 
+
+  private:
+	vector<bool> _needs_comma;
+	stringstream _result;
+	
+  public:	
 	void accept(Parser::NewickNode* node,const int depth);
 	
 	void farewell(Parser::NewickNode * node, const int depth);
+	
+	string get_result();
  };
 
 #endif // _TREE_BUILDER_HPP

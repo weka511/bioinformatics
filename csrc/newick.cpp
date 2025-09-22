@@ -24,6 +24,16 @@
 
  using namespace std;
 
+map<Parser::Type,string> Parser::type_names = {
+	{Parser::Type::Tree, "Tree"},
+	{Parser::Type::SubTree, "SubTree"},
+	{Parser::Type::Leaf, "Leaf"},
+	{Parser::Type::Internal, "Internal"},
+	{Parser::Type::BranchSet, "BranchSet"},
+	{Parser::Type::Branch, "Branch"},
+	{Parser::Type::Name, "Name"},
+	{Parser::Type::Length, "Length"},
+};
 /**
  * Indicates that parser encountered an error
  */
@@ -51,6 +61,12 @@ void Parser::NewickNode::descend(shared_ptr<Visitor> visitor, const int depth){
 	visitor->farewell(this,depth);
 }
 
+/**
+ * Used to determine type of node
+ */
+string Parser::NewickNode::get_type_name() const {
+	return Parser::type_names[_type];
+}
 /**
  * Allows us to output node
  */
@@ -194,7 +210,7 @@ void Parser::Name::parse(span<Token> tokens){
  */
 string Parser::Name::get_str() const {
 	stringstream str;
-	str << get_type() << " " << get_name();
+	str << get_type_name() << " " << get_name();
 	return str.str();
 }
 								
@@ -216,7 +232,7 @@ string Parser::Length::get_str() const  {
 	while (repr.length() > 3 && repr[repr.length()-1] == '0' && repr[repr.length()-2] == '0')
 		repr.pop_back();
 	stringstream str;
-	str << get_type() << " " << repr;
+	str << get_type_name() << " " << repr;
 	return str.str();
 }
 	
