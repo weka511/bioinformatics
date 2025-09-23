@@ -65,3 +65,14 @@ void TreeBuilder::farewell(Parser::NewickNode * node, const int depth){
 				return;
 	}
 }
+
+/**
+ *  Factory method to parse a tree, in Newick format, into a tree of Nodes.
+ */
+ shared_ptr<Node> TreeBuilder::create(string newick_string){
+	Parser parser;
+	auto tree = parser.parse(newick_string);
+	auto builder = make_shared<TreeBuilder>();
+	tree->descend(builder);
+	return builder->get_result();
+ }

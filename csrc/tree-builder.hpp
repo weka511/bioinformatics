@@ -39,6 +39,12 @@ class TreeBuilder : public Parser::Visitor {
 	vector<shared_ptr<Node>> _stack;
 	
   public:	
+  
+	/**
+	 *  Factory method to parse a tree, in Newick format, into a tree of Nodes.
+	 */
+	static shared_ptr<Node> create(string newick_string);
+	
 	/**
 	 * Start processing current node, which is either Internal or a Leaf
 	 */
