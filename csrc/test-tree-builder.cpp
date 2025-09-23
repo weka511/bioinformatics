@@ -28,13 +28,32 @@
 
  #include "tree-builder.hpp"
  
+ class Displayer: public Node::Visitor {
+	 void accept(Node& node,const int depth){
+		 stringstream leader;
+		 for (auto i=0;i<depth;i++)
+			 leader << "-";
+		 cout << __FILE__ << " " << __LINE__  << ": " /*<<leader.str()*/ <<node  << endl;
+	 }
+ };
+ 
  TEST_CASE( "Tree Builder Tests", "[tree_builder]" ) {
 	Parser parser;
+	shared_ptr<TreeBuilder> builder = make_shared<TreeBuilder>();
+	Displayer displayer;
 	
 	 SECTION("Test parser with labels") {
 			shared_ptr<Parser::Tree> tree = parser.parse("(A,B,(C,D));");
-			shared_ptr<TreeBuilder> displayer = make_shared<TreeBuilder>();
-			tree->descend(displayer);
-			cout<<displayer->get_result()<<endl;
+			tree->descend(builder);
+			shared_ptr<Node> new_tree = builder->get_result();
+			cout << *new_tree << endl;
+			new_tree->visit(displayer);
+			// cout<<displayer->get_string()<<endl;
 	 }
+	 
+	 SECTION("Test parser with labels and lengths(1)") {
+		shared_ptr<Parser::Tree> tree = parser.parse("(A:2.1,B:1.2,(C:3.0,D:0.2));");
+		tree->descend(builder);
+		// cout<<builder->get_string()<<endl;
+	}
 }

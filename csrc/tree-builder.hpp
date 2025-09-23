@@ -31,14 +31,18 @@ class TreeBuilder : public Parser::Visitor {
 
   private:
 	vector<bool> _needs_comma;
-	stringstream _result;
+	stringstream _string;
+	shared_ptr<Node> _result;// = make_shared<Node>(); // adding dummy node doesn't fix segmentation fault
+	vector<shared_ptr<Node>> _stack;
 	
   public:	
 	void accept(Parser::NewickNode* node,const int depth);
 	
 	void farewell(Parser::NewickNode * node, const int depth);
 	
-	string get_result();
+	string get_string();
+	
+	shared_ptr<Node> get_result() {return _result;}
  };
 
 #endif // _TREE_BUILDER_HPP

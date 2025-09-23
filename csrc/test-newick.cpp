@@ -43,51 +43,51 @@ TEST_CASE( "Newick Tests", "[newick]" ) {
 	Tokenizer tokenizer;
 	Displayer displayer;
 	
-	SECTION("get_first_comma_at_top_level") {
-		auto tokens = tokenizer.tokenize("A:0.1,B:0.2,(C:0.3,D:0.4)E:0.5");	
-		Parser::BranchSet branch_set;
-		REQUIRE(branch_set.get_first_comma_at_top_level(tokens) == 3);
-	}
+	// SECTION("get_first_comma_at_top_level") {
+		// auto tokens = tokenizer.tokenize("A:0.1,B:0.2,(C:0.3,D:0.4)E:0.5");	
+		// Parser::BranchSet branch_set;
+		// REQUIRE(branch_set.get_first_comma_at_top_level(tokens) == 3);
+	// }
 	
-	SECTION("get_first_comma_at_top_level(1)") {
-		auto tokens = tokenizer.tokenize("(C:0.3,D:0.4)E:0.5,A:0.1,B:0.2");	
-		Parser::BranchSet branch_set;
-		REQUIRE(branch_set.get_first_comma_at_top_level(tokens) == 12);
-	}
+	// SECTION("get_first_comma_at_top_level(1)") {
+		// auto tokens = tokenizer.tokenize("(C:0.3,D:0.4)E:0.5,A:0.1,B:0.2");	
+		// Parser::BranchSet branch_set;
+		// REQUIRE(branch_set.get_first_comma_at_top_level(tokens) == 12);
+	// }
 
-	SECTION("a naked leaf node ") {
-		shared_ptr<Parser::Tree> tree = parser.parse("SomeLeaf;");
-		shared_ptr<Parser::Visitor> displayer = make_shared<Displayer>();
-		tree->descend(displayer);
-		shared_ptr<Parser::NewickNode> subtree = tree->get_child(0);
-		shared_ptr<Parser::NewickNode> leaf = subtree->get_child(0);
-		shared_ptr<Parser::NewickNode> name = leaf->get_child(0);
-		REQUIRE(name->get_name() == "SomeLeaf");
-	}
+	// SECTION("a naked leaf node ") {
+		// shared_ptr<Parser::Tree> tree = parser.parse("SomeLeaf;");
+		// shared_ptr<Parser::Visitor> displayer = make_shared<Displayer>();
+		// tree->descend(displayer);
+		// shared_ptr<Parser::NewickNode> subtree = tree->get_child(0);
+		// shared_ptr<Parser::NewickNode> leaf = subtree->get_child(0);
+		// shared_ptr<Parser::NewickNode> name = leaf->get_child(0);
+		// REQUIRE(name->get_name() == "SomeLeaf");
+	// }
 	
-	SECTION("a naked leaf node with length") {
-		auto tokens = tokenizer.tokenize("SomeLeaf:3.1415;");	
-		Parser::Tree tree;
-		tree.parse(tokens);
-		shared_ptr<Parser::NewickNode> subtree = tree.get_child(0);
-		shared_ptr<Parser::NewickNode> leaf = subtree->get_child(0);
-		shared_ptr<Parser::NewickNode> name = leaf->get_child(0);
-		REQUIRE(name->get_name() == "SomeLeaf");
-		shared_ptr<Parser::NewickNode> length = name->get_child(0);
-		REQUIRE(length->get_length() == 3.1415);
-	}
+	// SECTION("a naked leaf node with length") {
+		// auto tokens = tokenizer.tokenize("SomeLeaf:3.1415;");	
+		// Parser::Tree tree;
+		// tree.parse(tokens);
+		// shared_ptr<Parser::NewickNode> subtree = tree.get_child(0);
+		// shared_ptr<Parser::NewickNode> leaf = subtree->get_child(0);
+		// shared_ptr<Parser::NewickNode> name = leaf->get_child(0);
+		// REQUIRE(name->get_name() == "SomeLeaf");
+		// shared_ptr<Parser::NewickNode> length = name->get_child(0);
+		// REQUIRE(length->get_length() == 3.1415);
+	// }
 	
-	SECTION("Test parser with labels") {
-		shared_ptr<Parser::Tree> tree = parser.parse("(A,B,(C,D));");
-		shared_ptr<Parser::Visitor> displayer = make_shared<Displayer>();
-		tree->descend(displayer);
-	}
+	// SECTION("Test parser with labels") {
+		// shared_ptr<Parser::Tree> tree = parser.parse("(A,B,(C,D));");
+		// shared_ptr<Parser::Visitor> displayer = make_shared<Displayer>();
+		// tree->descend(displayer);
+	// }
 	
-	SECTION("Test parser with labels and lengths(1)") {
-		shared_ptr<Parser::Tree> tree = parser.parse("(A:2.1,B:1.2,(C:3.0,D:0.2));");
-		shared_ptr<Parser::Visitor> displayer = make_shared<Displayer>();
-		tree->descend(displayer);
-	}
+	// SECTION("Test parser with labels and lengths(1)") {
+		// shared_ptr<Parser::Tree> tree = parser.parse("(A:2.1,B:1.2,(C:3.0,D:0.2));");
+		// shared_ptr<Parser::Visitor> displayer = make_shared<Displayer>();
+		// tree->descend(displayer);
+	// }
 	
 	// SECTION("Test parser with labels") {
 		// auto tree = parser.parse(

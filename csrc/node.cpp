@@ -31,8 +31,7 @@
  /**
   *  Create and intialize a node
   */
- Node::Node( const string name, const double distance) : 
-	_id(count++),_name(name),_distance(distance) {}
+ Node::Node() : _id(count++) {}
  
  /**
   *  This method is used to traverse a tree,
@@ -48,7 +47,7 @@
  * Allows us to output node
  */
  ostream& operator<<(ostream& os, const Node& node){
-	os  << "Node " << node._id 	<< " ["<<node._name << "]: "
+	os  << "Node " << node._id 	<< " " <<node._name << ": "
 		<< ", distance =  " << node._distance;
       return os;
 }

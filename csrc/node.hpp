@@ -55,7 +55,7 @@ class Node{
 	/**
 	 *  Distance of this node from parent
 	 */
-	const double _distance;
+	double _distance = 1.0;
 
   public:
     /**
@@ -77,12 +77,14 @@ class Node{
 	/**
 	 *  Create and intialize a node
 	 */
-	Node(const string name, const double distance=0.0);
+	Node();
 	
 	/**
 	 *   Add a child node
 	 */
 	void append(shared_ptr<Node> node) {_children.push_back(node);}; 
+	
+	shared_ptr<Node> get_last_child() const {return _children.back();}
 	
 	/**
 	 * Allows us to output node
@@ -92,12 +94,24 @@ class Node{
 	/**
 	 *  Distance of this node from parent
 	 */
-	double get_distance() {return _distance;}; 
+	double get_distance() const {
+		return _distance;
+	}; 
+	
+	void set_distance (const double distance) {
+		_distance = distance;
+	}
 	
 	/**
 	 *  Name will be filled in from string representation
 	 */
-	string get_name() {return _name;}; 
+	string get_name() const {
+		return _name;
+	}; 
+	
+	void set_name(const string name) {
+		_name = name;
+	}
 	
 	/**
 	 *  This method is used to traverse a tree,
