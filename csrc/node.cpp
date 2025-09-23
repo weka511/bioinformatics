@@ -19,6 +19,9 @@
 
  using namespace std;
  
+ /**
+  * Used to assign a unique number to each node
+  */
  int Node::count = 0;
  
  /**

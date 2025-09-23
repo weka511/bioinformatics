@@ -84,7 +84,12 @@ class Node{
 	 */
 	void append(shared_ptr<Node> node) {_children.push_back(node);}; 
 	
-	shared_ptr<Node> get_last_child() const {return _children.back();}
+	/**
+	 * When the bulider gets a name or a length, it is always for the latest child
+	 */
+	shared_ptr<Node> get_last_child() const {
+		return _children.back();
+	}
 	
 	/**
 	 * Allows us to output node
@@ -98,6 +103,9 @@ class Node{
 		return _distance;
 	}; 
 	
+	/**
+	 *   Assign distance to node
+	 */
 	void set_distance (const double distance) {
 		_distance = distance;
 	}
@@ -109,6 +117,9 @@ class Node{
 		return _name;
 	}; 
 	
+	/**
+	 *   Assign name to node
+	 */
 	void set_name(const string name) {
 		_name = name;
 	}

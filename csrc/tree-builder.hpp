@@ -19,8 +19,6 @@
 #define _TREE_BUILDER_HPP
 
 #include <vector>
-#include <sstream>
-#include <string>
 
 #include "node.hpp"
 #include "newick.hpp"
@@ -30,19 +28,33 @@ using namespace std;
 class TreeBuilder : public Parser::Visitor { 
 
   private:
-	vector<bool> _needs_comma;
-	stringstream _string;
-	shared_ptr<Node> _result;// = make_shared<Node>(); // adding dummy node doesn't fix segmentation fault
+	/**
+	 * This holds a tree that we ae building
+	 */
+	shared_ptr<Node> _result;
+	
+	/**
+	 *  We keep the most recent nodes, which are still in progress, on the stack.
+	 */
 	vector<shared_ptr<Node>> _stack;
 	
   public:	
+	/**
+	 * Start processing current node, which is either Internal or a Leaf
+	 */
 	void accept(Parser::NewickNode* node,const int depth);
 	
+	/**
+	 * End of current node
+	 */
 	void farewell(Parser::NewickNode * node, const int depth);
 	
-	string get_string();
-	
-	shared_ptr<Node> get_result() {return _result;}
+	/**
+	 * Get the tree that we have built
+	 */
+	shared_ptr<Node> get_result() {
+		return _result;
+	}
  };
 
 #endif // _TREE_BUILDER_HPP
