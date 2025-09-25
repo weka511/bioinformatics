@@ -134,11 +134,6 @@ class Parser {
 		 */
 		void attach(shared_ptr<Parser::NewickNode> node);
 		
-		/**
-		 * Used to determine type of node
-		 */
-		// string get_type_name() const;
-		
 	  	/**
 		 * Used by get_first_comma_at_top_level to indicate that it failed to find comma
 		 */
