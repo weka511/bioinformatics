@@ -23,7 +23,6 @@
 #include <stdexcept>
 #include <string>
 #include <vector>
-#include <map>
 
 #include "token.hpp"
 
@@ -54,11 +53,6 @@ class Parser {
 	 *  Traversal is by recursive descent.
 	 */
 	class Visitor;
-	
-	/**
-	 * Used to convert TYpe to a  string for display
-	 */
-	static map<Type,string> type_names;
 	
 	/*
 	 * This class is used to parse Newick format test. It is the parent
@@ -114,21 +108,9 @@ class Parser {
 		 *  Traversal is by recursive descent.
 		 */
 		void descend(shared_ptr<Visitor> visitor, const int depth=0);
-		
+			 
 		/**
-		 *   Used to output Node
-		 */
-		friend ostream& operator<<(ostream& os, const NewickNode& node);
-		
-		/**
-		 *   Used to output Node
-		 */
-		virtual string get_str() const {
-			return get_type_name();
-		}
-		 
-		/**
-		 * Used to display type
+		 * Used by tests to verify type
 		 */
 		Type get_type() const {
 			return _type;
@@ -155,7 +137,7 @@ class Parser {
 		/**
 		 * Used to determine type of node
 		 */
-		string get_type_name() const;
+		// string get_type_name() const;
 		
 	  	/**
 		 * Used by get_first_comma_at_top_level to indicate that it failed to find comma
@@ -305,11 +287,6 @@ class Parser {
 		void parse(span<Token> tokens);
 		
 		/**
-		 * Name and type are  used to label node
-		 */
-		string get_str() const;
-		
-		/**
 		 * Return name of node
 		 */
 		string get_name() const{
@@ -339,11 +316,6 @@ class Parser {
 		 * Length -> empty | ":" number  
 		 */
 		void parse(span<Token> tokens);
-		
-		/**
-		 *  Remove trailing zeroes for display
-		 */
-		string get_str() const;
 		
 		/**
 		 *  Return lenght as a number

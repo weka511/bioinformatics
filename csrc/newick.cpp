@@ -25,19 +25,6 @@
 using namespace std;
 
 /**
- * Used to convert TYpe to a  string for display
- */
-map<Parser::Type,string> Parser::type_names = {
-	{Parser::Type::Tree, "Tree"},
-	{Parser::Type::SubTree, "SubTree"},
-	{Parser::Type::Leaf, "Leaf"},
-	{Parser::Type::Internal, "Internal"},
-	{Parser::Type::BranchSet, "BranchSet"},
-	{Parser::Type::Branch, "Branch"},
-	{Parser::Type::Name, "Name"},
-	{Parser::Type::Length, "Length"},
-};
-/**
  * Indicates that parser encountered an error
  */
 logic_error Parser::NewickNode::create_error(Token token, const string file,const int line) const {
@@ -67,20 +54,20 @@ void Parser::NewickNode::descend(shared_ptr<Visitor> visitor, const int depth){
 /**
  * Used to determine type of node
  */
-string Parser::NewickNode::get_type_name() const {
-	if (Parser::type_names.count(_type) > 0)
-		return Parser::type_names[_type];
-	else
-		return "???";
-}
+// string Parser::NewickNode::get_type_name() const {
+	// if (Parser::type_names.count(_type) > 0)
+		// return Parser::type_names[_type];
+	// else
+		// return "???";
+// }
 
 /**
  * Allows us to output node
  */
- ostream& operator<<(ostream& os, const Parser::NewickNode& node){
-	os  << node.get_str() ;
-    return os;
-}
+ // ostream& operator<<(ostream& os, const Parser::NewickNode& node){
+	// os  << node.get_str() ;
+    // return os;
+// }
 
 /**
  * Tree -> Subtree ";"
@@ -125,7 +112,7 @@ void Parser::Leaf::parse(span<Token> tokens){
 		shared_ptr<Parser::Name> name = make_shared<Parser::Name>();
 		name->parse(tokens);
 		attach(name);
-	}else
+	} else
 		throw  create_error(tokens[0], __FILE__, __LINE__); 
 }
 
@@ -212,15 +199,7 @@ void Parser::Name::parse(span<Token> tokens){
 	attach(length);
 }
 
-/**
- * Name and type are  used to label node
- */
-string Parser::Name::get_str() const {
-	stringstream str;
-	str << Parser::NewickNode::get_str() << " " << get_name();
-	return str.str();
-}
-								
+							
 /** 
  * Length -> empty | ":" number  
  */
@@ -229,18 +208,6 @@ void Parser::Length::parse(span<Token> tokens){
 		_value = tokens[1].get_numeric();
 	else
 		throw create_error(tokens[0],__FILE__,__LINE__);
-}
-
-/**
- *  Remove trailing zeroes for display
- */
-string Parser::Length::get_str() const  {
-	auto repr = to_string(get_length());
-	while (repr.length() > 3 && repr[repr.length()-1] == '0' && repr[repr.length()-2] == '0')
-		repr.pop_back();
-	stringstream str;
-	str << Parser::NewickNode::get_str() << " " << repr;
-	return str.str();
 }
 	
 /**
