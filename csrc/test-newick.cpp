@@ -24,24 +24,15 @@
  * ((B:0.2,(C:0.3,D:0.4)E:0.5)F:0.1)A;    a tree rooted on a leaf node (rare)
  */
  
- #include <sstream>
- #include "catch.hpp"
- #include "newick.hpp"
- #include "tokenizer.hpp"
  
- class Displayer: public Parser::Visitor {
-	 void accept(Parser::NewickNode* node,const int depth){
-		 stringstream leader;
-		 for (auto i=0;i<depth;i++)
-			 leader << "-";
-		 cout << __FILE__ << " " << __LINE__  << ": " <<leader.str() <<*node  << endl;
-	 }
- };
+#include "catch.hpp"
+#include "newick.hpp"
+#include "tokenizer.hpp"
  
+  
 TEST_CASE( "Newick Tests", "[newick]" ) {
 	Parser parser;
 	Tokenizer tokenizer;
-	Displayer displayer;
 	
 	SECTION("get_first_comma_at_top_level") {
 		auto tokens = tokenizer.tokenize("A:0.1,B:0.2,(C:0.3,D:0.4)E:0.5");	
@@ -76,44 +67,79 @@ TEST_CASE( "Newick Tests", "[newick]" ) {
 	}
 	
 	SECTION("Test parser with labels") {
-		shared_ptr<Parser::Tree> tree = parser.parse("(A,B,(C,D));");
-		// shared_ptr<Parser::Visitor> displayer = make_shared<Displayer>();
-		// tree->descend(displayer);
+		auto tree = parser.parse("(A,B,(C,D));");
+		auto subtree = tree->get_child(0);
+		REQUIRE(subtree->get_type() == Parser::Type::SubTree);
+		auto internal = subtree->get_child(0);
+		REQUIRE(internal->get_type() == Parser::Type::Internal);
+		auto branchset1 = internal->get_child(0);
+		REQUIRE(branchset1->get_type() == Parser::Type::BranchSet);
+		auto branch1 = branchset1->get_child(0);
+		REQUIRE(branch1->get_type() == Parser::Type::Branch);
+		auto subtree1 = branch1->get_child(0);
+		REQUIRE(subtree1->get_type() == Parser::Type::SubTree);	
+		auto leaf1 = subtree1->get_child(0);
+		REQUIRE(leaf1->get_type() == Parser::Type::Leaf);
+		auto name1 = leaf1->get_child(0);
+		REQUIRE(name1->get_type() == Parser::Type::Name);
+		REQUIRE(name1->get_name() == "A");
+		auto branchset2 = branchset1->get_child(1);
+		REQUIRE(branchset2->get_type() == Parser::Type::BranchSet);
+		auto branch2 = branchset2->get_child(0);
+		REQUIRE(branch2->get_type() == Parser::Type::Branch);
+		auto subtree2 = branch2->get_child(0);
+		REQUIRE(subtree2->get_type() == Parser::Type::SubTree);	
+		auto leaf2 = subtree2->get_child(0);
+		REQUIRE(leaf2->get_type() == Parser::Type::Leaf);
+		auto name2 = leaf2->get_child(0);
+		REQUIRE(name2->get_type() == Parser::Type::Name);
+		REQUIRE(name2->get_name() == "B");
+		// auto branchset3 = branchset2->get_child(1);
+		// REQUIRE(branchset3->get_type() == Parser::Type::BranchSet);
+		// auto branch3 = branchset3->get_child(0);
+		// REQUIRE(branch3->get_type() == Parser::Type::Branch);
+		// auto subtree3 = branch3->get_child(0);
+		// REQUIRE(subtree3->get_type() == Parser::Type::SubTree);	
+		// auto leaf3 = subtree3->get_child(0);
+		// REQUIRE(leaf3->get_type() == Parser::Type::Leaf);
+		// auto name3 = leaf3->get_child(0);
+		// REQUIRE(name3->get_type() == Parser::Type::Name);
+		// REQUIRE(name3->get_name() == "C");
 	}
 	
-	// SECTION("Test parser with labels and lengths(1)") {
-		// shared_ptr<Parser::Tree> tree = parser.parse("(A:2.1,B:1.2,(C:3.0,D:0.2));");
-		// shared_ptr<Parser::Visitor> displayer = make_shared<Displayer>();
-		// tree->descend(displayer);
-	// }
+	SECTION("Test parser with labels and lengths(1)") {
+		auto tree = parser.parse("(A:2.1,B:1.2,(C:3.0,D:0.2));");
+		auto subtree = tree->get_child(0);
+		REQUIRE(subtree->get_type() == Parser::Type::SubTree);
+		auto internal = subtree->get_child(0);
+		REQUIRE(internal->get_type() == Parser::Type::Internal);
+		auto branchset1 = internal->get_child(0);
+		REQUIRE(branchset1->get_type() == Parser::Type::BranchSet);
+		auto branch1 = branchset1->get_child(0);
+		REQUIRE(branch1->get_type() == Parser::Type::Branch);
+		auto subtree1 = branch1->get_child(0);
+		REQUIRE(subtree1->get_type() == Parser::Type::SubTree);	
+		auto leaf1 = subtree1->get_child(0);
+		REQUIRE(leaf1->get_type() == Parser::Type::Leaf);
+		auto name1 = leaf1->get_child(0);
+		REQUIRE(name1->get_type() == Parser::Type::Name);
+		REQUIRE(name1->get_name() == "A");
+		// auto distance1 = leaf1->get_child(1);   //segfault!
+		// REQUIRE(distance1->get_type() == Parser::Type::Length);
+		// REQUIRE(distance1->get_length() == 2.1);
+		auto branchset2 = branchset1->get_child(1);
+		REQUIRE(branchset2->get_type() == Parser::Type::BranchSet);
+		auto branch2 = branchset2->get_child(0);
+		REQUIRE(branch2->get_type() == Parser::Type::Branch);
+		auto subtree2 = branch2->get_child(0);
+		REQUIRE(subtree2->get_type() == Parser::Type::SubTree);	
+		auto leaf2 = subtree2->get_child(0);
+		REQUIRE(leaf2->get_type() == Parser::Type::Leaf);
+		auto name2 = leaf2->get_child(0);
+		REQUIRE(name2->get_type() == Parser::Type::Name);
+		REQUIRE(name2->get_name() == "B");
+	}
 	
-	// SECTION("Test parser with labels") {
-		// auto tree = parser.parse(
-						// "(((Abantias_enhydris,(Bradypodion_australis,Lasiodora_zenobia))," 
-						// "(Bubulcus_carnivorus,Riparia_rostratus)),(((((((Aegialites_chukar,(((Anolis_schokari,(Aphonopelma_galeatus," 
-						// "(((Callipogon_fernandi,(Machetes_belliana,Scincus_fuellebornii)),Phelsuma_irregularis),"
-						// "(Citellus_carbonaria,Haliaetus_emilia)))),Pareas_acanthinura),((Anthropoides_ferruginea,"
-						// "(Grampus_tataricus,Prunella_lineatus)),Burhinus_conicus))),(Hyla_blythi,Tursiops_heliaca)),"
-						// "Terpsihone_rufodorsata),((((((Allobates_aegagrus,Perdix_clypeatus),Pachytriton_hilarii),"
-						// "Aythia_caudatus),Babycurus_bicinctores),Chrysemys_fasciolata),((Cottus_fernandi,Ctenosaura_vertebralis),"
-						// "Minipterus_ciliatus))),Antaresia_bengalensis),Ethmostigmus_pardus),Alaus_tristis),"
-						// "(((((((((((((Aegialites_mysticetus,Phyllopneuste_mandarina),Lyrurus_dendrophila),"
-						// "((Phyllopneuste_viscivorus,Sphenops_sarasinorum),Xenopeltis_maihensis)),Eublepharis_dignus),"
-						// "(Emberiza_dolosus,Petrocincla_dactylisonans)),(Sorex_difficilis,Spermophilus_stejnegeri)),"
-						// "(Dipsosaurus_meermani,Testudo_lividum)),((Furcifer_horridum,Tropidurus_wogura),"
-						// "(Middendorffinaia_maihensis,Motacilla_nigropalmatus))),Minipterus_cranwelli),"
-						// "((((((((((((((Ahaetulla_tetrax,((((Carabus_americanus,(Haplopelma_bicoloratum,Leuciscus_himalayanus)),"
-						// "Oxyura_sirtalis),((Chlamydotis_hendersoni,Lanius_gibbosus),Siniperca_lividum)),Coenobita_borealis)),"
-						// "(Archispirostreptus_linaria,Phalacrocorax_vitulina)),Apodora_cinereus),Pseudorca_geniculata),Aythya_aleutica),"
-						// "((((((((Allobates_turtor,Vulpes_taeniura),Psammophis_alcinous),Himantopus_orientalis),((Anthropoidae_kurilensis,"
-						// "Pyxicephalus_cenchria),Bombyx_saxatilis)),Rhamphiophis_ferox),(((Apus_fluviatilis,Brachypelma_marmorata),"
-						// "Ctenotus_means),Otis_gregarius)),Elaphe_coturnix),Calotes_milii)),(Bombus_glacialis,"
-						// "(Dryobates_rutila,Holaspis_pachypus))),Bubulcus_apus),Lampropeltis_proteus),Pterocles_gallinago),"
-						// "Phoca_naumanni),(Eublepharis_leucoptera,Pyrgilauda_corone)),Litoria_parahybana),"
-						// "((Budytes_rutila,Sceloporus_constricticollis),Phylloscopus_pallasii))),Tryngites_cliffordii),"
-						// "Atrophaneura_lagopus),Rhinolophus_sanguinolentus));");
-		// auto displayer = make_shared<Displayer>();
-		// tree->descend(displayer);
-	// }
+
 	
  }
