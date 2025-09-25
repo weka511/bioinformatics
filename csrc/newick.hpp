@@ -35,6 +35,9 @@ using namespace std;
  */
 class Parser {
   public:
+	/**
+	 * Used to indicate the role that a Node has been assigned during a parse
+	 */
    	enum class Type{
 		Tree = 0, 
 		SubTree = 1,
@@ -46,8 +49,15 @@ class Parser {
 		Length = 7
 	};
 	
+	/**
+	 *  Used in conjunction with NewickNode::descend() to perform an operation on every node.
+	 *  Traversal is by recursive descent.
+	 */
 	class Visitor;
 	
+	/**
+	 * Used to convert TYpe to a  string for display
+	 */
 	static map<Type,string> type_names;
 	
 	/*
@@ -117,9 +127,13 @@ class Parser {
 			return get_type_name();
 		}
 		 
+		/**
+		 * Used to display type
+		 */
 		Type get_type() const {
 			return _type;
 		}
+		
 		
 	  protected:
 		/**
