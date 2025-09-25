@@ -124,9 +124,9 @@ TEST_CASE( "Newick Tests", "[newick]" ) {
 		auto name1 = leaf1->get_child(0);
 		REQUIRE(name1->get_type() == Parser::Type::Name);
 		REQUIRE(name1->get_name() == "A");
-		// auto distance1 = leaf1->get_child(1);   //segfault!
-		// REQUIRE(distance1->get_type() == Parser::Type::Length);
-		// REQUIRE(distance1->get_length() == 2.1);
+		auto distance1 = name1->get_child(0);
+		REQUIRE(distance1->get_type() == Parser::Type::Length);
+		REQUIRE(distance1->get_length() == 2.1);
 		auto branchset2 = branchset1->get_child(1);
 		REQUIRE(branchset2->get_type() == Parser::Type::BranchSet);
 		auto branch2 = branchset2->get_child(0);
@@ -138,6 +138,9 @@ TEST_CASE( "Newick Tests", "[newick]" ) {
 		auto name2 = leaf2->get_child(0);
 		REQUIRE(name2->get_type() == Parser::Type::Name);
 		REQUIRE(name2->get_name() == "B");
+		auto distance2 = name2->get_child(0);
+		REQUIRE(distance2->get_type() == Parser::Type::Length);
+		REQUIRE(distance2->get_length() == 1.2);
 	}
 	
 
