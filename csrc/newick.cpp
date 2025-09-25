@@ -42,13 +42,13 @@ void Parser::NewickNode::attach(shared_ptr<Parser::NewickNode> node){
 
 /**
  *  Used in conjunction with Visitor to perform an operation on every node.
- *  Traversal is by recurseive descent.
+ *  Traversal is depth first.
  */
-void Parser::NewickNode::descend(shared_ptr<Visitor> visitor, const int depth){
-	visitor->accept(this,depth);
+void Parser::NewickNode::descend(shared_ptr<Visitor> visitor){
+	visitor->accept(this);
 	for (auto child : _children)
-		child->descend(visitor,depth+1);
-	visitor->farewell(this,depth);
+		child->descend(visitor);
+	visitor->farewell(this);
 }
 
 /**

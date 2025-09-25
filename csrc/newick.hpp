@@ -105,9 +105,9 @@ class Parser {
 		
 		/**
 		 *  Used in conjunction with Visitor to perform an operation on every node.
-		 *  Traversal is by recursive descent.
+		 *  Traversal is depth first.
 		 */
-		void descend(shared_ptr<Visitor> visitor, const int depth=0);
+		void descend(shared_ptr<Visitor> visitor);
 			 
 		/**
 		 * Used by tests to verify type
@@ -340,12 +340,12 @@ class Parser {
 	    /**
 		 * This function is invoked for each node by NewickNode::descend()
 		 */
-		virtual void accept(NewickNode * node, const int depth) = 0;
+		virtual void accept(NewickNode * node) = 0;
 		
 		/**
 		 * This function is called after all children have been visited
 		 */
-		virtual void farewell(NewickNode * node, const int depth){;}
+		virtual void farewell(NewickNode * node) = 0;
 	};
 };
 

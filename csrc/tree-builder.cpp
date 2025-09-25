@@ -22,7 +22,7 @@ using namespace std;
 /**
  * Start processing current node, which is either Internal or a Leaf
  */
-void TreeBuilder::accept(Parser::NewickNode* node,const int depth){
+void TreeBuilder::accept(Parser::NewickNode* node){
 	switch (node->get_type()){
 		case Parser::Type::Leaf: 
 			_stack.back()->append(make_shared<Node>());
@@ -55,7 +55,7 @@ void TreeBuilder::accept(Parser::NewickNode* node,const int depth){
 /**
  * End of current node
  */
-void TreeBuilder::farewell(Parser::NewickNode * node, const int depth){
+void TreeBuilder::farewell(Parser::NewickNode * node){
 		switch (node->get_type()){
 			case Parser::Type::Internal:
 				_stack.pop_back();

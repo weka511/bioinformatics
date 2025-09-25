@@ -48,12 +48,12 @@ class TreeBuilder : public Parser::Visitor {
 	/**
 	 * Start processing current node, which is either Internal or a Leaf
 	 */
-	void accept(Parser::NewickNode* node,const int depth);
+	void accept(Parser::NewickNode* node);
 	
 	/**
 	 * End of current node
 	 */
-	void farewell(Parser::NewickNode * node, const int depth);
+	void farewell(Parser::NewickNode * node);
 	
 	/**
 	 * Get the tree that we have built
