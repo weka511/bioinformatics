@@ -82,7 +82,9 @@ class Node{
 	/**
 	 *   Add a child node
 	 */
-	void append(shared_ptr<Node> node) {_children.push_back(node);}; 
+	void append(shared_ptr<Node> node) {
+		_children.push_back(node);
+	}; 
 	
 	/**
 	 * When the bulider gets a name or a length, it is always for the latest child
