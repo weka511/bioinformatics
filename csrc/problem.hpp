@@ -27,11 +27,18 @@
 
 using namespace std;
 
+/**
+ *  This class is responsible for providing input data for a problem.
+ *   Its subclasses determone whether this is read from a file, or hard coded.
+ */
 class Datasource {
    public:
 	virtual string get_input(int i)=0;
 };
 
+/**
+ *  This class is responsible for storing results data from a problem.
+ */
 class OutputAdapter  {
    public:
 	virtual void append(string text)=0;

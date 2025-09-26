@@ -22,12 +22,15 @@
 
 #include <string>
 #include <vector>
+
 #include "problem.hpp"
 
 using namespace std;
 
 
-
+/**
+ * This class creates a file name for a problem
+ */
 class FileNameFactory {
   private:
 	string _path="C:\\Users\\Weka\\Downloads\\";
@@ -37,10 +40,16 @@ class FileNameFactory {
 		SUBMIT, 	// rosalind_ba11f
 		TEST 		// rosalind_dna_1_dataset
 	};
-		
-	string create(string problem_name,Format format,int seq=0);
+	
+	/**
+	 * Create a file name for a problem
+	 */
+	string create(string problem_name, const Format format,int const seq=0);
 };
 
+/**
+ *  This class is responsible for providing input data for a problem from a file.
+ */
 class FileDatasource : public Datasource{
   private: 
 	vector<string> _lines;
@@ -51,10 +60,15 @@ class FileDatasource : public Datasource{
 	string get_input(int i);
 };
 
+/**
+ *  This class is responsible for storing results data from a problem
+ *  into a file.
+ */
 class FileOutput : public OutputAdapter{
   private:
 	vector<string> _lines;
 	string _file_name;
+	
   public:
 	FileOutput(string file_name);
    

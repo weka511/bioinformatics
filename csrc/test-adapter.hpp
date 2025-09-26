@@ -18,15 +18,15 @@
 #ifndef _TEST_ADAPTER_HPP
 #define _TEST_ADAPTER_HPP
 
-#include <iostream>
-#include <memory>
 #include <string>
 #include <vector>
 #include "problem.hpp"
 
 using namespace std;
 
-
+/**
+ *  This class is responsible for providing hard coded input data for a problem.
+ */
 class TestDatasource : public Datasource, public vector<string>{
    public:
 	string get_input(int i) { 
@@ -34,6 +34,9 @@ class TestDatasource : public Datasource, public vector<string>{
 	}
 };
 
+/**
+ *  This class is responsible for storing results data from a problem.
+ */
 class TestOutput : public OutputAdapter, public vector<string>{
    public:
 	void append(string text);

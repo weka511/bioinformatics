@@ -23,7 +23,6 @@
 #include <sstream>
 
 #include "tree-builder.hpp"
-#include "tokenizer.hpp"
 
 using namespace std;
 

@@ -27,14 +27,14 @@
  
  using namespace std;
  
- string FileNameFactory::create(string problem_name,Format format,int seq) {
+ string FileNameFactory::create( string problem_name, const Format format, const int seq) {
 	transform(problem_name.begin(), problem_name.end(), problem_name.begin(),
              [](unsigned char c) { return tolower(c); });
 	stringstream path;
 	path << _path << "\\" << "rosalind_" << problem_name;
 	switch (format) {
 		case SUBMIT:
-			if (seq>0)
+			if (seq > 0)
 				path << "(" << seq <<")";
 			break ;
 		case TEST:
