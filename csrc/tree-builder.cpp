@@ -68,10 +68,14 @@ void TreeBuilder::farewell(Parser::NewickNode * node){
 
 /**
  *  Factory method to parse a tree, in Newick format, into a tree of Nodes.
+ *
+ *  Parameters:
+ *		newick_string            A atring in Newick format
+ *      force_semicolon_at_end   See  #166 Incompatibility between reading Newick file and hand coded Newich string
  */
- shared_ptr<Node> TreeBuilder::create(string newick_string){
+ shared_ptr<Node> TreeBuilder::create(string newick_string,bool force_semicolon_at_end){
 	Parser parser;
-	auto tree = parser.parse(newick_string);
+	auto tree = parser.parse(newick_string,force_semicolon_at_end);
 	auto builder = make_shared<TreeBuilder>();
 	tree->descend(builder);
 	return builder->get_result();

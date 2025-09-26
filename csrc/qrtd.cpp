@@ -22,14 +22,21 @@
 #include <cstddef> 
 #include <sstream>
 
+#include "tree-builder.hpp"
+#include "tokenizer.hpp"
+
 using namespace std;
 
 
 void QRTD::solve() {
-	auto taxa= get_input(0);
-	auto tree1= get_input(1);
-	auto tree2= get_input(2);
-	
+	TreeBuilder builder;
+	auto taxa = get_input(0);
+	auto string1 = get_input(1);
+	auto string2 = get_input(2);
+	auto tree1 = builder.create(string1,true);
+	cout << *tree1 << endl;
+	auto tree2 = builder.create(string2,true);
+	cout << *tree2 << endl;
 	// TO DO
 	append("0");
 }

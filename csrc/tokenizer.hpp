@@ -60,14 +60,18 @@ class Tokenizer {
   
 	/**
 	 *  Convert a string to a vector of tokens
+	 *
+	 *  Parameters:
+	 *		newick_string            A atring in Newick format
+	 *      force_semicolon_at_end   See  #166 Incompatibility between reading Newick file and hand coded Newich string
 	 */
-	vector<Token> tokenize(string str);
+	vector<Token> tokenize(string newick_string,bool force_semicolon_at_end=false);
 	
   private:
 	/**
 	 * Replace consecutive white spaces with a single space
 	 */
-    vector<Token> _cull_consecutive_spaces(vector<Token> tokens);
+    vector<Token> _cull_consecutive_spaces(vector<Token> tokens,bool force_semicolon_at_end);
 
 };
 

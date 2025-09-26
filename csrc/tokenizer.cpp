@@ -29,7 +29,7 @@
  /**
   *  Convert a string to a vector of tokens
   */
- vector<Token> Tokenizer::tokenize(string str) {
+ vector<Token> Tokenizer::tokenize(string str,bool force_semicolon_at_end) {
 	vector<Token> product;
 	long unsigned int right = str.length();
 	long unsigned int start = 0; // Avoid warning when I compare with `next_token`
@@ -45,13 +45,13 @@
 			product.push_back(Token(str.substr(start,next_token-start),false,start,_type_map));
 	}
 
-	return _cull_consecutive_spaces(product);
+	return _cull_consecutive_spaces(product,force_semicolon_at_end);
  }
  
  /**
   * Replace consecutive white spaces with a single space
   */
- vector<Token> Tokenizer::_cull_consecutive_spaces(vector<Token> tokens){
+ vector<Token> Tokenizer::_cull_consecutive_spaces(vector<Token> tokens,bool force_semicolon_at_end){
 	vector<Token> product;
 	auto last_token_was_space = true;
 	for (auto token : tokens){
@@ -62,6 +62,11 @@
 				product.push_back(token);
 		last_token_was_space = token.is_space();
 	}
-
+	/**
+	 *  Force semicolon to be last token in vector.
+	 */
+	if (force_semicolon_at_end)
+		while (product.back().get_type() != Token::Type::Semicolon)
+			product.pop_back();
 	return product;
  }

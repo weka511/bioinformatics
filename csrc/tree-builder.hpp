@@ -42,8 +42,12 @@ class TreeBuilder : public Parser::Visitor {
   
 	/**
 	 *  Factory method to parse a tree, in Newick format, into a tree of Nodes.
+	 *
+	 *  Parameters:
+	 *		newick_string            A atring in Newick format
+	 *      force_semicolon_at_end   See  #166 Incompatibility between reading Newick file and hand coded Newich string
 	 */
-	static shared_ptr<Node> create(string newick_string);
+	static shared_ptr<Node> create(string newick_string,bool force_semicolon_at_end=false);
 	
 	/**
 	 * Start processing current node, which is either Internal or a Leaf

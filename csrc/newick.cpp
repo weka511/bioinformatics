@@ -51,23 +51,6 @@ void Parser::NewickNode::descend(shared_ptr<Visitor> visitor){
 	visitor->farewell(this);
 }
 
-/**
- * Used to determine type of node
- */
-// string Parser::NewickNode::get_type_name() const {
-	// if (Parser::type_names.count(_type) > 0)
-		// return Parser::type_names[_type];
-	// else
-		// return "???";
-// }
-
-/**
- * Allows us to output node
- */
- // ostream& operator<<(ostream& os, const Parser::NewickNode& node){
-	// os  << node.get_str() ;
-    // return os;
-// }
 
 /**
  * Tree -> Subtree ";"
@@ -214,10 +197,10 @@ void Parser::Length::parse(span<Token> tokens){
  *  Convert a string to a vector of tokens,
  *  then attempt to parse to a Tree.
  */
-shared_ptr<Parser::Tree> Parser::parse(string source){
+shared_ptr<Parser::Tree> Parser::parse(string source,bool force_semicolon_at_end){
 	Tokenizer tokenizer;
 	auto tree = make_shared<Parser::Tree>();
-	auto tokens = tokenizer.tokenize(source);
+	auto tokens = tokenizer.tokenize(source,force_semicolon_at_end);
 	tree->parse(tokens);	
 	return tree;
 }

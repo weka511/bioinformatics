@@ -324,7 +324,7 @@ class Parser {
 	 *  Convert a string to a vector of tokens,
 	 *  then attempt to parse to a Tree.
 	 */
-	shared_ptr<Tree> parse(string source);
+	shared_ptr<Tree> parse(string source,bool force_semicolon_at_end=false);
 	
 	/**
 	 *  Used in conjunction with NewickNode::descend() to perform an operation on every node.
