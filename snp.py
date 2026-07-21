@@ -456,7 +456,7 @@ def get_char(ch,column,seq):
     Parameters:
         ch      Character to search for
         column  Column to be searched
-        seq     Number of occurrence - 1 for first occurence, 2 for 2nd, etc.
+        seq     Number of occurrence - 1 for first occurrence, 2 for 2nd, etc.
     '''
     count = 0
     for pos in range(len(column)):
@@ -480,7 +480,7 @@ def InverseBWT(BWT):
                                   # Of course there is only one occurrence of $, but this
                                   # isn't necessarly true for other characters
     while len(Result) < len(BWT):
-        row = get_char(ch,lastColumn,seq)  # Find row number for seq-th occurence of character in last coumn
+        row = get_char(ch,lastColumn,seq)  # Find row number for seq-th occurrence of character in last coumn
         ch = firstColumn[row]             # Find coresponding symbol in first column
                                            # this is the next character arising from a cyclic permutation
         seq = getN(ch,row,firstColumn)     # Indicates whether 1st, 2nd, ... occurrence
@@ -503,7 +503,7 @@ def LastToFirst(BWT,i):
     first = sorted(BWT)         # First column = last column, sorted
     ch = BWT[i]              # ith character, 0 based
     n = getN(ch,i,BWT)      # character is nth occurrence
-    return get_char(ch,first,n) # nth occurence in first column
+    return get_char(ch,first,n) # nth occurrence in first column
 
 
 def ColumnContains(Column,symbol,top,bottom):
@@ -871,7 +871,7 @@ def EvenBetterBWMatching(Text,Patterns,K=10):
         pos = get_entry(row)
         while pos==None:
             predecessor = LastColumn[row]                              # Predecessor of 1st character of match (cyclic)
-            occurrence  = getN(predecessor,row,LastColumn)             # 1st, 2nd, ... occurence
+            occurrence  = getN(predecessor,row,LastColumn)             # 1st, 2nd, ... occurrence
             row         = get_char(predecessor,FirstColumn,occurrence) # Find occurrence in 1st column
             steps += 1
             pos = get_entry(row)
